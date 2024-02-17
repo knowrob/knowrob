@@ -38,17 +38,6 @@ namespace knowrob {
 		semweb::TripleFormat tripleFormat() const { return tripleFormat_; }
 
 		/**
-		 * The meaning is that parent origin imports this ontology file.
-		 * @param parentOrigin the origin of the parent ontology.
-		 */
-		void setParentOrigin(std::string_view parentOrigin) { parentOrigin_ = parentOrigin; }
-
-		/**
-		 * @return the origin of the parent ontology.
-		 */
-		auto &parentOrigin() const { return parentOrigin_; }
-
-		/**
 		 * @param callback a function that is called for each batch of triples in the endpoint.
 		 * @param origin the origin for each triple.
 		 * @param batchSize the number of triples to load in each batch.
@@ -58,7 +47,6 @@ namespace knowrob {
 
 	protected:
 		semweb::TripleFormat tripleFormat_;
-		std::optional<std::string> parentOrigin_;
 	    librdf_world *world_;
 	    librdf_storage *storage_;
 		librdf_model *model_;

@@ -149,6 +149,7 @@ namespace knowrob {
 		std::shared_ptr<semweb::Vocabulary> vocabulary_;
 		std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
 		uint32_t tripleBatchSize_;
+		bool isInitialized_;
 
 		// used to sort dependency nodes in a priority queue.
 		// the nodes are considered to be dependent on each other through free variables.
@@ -183,6 +184,8 @@ namespace knowrob {
 			semweb::VocabularyPtr vocabulary_;
 		};
 
+		void construct();
+
 		void initFromConfig(const boost::property_tree::ptree &config);
 
 		void loadConfiguration(const boost::property_tree::ptree &config);
@@ -194,6 +197,10 @@ namespace knowrob {
 		void stopReasoner();
 
 		DataBackendPtr findSourceBackend(const StatementData &triple);
+
+		std::vector<std::shared_ptr<DefinedBackend>> prepareLoad(std::string_view origin, std::string_view newVersion) const;
+
+		void finishLoad(const std::shared_ptr<OntologySource> &source, std::string_view origin, std::string_view newVersion);
 
 		bool loadNonOntologySource(const DataSourcePtr &source) const;
 

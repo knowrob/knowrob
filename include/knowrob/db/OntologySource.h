@@ -16,8 +16,20 @@ namespace knowrob {
 
 		const auto &frame() const { return frame_; }
 
+		/**
+		 * The meaning is that parent origin imports this ontology file.
+		 * @param parentOrigin the origin of the parent ontology.
+		 */
+		void setParentOrigin(std::string_view parentOrigin) { parentOrigin_ = parentOrigin; }
+
+		/**
+		 * @return the origin of the parent ontology.
+		 */
+		auto &parentOrigin() const { return parentOrigin_; }
+
 	protected:
 		GraphSelectorPtr frame_;
+		std::optional<std::string> parentOrigin_;
 	};
 
 } // knowrob

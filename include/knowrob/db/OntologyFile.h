@@ -39,17 +39,6 @@ namespace knowrob {
 		 */
 		semweb::OntologyLanguage ontologyLanguage() const { return ontologyLanguage_; }
 
-		/**
-		 * The meaning is that parent origin imports this ontology file.
-		 * @param parentOrigin the origin of the parent ontology.
-		 */
-		void setParentOrigin(std::string_view parentOrigin) { parentOrigin_ = parentOrigin; }
-
-		/**
-		 * @return the origin of the parent ontology.
-		 */
-		auto &parentOrigin() const { return parentOrigin_; }
-
 		// override DataSource
 		DataSourceType type() const override { return DataSourceType::ONTOLOGY; }
 
