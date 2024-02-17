@@ -110,6 +110,30 @@ foreign_t sw_default_graph3(term_t t_manager, term_t t_reasoner, term_t t_graph)
 	return hierarchy && PL_unify_atom_chars(t_graph, hierarchy->defaultGraph().c_str());
 }
 
+foreign_t sw_origin_any1(term_t t_origin) {
+	return PL_unify_atom_chars(t_origin, semweb::ImportHierarchy::ORIGIN_ANY.data());
+}
+
+foreign_t sw_origin_system1(term_t t_origin) {
+	return PL_unify_atom_chars(t_origin, semweb::ImportHierarchy::ORIGIN_SYSTEM.data());
+}
+
+foreign_t sw_origin_session1(term_t t_origin) {
+	return PL_unify_atom_chars(t_origin, semweb::ImportHierarchy::ORIGIN_SESSION.data());
+}
+
+foreign_t sw_origin_user1(term_t t_origin) {
+	return PL_unify_atom_chars(t_origin, semweb::ImportHierarchy::ORIGIN_USER.data());
+}
+
+foreign_t sw_origin_reasoner1(term_t t_origin) {
+	return PL_unify_atom_chars(t_origin, semweb::ImportHierarchy::ORIGIN_REASONER.data());
+}
+
+foreign_t sw_origin_test1(term_t t_origin) {
+	return PL_unify_atom_chars(t_origin, semweb::ImportHierarchy::ORIGIN_TEST.data());
+}
+
 foreign_t sw_url_graph2(term_t t_url, term_t t_graph) {
 	char *url;
 	if (PL_get_atom_chars(t_url, &url)) {
@@ -144,10 +168,16 @@ foreign_t sw_load_rdf_xml4(term_t t_manager, term_t t_reasoner, term_t t_url, te
 
 namespace knowrob::prolog {
 	PL_extension PL_extension_semweb[] = {
-			{"sw_url_graph",                   2, (pl_function_t) sw_url_graph2,               0},
-			{"sw_url_version",                 2, (pl_function_t) sw_url_version2,             0},
-			{"sw_default_graph_cpp",           3, (pl_function_t) sw_default_graph3,           0},
-			{"sw_set_default_graph_cpp",       3, (pl_function_t) sw_set_default_graph3,       0},
+			{"sw_url_graph",                   2, (pl_function_t) sw_url_graph2,                0},
+			{"sw_url_version",                 2, (pl_function_t) sw_url_version2,              0},
+			{"sw_default_graph_cpp",           3, (pl_function_t) sw_default_graph3,            0},
+			{"sw_origin_any",                  1, (pl_function_t) sw_origin_any1,               0},
+			{"sw_origin_system",               1, (pl_function_t) sw_origin_system1,            0},
+			{"sw_origin_session",              1, (pl_function_t) sw_origin_session1,           0},
+			{"sw_origin_user",                 1, (pl_function_t) sw_origin_user1,              0},
+			{"sw_origin_reasoner",             1, (pl_function_t) sw_origin_reasoner1,          0},
+			{"sw_origin_test",                 1, (pl_function_t) sw_origin_test1,              0},
+			{"sw_set_default_graph_cpp",       3, (pl_function_t) sw_set_default_graph3,        0},
 			{"sw_graph_get_imports_cpp",       4, (pl_function_t) sw_graph_get_imports4,       0},
 			{"sw_graph_add_direct_import_cpp", 4, (pl_function_t) sw_graph_add_direct_import4, 0},
 			{"sw_current_graph_cpp",           3, (pl_function_t) sw_current_graph3,           0},

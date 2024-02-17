@@ -27,7 +27,7 @@ ReasonerManager::ReasonerManager(KnowledgeBase *kb, const std::shared_ptr<Backen
 
 ReasonerManager::~ReasonerManager() {
 	std::lock_guard<std::mutex> scoped_lock(staticMutex_);
-	for(auto &x: reasonerPool_) {
+	for (auto &x: reasonerPool_) {
 		// make sure reasoner does not interact with the manager anymore
 		x.second->reasoner()->setReasonerManager(nullptr);
 	}
@@ -193,6 +193,9 @@ std::shared_ptr<DefinedReasoner> ReasonerManager::addReasoner(
 	reasonerPool_[reasonerID] = managedReasoner;
 	reasoner->setReasonerManager(this);
 	reasoner->setReasonerName(reasonerID);
+	// indicate that the origin `reasonerID` is a reasoner, and thus belongs to the session
+	kb_->importHierarchy()->addDirectImport(
+			kb_->importHierarchy()->ORIGIN_REASONER, reasonerID);
 
 	// check if reasoner implements DataBackend interface
 	auto backend = std::dynamic_pointer_cast<DataBackend>(reasoner);

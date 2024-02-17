@@ -18,6 +18,7 @@
 #include "knowrob/formulas/Disjunction.h"
 #include "knowrob/queries/QueryError.h"
 #include "knowrob/semweb/xsd.h"
+#include "knowrob/semweb/ImportHierarchy.h"
 
 using namespace knowrob;
 
@@ -228,9 +229,8 @@ bool PrologTerm::putTriple(std::string_view functor, const StatementData &triple
 			return false;
 		}
 	} else {
-		static const auto fallbackOrigin = "user";
-		KB_WARN("triple has no graph, using fallback origin '{}'.", fallbackOrigin);
-		if (!PL_put_atom_chars(pl_arg + 3, fallbackOrigin)) {
+		KB_WARN("triple has no graph, using fallback origin '{}'.", semweb::ImportHierarchy::ORIGIN_USER);
+		if (!PL_put_atom_chars(pl_arg + 3, semweb::ImportHierarchy::ORIGIN_USER.data())) {
 			PL_reset_term_refs(pl_arg);
 			return false;
 		}

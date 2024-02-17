@@ -30,6 +30,13 @@
       sw_default_graph/1,          % ?Graph
       sw_current_graph/2,
 
+      sw_origin_any/1,          % ?Origin
+      sw_origin_system/1, 		% ?Origin
+      sw_origin_session/1, 		% ?Origin
+      sw_origin_user/1, 		% ?Origin
+      sw_origin_reasoner/1, 	% ?Origin
+      sw_origin_test/1, 		% ?Origin
+
       load_rdf_xml/2               % +URL, +ParentGraph
     ]).
 /** <module> Extensions around the semweb modules of Prolog.
@@ -260,15 +267,7 @@ restriction_expr1(R, P, some(P,O))    :- rdf(R,owl:someValuesFrom,Cls), sw_class
 restriction_expr1(R, P, value(P,O))   :- rdf(R,owl:hasValue,Value),     value_expr(Value,O).
 restriction_expr1(R, P, min(P,C))     :- rdf(R,owl:minCardinality,Lit), rdf_literal_value(Lit,C).
 restriction_expr1(R, P, max(P,C))     :- rdf(R,owl:maxCardinality,Lit), rdf_literal_value(Lit,C).
-restriction_expr1(R, P, exactly(P,C)) :- rdf(R,owl:cardinality,Lit),
-
-writeln(foobarrestr1),
-writeln(foobarrestr1),
-writeln(foobarrestr(R,Lit)),
-writeln(foobarrestr2),
-writeln(foobarrestr2),
-
- rdf_literal_value(Lit,C).
+restriction_expr1(R, P, exactly(P,C)) :- rdf(R,owl:cardinality,Lit),    rdf_literal_value(Lit,C).
 
 restriction_expr2(R, P, Cls, min(P,C,Cls))     :- rdf(R,owl:minQualifiedCardinality,Lit), rdf_literal_value(Lit,C).
 restriction_expr2(R, P, Cls, max(P,C,Cls))     :- rdf(R,owl:maxQualifiedCardinality,Lit), rdf_literal_value(Lit,C).

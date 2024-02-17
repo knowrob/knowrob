@@ -1,7 +1,4 @@
-/* 
- * Copyright (c) 2020, Daniel Beßler
- * All rights reserved.
- * 
+/*
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -70,6 +67,37 @@ void Collection::drop()
 	if(!mongoc_collection_drop(coll_,&err)) {
 		throw MongoException("drop_failed", err);
 	}
+}
+
+std::vector<std::string> Collection::distinctValues(std::string_view key)
+{
+	bson_error_t err;
+	bson_t reply;
+	bson_t *command = BCON_NEW("distinct", BCON_UTF8(name_.c_str()), "key", BCON_UTF8(key.data()));
+	bool success = mongoc_database_command_simple(
+			db_, command, nullptr, &reply, &err);
+	if(!success) {
+		bson_destroy(command);
+		bson_destroy(&reply);
+		throw MongoException("distinct_failed", err);
+	}
+
+	std::vector<std::string> values;
+	bson_iter_t iter;
+	if(bson_iter_init(&iter, &reply)) {
+		const bson_value_t *value;
+		if(bson_iter_find(&iter, "values") && BSON_ITER_HOLDS_ARRAY(&iter)) {
+			bson_iter_t array;
+			bson_iter_recurse(&iter, &array);
+			while(bson_iter_next(&array)) {
+				value = bson_iter_value(&array);
+				values.emplace_back(value->value.v_utf8.str);
+			}
+		}
+	}
+	bson_destroy(command);
+	bson_destroy(&reply);
+	return values;
 }
 
 void Collection::storeOne(const Document &document)

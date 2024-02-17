@@ -53,7 +53,7 @@ mongolog:step_compile(assert(triple(S,P,O)), CtxIn, Pipeline, StepVars) :-
 	extend_context(triple(S,P,O), P1, Ctx, Ctx0),
 	option(collection(Collection), Ctx0),
 	option(query_scope(Scope), Ctx0),
-	triple_graph(Ctx0, Graph),
+	triple_graph_for_assert(Ctx0, Graph),
 	% throw instantiation_error if one of the arguments was not referred to before
 	mongolog:all_ground([S,O], Ctx),
 	% resolve arguments
@@ -391,7 +391,7 @@ triple(S,P,O) :-
 %
 mng_triple_doc(triple(S,P,V), Doc, Context) :-
 	%% read options
-	triple_graph(Context, Graph),
+	triple_graph_for_query(Context, Graph),
 	option(query_scope(Scope), Context, dict{}),
 	% special handling for some properties
 	(	taxonomical_property(P)
@@ -441,8 +441,8 @@ triple_arg_value(Arg, ArgValue, FieldValue, _Ctx, [ArgOperator,
 	mng_operator(Operator1, ArgOperator).
 
 %%
-graph_doc('*', _)    :- !, fail.
-graph_doc('user', _) :- !, fail.
+graph_doc('any', _) :- !, fail.
+graph_doc('*', _)   :- !, fail.
 graph_doc(=(GraphName), ['graph',string(GraphName)]) :- !.
 graph_doc(  GraphName,  ['graph',['$in',array(Graphs)]]) :-
 	ground(GraphName),!,
@@ -455,9 +455,12 @@ graph_doc(  GraphName,  ['graph',['$in',array(Graphs)]]) :-
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %%
-triple_graph(Ctx, Graph) :-
+triple_graph_for_assert(Ctx, Graph) :-
 	once((sw_default_graph(DefaultGraph) ; DefaultGraph=user)),
 	option(graph(Graph), Ctx, DefaultGraph).
+
+triple_graph_for_query(Ctx, Graph) :-
+	option(graph(Graph), Ctx, any).
 
 %%
 extend_context(triple(_,P,_), P1, Context, Context0) :-

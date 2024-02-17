@@ -10,6 +10,7 @@
 #include "knowrob/semweb/xsd.h"
 #include "knowrob/semweb/owl.h"
 #include "knowrob/semweb/PrefixRegistry.h"
+#include "knowrob/semweb/ImportHierarchy.h"
 
 namespace fs = std::filesystem;
 using namespace knowrob;
@@ -155,9 +156,10 @@ void OntologyParser::applyFrame(StatementData *triple) {
 void OntologyParser::add(raptor_statement *statement, const semweb::TripleHandler &callback) {
 	if (!currentBatch_) {
 		if(origin_.empty()) {
-			KB_WARN("No origin set for ontology parser, using default.");
-			static const auto defaultOrigin = "user";
-			currentBatch_ = std::make_shared<Batch>(callback, batchSize_, defaultOrigin);
+			KB_WARN("No origin set for ontology parser, falling back to \"user\" origin.");
+			currentBatch_ = std::make_shared<Batch>(
+				callback, batchSize_,
+				semweb::ImportHierarchy::ORIGIN_USER);
 		} else {
 			currentBatch_ = std::make_shared<Batch>(callback, batchSize_, origin_);
 		}

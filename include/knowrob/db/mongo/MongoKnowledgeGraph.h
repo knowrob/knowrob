@@ -139,7 +139,7 @@ namespace knowrob {
 
 		static std::shared_ptr<mongo::Collection> connect(const boost::property_tree::ptree &config);
 
-		static std::shared_ptr<mongo::Collection> connect(const std::string_view db_uri, const std::string_view db_name, const std::string_view collectionName);
+		static std::shared_ptr<mongo::Collection> connect(std::string_view db_uri, std::string_view db_name, std::string_view collectionName);
 
 		static std::string getDBName(const boost::property_tree::ptree &config);
 
@@ -155,15 +155,17 @@ namespace knowrob {
 
 		void updateTimeInterval(const StatementData &tripleLoader);
 
-		static bson_t *getSelector(const RDFLiteral &tripleExpression, bool isTaxonomicProperty);
+		bson_t *getSelector(const RDFLiteral &tripleExpression, bool isTaxonomicProperty);
 
-		static bson_t *getSelector(const StatementData &triple, bool isTaxonomicProperty);
+		bson_t *getSelector(const StatementData &triple, bool isTaxonomicProperty);
 
 		bool isTaxonomicProperty(const TermPtr &propertyTerm);
 
 		bool isTaxonomicProperty(const char *property);
 
 		bool dropOrigin(std::string_view origin);
+
+		bool dropSessionOrigins();
 
 		friend class MongoKnowledgeGraphTest;
 	};

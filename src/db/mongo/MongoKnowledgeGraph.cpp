@@ -1,6 +1,7 @@
-//
-// Created by daniel on 01.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include <gtest/gtest.h>
 #include <filesystem>
@@ -48,8 +49,6 @@ using namespace knowrob::semweb;
 KNOWROB_BUILTIN_BACKEND("MongoDB", MongoKnowledgeGraph)
 
 // AGGREGATION PIPELINES
-bson_t *newPipelineImportHierarchy(const char *collection);
-
 bson_t *newRelationCounter(const char *collection);
 bson_t *newClassCounter(const char *collection);
 
@@ -70,7 +69,7 @@ bool MongoKnowledgeGraph::init(std::string_view db_uri, std::string_view db_name
 	tripleCollection_ = connect(db_uri, db_name, collectionName);
 	if(tripleCollection_) {
 		initialize();
-		dropOrigin("user");
+		dropSessionOrigins();
 		return true;
 	} else {
 		return false;
@@ -83,7 +82,7 @@ bool MongoKnowledgeGraph::loadConfig(const ReasonerConfig &config) {
 		tripleCollection_ = connect(DB_URI_DEFAULT, DB_NAME_KNOWROB, COLL_NAME_TESTS);
 		if(tripleCollection_) {
 			initialize();
-			dropOrigin("user");
+			dropSessionOrigins();
 			return true;
 		} else {
 			return false;
@@ -106,7 +105,7 @@ bool MongoKnowledgeGraph::loadConfig(const ReasonerConfig &config) {
 						removeAllWithOrigin(v.second.data());
 					}
 	} else {
-		removeAllWithOrigin("user");
+		dropSessionOrigins();
 	}
 
 	return true;
@@ -266,20 +265,8 @@ void MongoKnowledgeGraph::initialize() {
 	}
 
 	// initialize the import hierarchy
-	{
-		const bson_t *result;
-		Cursor cursor(tripleCollection_);
-		Document document(newPipelineImportHierarchy(tripleCollection_->name().c_str()));
-		cursor.aggregate(document.bson());
-		while (cursor.next(&result)) {
-			bson_iter_t iter;
-			if (!bson_iter_init(&iter, result)) break;
-			if (!bson_iter_find(&iter, "importer")) break;
-			auto importer = bson_iter_utf8(&iter, nullptr);
-			if (!bson_iter_find(&iter, "imported")) break;
-			auto imported = bson_iter_utf8(&iter, nullptr);
-			importHierarchy_->addDirectImport(importer, imported);
-		}
+	for(auto &persistedOrigin : tripleCollection_->distinctValues("graph")) {
+		importHierarchy_->addDirectImport(importHierarchy_->ORIGIN_SYSTEM, persistedOrigin);
 	}
 }
 
@@ -307,6 +294,21 @@ void MongoKnowledgeGraph::drop() {
 	tripleCollection_->drop();
 	vocabulary_ = std::make_shared<semweb::Vocabulary>();
 	importHierarchy_->clear();
+}
+
+bool MongoKnowledgeGraph::dropOrigin(std::string_view graphName) {
+	KB_INFO("[mongodb] dropping triples with origin \"{}\".", graphName);
+	tripleCollection_->removeAll(Document(
+			BCON_NEW("graph", BCON_UTF8(graphName.data()))));
+	return true;
+}
+
+bool MongoKnowledgeGraph::dropSessionOrigins() {
+	// TODO: rather iterate over all children of ORIGIN_SESSION, and drop all of them
+	// TODO: I think it would be better if this is done centrally
+	return dropOrigin(semweb::ImportHierarchy::ORIGIN_USER) &&
+		   dropOrigin(semweb::ImportHierarchy::ORIGIN_REASONER) &&
+		   dropOrigin(semweb::ImportHierarchy::ORIGIN_SESSION);
 }
 
 void MongoKnowledgeGraph::setVersionOfOrigin(std::string_view origin, std::string_view version) {
@@ -340,7 +342,7 @@ bson_t *MongoKnowledgeGraph::getSelector(
 		const RDFLiteral &tripleExpression,
 		bool b_isTaxonomicProperty) {
 	auto doc = bson_new();
-	aggregation::appendTripleSelector(doc, tripleExpression, b_isTaxonomicProperty);
+	aggregation::appendTripleSelector(doc, tripleExpression, b_isTaxonomicProperty, importHierarchy_);
 	return doc;
 }
 
@@ -351,9 +353,9 @@ bson_t *MongoKnowledgeGraph::getSelector(
 }
 
 bool MongoKnowledgeGraph::insertOne(const StatementData &tripleData) {
-	auto &graph = tripleData.graph ? tripleData.graph : importHierarchy_->defaultGraph();
+	auto &fallbackOrigin = importHierarchy_->defaultGraph();
 	bool isTaxonomic = isTaxonomicProperty(tripleData.predicate);
-	auto document = createTripleDocument(tripleData, graph, isTaxonomic);
+	auto document = createTripleDocument(tripleData, fallbackOrigin, isTaxonomic);
 	tripleCollection_->storeOne(Document(document));
 
 	if (semweb::isSubClassOfIRI(tripleData.predicate)) {
@@ -366,7 +368,8 @@ bool MongoKnowledgeGraph::insertOne(const StatementData &tripleData) {
 }
 
 bool MongoKnowledgeGraph::insertAll(const semweb::TripleContainerPtr &triples) {
-	auto &graph = importHierarchy_->defaultGraph();
+	// only used in case triples do not specify origin field
+	auto &fallbackOrigin = importHierarchy_->defaultGraph();
 	auto bulk = tripleCollection_->createBulkOperation();
 	struct TaxonomyAssertions {
 		std::vector<StringPair> subClassAssertions;
@@ -377,8 +380,7 @@ bool MongoKnowledgeGraph::insertAll(const semweb::TripleContainerPtr &triples) {
 				  [&](auto &data) {
 					  bool isTaxonomic = isTaxonomicProperty(data.predicate);
 
-					  // TODO: why the graph param?
-					  auto document = createTripleDocument(data, graph, isTaxonomic);
+					  auto document = createTripleDocument(data, fallbackOrigin, isTaxonomic);
 					  bulk->pushInsert(document);
 					  bson_free(document);
 
@@ -418,22 +420,9 @@ bool MongoKnowledgeGraph::removeAll(const semweb::TripleContainerPtr &triples) {
 	return true;
 }
 
-bool MongoKnowledgeGraph::dropOrigin(std::string_view graphName) {
-	KB_INFO("[mongodb] dropping triples with origin \"{}\".", graphName);
-	tripleCollection_->removeAll(Document(
-			BCON_NEW("graph", BCON_UTF8(graphName.data()))));
-	// TODO: improve handling of default graph names.
-	//       here it is avoided that import relations are forgotten.
-	if (graphName != "user" && graphName != "common" && graphName != "test")
-		importHierarchy_->removeCurrentGraph(graphName);
-	return true;
-}
-
-
 bool MongoKnowledgeGraph::removeAllWithOrigin(std::string_view graphName) {
 	return dropOrigin(graphName);
 }
-
 
 bool MongoKnowledgeGraph::removeAllMatching(const RDFLiteral &query) {
 	static const bool doMatchMany = true;
@@ -459,7 +448,7 @@ AnswerCursorPtr MongoKnowledgeGraph::lookup(const RDFLiteral &tripleExpression) 
 		// indicate that no variables in tripleExpression may have been instantiated
 		// by a previous step to allow for some optimizations.
 		lookupData.mayHasMoreGroundings = false;
-		aggregation::lookupTriple(pipeline, tripleCollection_->name(), vocabulary_, lookupData);
+		aggregation::lookupTriple(pipeline, tripleCollection_->name(), vocabulary_, importHierarchy_, lookupData);
 	}
 	bson_append_array_end(&pipelineDoc, &pipelineArray);
 
@@ -481,6 +470,7 @@ MongoKnowledgeGraph::lookup(const std::vector<RDFLiteralPtr> &tripleExpressions,
 	aggregation::lookupTriplePaths(pipeline,
 								   tripleCollection_->name(),
 								   vocabulary_,
+								   importHierarchy_,
 								   tripleExpressions);
 	if (limit > 0) {
 		pipeline.limit(limit);
@@ -561,7 +551,7 @@ void MongoKnowledgeGraph::updateTimeInterval(const StatementData &tripleData) {
 	StatementData tripleDataCopy(tripleData);
 	tripleDataCopy.temporalOperator = TemporalOperator::SOMETIMES;
 	RDFLiteral overlappingExpr(tripleDataCopy);
-	aggregation::appendTripleSelector(&selectorDoc, overlappingExpr, b_isTaxonomicProperty);
+	aggregation::appendTripleSelector(&selectorDoc, overlappingExpr, b_isTaxonomicProperty, importHierarchy_);
 	cursor.filter(&selectorDoc);
 
 	// iterate overlapping triples, remember document ids and compute
@@ -701,7 +691,7 @@ bool MongoKnowledgeGraph::isTaxonomicProperty(const TermPtr &propertyTerm) {
 }
 
 bson_t *MongoKnowledgeGraph::createTripleDocument(const StatementData &tripleData,
-												  const std::string &graphName,
+												  const std::string &fallbackOrigin,
 												  bool isTaxonomic) {
 	bson_t parentsArray;
 	uint32_t arrIndex = 0;
@@ -778,7 +768,7 @@ bson_t *MongoKnowledgeGraph::createTripleDocument(const StatementData &tripleDat
 	if (tripleData.graph) {
 		BSON_APPEND_UTF8(tripleDoc, "graph", tripleData.graph);
 	} else {
-		BSON_APPEND_UTF8(tripleDoc, "graph", graphName.c_str());
+		BSON_APPEND_UTF8(tripleDoc, "graph", fallbackOrigin.c_str());
 	}
 
 	if (tripleData.agent)
@@ -884,39 +874,6 @@ bson_t *newClassCounter(const char *collection) {
 						"}", "}",
 					"]"
 	);
-}
-
-bson_t *newPipelineImportHierarchy(const char *collection) {
-	return BCON_NEW("pipeline", "[",
-					"{", "$match", "{", "p", BCON_UTF8(MONGO_KG_VERSION_KEY), "}", "}",
-					"{", "$lookup", "{",
-					"from", BCON_UTF8(collection),
-					"as", BCON_UTF8("x"),
-					"let", "{", "x", BCON_UTF8("$graph"), "}",
-					"pipeline", "[",
-					"{", "$match", "{",
-					"p", BCON_UTF8(owl::imports.data()),
-					"$expr", "{", "$eq", "[", BCON_UTF8("$graph"), BCON_UTF8("$$x"), "]", "}",
-					"}", "}",
-					"{", "$project", "{", "o", BCON_INT32(1), "}", "}",
-					"]",
-					"}", "}",
-					"{", "$unwind", BCON_UTF8("$x"), "}",
-					"{", "$lookup", "{",
-					"from", BCON_UTF8(collection),
-					"as", BCON_UTF8("y"),
-					"let", "{", "x", BCON_UTF8("$x.o"), "}",
-					"pipeline", "[",
-					"{", "$match", "{",
-					"p", BCON_UTF8(MONGO_KG_VERSION_KEY),
-					"$expr", "{", "$eq", "[", BCON_UTF8("$s"), BCON_UTF8("$$x"), "]", "}",
-					"}", "}",
-					"{", "$project", "{", "graph", BCON_INT32(1), "}", "}",
-					"]",
-					"}", "}",
-					"{", "$unwind", BCON_UTF8("$y"), "}",
-					"{", "$project", "{", "importer", BCON_UTF8("$graph"), "imported", BCON_UTF8("$y.graph"), "}", "}",
-					"]");
 }
 
 

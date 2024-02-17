@@ -28,7 +28,7 @@ KnowledgeBase *Reasoner::kb() const {
 }
 
 ReasonerManager &Reasoner::reasonerManager() const {
-	if(reasonerManager_) {
+	if (reasonerManager_) {
 		return *reasonerManager_;
 	} else {
 		throw ReasonerError("ReasonerManager not found.");
@@ -43,9 +43,19 @@ std::shared_ptr<semweb::ImportHierarchy> Reasoner::importHierarchy() const {
 	return reasonerManager().kb()->importHierarchy();
 }
 
+class ReasonerTask : public ThreadPool::Runner {
+public:
+	explicit ReasonerTask(const std::function<void()> &fn) : fn_(fn) {}
+	void run() override { fn_(); }
+
+	protected:
+		std::function<void()> fn_;
+};
+
 void Reasoner::pushWork(const std::function<void(void)> &fn) {
-	auto runner =
-			std::make_shared<ThreadPool::LambdaRunner>([&fn](const ThreadPool::LambdaRunner::StopChecker&) { fn(); });
+	// TODO: add support for stop request flag. For this the lambda needs to take an additional parameter.
+	//       which itself is a function that returns the stop request flag of the worker.
+	auto runner = std::make_shared<ReasonerTask>(fn);
 	DefaultThreadPool()->pushWork(runner, [](const std::exception &e) {
 		KB_ERROR("Error in reasoner worker thread: {}", e.what());
 	});
@@ -103,7 +113,9 @@ void Reasoner::setInferredTriples(const std::vector<StatementData> &triples) {
 class ReasonerTripleContainer : public semweb::TripleContainer {
 public:
 	explicit ReasonerTripleContainer(const std::vector<StatementData> *triples) : triples_(triples) {}
+
 	const std::vector<StatementData> &asVector() const override { return *triples_; }
+
 protected:
 	const std::vector<StatementData> *triples_;
 };

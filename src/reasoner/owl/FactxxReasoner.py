@@ -23,6 +23,7 @@ class FactxxReasoner(ReasonerWithBackend):
 		self.synch_to_kb = True
 		# skip inferred triples with blank nodes?
 		self.ignore_bnodes = True
+		self.bnode_map = {}
 
 		self.crs = coras.Coras()
 		self.is_parse_needed = False
@@ -77,12 +78,25 @@ class FactxxReasoner(ReasonerWithBackend):
 			return False
 		return True
 
-	@staticmethod
-	def triple_to_python(triple: StatementData) -> Tuple[URIRef, URIRef, Union[URIRef, Literal_rdflib]]:
-		s_uri = URIRef(triple.subject)
+	def get_blank_node(self, iri: str):
+		if iri not in self.bnode_map:
+			self.bnode_map[iri] = BNode(iri)
+		return self.bnode_map[iri]
+
+	def resource_to_python(self, iri: str):
+		if iri.startswith("_"):
+			return self.get_blank_node(iri)
+		elif iri.startswith("genid"):
+			# FIXME: where are these genid's coming from?
+			return self.get_blank_node(iri)
+		else:
+			return URIRef(iri)
+
+	def triple_to_python(self, triple: StatementData) -> Tuple[Union[BNode,URIRef], URIRef, Union[URIRef,Literal_rdflib,BNode]]:
+		s_uri = self.resource_to_python(triple.subject)
 		p_uri = URIRef(triple.predicate)
 		if triple.objectType == RDFType.RESOURCE:
-			return s_uri, p_uri, URIRef(triple.object)
+			return s_uri, p_uri, self.resource_to_python(triple.object)
 		elif triple.objectType == RDFType.INT64_LITERAL:
 			return s_uri, p_uri, Literal_rdflib(triple.objectInteger)
 		elif triple.objectType == RDFType.DOUBLE_LITERAL:
@@ -100,8 +114,8 @@ class FactxxReasoner(ReasonerWithBackend):
 		if type(row[2]) is Literal_rdflib:
 			literal: Literal_rdflib = row[2]
 			datatype = literal.datatype
+			kb_triple.object = str(row[2])
 			if datatype == XSD.string:
-				kb_triple.object = str(row[2])
 				kb_triple.objectType = RDFType.STRING_LITERAL
 			elif datatype == XSD.integer or datatype == XSD.long:
 				kb_triple.objectInteger = int(row[2])
@@ -116,6 +130,13 @@ class FactxxReasoner(ReasonerWithBackend):
 				logWarn("unknown datatype in inferred triple: " + str(datatype))
 		elif type(row[2]) is URIRef:
 			kb_triple.object = str(row[2])
+			kb_triple.objectType = RDFType.RESOURCE
+		elif type(row[2]) is BNode:
+			bnode_name = str(row[2])
+			if bnode_name.startswith("_"):
+				kb_triple.object = bnode_name
+			else:
+				kb_triple.object = "_" + bnode_name
 			kb_triple.objectType = RDFType.RESOURCE
 
 	def update_triples(self):
@@ -180,12 +201,14 @@ class FactxxReasoner(ReasonerWithBackend):
 	def start(self):
 		# start a thread for the reasoner where realise is called.
 		self.pushWork(self.update)
+		#self.update()
 
 	def stop(self):
 		pass
 
 	def insertOne(self, triple: StatementData) -> bool:
-		self.edb().add(FactxxReasoner.triple_to_python(triple))
+		py_triple = self.triple_to_python(triple)
+		self.edb().add(py_triple)
 		self.is_update_needed = True
 		self.is_parse_needed = True
 		return True
@@ -201,7 +224,7 @@ class FactxxReasoner(ReasonerWithBackend):
 		return all_true
 
 	def removeOne(self, triple: StatementData) -> bool:
-		self.edb().remove(FactxxReasoner.triple_to_python(triple))
+		self.edb().remove(self.triple_to_python(triple))
 		self.is_update_needed = True
 		self.is_parse_needed = True
 		return True

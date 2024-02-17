@@ -6,6 +6,7 @@
 #include "knowrob/db/mongo/aggregation/terms.h"
 #include "knowrob/terms/Constant.h"
 #include "knowrob/terms/ListTerm.h"
+#include "knowrob/Logger.h"
 
 using namespace knowrob;
 using namespace knowrob::mongo;
@@ -83,7 +84,8 @@ void aggregation::appendTermQuery( //NOLINT
 void aggregation::appendArrayQuery( // NOLINT
         bson_t *doc,
         const char *key,
-        const std::vector<TermPtr> &terms)
+        const std::vector<TermPtr> &terms,
+        const char *arrayOperator)
 {
     bson_t orOperator, orArray;
     char arrIndexStr[16];
@@ -91,11 +93,12 @@ void aggregation::appendArrayQuery( // NOLINT
     uint32_t arrIndex = 0;
 
     BSON_APPEND_DOCUMENT_BEGIN(doc, key, &orOperator);
-    BSON_APPEND_ARRAY_BEGIN(&orOperator, "$or", &orArray);
+    BSON_APPEND_ARRAY_BEGIN(&orOperator, arrayOperator, &orArray);
     for(auto &term : terms) {
         bson_uint32_to_string(arrIndex++,
             &arrIndexKey, arrIndexStr, sizeof arrIndexStr);
-        appendTermQuery(doc, arrIndexKey, term);
+		KB_INFO("array elem {} = {}", arrIndexKey, *term);
+        appendTermQuery(&orArray, arrIndexKey, term);
     }
     bson_append_array_end(&orOperator, &orArray);
     bson_append_document_end(doc, &orOperator);

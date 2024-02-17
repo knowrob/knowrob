@@ -75,8 +75,6 @@ bool MongologReasoner::loadConfig(const ReasonerConfig &reasonerConfiguration) {
 		kb()->backendManager()->addBackend("mongo", knowledgeGraph_);
 		KB_WARN("Falling back to default configuration for MongoDB!");
 	}
-	auto importHierarchy = knowledgeGraph_->importHierarchy();
-	importHierarchy->addDirectImport("user", reasonerName());
 
 	return true;
 }
@@ -204,7 +202,7 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
 			if (graphTerm->type() != TermType::STRING) throw QueryError("invalid property term {}", *graphTerm);
 			tripleData.graph = ((StringTerm *) graphTerm.get())->value().c_str();
 		} else {
-			tripleData.graph = "user";
+			tripleData.graph = mongolog->importHierarchy()->defaultGraph().c_str();
 		}
 
 		// "c" field
@@ -258,7 +256,7 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
 			}
 		}
 
-		mongolog->knowledgeGraph()->insertOne(tripleData);
+		mongolog->kb()->insertOne(tripleData);
 		return true;
 	}
 	return false;
@@ -288,7 +286,6 @@ protected:
 	// Per-test-suite set-up.
 	static void SetUpTestSuite() {
 		// Initialize the reasoner
-		KB_INFO("MongologTests SetUpTestSuite");
 		try {
 			reasoner();
 		} catch (std::exception &e) {

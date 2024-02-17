@@ -56,7 +56,8 @@ KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config)
 		: vocabulary_(std::make_shared<semweb::Vocabulary>()),
 		  importHierarchy_(std::make_unique<semweb::ImportHierarchy>()),
 		  tripleBatchSize_(KB_DEFAULT_TRIPLE_BATCH_SIZE) {
-	KB_INFO("creating knowledge base");
+	// use "system" as default origin until initialization completed
+	importHierarchy_->setDefaultGraph(importHierarchy_->ORIGIN_SYSTEM);
 	backendManager_ = std::make_unique<BackendManager>(this);
 	reasonerManager_ = std::make_unique<ReasonerManager>(this, backendManager_);
 	initFromConfig(config);
@@ -66,6 +67,8 @@ KnowledgeBase::KnowledgeBase(const std::string_view &configFile)
 		: vocabulary_(std::make_shared<semweb::Vocabulary>()),
 		  importHierarchy_(std::make_unique<semweb::ImportHierarchy>()),
 		  tripleBatchSize_(KB_DEFAULT_TRIPLE_BATCH_SIZE) {
+	// use "system" as default origin until initialization completed
+	importHierarchy_->setDefaultGraph(importHierarchy_->ORIGIN_SYSTEM);
 	backendManager_ = std::make_unique<BackendManager>(this);
 	reasonerManager_ = std::make_unique<ReasonerManager>(this, backendManager_);
 	boost::property_tree::ptree config;
@@ -77,6 +80,8 @@ KnowledgeBase::KnowledgeBase()
 		: vocabulary_(std::make_shared<semweb::Vocabulary>()),
 		  importHierarchy_(std::make_unique<semweb::ImportHierarchy>()),
 		  tripleBatchSize_(KB_DEFAULT_TRIPLE_BATCH_SIZE) {
+	// use "system" as default origin until initialization completed
+	importHierarchy_->setDefaultGraph(importHierarchy_->ORIGIN_SYSTEM);
 	backendManager_ = std::make_unique<BackendManager>(this);
 	reasonerManager_ = std::make_unique<ReasonerManager>(this, backendManager_);
 }
@@ -86,6 +91,8 @@ void KnowledgeBase::init() {
 	for (auto &ontoPath: {"owl/rdf-schema.xml", "owl/owl.rdf"}) {
 		loadDataSource(std::make_shared<OntologyFile>(URI(ontoPath), "rdf-xml"));
 	}
+	// switch to "user" as default origin
+	importHierarchy_->setDefaultGraph(importHierarchy_->ORIGIN_USER);
 	startReasoner();
 }
 
@@ -741,9 +748,7 @@ static inline std::shared_ptr<ThreadPool::Runner> pushPerTripleWork(
 		const std::function<void(const StatementData &)> &fn) {
 	auto perTripleWorker =
 			std::make_shared<ThreadPool::LambdaRunner>([fn, triples](const ThreadPool::LambdaRunner::StopChecker &) {
-				std::for_each(triples->begin(), triples->end(), [fn](const StatementData &triple) {
-					fn(triple);
-				});
+				std::for_each(triples->begin(), triples->end(), fn);
 			});
 	DefaultThreadPool()->pushWork(perTripleWorker,
 								  [](const std::exception &exc) {
@@ -921,7 +926,9 @@ bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
 	//       if there is no other origin defining it.
 	// TODO: optionally drop all child imports of the origin
 	// remove origin from import hierarchy
-	importHierarchy_->removeCurrentGraph(origin);
+	if (!importHierarchy_->isReservedOrigin(origin)) {
+		importHierarchy_->removeCurrentGraph(origin);
+	}
 
 	return true;
 }
@@ -950,6 +957,7 @@ void KnowledgeBase::updateVocabularyInsert(const StatementData &tripleData) {
 		//vocabulary_->increaseFrequency(tripleData.subject);
 		// TODO: string comparison below is not efficient, could put all classes in a map here, or add
 		//       an interface to the vocabulary that excludes owl/rdfs/rdf terms
+		//  --> rather check for subclass of relationship to owl:Thing
 		if (vocabulary_->isDefinedClass(tripleData.object) &&
 		    semweb::owl::Class != tripleData.object &&
 		    semweb::owl::Restriction != tripleData.object &&
