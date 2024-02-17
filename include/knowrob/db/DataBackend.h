@@ -1,6 +1,7 @@
-//
-// Created by daniel on 12.03.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_DATA_BACKEND_H
 #define KNOWROB_DATA_BACKEND_H
@@ -8,6 +9,9 @@
 #include <boost/property_tree/ptree.hpp>
 #include "knowrob/semweb/RDFLiteral.h"
 #include "knowrob/semweb/StatementData.h"
+#include "knowrob/semweb/TripleContainer.h"
+#include "knowrob/semweb/Vocabulary.h"
+#include "knowrob/semweb/ImportHierarchy.h"
 #include "knowrob/reasoner/ReasonerConfig.h"
 #include "knowrob/ThreadPool.h"
 #include "DataSourceHandler.h"
@@ -30,7 +34,7 @@ namespace knowrob {
 		 * @param triples a set of triples.
 		 * @return true on success
 		 */
-		virtual bool insertAll(const std::vector<StatementData> &triples) = 0;
+		virtual bool insertAll(const semweb::TripleContainerPtr &triples) = 0;
 
 		/**
 		 * Delete the first matching statement from this backend.
@@ -42,15 +46,20 @@ namespace knowrob {
 		 * Delete all matching statements from this backend.
 		 * @param triples a set of triples.
 		 */
-		virtual bool removeAll(const std::vector<StatementData> &triples) = 0;
+		virtual bool removeAll(const semweb::TripleContainerPtr &triples) = 0;
+
+		/**
+		 * Delete all statements with a given origin from this backend.
+		 * @param origin the origin of the statements to be deleted.
+		 */
+		virtual bool removeAllWithOrigin(std::string_view origin) = 0;
 
 		/**
 		 * Delete all matching statements from this backend.
 		 * @param query an expression used to match triples in the backend.
-		 * @param doMatchMany if true, all matching triples are deleted, otherwise only the first one.
 		 * @return the number of deleted triples.
 		 */
-		virtual int removeMatching(const RDFLiteral &query, bool doMatchMany) = 0;
+		virtual bool removeAllMatching(const RDFLiteral &query) = 0;
 	};
 
 	/**
@@ -72,6 +81,26 @@ namespace knowrob {
 		 * @return true on success
 		 */
 		virtual bool loadConfig(const ReasonerConfig &config) = 0;
+
+		/**
+		 * @return the vocabulary of this backend.
+		 */
+		const auto &vocabulary() const { return vocabulary_; }
+
+		/**
+		 * @return the import hierarchy between named graphs.
+		 */
+		const auto &importHierarchy() const { return importHierarchy_; }
+
+		void setVocabulary(std::shared_ptr<semweb::Vocabulary> vocabulary) { vocabulary_ = std::move(vocabulary); }
+
+		void setImportHierarchy(std::shared_ptr<semweb::ImportHierarchy> importHierarchy) {
+			importHierarchy_ = std::move(importHierarchy);
+		}
+
+	protected:
+		std::shared_ptr<semweb::Vocabulary> vocabulary_;
+		std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
 	};
 
 	using DataBackendPtr = std::shared_ptr<DataBackend>;

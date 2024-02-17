@@ -14,12 +14,14 @@ namespace knowrob::semweb {
         constexpr std::string_view versionInfo           = "http://www.w3.org/2002/07/owl#versionInfo";
         constexpr std::string_view inverseOf             = "http://www.w3.org/2002/07/owl#inverseOf";
         constexpr std::string_view Class                 = "http://www.w3.org/2002/07/owl#Class";
+        constexpr std::string_view Restriction           = "http://www.w3.org/2002/07/owl#Restriction";
         constexpr std::string_view ObjectProperty        = "http://www.w3.org/2002/07/owl#ObjectProperty";
         constexpr std::string_view DatatypeProperty      = "http://www.w3.org/2002/07/owl#DatatypeProperty";
         constexpr std::string_view AnnotationProperty    = "http://www.w3.org/2002/07/owl#AnnotationProperty";
         constexpr std::string_view TransitiveProperty    = "http://www.w3.org/2002/07/owl#TransitiveProperty";
         constexpr std::string_view SymmetricProperty     = "http://www.w3.org/2002/07/owl#SymmetricProperty";
         constexpr std::string_view ReflexiveProperty     = "http://www.w3.org/2002/07/owl#ReflexiveProperty";
+        constexpr std::string_view NamedIndividual       = "http://www.w3.org/2002/07/owl#NamedIndividual";
     }
 
     /**

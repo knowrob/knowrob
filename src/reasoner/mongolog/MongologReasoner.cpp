@@ -25,10 +25,6 @@ foreign_t pl_db_name3(term_t, term_t, term_t);
 
 foreign_t pl_uri3(term_t, term_t, term_t);
 
-foreign_t mng_drop_graph3(term_t, term_t, term_t);
-
-foreign_t pl_load_triples_cpp4(term_t, term_t, term_t, term_t);
-
 foreign_t pl_rdf_current_property_cpp3(term_t t_reasonerManager, term_t t_reasonerModule, term_t t_propertyIRI);
 
 foreign_t pl_assert_triple_cpp9(term_t, term_t, term_t, term_t, term_t, term_t, term_t, term_t, term_t);
@@ -55,10 +51,6 @@ bool MongologReasoner::initializeDefaultPackages() {
 		PL_register_foreign("mng_uri_cpp",
 							3, (pl_function_t) pl_uri3, 0);
 
-		PL_register_foreign("mng_drop_graph_cpp",
-							3, (pl_function_t) mng_drop_graph3, 0);
-		PL_register_foreign("mng_load_triples_cpp",
-							4, (pl_function_t) pl_load_triples_cpp4, 0);
 		PL_register_foreign("mng_rdf_current_property_cpp",
 							3, (pl_function_t) pl_rdf_current_property_cpp3, 0);
 		PL_register_foreign("mng_assert_triple_cpp",
@@ -72,15 +64,17 @@ bool MongologReasoner::loadConfig(const ReasonerConfig &reasonerConfiguration) {
 	if (!PrologReasoner::loadConfig(reasonerConfiguration)) return false;
 
 	if (!knowledgeGraph_) {
-		knowledgeGraph_ = std::make_shared<MongoKnowledgeGraph>("mongodb://localhost:27017", "knowrob", "triples");
+		knowledgeGraph_ = std::make_shared<MongoKnowledgeGraph>();
+		knowledgeGraph_->setVocabulary(std::make_shared<semweb::Vocabulary>());
+		knowledgeGraph_->setImportHierarchy(std::make_shared<semweb::ImportHierarchy>());
+		knowledgeGraph_->init(
+				MongoKnowledgeGraph::DB_URI_DEFAULT,
+				MongoKnowledgeGraph::DB_NAME_KNOWROB,
+				MongoKnowledgeGraph::COLL_NAME_TRIPLES
+		);
+		kb()->backendManager()->addBackend("mongo", knowledgeGraph_);
 		KB_WARN("Falling back to default configuration for MongoDB!");
 	}
-	importHierarchy_ = knowledgeGraph_->importHierarchy();
-	importHierarchy_->addDirectImport("user", reasonerName());
-
-	// load some common ontologies
-	loadDataSource(std::make_shared<DataSource>(DataSource::RDF_XML_FORMAT, "owl/rdf-schema.xml"));
-	loadDataSource(std::make_shared<DataSource>(DataSource::RDF_XML_FORMAT, "owl/owl.rdf"));
 
 	return true;
 }
@@ -93,53 +87,26 @@ void MongologReasoner::setDataBackend(const DataBackendPtr &backend) {
 	}
 }
 
-const functor_t &MongologReasoner::callFunctor() {
-	static const auto call_f = PL_new_functor(PL_new_atom("mongolog_call"), 2);
+std::string_view MongologReasoner::callFunctor() {
+	static const auto call_f = "mongolog_call";
 	return call_f;
 }
-
-/*
-bool MongologReasoner::projectIntoEDB(const Statement &statement)
-{
-    // FIXME: handle time interval and confidence value!
-    auto mongolog_project = std::make_shared<Predicate>(Predicate("mongolog_project",{
-            statement.predicate()
-    }));
-    return eval(mongolog_project, nullptr, false);
-}
-
-bool MongologReasoner::importData(const std::filesystem::path &path)
-{
-    auto mng_dump = std::make_shared<Predicate>(Predicate("mongolog_import",{
-            std::make_shared<StringTerm>(path.u8string())
-    }));
-    return eval(mng_dump, nullptr, false);
-}
-
-bool MongologReasoner::exportData(const std::filesystem::path &path)
-{
-    auto mng_dump = std::make_shared<Predicate>(Predicate("mongolog_export",{
-        std::make_shared<StringTerm>(path.u8string())
-    }));
-    return eval(mng_dump, nullptr, false);
-}
-*/
 
 static inline std::shared_ptr<MongologReasoner> getMongologReasoner(term_t t_reasonerManager,
 																	term_t t_reasonerModule) {
 	auto definedReasoner = PrologReasoner::getDefinedReasoner(t_reasonerManager, t_reasonerModule);
 	if (!definedReasoner) {
 		KB_ERROR("unable to find reasoner with id '{}' (manager id: {}).",
-				 *PrologQuery::constructTerm(t_reasonerModule),
-				 *PrologQuery::constructTerm(t_reasonerManager));
+				 *PrologTerm::toKnowRobTerm(t_reasonerModule),
+				 *PrologTerm::toKnowRobTerm(t_reasonerManager));
 		return {};
 	}
 	auto reasoner = definedReasoner->reasoner();
 	auto mongolog = std::dynamic_pointer_cast<MongologReasoner>(reasoner);
 	if (!mongolog) {
 		KB_ERROR("reasoner with id '{}' (manager id: {}) is not a mongolog reasoner.",
-				 *PrologQuery::constructTerm(t_reasonerModule),
-				 *PrologQuery::constructTerm(t_reasonerManager));
+				 *PrologTerm::toKnowRobTerm(t_reasonerModule),
+				 *PrologTerm::toKnowRobTerm(t_reasonerManager));
 	}
 	return mongolog;
 }
@@ -179,43 +146,8 @@ foreign_t pl_rdf_current_property_cpp3(term_t t_reasonerManager,
 	auto mongolog = getMongologReasoner(t_reasonerManager, t_reasonerModule);
 	char *propertyIRI;
 	if (mongolog && PL_get_atom_chars(t_propertyIRI, &propertyIRI)) {
+		// TODO: rather only yield true if there is an IDB predicate for the property?
 		return mongolog->knowledgeGraph()->vocabulary()->isDefinedProperty(propertyIRI);
-	}
-	return false;
-}
-
-foreign_t pl_load_triples_cpp4(term_t t_reasonerManager,
-							   term_t t_reasonerModule,
-							   term_t t_ontologyURI,
-							   term_t t_parentGraph) {
-	auto mongolog = getMongologReasoner(t_reasonerManager, t_reasonerModule);
-	char *ontologyURI;
-	if (mongolog && PL_get_atom_chars(t_ontologyURI, &ontologyURI)) {
-		auto &kg = mongolog->knowledgeGraph();
-
-		if (!kg->loadFile(ontologyURI, TripleFormat::RDF_XML, *DefaultGraphSelector())) return false;
-
-		char *parentGraph;
-		if (!PL_is_variable(t_parentGraph) && PL_get_atom_chars(t_parentGraph, &parentGraph)) {
-			// FIXME: redundant
-			auto resolved = URI::resolve(ontologyURI);
-			auto graphName = KnowledgeGraph::getNameFromURI(resolved);
-			mongolog->importHierarchy()->addDirectImport(parentGraph, graphName);
-		}
-		return true;
-	}
-	return false;
-}
-
-
-foreign_t mng_drop_graph3(term_t t_reasonerManager,
-						  term_t t_reasonerModule,
-						  term_t t_graph) {
-	auto mongolog = getMongologReasoner(t_reasonerManager, t_reasonerModule);
-	char *graph;
-	if (mongolog && PL_get_atom_chars(t_graph, &graph)) {
-		mongolog->knowledgeGraph()->dropGraph(graph);
-		return true;
 	}
 	return false;
 }
@@ -234,17 +166,17 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
 		StatementData tripleData;
 
 		// "s" field
-		auto subjectTerm = PrologQuery::constructTerm(t_subjectTerm);
+		auto subjectTerm = PrologTerm::toKnowRobTerm(t_subjectTerm);
 		if (subjectTerm->type() != TermType::STRING) throw QueryError("invalid subject term {}", *subjectTerm);
 		tripleData.subject = ((StringTerm *) subjectTerm.get())->value().c_str();
 
 		// "p" field
-		auto propertyTerm = PrologQuery::constructTerm(t_propertyTerm);
+		auto propertyTerm = PrologTerm::toKnowRobTerm(t_propertyTerm);
 		if (propertyTerm->type() != TermType::STRING) throw QueryError("invalid property term {}", *propertyTerm);
 		tripleData.predicate = ((StringTerm *) propertyTerm.get())->value().c_str();
 
 		// "o" field
-		auto objectTerm = PrologQuery::constructTerm(t_objectTerm);
+		auto objectTerm = PrologTerm::toKnowRobTerm(t_objectTerm);
 		switch (objectTerm->type()) {
 			case TermType::STRING:
 				tripleData.objectType = RDF_STRING_LITERAL;
@@ -266,17 +198,17 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
 		// "g" field
 		TermPtr graphTerm;
 		if (!PL_is_variable(t_graphTerm)) {
-			graphTerm = PrologQuery::constructTerm(t_graphTerm);
+			graphTerm = PrologTerm::toKnowRobTerm(t_graphTerm);
 			if (graphTerm->type() != TermType::STRING) throw QueryError("invalid property term {}", *graphTerm);
 			tripleData.graph = ((StringTerm *) graphTerm.get())->value().c_str();
 		} else {
-			tripleData.graph = "user";
+			tripleData.graph = mongolog->importHierarchy()->defaultGraph().c_str();
 		}
 
 		// "c" field
 		TermPtr confidenceTerm;
 		if (!PL_is_variable(t_confidenceTerm)) {
-			confidenceTerm = PrologQuery::constructTerm(t_confidenceTerm);
+			confidenceTerm = PrologTerm::toKnowRobTerm(t_confidenceTerm);
 			switch (confidenceTerm->type()) {
 				case TermType::DOUBLE:
 					tripleData.confidence = ((DoubleTerm *) confidenceTerm.get())->value();
@@ -289,7 +221,7 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
 		// "b" field
 		TermPtr beginTerm;
 		if (!PL_is_variable(t_beginTerm)) {
-			beginTerm = PrologQuery::constructTerm(t_beginTerm);
+			beginTerm = PrologTerm::toKnowRobTerm(t_beginTerm);
 			switch (beginTerm->type()) {
 				case TermType::DOUBLE:
 					tripleData.begin = ((DoubleTerm *) beginTerm.get())->value();
@@ -308,7 +240,7 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
 		// "e" field
 		TermPtr endTerm;
 		if (!PL_is_variable(t_endTerm)) {
-			endTerm = PrologQuery::constructTerm(t_endTerm);
+			endTerm = PrologTerm::toKnowRobTerm(t_endTerm);
 			switch (endTerm->type()) {
 				case TermType::DOUBLE:
 					tripleData.end = ((DoubleTerm *) endTerm.get())->value();
@@ -324,17 +256,72 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
 			}
 		}
 
-		mongolog->knowledgeGraph()->insertOne(tripleData);
+		mongolog->kb()->insertOne(tripleData);
 		return true;
 	}
 	return false;
 }
 
-
-class MongologTests : public PrologTests<knowrob::MongologReasoner> {
+class MongologTests : public PrologTestsBase {
 protected:
+	static std::shared_ptr<knowrob::MongoKnowledgeGraph> createBackend2(const std::string &name, const std::shared_ptr<KnowledgeBase> &kb) {
+		auto kg = std::make_shared<MongoKnowledgeGraph>();
+		kb->backendManager()->addBackend(name, kg);
+		kg->init(
+			MongoKnowledgeGraph::DB_URI_DEFAULT,
+			MongoKnowledgeGraph::DB_NAME_TESTS,
+			MongoKnowledgeGraph::COLL_NAME_TRIPLES);
+		return kg;
+	}
+
+	static std::shared_ptr<MongologReasoner> createReasoner2(const std::string &name, const std::shared_ptr<KnowledgeBase> &kb, const std::shared_ptr<MongoKnowledgeGraph> &db) {
+		auto r = std::make_shared<MongologReasoner>();
+		r->setDataBackend(db);
+		kb->reasonerManager()->addReasoner(name, r);
+		r->loadConfig(knowrob::ReasonerConfig());
+		r->load_rdf_xml("http://www.ease-crc.org/ont/SOMA.owl");
+		return r;
+	}
+
+	// Per-test-suite set-up.
 	static void SetUpTestSuite() {
-		reasoner()->load_rdf_xml("http://www.ease-crc.org/ont/SOMA.owl");
+		// Initialize the reasoner
+		try {
+			reasoner();
+		} catch (std::exception &e) {
+			FAIL() << "SetUpTestSuite failed: " << e.what();
+		}
+	}
+
+	static void runTests(const std::string &t) {
+		try {
+			runPrologTests(reasoner(), t);
+		} catch (std::exception &e) {
+			FAIL() << "runTests failed: " << e.what();
+		}
+	}
+
+	static std::shared_ptr<MongologReasoner> reasoner() {
+		static std::shared_ptr<MongologReasoner> reasoner;
+		static std::shared_ptr<KnowledgeBase> kb;
+		static std::shared_ptr<MongoKnowledgeGraph> db;
+
+		if(!reasoner) {
+			static int reasonerIndex_ = 0;
+			std::stringstream ss;
+			ss << "prolog" << reasonerIndex_++;
+
+			kb = std::make_shared<KnowledgeBase>();
+			db = createBackend2(ss.str(), kb);
+			reasoner = createReasoner2(ss.str(), kb, db);
+
+			kb->init();
+		}
+		return reasoner;
+	}
+
+	static KnowledgeBase* kb() {
+		return reasoner()->reasonerManager().kb();
 	}
 
 	static std::string getPath(const std::string &filename) {

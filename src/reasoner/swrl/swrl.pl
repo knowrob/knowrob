@@ -15,7 +15,7 @@
 
 :- use_module(library('scope')).
 :- use_module(library('semweb')).
-:- use_module(library('blackboard')).
+:- use_module(library('reasoner')).
 :- use_module(library('semweb/rdf_db'), [ rdf_subject/1 ]).
 :- use_module(library('semweb/rdfs'), [ rdfs_individual_of/2 ]).
 

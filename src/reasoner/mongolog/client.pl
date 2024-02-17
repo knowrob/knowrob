@@ -45,7 +45,7 @@ To this end, Prolog datastructures are translated from and into BSON format.
 
 :- use_module(library('logging')).
 :- use_module(library('http/json')).
-:- use_module(library('filesystem'), [ path_concat/3 ]).
+:- use_module(library('ext/filesystem'), [ path_concat/3 ]).
 
 %:- use_foreign_library('libmongo_kb.so').
 

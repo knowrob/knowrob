@@ -25,7 +25,9 @@ test('some test') :- fail.
 	  load_rdf_xml/2,
 	  sw_graph_includes/2,
 	  sw_set_default_graph/1,
-	  sw_unload_graph/1
+	  sw_unload_graph/1,
+	  sw_origin_test/1,
+	  sw_origin_user/1
 	]).
 
 %% begin_rdf_tests(+Name, +RDFFile, +Options) is det.
@@ -59,10 +61,11 @@ end_rdf_tests(Name) :-
 
 %%
 setup(RDFFile) :-
+	sw_origin_test(OriginTest),
     % any rdf asserts in test cases go into "test" graph
-	sw_set_default_graph(test),
+	sw_set_default_graph(OriginTest),
 	% load OWL file with "test" as parent graph
-	load_rdf_xml(RDFFile,test).
+	load_rdf_xml(RDFFile,OriginTest).
 
 %%
 cleanup(RDFFile) :-
@@ -72,14 +75,16 @@ cleanup(RDFFile) :-
 
 %%
 cleanup :-
+	sw_origin_test(OriginTest),
+	sw_origin_user(OriginUser),
 	forall(
-		(   sw_graph_includes(test, TestSubGraph),
-		\+  sw_graph_includes(user, TestSubGraph),
-		\+  TestSubGraph==user
+		(   sw_graph_includes(OriginTest, TestSubGraph),
+		\+  sw_graph_includes(OriginUser, TestSubGraph),
+		\+  TestSubGraph==OriginUser
 		),
 		sw_unload_graph(TestSubGraph)
 	),
-	sw_set_default_graph(user).
+	sw_set_default_graph(OriginUser).
 
 %%
 add_option_goal(OptionsIn,NewOpt,[MergedOpt|Rest]) :-

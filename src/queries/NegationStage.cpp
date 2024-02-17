@@ -46,7 +46,7 @@ bool LiteralNegationStage::succeeds(const AnswerYesPtr &answer) {
 	// of the queries produced a result.
 	std::vector<TokenBufferPtr> results;
 
-	std::shared_ptr<KnowledgeGraph> kg = kb_->centralKG();
+	auto kg = kb_->getBackendForQuery(negatedLiterals_, ctx_);
 
 	for (auto &lit: negatedLiterals_) {
 		auto lit1 = lit->applySubstitution(*answer->substitution());

@@ -42,7 +42,7 @@ namespace knowrob {
         StatementData(const char* subject,
                       const char* predicate,
                       const char* object,
-                      const char* graph="user",
+                      const char* graph=nullptr,
                       const char* agent=nullptr)
                 : documentID(nullptr),
                   subject(subject),
@@ -57,7 +57,7 @@ namespace knowrob {
         const char* subject;
         const char *predicate;
         const char* object;
-		// TODO: rename to source
+		// TODO: rename to origin
         const char* graph;
         const char* agent;
         std::optional<TemporalOperator> temporalOperator;

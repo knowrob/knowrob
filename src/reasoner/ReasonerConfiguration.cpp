@@ -34,9 +34,9 @@ ReasonerConfig::ReasonerConfig(const boost::property_tree::ptree *ptree)
 	if (data_sources) {
 		for (const auto &pair: data_sources.value()) {
 			auto &subtree = pair.second;
+			URI dataSourceURI(subtree);
 			auto dataFormat = subtree.get("format", formatDefault);
-			auto source = std::make_shared<DataSource>(dataFormat);
-			source->loadSettings(subtree);
+			auto source = std::make_shared<DataSource>(dataSourceURI, dataFormat);
 			dataSources_.push_back(source);
 		}
 	}

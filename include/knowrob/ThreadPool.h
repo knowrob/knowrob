@@ -13,6 +13,7 @@
 #include <mutex>
 #include <string>
 #include <list>
+#include <functional>
 #include <condition_variable>
 #include <atomic>
 #include <iostream>
@@ -44,7 +45,7 @@ namespace knowrob {
 		 * The goal is assigned to a worker thread when one is available.
 		 * @goal the work goal
 		 */
-		void pushWork(const std::shared_ptr<ThreadPool::Runner> &goal, ExceptionHandler exceptionHandler);
+		void pushWork(const std::shared_ptr<ThreadPool::Runner> &goal, ThreadPool::ExceptionHandler exceptionHandler);
 
 		/**
 		 * A worker thread that pulls work goals from the work queue of a thread pool.
@@ -134,15 +135,17 @@ namespace knowrob {
 		 */
 		class LambdaRunner : public Runner {
 		public:
+			using StopChecker = std::function<bool()>;
+
 			/**
 			 * @param fn the lambda function to be executed
 			 */
-			explicit LambdaRunner(const std::function<void()> &fn) : fn_(fn) {}
+			explicit LambdaRunner(const std::function<void(const StopChecker&)> &fn) : fn_(fn) {}
 
-			void run() override { fn_(); }
+			void run() override { fn_([&]{ return hasStopRequest(); }); }
 
 		protected:
-			std::function<void()> fn_;
+			std::function<void(const StopChecker&)> fn_;
 		};
 
 	private:

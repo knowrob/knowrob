@@ -63,15 +63,15 @@ setup(RDFFile) :-
 		\+  sw_graph_includes(user, TestSubGraph),
 		\+  TestSubGraph==user
 		),
-		mongolog_triple:drop_graph(TestSubGraph)
+		sw_unload_graph(TestSubGraph)
 	),
-	mongolog_call(load_rdf_xml(RDFFile,test)).
+	load_rdf_xml(RDFFile,test).
 
 %%
 cleanup(RDFFile) :-
 	cleanup,
 	sw_url_graph(RDFFile, OntoGraph),
-	mongolog_triple:drop_graph(OntoGraph).
+	sw_unload_graph(OntoGraph).
 
 %%
 cleanup :-
@@ -80,9 +80,9 @@ cleanup :-
 		\+  sw_graph_includes(user, TestSubGraph),
 		\+  TestSubGraph==user
 		),
-		mongolog_triple:drop_graph(TestSubGraph)
+		sw_unload_graph(TestSubGraph)
 	),
-	mongolog_triple:drop_graph(test),
+	sw_unload_graph(test),
 	sw_set_default_graph(user).
 
 %%

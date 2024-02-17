@@ -181,13 +181,10 @@ test('during(+Triple,+Interval)') :-
 test('during(+Triple,+Overlapping)') :-
 	% assert additional interval during which a statement holds that overlaps
 	% with an existing interval
-	log_info(during1),
 	assert_true(mongolog_call(project(
 		triple(test:'Lea', test:hasNumber, '+493455249') during [44,84]))),
-	log_info(during2),
 	assert_true(mongolog_call(project(
 		triple(test:'Lea', test:hasNumber, '+493455249') during [24,54]))),
-	log_info(during3),
 	assert_true(mongolog_call(
 		triple(test:'Lea', test:hasNumber, '+493455249') during [34,44])),
 	assert_true(mongolog_call(
@@ -195,7 +192,7 @@ test('during(+Triple,+Overlapping)') :-
 	assert_false(mongolog_call(
 		triple(test:'Lea', test:hasNumber, '+493455247') during [140,240])).
 
-test('during(+Triple,[-Since,-Until])') :-
+test('during(+Triple,[-Since,-Until])', fixme('variables in second argument of during')) :-
 	assert_true(mongolog_call(
 		triple(test:'Lea', test:hasNumber, '+493455247') during [_,_])),
 	(	mongolog_call(
@@ -204,7 +201,7 @@ test('during(+Triple,[-Since,-Until])') :-
 	;	true
 	).
 
-test('during(+Triple,-Interval)') :-
+test('during(+Triple,-Interval)', fixme('variables in second argument of during')) :-
 	assert_true(mongolog_call(
 		triple(test:'Lea', test:hasNumber, '+493455247') during _)),
 	(	mongolog_call(

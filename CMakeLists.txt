@@ -224,19 +224,24 @@ add_library(knowrob SHARED
 		src/reasoner/Reasoner.cpp
 		src/reasoner/ReasonerManager.cpp
 		src/reasoner/ReasonerConfiguration.cpp
-		src/reasoner/prolog/PrologQuery.cpp
-		src/reasoner/prolog/PrologQueryRunner.cpp
-		src/reasoner/prolog/PrologThreadPool.cpp
+        src/reasoner/prolog/PrologEngine.cpp
 		src/reasoner/prolog/PrologReasoner.cpp
 		src/reasoner/prolog/PrologTests.cpp
 		src/reasoner/prolog/logging.cpp
-		src/reasoner/prolog/algebra.cpp
-		src/reasoner/prolog/blackboard.cpp
+        src/reasoner/prolog/ext/algebra.cpp
 		src/reasoner/mongolog/MongologReasoner.cpp
 		src/reasoner/mongolog/mongo_kb.cpp
 		src/reasoner/mongolog/bson_pl.cpp
 		src/reasoner/swrl/SWRLReasoner.cpp
 		src/reasoner/esg/ESGReasoner.cpp
+        src/db/QueryableBackend.cpp
+        src/db/BackendManager.cpp
+        src/db/BackendPlugin.cpp
+        src/db/DataSourceHandler.cpp
+        src/db/OntologyFile.cpp
+        src/db/OntologyParser.cpp
+        src/db/DataFile.cpp
+        src/db/DataTransaction.cpp
         src/db/mongo/MongoInterface.cpp
         src/db/mongo/Database.cpp
         src/db/mongo/Collection.cpp
@@ -245,7 +250,6 @@ add_library(knowrob SHARED
         src/db/mongo/QueryWatch.cpp
         src/db/mongo/MongoKnowledgeGraph.cpp
         src/db/mongo/BulkOperation.cpp
-        src/db/mongo/TripleLoader.cpp
         src/db/mongo/aggregation/graph.cpp
         src/db/mongo/Pipeline.cpp
         src/db/mongo/TripleCursor.cpp
@@ -253,16 +257,13 @@ add_library(knowrob SHARED
         src/db/mongo/aggregation/terms.cpp
         src/db/mongo/aggregation/triples.cpp
         src/db/mongo/Connection.cpp
-        src/db/KnowledgeGraph.cpp
-        src/db/BackendManager.cpp
-        src/db/BackendPlugin.cpp
+        src/db/mongo/bson-helper.cpp
 		src/queries/ModalStage.cpp
 		src/semweb/Agent.cpp
 		include/knowrob/semweb/Agent.h
 		src/formulas/PredicateIndicator.cpp
 		src/formulas/PredicateDescription.cpp
 		src/reasoner/ReasonerModule.cpp
-        src/db/DataSourceHandler.cpp
 		src/queries/AnswerYes.cpp
 		include/knowrob/queries/AnswerYes.h
 		src/queries/AnswerNo.cpp
@@ -275,9 +276,15 @@ add_library(knowrob SHARED
 		src/queries/AnswerMerger.cpp
 		src/queries/QueryStageLiteral.cpp
 		src/queries/QueryStageFormula.cpp
-        src/db/mongo/bson-helper.cpp
 		src/py/utils.cpp
-		src/semweb/StatementData.cpp)
+		src/semweb/StatementData.cpp
+        src/semweb/Transformation.cpp
+        src/semweb/TripleFormat.cpp
+        src/semweb/OntologyLanguage.cpp
+        src/db/DataService.cpp
+        src/reasoner/prolog/semweb.cpp
+        src/reasoner/prolog/PrologBackend.cpp
+        src/reasoner/prolog/PrologTerm.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

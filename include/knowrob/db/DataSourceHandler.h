@@ -12,18 +12,19 @@
 #include "DataSource.h"
 
 namespace knowrob {
+	using DataSourceLoader = std::function<bool(const DataSourcePtr &)>;
+
 	/**
 	 * An object that can load data sources.
 	 */
 	class DataSourceHandler {
-    public:
+	public:
 		/**
 		 * Add a handler for a data source format.
 		 * @param format the format name.
 		 * @param fn the handler function.
 		 */
-		void addDataHandler(const std::string &format,
-							const std::function<bool(const DataSourcePtr &)> &fn);
+		void addDataHandler(const std::string &format, const DataSourceLoader &fn);
 
 		/**
 		 * Load a data source.
@@ -33,11 +34,18 @@ namespace knowrob {
 		 */
 		bool loadDataSource(const DataSourcePtr &dataSource);
 
+		/**
+		 * Check if a handler for a data source format is available.
+		 * @param format the format name.
+		 * @return true if a handler is available.
+		 */
+		bool hasDataHandler(const DataSourcePtr &dataSource) const;
 
-    protected:
+
+	protected:
 		std::map<std::string, DataSourceLoader> dataSourceHandler_;
 
-		virtual bool loadDataSourceWithUnknownFormat(const DataSourcePtr&) { return false; }
+		virtual bool loadDataSourceWithUnknownFormat(const DataSourcePtr &) { return false; }
 	};
 }
 

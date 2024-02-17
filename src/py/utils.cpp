@@ -10,6 +10,7 @@
 #include <boost/python.hpp>
 #include "knowrob/py/utils.h"
 #include "knowrob/reasoner/ReasonerError.h"
+#include "knowrob/Logger.h"
 
 namespace knowrob::py {
 	void handlePythonError() {

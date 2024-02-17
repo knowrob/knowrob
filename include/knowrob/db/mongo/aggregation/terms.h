@@ -20,7 +20,8 @@ namespace knowrob::mongo::aggregation
     void appendArrayQuery(
             bson_t *doc,
             const char *key,
-            const std::vector<TermPtr> &terms);
+            const std::vector<TermPtr> &terms,
+            const char *arrayOperator="$or");
 }
 
 #endif //KNOWROB_MONGO_AGGREGATION_TERMS_H

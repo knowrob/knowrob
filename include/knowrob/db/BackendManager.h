@@ -16,6 +16,8 @@
 #include "TypedBackendFactory.h"
 #include "BackendPlugin.h"
 #include "DefinedBackend.h"
+#include "QueryableBackend.h"
+#include "PersistentBackend.h"
 
 namespace knowrob {
 	/**
@@ -66,7 +68,7 @@ namespace knowrob {
 		 * for built-in backend types need to be added to the backend manager before.
 		 * @param config a property tree holding a backend configuration
 		 */
-		void loadBackend(const boost::property_tree::ptree &config);
+		DataBackendPtr loadBackend(const boost::property_tree::ptree &config);
 
 		/**
 		 * @param backendID a backend ID string.
@@ -93,6 +95,16 @@ namespace knowrob {
 		const auto &backendPool() const { return backendPool_; }
 
 		/**
+		 * @return map of all persistent backends defined by this manager.
+		 */
+		const auto &persistent() const { return persistent_; }
+
+		/**
+		 * @return map of all queryable backends defined by this manager.
+		 */
+		const auto &queryable() const { return queryable_; }
+
+		/**
 		 * @return the manager ID.
 		 */
 		auto managerID() const { return managerID_; }
@@ -108,6 +120,8 @@ namespace knowrob {
 		// pool of all backend instances created via this manager
 		// maps backend ID to backend instance.
 		std::map<std::string, std::shared_ptr<DefinedBackend>> backendPool_;
+		std::map<std::string, PersistentBackendPtr> persistent_;
+		std::map<std::string, QueryableBackendPtr> queryable_;
 		// maps plugin names to factories used to create backend instances
 		std::map<std::string, std::shared_ptr<BackendPlugin>> loadedPlugins_;
 		// a counter used to generate unique IDs
@@ -122,6 +136,8 @@ namespace knowrob {
 		 * @reasoner a reasoner.
 		 */
 		void removeBackend(const std::shared_ptr<DefinedBackend> &reasoner);
+
+		void initBackend(const std::shared_ptr<DefinedBackend> &definedKG);
 	};
 
 	// a macro for static registration of a knowledge graph type.

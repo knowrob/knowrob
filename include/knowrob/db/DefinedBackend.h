@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -10,6 +7,7 @@
 #define KNOWROB_DEFINED_BACKEND_H_
 
 #include <string>
+#include <map>
 #include <memory>
 #include "DataBackend.h"
 
@@ -41,9 +39,26 @@ namespace knowrob {
 		 */
 		auto& name() const { return name_; }
 
+		std::optional<std::string> getVersionOfOrigin(std::string_view origin) const {
+			auto it = originVersions_.find(origin.data());
+			if (it != originVersions_.end()) {
+				return it->second;
+			}
+			return std::nullopt;
+		}
+
+		void setVersionOfOrigin(std::string_view origin, std::optional<std::string_view> version) {
+			if (version) {
+				originVersions_[origin.data()] = version.value().data();
+			} else {
+				originVersions_.erase(origin.data());
+			}
+		}
+
 	protected:
 		const std::string name_;
 		const std::shared_ptr<DataBackend> backend_;
+		std::map<std::string, std::string> originVersions_;
 	};
 }
 

@@ -15,6 +15,9 @@ namespace knowrob::semweb {
         constexpr std::string_view comment           = "http://www.w3.org/2000/01/rdf-schema#comment";
         constexpr std::string_view seeAlso           = "http://www.w3.org/2000/01/rdf-schema#seeAlso";
         constexpr std::string_view label             = "http://www.w3.org/2000/01/rdf-schema#label";
+        constexpr std::string_view range             = "http://www.w3.org/2000/01/rdf-schema#range";
+        constexpr std::string_view domain            = "http://www.w3.org/2000/01/rdf-schema#domain";
+        constexpr std::string_view Class             = "http://www.w3.org/2000/01/rdf-schema#Class";
     }
 
     /**

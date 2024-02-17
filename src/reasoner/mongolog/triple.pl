@@ -2,8 +2,7 @@
         [ mng_triple_doc(t,-,t),
           triple(t,t,t),
           get_unique_name(r,-),
-          is_unique_name(r),
-          drop_graph(+)
+          is_unique_name(r)
         ]).
 /** <module> Handling of triples in query expressions.
 
@@ -19,7 +18,7 @@ The following predicates are supported:
 
 :- use_module(library('semweb/rdf_db'),
 		[ rdf_meta/1, rdf_equal/2 ]).
-:- use_module(library('blackboard'),
+:- use_module(library('reasoner'),
 		[ current_reasoner_module/1 ]).
 :- use_module('client').
 :- use_module(library('mongolog/mongolog')).
@@ -54,7 +53,7 @@ mongolog:step_compile(assert(triple(S,P,O)), CtxIn, Pipeline, StepVars) :-
 	extend_context(triple(S,P,O), P1, Ctx, Ctx0),
 	option(collection(Collection), Ctx0),
 	option(query_scope(Scope), Ctx0),
-	triple_graph(Ctx0, Graph),
+	triple_graph_for_assert(Ctx0, Graph),
 	% throw instantiation_error if one of the arguments was not referred to before
 	mongolog:all_ground([S,O], Ctx),
 	% resolve arguments
@@ -392,7 +391,7 @@ triple(S,P,O) :-
 %
 mng_triple_doc(triple(S,P,V), Doc, Context) :-
 	%% read options
-	triple_graph(Context, Graph),
+	triple_graph_for_query(Context, Graph),
 	option(query_scope(Scope), Context, dict{}),
 	% special handling for some properties
 	(	taxonomical_property(P)
@@ -442,8 +441,8 @@ triple_arg_value(Arg, ArgValue, FieldValue, _Ctx, [ArgOperator,
 	mng_operator(Operator1, ArgOperator).
 
 %%
-graph_doc('*', _)    :- !, fail.
-graph_doc('user', _) :- !, fail.
+graph_doc('any', _) :- !, fail.
+graph_doc('*', _)   :- !, fail.
 graph_doc(=(GraphName), ['graph',string(GraphName)]) :- !.
 graph_doc(  GraphName,  ['graph',['$in',array(Graphs)]]) :-
 	ground(GraphName),!,
@@ -451,25 +450,17 @@ graph_doc(  GraphName,  ['graph',['$in',array(Graphs)]]) :-
 		(X=GraphName ; sw_graph_includes(GraphName,X)),
 		Graphs).
 
-%% drop_graph(+Name) is det.
-%
-% Deletes all triples asserted into given named graph.
-%
-% @param Name the graph name.
-%
-drop_graph(Name) :-
-    current_reasoner_manager(ReasonerManager),
-    current_reasoner_module(Reasoner),
-	mng_drop_graph_cpp(ReasonerManager, Reasoner, Name).
-
 %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% helper
 %%%%%%%%%%%%%%%%%%%%%%%
 
 %%
-triple_graph(Ctx, Graph) :-
+triple_graph_for_assert(Ctx, Graph) :-
 	once((sw_default_graph(DefaultGraph) ; DefaultGraph=user)),
 	option(graph(Graph), Ctx, DefaultGraph).
+
+triple_graph_for_query(Ctx, Graph) :-
+	option(graph(Graph), Ctx, any).
 
 %%
 extend_context(triple(_,P,_), P1, Context, Context0) :-

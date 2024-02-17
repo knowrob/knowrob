@@ -25,7 +25,7 @@
 	      rdf_global_term/2 ]).
 :- use_module('client').
 :- use_module(library('scope')).
-:- use_module(library('blackboard'),
+:- use_module(library('reasoner'),
         [ reasoner_setting/4,
           reasoner_setting/2,
           current_reasoner_module/1 ]).
@@ -399,15 +399,6 @@ mongolog_call(consult(File), _Ctx) :-
     ;   mongolog_consult(File)
     ).
 
-mongolog_call(load_rdf_xml(File,ParentGraph), _Ctx) :-
-    !,
-    current_reasoner_manager(ReasonerManager),
-    current_reasoner_module(ReasonerModule),
-    (   var(File)
-    ->  throw(error(instantiation_error(File), mongolog_call(load_rdf_xml(File,ParentGraph))))
-    ;   mng_load_triples_cpp(ReasonerManager, ReasonerModule, File, ParentGraph)
-    ).
-
 mongolog_call(Goal, ContextIn) :-
 	% Add all toplevel variables to context.
 	% note that this is important to avoid that Prolog garbage collects the variables!
@@ -425,11 +416,11 @@ mongolog_call(Goal, ContextIn) :-
 	(   option(predicates(_),ContextIn) -> (
 	        % add trace_predicate/1 calls where appropriate
 	        expand_instantiations(Goal, GoalWithInstantiations),
-	        blackboard:expand_rdf_predicates(GoalWithInstantiations, RDFExpanded),
+	        reasoner:expand_rdf_predicates(GoalWithInstantiations, RDFExpanded),
 	        mongolog_compile(RDFExpanded, pipeline(Doc0,Vars), Context),
 	        Doc=[['$set',['v_predicates',array([])]] | Doc0]
 	    )
-	;   (   blackboard:expand_rdf_predicates(Goal, RDFExpanded),
+	;   (   reasoner:expand_rdf_predicates(Goal, RDFExpanded),
 	        mongolog_compile(RDFExpanded, pipeline(Doc,Vars), Context)
 	    )
 	),

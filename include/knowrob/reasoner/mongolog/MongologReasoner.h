@@ -40,7 +40,7 @@ namespace knowrob {
 		std::shared_ptr<MongoKnowledgeGraph> knowledgeGraph_;
 
 		// Override PrologReasoner
-		const functor_t &callFunctor() override;
+		std::string_view callFunctor() override;
 
 		// Override PrologReasoner
 		bool initializeDefaultPackages() override;

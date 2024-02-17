@@ -16,35 +16,70 @@ namespace knowrob {
 	/**
 	 * A baseclass for prolog test fixtures.
 	 */
-	class PrologTestsBase: public testing::Test {
+	class PrologTestsBase : public testing::Test {
 	protected:
-		static void runPrologTests(const std::shared_ptr<knowrob::PrologReasoner> &reasoner,
-								   const std::string &target);
+		static void runPrologTests(
+				const std::shared_ptr<knowrob::PrologReasoner> &reasoner,
+				const std::string &target);
 	};
 
-	template <class T> class PrologTests: public PrologTestsBase {
+	template<class ReasonerType, class BackendType>
+	class PrologTests : public PrologTestsBase {
 	protected:
+		static std::shared_ptr<BackendType> createBackend(const std::string &name, const std::shared_ptr<KnowledgeBase> &kb) {
+			auto db = std::make_shared<BackendType>();
+			kb->backendManager()->addBackend(name, db);
+			db->loadConfig(knowrob::ReasonerConfig());
+			return db;
+		}
+
+		static std::shared_ptr<ReasonerType> createReasoner(const std::string &name, const std::shared_ptr<KnowledgeBase> &kb, const std::shared_ptr<BackendType> &db) {
+			auto r = std::make_shared<ReasonerType>();
+			kb->reasonerManager()->addReasoner(name, r);
+			r->setDataBackend(db);
+			r->loadConfig(knowrob::ReasonerConfig());
+			return r;
+		}
+
 		// Per-test-suite set-up.
-		static void SetUpTestSuite() { reasoner();  }
+		static void SetUpTestSuite() {
+			// Initialize the reasoner
+			try {
+				reasoner();
+			} catch (std::exception &e) {
+				FAIL() << "SetUpTestSuite failed: " << e.what();
+			}
+		}
 
-		static void runTests(const std::string &t) { runPrologTests(reasoner(), t); }
+		static void runTests(const std::string &t) {
+			try {
+				runPrologTests(reasoner(), t);
+			} catch (std::exception &e) {
+				FAIL() << "runTests failed: " << e.what();
+			}
+		}
 
-		static std::shared_ptr<T> reasoner() {
-			static std::shared_ptr<T> r;
-			static std::shared_ptr<BackendManager> backendManager;
-			static std::shared_ptr<ReasonerManager> reasonerManager;
-			static int reasonerIndex_=0;
-			if(!r) {
-			    backendManager = std::make_shared<BackendManager>(nullptr);
-			    reasonerManager = std::make_shared<ReasonerManager>(nullptr, backendManager);
+		static std::shared_ptr<ReasonerType> reasoner() {
+			static std::shared_ptr<ReasonerType> reasoner;
+			static std::shared_ptr<KnowledgeBase> kb;
+			static std::shared_ptr<BackendType> db;
 
+			if(!reasoner) {
+				static int reasonerIndex_ = 0;
 				std::stringstream ss;
 				ss << "prolog" << reasonerIndex_++;
-				r = std::make_shared<T>();
-                reasonerManager->addReasoner(ss.str(), r);
-				r->loadConfig(knowrob::ReasonerConfig());
+
+				kb = std::make_shared<KnowledgeBase>();
+				db = createBackend(ss.str(), kb);
+				reasoner = createReasoner(ss.str(), kb, db);
+
+				kb->init();
 			}
-			return r;
+			return reasoner;
+		}
+
+		static KnowledgeBase* kb() {
+			return reasoner()->reasonerManager().kb();
 		}
 	};
 }

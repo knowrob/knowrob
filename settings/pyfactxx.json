@@ -10,8 +10,9 @@
   },
   "data-sources": [
     {
-      "path": "owl/external/SOMA.owl",
-      "format": "rdf-xml"
+      "path": "owl/external/DUL.owl",
+      "language": "owl",
+      "format": "xml"
     }
   ],
   "data-backends": [
@@ -24,7 +25,6 @@
       "read-only": false
     }
   ],
-  "central-backend": "mongodb",
   "reasoner": [
     {
       "type": "FactxxReasoner",

@@ -1,11 +1,12 @@
 from knowrob import *
 from pyfactxx import coras
-from rdflib import BNode, URIRef
+from rdflib import BNode, URIRef, ConjunctiveGraph
+from rdflib import Literal as Literal_rdflib
 from rdflib.query import ResultRow
 from rdflib.namespace import XSD
-from typing import List
+from typing import List, Tuple, Union
 
-
+import traceback
 
 class FactxxReasoner(ReasonerWithBackend):
 	"""
@@ -16,30 +17,24 @@ class FactxxReasoner(ReasonerWithBackend):
 
 	def __init__(self):
 		super(FactxxReasoner, self).__init__()
+		logDebug("FactxxReasoner init.")
 
 		# add all inferred triples to the knowledge base?
 		self.synch_to_kb = True
 		# skip inferred triples with blank nodes?
 		self.ignore_bnodes = True
+		self.bnode_map = {}
 
 		self.crs = coras.Coras()
 		self.is_parse_needed = False
 		self.is_update_needed = False
 
-		# add data handler for OWL files
-		self.addDataHandler('rdf-xml', lambda ds: self.load_owl(ds, 'xml'))
-		self.addDataHandler('turtle', lambda ds: self.load_owl(ds, 'turtle'))
-		self.addDataHandler('json-ld', lambda ds: self.load_owl(ds, 'json-ld'))
-		self.addDataHandler('ntriples', lambda ds: self.load_owl(ds, 'ntriples'))
-		self.addDataHandler('trix', lambda ds: self.load_owl(ds, 'trix'))
-		self.addDataHandler('n3', lambda ds: self.load_owl(ds, 'n3'))
-
 	def loadConfig(self, config: ReasonerConfiguration) -> bool:
 		return True
 
-	def load_owl(self, data_source: DataSource, file_format) -> bool:
-		logInfo("pyfactxx loading file {}.".format(data_source.uri()))
-		self.crs.load(data_source.uri(), format=file_format)
+	def load_owl(self, uri: str, file_format: str) -> bool:
+		logInfo("pyfactxx loading file {}.".format(uri))
+		self.crs.load(uri, format=file_format)
 		logDebug("pyfactxx file loaded.")
 		self.is_parse_needed = True
 		self.is_update_needed = True
@@ -48,30 +43,23 @@ class FactxxReasoner(ReasonerWithBackend):
 	def factxx(self):
 		return self.crs.reasoner
 
+	def edb(self) -> ConjunctiveGraph:
+		return self.crs._graph
+
 	def is_consistent(self) -> bool:
 		return self.factxx().is_consistent()
 
 	def is_instance_of(self, individual, concept) -> bool:
 		reasoner = self.factxx()
 		individual_v = reasoner.individual(individual)
-		concept_v = reasoner.concept(individual)
+		concept_v = reasoner.concept(concept)
 		return self.factxx().instance_of(individual_v, concept_v)
 
-	def create_cls(self, cls_name):
+	def get_role_fillers(self, individual: str, role: str) -> List[str]:
 		reasoner = self.factxx()
-		cls = reasoner.concept(cls_name)
-		return cls
-
-	def create_object_role(self, name, role_domain, role_range):
-		reasoner = self.factxx()
-		r = reasoner.object_role(name)
-		reasoner.set_o_domain(r, role_domain)
-		reasoner.set_o_range(r, role_range)
-		return r
-
-	def get_role_fillers(self, role: str, individual: str) -> List[str]:
-		role = self.factxx().object_role(role)
-		return self.factxx().get_role_fillers(individual, role)
+		individual_v = reasoner.individual(individual)
+		role_v = reasoner.object_role(role)
+		return reasoner.get_role_fillers(individual, role_v)
 
 	def parse(self):
 		self.is_parse_needed = False
@@ -90,16 +78,51 @@ class FactxxReasoner(ReasonerWithBackend):
 			return False
 		return True
 
+	def get_blank_node(self, iri: str):
+		if iri not in self.bnode_map:
+			self.bnode_map[iri] = BNode(iri)
+		return self.bnode_map[iri]
+
+	def resource_to_python(self, iri: str):
+		if iri.startswith("_"):
+			return self.get_blank_node(iri)
+		elif iri.startswith("genid"):
+			# FIXME: where are these genid's coming from?
+			return self.get_blank_node(iri)
+		else:
+			return URIRef(iri)
+
+	def triple_to_python(self, triple: StatementData) -> Tuple[Union[BNode,URIRef], URIRef, Union[URIRef,Literal_rdflib,BNode]]:
+		s_uri = self.resource_to_python(triple.subject)
+		p_uri = URIRef(triple.predicate)
+		if triple.objectType == RDFType.RESOURCE:
+			return s_uri, p_uri, self.resource_to_python(triple.object)
+		elif triple.objectType == RDFType.INT64_LITERAL:
+			return s_uri, p_uri, Literal_rdflib(triple.objectInteger)
+		elif triple.objectType == RDFType.DOUBLE_LITERAL:
+			return s_uri, p_uri, Literal_rdflib(triple.objectDouble)
+		elif triple.objectType == RDFType.BOOLEAN_LITERAL:
+			return s_uri, p_uri, Literal_rdflib(triple.objectInteger == 1)
+		else:
+			return s_uri, p_uri, Literal_rdflib(triple.object)
+
 	@staticmethod
-	def read_triple(kb_triple: StatementData, row: ResultRow):
+	def triple_from_python(kb_triple: StatementData, row: ResultRow):
+		# FIXME: there is something wrong here with memory. the row is fine, and assigning
+		#        seems to work, as always when printing kb_triple directly after the assignment, it is fine.
+		#        but when printing it after the function call or at the end, some of the fields seems to have
+		#        wrong values. e.g. often triples (NamedIndividual, NamedIndividual, NamedIndividual) appear.
+		#        It does not seem to the row, as the row is fine when printing it at the end of the function.
+		#        So my best guess is that boost::python is doing something unexpected mapping Python strings to
+		#        char* used in kb_triple. Maybe it would help to switch to std::string_view in the C++ code.
 		kb_triple.subject = str(row[0])
 		kb_triple.predicate = str(row[1])
 
-		if type(row[2]) is Literal:
-			literal: Literal = row[2]
+		if type(row[2]) is Literal_rdflib:
+			literal: Literal_rdflib = row[2]
 			datatype = literal.datatype
+			kb_triple.object = str(row[2])
 			if datatype == XSD.string:
-				kb_triple.object = str(row[2])
 				kb_triple.objectType = RDFType.STRING_LITERAL
 			elif datatype == XSD.integer or datatype == XSD.long:
 				kb_triple.objectInteger = int(row[2])
@@ -115,6 +138,13 @@ class FactxxReasoner(ReasonerWithBackend):
 		elif type(row[2]) is URIRef:
 			kb_triple.object = str(row[2])
 			kb_triple.objectType = RDFType.RESOURCE
+		elif type(row[2]) is BNode:
+			bnode_name = str(row[2])
+			if bnode_name.startswith("_"):
+				kb_triple.object = bnode_name
+			else:
+				kb_triple.object = "_" + bnode_name
+			kb_triple.objectType = RDFType.RESOURCE
 
 	def update_triples(self):
 		# retrieve all inferred triples
@@ -124,15 +154,19 @@ class FactxxReasoner(ReasonerWithBackend):
 
 		# create a vector of KB triples at once
 		filtered_rows = list(filter(self.include_triple, result_rows))
+		if len(filtered_rows) == 0:
+			logDebug("pyfactxx has no inferences.")
+			return
 		kb_triples = list(self.createTriples(len(filtered_rows)))
 
 		# convert result to knowrob triples
 		triple_index = 0
 		for row in filtered_rows:
 			kb_triple = kb_triples[triple_index]
-			self.read_triple(kb_triple, row)
+			self.triple_from_python(kb_triple, row)
 			triple_index += 1
 
+		logDebug("pyfactxx inferred " + str(triple_index) + " triples (without bnodes).")
 		# set the inferred triples in the knowledge base
 		self.setInferredTriples(kb_triples)
 
@@ -144,7 +178,19 @@ class FactxxReasoner(ReasonerWithBackend):
 		reasoner = self.factxx()
 
 		if self.is_parse_needed:
-			self.parse()
+			# FIXME: for some reason, the parse method is not working as expected.
+			#        an assertion fails in the parser of pyfactxx, it seems it cannot retrieve the
+			#        owl:onProperty property of an owl:Restriction. Not sure why this happens.
+			#        with load_owl it worked fine though, at least for the SOMA ontology alone
+			#        not sure if in this case DUL and the other files were loaded as well.
+			# FIXME: also the exception is not caught in C++ and terminates the program.
+			#        probably related to special handling for failed assertions in the parser.
+			try:
+				self.parse()
+			except Exception as e:
+				logError("pyfactxx parse failed: " + str(e))
+				traceback.print_exc()
+				return
 
 		logDebug("pyfactxx realise start.")
 		reasoner.classify()
@@ -162,30 +208,54 @@ class FactxxReasoner(ReasonerWithBackend):
 	def start(self):
 		# start a thread for the reasoner where realise is called.
 		self.pushWork(self.update)
+		#self.update()
 
 	def stop(self):
 		pass
 
 	def insertOne(self, triple: StatementData) -> bool:
-		# NOTE: currently only the initial loading of OWL files is supported
-		logWarn("insertOne not supported")
-		return False
+		py_triple = self.triple_to_python(triple)
+		self.edb().add(py_triple)
+		self.is_update_needed = True
+		self.is_parse_needed = True
+		return True
 
-	def insertAll(self, triples: List[StatementData]) -> bool:
-		# NOTE: currently only the initial loading of OWL files is supported
-		logWarn("insertAll not supported")
-		return False
+	def insertAll(self, triples: TripleContainer) -> bool:
+		# TODO: use addN instead of add
+		# self.edb().addN(FactxxReasoner.triples_to_python(triples))
+		all_true = True
+		for triple in triples:
+			all_true = self.insertOne(triple) and all_true
+		self.is_update_needed = True
+		self.is_parse_needed = True
+		return all_true
 
 	def removeOne(self, triple: StatementData) -> bool:
-		# NOTE: currently only the initial loading of OWL files is supported
-		return False
+		self.edb().remove(self.triple_to_python(triple))
+		self.is_update_needed = True
+		self.is_parse_needed = True
+		return True
 
-	def removeAll(self, triples: List[StatementData]) -> bool:
-		# NOTE: currently only the initial loading of OWL files is supported
+	def removeAll(self, triples: TripleContainer) -> bool:
+		# TODO: there is no trivial interface to remove all triples from the graph at once.
+		#       however there seems to be a db transaction interface. e.g.:
+		#       self.edb().commit() is there, and rollbacks are supported as well.
+		#       so it should be possible to implement removeAll by using a transaction.
+
+		all_true = True
+		for triple in triples:
+			all_true = self.removeOne(triple) and all_true
+		self.is_update_needed = True
+		self.is_parse_needed = True
+		return all_true
+
+	def removeAllWithOrigin(self, origin: str) -> bool:
+		logWarn("removeAllWithOrigin not implemented for FactxxReasoner")
 		return False
 
 	def removeMatching(self, query: RDFLiteral, do_match_many: bool) -> int:
 		# NOTE: currently only the initial loading of OWL files is supported
+		logWarn("removeMatching not implemented for FactxxReasoner")
 		return 0
 
 	def getDescription(self, indicator: PredicateIndicator) -> PredicateDescription:
@@ -194,4 +264,5 @@ class FactxxReasoner(ReasonerWithBackend):
 
 	def submitQuery(self, query: RDFLiteral, ctx: QueryContext) -> TokenBuffer:
 		# NOTE: inferred triples are added to the knowledge base, so no need to respond to queries
+		logWarn("submitQuery not implemented for FactxxReasoner")
 		return None

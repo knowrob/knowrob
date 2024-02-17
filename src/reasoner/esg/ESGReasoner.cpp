@@ -24,7 +24,7 @@ bool ESGReasoner::initializeDefaultPackages()
 	return consult(std::filesystem::path("reasoner") / "esg" / "__init__.pl");
 }
 
-class ESGTests: public PrologTests<knowrob::ESGReasoner> {
+class ESGTests: public PrologTests<knowrob::ESGReasoner,knowrob::PrologBackend> {
 protected:
 	static std::string getPath(const std::string &filename)
 	{ return std::filesystem::path("reasoner") / "esg" / filename; }

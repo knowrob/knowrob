@@ -5,7 +5,10 @@
       assert_equals/2,
       assert_unifies/2
     ]).
-/** <module> Run plunit tests in the scope of a ROS workspace.
+/** <module> Run plunit tests and report results.
+This needs to be done by intercepting the messages sent by plunit, and converting
+them into facts. This is necessary to be able to generate reports in different
+formats, and to be able to run tests in parallel.
 
 @author Daniel Beßler
 @license BSD
@@ -83,6 +86,8 @@ prolog:message(test_blocked(Name,Msg)) -->
     [ '[plunit] test "~p" is blocked: ~p'-[Name,Msg] ].
 prolog:message(test_fixme(num_tests(1)))   --> [ '[plunit] 1 test is labeled as `fixme`' ].
 prolog:message(test_fixme(num_tests(Num))) --> [ '[plunit] ~p tests are labeled as `fixme`'-[Num] ].
+prolog:message(run_tests(Module)) -->
+    [ '[plunit] testing module "~p"'-[Module] ].
 
 %% Intercept plunit messages, and
 %% create facts using the dynamic "test_*" predicates.
@@ -91,17 +96,23 @@ prolog:message(test_fixme(num_tests(Num))) --> [ '[plunit] ~p tests are labeled 
 user:message_hook(plunit(Args), _Level, _Lines) :-
 	once( plunit_message_hook(Args) ).
 
-%plunit_message_hook(MsgTerm) :-
-%    writeln(MsgTerm), fail.
-
 % suppress some messages
+plunit_message_hook(test_files(_,_)) :- !.
 plunit_message_hook(all_passed(_)) :- !.
+plunit_message_hook(all_passed(_,_,_)) :- !.
 plunit_message_hook(progress(_,_,_)) :- !.
+plunit_message_hook(progress(_,_,_,_)) :- !.
 plunit_message_hook(blocked(_)) :- !.
 
 plunit_message_hook(failed_assertions(_)) :- !.
 plunit_message_hook(failed(_)) :- !.
 plunit_message_hook(passed(_)) :- !.
+plunit_message_hook(total_time(_)) :- !.
+
+% uncomment this if something breaks to see what messages are being sent
+% by plunit. Every now and then the format of the messages changes.
+%plunit_message_hook(MsgTerm) :-
+%    writeln(MsgTerm), fail.
 
 plunit_message_hook(blocked(FileIndicator, Name, Msg)) :-
     log_warning(test_blocked(Name, Msg), FileIndicator).
@@ -128,6 +139,14 @@ plunit_message_hook(end(Unit:Test, _File:_Line, _STO)) :-
 	unpack_test_(Test,TestA),
 	get_time(Time), assertz(test_case_end(Unit,TestA,Time)).
 
+plunit_message_hook(failed(Unit, Name, Line, _ErrorTerm, _Time, FailedAssert)) :-
+	plunit_message_hook(failed(Unit, Name, Line, FailedAssert)).
+plunit_message_hook(failed(Unit, Name, Line, Error, _Time)) :-
+	plunit_message_hook(failed(Unit, Name, Line, Error)).
+plunit_message_hook(failed(Unit:Name, _Counter, Line, Error)) :-
+	% seems format has changed in newer versions of plunit, it starts with "Unit:Name" which
+	% was not the case before afaik.
+	plunit_message_hook(failed(Unit, Name, Line, Error)).
 plunit_message_hook(failed(Unit, Name, _Line, Error)) :-
 	% need to select the output stream for print_message explicitely in the
 	% the scope of *run_tests*.
@@ -268,6 +287,7 @@ run_test__(ModuleFile, Opts) :-
 	),
 	% get the module name
 	use_module(Module,ModuleFile,[]),
+	log_info(run_tests(Module)),
 	% load plt file if any
 	load_test_files(_),
 	% remember old user output
@@ -384,8 +404,8 @@ xunit_term_(Module, element(testsuite,
 		  failures=NumFailures, errors=NumErrors,
 		  time=TestTime ], TestCaseTerms)) :-
 	%%
-	test_suite_begin(Module,T0),
-	test_suite_end(Module,T1),
+	once(test_suite_begin(Module,T0)),
+	once(test_suite_end(Module,T1)),
 	TestTime is T1 - T0,
 	%%
 	findall(X0, test_case_begin(Module,X0,_,_,_), TestCases),

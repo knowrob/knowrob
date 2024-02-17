@@ -15,11 +15,6 @@
 
 using namespace knowrob;
 
-PredicatePtr StringTerm::operator()(TermPtr arg1, TermPtr arg2) const
-{
-	return std::make_shared<Predicate>(value_, std::vector<TermPtr>{arg1, arg2});
-}
-
 void StringTerm::write(std::ostream& os) const
 {
     // print IRI's in short form

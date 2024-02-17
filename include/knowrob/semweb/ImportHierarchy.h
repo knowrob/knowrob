@@ -8,99 +8,107 @@
 #include "string"
 #include "set"
 #include "map"
+#include "CurrentGraph.h"
 
 namespace knowrob::semweb {
-    /**
-     * A named graph currently defined in a knowledge graph.
-     */
-    class CurrentGraph {
-    public:
-        explicit CurrentGraph(const std::string_view &name)
-        : name_(name) {}
+	/**
+	 * Manages a hierarchy between named triple origins.
+	 * One of the purposes of this hierarchy is to distinguish between triples that are dynamically
+	 * inserted during runtime from those that are more static like files loaded initially.
+	 */
+	class ImportHierarchy {
+	public:
+		/**
+		 * Used to match triples of any origin in a query.
+		 */
+		static constexpr std::string_view ORIGIN_ANY = "any";
+		/**
+		 * Used to only match system triples.
+		 */
+		static constexpr std::string_view ORIGIN_SYSTEM = "system";
+		/**
+		 * Used to only match triples from the current session, i.e. those that are inserted
+		 * by the user, by reasoners or unittests during the current session.
+		 */
+		static constexpr std::string_view ORIGIN_SESSION = "session";
+		/**
+		 * Used to only match triples from the current user.
+		 */
+		static constexpr std::string_view ORIGIN_USER = "user";
+		/**
+		 * Used to only match triples from reasoners.
+		 */
+		static constexpr std::string_view ORIGIN_REASONER = "reasoner";
+		/**
+		 * Used to only match triples from unittests.
+		 */
+		static constexpr std::string_view ORIGIN_TEST = "test";
 
-        /**
-         * @return the name of the graph.
-         */
-        const auto& name() const { return name_; }
+		ImportHierarchy();
 
-        /**
-         * @return list of direct imports of this graph.
-         */
-        const auto& directImports() const { return directImports_; }
+		/**
+		 * @param graphName a graph name
+		 * @return true if graphName is known in this hierarchy.
+		 */
+		bool isCurrentGraph(std::string_view graphName) const;
 
-        /**
-         * @return transitive closure of imports relation starting from this graph.
-         */
-        const auto& imports() const { return imports_; }
+		/**
+		 * @param origin a graph name
+		 * @return true if origin is a reserved origin.
+		 */
+		static bool isReservedOrigin(std::string_view origin);
 
-    protected:
-        const std::string name_;
-        std::set<CurrentGraph*> directImports_;
-        std::set<CurrentGraph*> imports_;
-        friend class ImportHierarchy;
-    };
+		/**
+		 * Clear the hierarchy.
+		 */
+		void clear() { graphs_.clear(); }
 
-    /**
-     * Manages the import hierarchy between named graphs.
-     * Names of graphs may correspond to names of ontology files,
-     * and the import hierarchy can be build based on owl:imports statements.
-     */
-    class ImportHierarchy {
-    public:
-        ImportHierarchy();
+		/**
+		 * Set the default graph used for triples in case no graph name is specified.
+		 * @param defaultGraph a graph name.
+		 */
+		void setDefaultGraph(std::string_view defaultGraph) { defaultGraph_ = defaultGraph; }
 
-        /**
-         * @param graphName a graph name
-         * @return true if graphName is known in this hierarchy.
-         */
-        bool isCurrentGraph(const std::string_view &graphName) const;
+		/**
+		 * @return the default graph name of this hierarchy.
+		 */
+		const auto &defaultGraph() const { return defaultGraph_; }
 
-        /**
-         * Clear the hierarchy.
-         */
-        void clear() { graphs_.clear(); }
+		/**
+		 * Defines a named graph if it is not defined yet.
+		 * @param graphName a graph name.
+		 */
+		void addCurrentGraph(std::string_view graphName);
 
-        /**
-         * Set the default graph used for triples in case no graph name is specified.
-         * @param defaultGraph a graph name.
-         */
-        void setDefaultGraph(const std::string_view &defaultGraph) { defaultGraph_ = defaultGraph; }
+		/**
+		 * Removes any definition of a named graph.
+		 * @param graphName a graph name.
+		 */
+		void removeCurrentGraph(std::string_view graphName);
 
-        /**
-         * @return the default graph name of this hierarchy.
-         */
-        const auto& defaultGraph() const { return defaultGraph_; }
+		/**
+		 * Adds the imports relation between two named graphs.
+		 * @param importerGraphName a graph name.
+		 * @param importedGraphName a graph name.
+		 */
+		void addDirectImport(std::string_view importerGraphName, std::string_view importedGraphName);
 
-        /**
-         * Defines a named graph if it is not defined yet.
-         * @param graphName a graph name.
-         */
-        void addCurrentGraph(const std::string_view &graphName);
+		/**
+		 * @param graphName a graph name.
+		 * @return the transitive closure of the import relation starting from graphName
+		 */
+		const std::set<CurrentGraph *> &getImports(std::string_view graphName);
 
-        /**
-         * Removes any definition of a named graph.
-         * @param graphName a graph name.
-         */
-        void removeCurrentGraph(const std::string_view &graphName);
+	protected:
+		std::map<std::string_view, std::unique_ptr<CurrentGraph>> graphs_;
+		std::string defaultGraph_;
 
-        /**
-         * Adds the imports relation between two named graphs.
-         * @param importerGraphName a graph name.
-         * @param importedGraphName a graph name.
-         */
-        void addDirectImport(const std::string_view &importerGraphName,
-                             const std::string_view &importedGraphName);
+		CurrentGraph& getCurrentGraph(std::string_view name);
 
-        /**
-         * @param graphName a graph name.
-         * @return the transitive closure of the import relation starting from graphName
-         */
-        const std::set<CurrentGraph*>& getImports(const std::string_view &graphName);
+		bool isSystemOrigin(CurrentGraph &graph);
 
-    protected:
-        std::map<std::string_view, std::unique_ptr<CurrentGraph>> graphs_;
-        std::string defaultGraph_;
-    };
+		bool isSessionOrigin(CurrentGraph &graph);
+	};
 
 } // knowrob::semweb
 
