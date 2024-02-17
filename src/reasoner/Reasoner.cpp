@@ -105,8 +105,12 @@ void Reasoner::setInferredTriples(const std::vector<StatementData> &triples) {
 		}
 		inferredTriples_.insert(triplesToAdd.begin(), triplesToAdd.end());
 		// update the knowledge base
-		addInferredTriples(triplesToAdd);
-		removeInferredTriples(triplesToAdd);
+		if(!triplesToAdd.empty()) {
+			addInferredTriples(triplesToAdd);
+		}
+		if(!triplesToRemove.empty()) {
+			removeInferredTriples(triplesToRemove);
+		}
 	}
 }
 

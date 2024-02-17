@@ -10,7 +10,7 @@
   },
   "data-sources": [
     {
-      "path": "owl/external/SOMA.owl",
+      "path": "owl/external/DUL.owl",
       "language": "owl",
       "format": "xml"
     }

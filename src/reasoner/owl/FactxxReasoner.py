@@ -108,6 +108,13 @@ class FactxxReasoner(ReasonerWithBackend):
 
 	@staticmethod
 	def triple_from_python(kb_triple: StatementData, row: ResultRow):
+		# FIXME: there is something wrong here with memory. the row is fine, and assigning
+		#        seems to work, as always when printing kb_triple directly after the assignment, it is fine.
+		#        but when printing it after the function call or at the end, some of the fields seems to have
+		#        wrong values. e.g. often triples (NamedIndividual, NamedIndividual, NamedIndividual) appear.
+		#        It does not seem to the row, as the row is fine when printing it at the end of the function.
+		#        So my best guess is that boost::python is doing something unexpected mapping Python strings to
+		#        char* used in kb_triple. Maybe it would help to switch to std::string_view in the C++ code.
 		kb_triple.subject = str(row[0])
 		kb_triple.predicate = str(row[1])
 
