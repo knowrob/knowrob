@@ -105,7 +105,7 @@ namespace knowrob {
 		 * @param query a literal
 		 * @return a stream of query results
 		 */
-		TokenBufferPtr submitQuery(const LiteralPtr &query, const QueryContextPtr &ctx);
+		TokenBufferPtr submitQuery(const FirstOrderLiteralPtr &query, const QueryContextPtr &ctx);
 
 		/**
 		 * Evaluate a query represented as a Formula.

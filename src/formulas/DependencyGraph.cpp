@@ -28,13 +28,13 @@ void DependencyGraph::operator+=(const DependencyNodePtr &node)
     insert(node);
 }
 
-void DependencyGraph::insert(const std::vector<LiteralPtr> &literals)
+void DependencyGraph::insert(const std::vector<FirstOrderLiteralPtr> &literals)
 {
     for(auto &l : literals)
         insert(std::make_shared<DependencyNode>(l));
 }
 
-void DependencyGraph::insert(const LiteralPtr &literal)
+void DependencyGraph::insert(const FirstOrderLiteralPtr &literal)
 {
     insert(std::make_shared<DependencyNode>(literal));
 }
@@ -85,7 +85,7 @@ void DependencyGraph::insert(const DependencyNodePtr &newNode)
 }
 
 
-DependencyNode::DependencyNode(const LiteralPtr &literal)
+DependencyNode::DependencyNode(const FirstOrderLiteralPtr &literal)
         : literal_(literal)
 {
 }
@@ -99,12 +99,12 @@ void DependencyNode::addDependency(const std::shared_ptr<DependencyNode> &other)
 // fixture class for testing
 class DependencyGraphTest : public ::testing::Test {
 protected:
-    LiteralPtr p_, q_, r_, s_;
+    FirstOrderLiteralPtr p_, q_, r_, s_;
     void SetUp() override {
-        p_ = std::make_shared<Literal>(QueryParser::parsePredicate("p(a,X)"), false);
-        q_ = std::make_shared<Literal>(QueryParser::parsePredicate("q(X,Y)"), false);
-        r_ = std::make_shared<Literal>(QueryParser::parsePredicate("r(Y,z)"), false);
-        s_ = std::make_shared<Literal>(QueryParser::parsePredicate("s(b,a)"), false);
+        p_ = std::make_shared<FirstOrderLiteral>(QueryParser::parsePredicate("p(a,X)"), false);
+        q_ = std::make_shared<FirstOrderLiteral>(QueryParser::parsePredicate("q(X,Y)"), false);
+        r_ = std::make_shared<FirstOrderLiteral>(QueryParser::parsePredicate("r(Y,z)"), false);
+        s_ = std::make_shared<FirstOrderLiteral>(QueryParser::parsePredicate("s(b,a)"), false);
 
         auto x = std::make_shared<ModalIteration>();
         *x += KnowledgeModality::K();

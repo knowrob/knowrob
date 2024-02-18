@@ -191,7 +191,7 @@ add_library(knowrob SHARED
 		src/formulas/Bottom.cpp
 		src/formulas/Top.cpp
 		src/formulas/ModalFormula.cpp
-		src/formulas/Literal.cpp
+        src/formulas/FirstOrderLiteral.cpp
 		src/queries/FormulaQuery.cpp
 		src/queries/QueryError.cpp
 		src/queries/Answer.cpp

@@ -49,7 +49,7 @@ bool LiteralNegationStage::succeeds(const AnswerYesPtr &answer) {
 	auto kg = kb_->getBackendForQuery(negatedLiterals_, ctx_);
 
 	for (auto &lit: negatedLiterals_) {
-		auto lit1 = lit->applySubstitution(*answer->substitution());
+		auto lit1 = std::make_shared<RDFLiteral>(*lit, *answer->substitution());
 		// for now evaluate positive variant of the literal.
 		// NOTE: for open-world semantics this cannot be done. open-world reasoner
 		//       would need to receive negative literal instead.

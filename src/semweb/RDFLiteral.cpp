@@ -16,7 +16,7 @@ static auto TRIPLE_INDICATOR =
         std::make_shared<PredicateIndicator>("triple",3);
 
 RDFLiteral::RDFLiteral(const StatementData &data, bool isNegated)
-: Literal(getRDFPredicate(data), isNegated),
+: FirstOrderLiteral(getRDFPredicate(data), isNegated),
   subjectTerm_(predicate_->arguments()[0]),
   propertyTerm_(predicate_->arguments()[1]),
   objectTerm_(predicate_->arguments()[2]),
@@ -42,7 +42,7 @@ RDFLiteral::RDFLiteral(const StatementData &data, bool isNegated)
 }
 
 RDFLiteral::RDFLiteral(const PredicatePtr &predicate, bool isNegated, const GraphSelector &selector)
-: Literal(getRDFPredicate(predicate), isNegated),
+: FirstOrderLiteral(getRDFPredicate(predicate), isNegated),
   subjectTerm_(predicate_->arguments()[0]),
   propertyTerm_(predicate_->arguments()[1]),
   objectTerm_(predicate_->arguments()[2]),
@@ -68,7 +68,7 @@ RDFLiteral::RDFLiteral(const PredicatePtr &predicate, bool isNegated, const Grap
 }
 
 RDFLiteral::RDFLiteral(const RDFLiteral &other, const Substitution &sub)
-: Literal(other, sub),
+: FirstOrderLiteral(other, sub),
   subjectTerm_(predicate_->arguments()[0]),
   propertyTerm_(predicate_->arguments()[1]),
   objectTerm_(predicate_->arguments()[2]),
@@ -90,7 +90,7 @@ RDFLiteral::RDFLiteral(
             const TermPtr &o,
             bool isNegated,
             const GraphSelector &selector)
-: Literal(getRDFPredicate(s,p,o), isNegated),
+: FirstOrderLiteral(getRDFPredicate(s,p,o), isNegated),
   subjectTerm_(s),
   propertyTerm_(p),
   objectTerm_(o),

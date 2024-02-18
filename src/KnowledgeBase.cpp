@@ -559,7 +559,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 	return out;
 }
 
-TokenBufferPtr KnowledgeBase::submitQuery(const LiteralPtr &literal, const QueryContextPtr &ctx) {
+TokenBufferPtr KnowledgeBase::submitQuery(const FirstOrderLiteralPtr &literal, const QueryContextPtr &ctx) {
 	auto rdfLiteral = std::make_shared<RDFLiteral>(
 			literal->predicate(), literal->isNegated(), ctx->selector_);
 	return submitQuery(std::make_shared<ConjunctiveQuery>(

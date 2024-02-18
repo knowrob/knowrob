@@ -1,9 +1,10 @@
-//
-// Created by daniel on 21.03.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
-#ifndef KNOWROB_LITERAL_H
-#define KNOWROB_LITERAL_H
+#ifndef KNOWROB_FIRST_ORDER_LITERAL_H
+#define KNOWROB_FIRST_ORDER_LITERAL_H
 
 #include <memory>
 #include "Predicate.h"
@@ -11,18 +12,18 @@
 
 namespace knowrob {
     /**
-     * A literal is an atomic formula or its negation.
+     * A FOL literal is an atomic formula or its negation.
      */
-    class Literal {
+    class FirstOrderLiteral {
     public:
-        Literal(const PredicatePtr &predicate, bool isNegative);
+        FirstOrderLiteral(const PredicatePtr &predicate, bool isNegative);
 
         /**
          * Substitution constructor.
          * @other a literal.
          * @sub a mapping from terms to variables.
          */
-        Literal(const Literal &other, const Substitution &sub);
+        FirstOrderLiteral(const FirstOrderLiteral &other, const Substitution &sub);
 
         /**
          * @return the predicate of this literal.
@@ -60,14 +61,6 @@ namespace knowrob {
         virtual uint32_t numVariables() const { return predicate_->getVariables().size(); }
 
         /**
-		 * Replaces variables in the literal with terms.
-		 * @sub a substitution mapping.
-		 * @return the created literal.
-         */
-        virtual std::shared_ptr<Literal> applySubstitution(const Substitution &sub) const
-        { return std::make_shared<Literal>(*this, sub); }
-
-        /**
          * Write the literal into an ostream.
          */
         virtual std::ostream& write(std::ostream& os) const;
@@ -77,12 +70,12 @@ namespace knowrob {
         bool isNegated_;
     };
 
-    using LiteralPtr = std::shared_ptr<Literal>;
+    using FirstOrderLiteralPtr = std::shared_ptr<FirstOrderLiteral>;
 
 } // knowrob
 
 namespace std {
-    std::ostream& operator<<(std::ostream& os, const knowrob::Literal& l);
+    std::ostream& operator<<(std::ostream& os, const knowrob::FirstOrderLiteral& l);
 }
 
-#endif //KNOWROB_LITERAL_H
+#endif //KNOWROB_FIRST_ORDER_LITERAL_H

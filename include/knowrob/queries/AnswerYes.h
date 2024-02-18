@@ -8,7 +8,7 @@
 
 #include "Answer.h"
 #include "knowrob/terms/PredicateInstance.h"
-#include "knowrob/formulas/Literal.h"
+#include "knowrob/formulas/FirstOrderLiteral.h"
 #include "knowrob/formulas/FramedPredicate.h"
 
 namespace knowrob {

@@ -13,7 +13,7 @@
 #include "knowrob/db/PersistentBackend.h"
 #include "knowrob/db/mongo/Collection.h"
 #include "knowrob/queries/TokenBuffer.h"
-#include "knowrob/formulas/Literal.h"
+#include "knowrob/formulas/FirstOrderLiteral.h"
 #include "knowrob/db/mongo/AnswerCursor.h"
 #include "knowrob/semweb/ImportHierarchy.h"
 

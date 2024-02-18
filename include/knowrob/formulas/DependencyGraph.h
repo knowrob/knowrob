@@ -9,7 +9,7 @@
 #ifndef KNOWROB_DEPENDENCY_GRAPH_H
 #define KNOWROB_DEPENDENCY_GRAPH_H
 
-#include "knowrob/formulas/Literal.h"
+#include "knowrob/formulas/FirstOrderLiteral.h"
 
 namespace knowrob {
     /**
@@ -17,7 +17,7 @@ namespace knowrob {
      */
     class DependencyNode {
     public:
-        explicit DependencyNode(const LiteralPtr &literal);
+        explicit DependencyNode(const FirstOrderLiteralPtr &literal);
 
         /**
          * @return the set of variables appearing in literal nodes.
@@ -48,7 +48,7 @@ namespace knowrob {
 
     protected:
         std::list<std::shared_ptr<DependencyNode>> neighbors_;
-        const LiteralPtr literal_;
+        const FirstOrderLiteralPtr literal_;
         friend class DependencyGraph;
     };
     using DependencyNodePtr = std::shared_ptr<DependencyNode>;
@@ -97,14 +97,14 @@ namespace knowrob {
          * with other nodes.
          * @param literal a literal.
          */
-        void insert(const LiteralPtr &literal);
+        void insert(const FirstOrderLiteralPtr &literal);
 
         /**
          * Add a new node to the graph and compute dependency relation
          * with other nodes.
          * @param literals set of literals considered in conjunction.
          */
-        void insert(const std::vector<LiteralPtr> &literals);
+        void insert(const std::vector<FirstOrderLiteralPtr> &literals);
 
         /**
          * Insert a node for each iteration.

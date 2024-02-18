@@ -14,7 +14,7 @@
 #include "knowrob/reasoner/ReasonerConfig.h"
 #include "knowrob/db/DataSource.h"
 #include "knowrob/queries/TokenBuffer.h"
-#include "knowrob/formulas/Literal.h"
+#include "knowrob/formulas/FirstOrderLiteral.h"
 #include "knowrob/formulas/PredicateDescription.h"
 #include "knowrob/queries/ConjunctiveQuery.h"
 #include "knowrob/db/DataSourceHandler.h"

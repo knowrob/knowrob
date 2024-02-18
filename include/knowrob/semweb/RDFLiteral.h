@@ -9,7 +9,7 @@
 #include "knowrob/semweb/StatementData.h"
 #include "knowrob/semweb/TripleContainer.h"
 #include "knowrob/terms/Constant.h"
-#include "knowrob/formulas/Literal.h"
+#include "knowrob/formulas/FirstOrderLiteral.h"
 #include "knowrob/queries/QueryContext.h"
 
 namespace knowrob {
@@ -17,7 +17,7 @@ namespace knowrob {
      * A triple expression where subject, predicate and object are
      * represented as a term, and an additional unary operator can be applied to the object.
      */
-    class RDFLiteral : public Literal {
+    class RDFLiteral : public FirstOrderLiteral {
     public:
         /**
          * Unary operators that can be applied on terms.

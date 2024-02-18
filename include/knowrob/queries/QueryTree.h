@@ -14,7 +14,7 @@
 #include "knowrob/formulas/Implication.h"
 #include "knowrob/formulas/Negation.h"
 #include "knowrob/formulas/ModalFormula.h"
-#include "knowrob/formulas/Literal.h"
+#include "knowrob/formulas/FirstOrderLiteral.h"
 
 namespace knowrob {
     /**

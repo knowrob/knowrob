@@ -260,17 +260,15 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 	/////////////////////////////////////////////////////
 	// mappings for literals
 	/////////////////////////////////////////////////////
-	class_<Literal, std::shared_ptr<Literal>>("Literal", init<const PredicatePtr &, bool>())
-			.def(init<const Literal &, const Substitution &>())
-			.def("predicate", &Literal::predicate, CONST_REF_RETURN)
-			.def("isNegated", &Literal::isNegated)
-			.def("functor", &Literal::functor, CONST_REF_RETURN)
-			.def("arity", &Literal::arity)
+	class_<FirstOrderLiteral, std::shared_ptr<FirstOrderLiteral>>("FirstOrderLiteral", init<const PredicatePtr &, bool>())
+			.def(init<const FirstOrderLiteral &, const Substitution &>())
+			.def("predicate", &FirstOrderLiteral::predicate, CONST_REF_RETURN)
+			.def("isNegated", &FirstOrderLiteral::isNegated)
+			.def("functor", &FirstOrderLiteral::functor, CONST_REF_RETURN)
+			.def("arity", &FirstOrderLiteral::arity)
 					// FIXME: is a virtual method, might need a wrapper
-			.def("numVariables", &Literal::numVariables)
-					// FIXME: is a virtual method, might need a wrapper
-			.def("applySubstitution", &Literal::applySubstitution);
-	class_<RDFLiteral, std::shared_ptr<RDFLiteral>, bases<Literal>>
+			.def("numVariables", &FirstOrderLiteral::numVariables);
+	class_<RDFLiteral, std::shared_ptr<RDFLiteral>, bases<FirstOrderLiteral>>
 			("RDFLiteral", init<const StatementData &, bool>())
 			.def(init<const StatementData &>())
 			.def(init<const RDFLiteral &, const Substitution &>())
