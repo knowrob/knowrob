@@ -289,7 +289,12 @@ add_library(knowrob SHARED
         src/reasoner/prolog/PrologBackend.cpp
         src/reasoner/prolog/PrologTerm.cpp
         src/db/SPARQLService.cpp
-        src/db/RaptorContainer.cpp)
+        src/db/RaptorContainer.cpp
+        src/db/GraphRenaming.cpp
+        src/db/GraphRestructuring.cpp
+        src/db/RedlandModel.cpp
+        src/db/GraphTransformation.cpp
+        src/queries/SPARQLQuery.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

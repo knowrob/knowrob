@@ -76,7 +76,7 @@ bool MongoKnowledgeGraph::init(std::string_view db_uri, std::string_view db_name
 	}
 }
 
-bool MongoKnowledgeGraph::loadConfig(const ReasonerConfig &config) {
+bool MongoKnowledgeGraph::initializeBackend(const ReasonerConfig &config) {
 	auto ptree = config.ptree();
 	if (!ptree) {
 		tripleCollection_ = connect(DB_URI_DEFAULT, DB_NAME_KNOWROB, COLL_NAME_TESTS);

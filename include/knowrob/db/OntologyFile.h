@@ -42,10 +42,14 @@ namespace knowrob {
 		// override DataSource
 		DataSourceType type() const override { return DataSourceType::ONTOLOGY; }
 
+		// override OntologySource
+		std::string_view origin() const override { return origin_; }
+
 	protected:
 		semweb::TripleFormat tripleFormat_;
 		semweb::OntologyLanguage ontologyLanguage_;
 		std::optional<std::string> parentOrigin_;
+		std::string origin_;
 	};
 
 } // knowrob

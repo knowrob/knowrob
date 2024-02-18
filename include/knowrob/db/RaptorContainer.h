@@ -3,10 +3,11 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_TRIPLE_BATCH_H
-#define KNOWROB_TRIPLE_BATCH_H
+#ifndef KNOWROB_RAPTOR_CONTAINER_H
+#define KNOWROB_RAPTOR_CONTAINER_H
 
 #include <raptor.h>
+#include <librdf.h>
 #include "knowrob/semweb/TripleContainer.h"
 #include "knowrob/semweb/StatementData.h"
 
@@ -14,13 +15,18 @@ namespace knowrob {
 	/**
 	 * A batch of triples loaded with raptor.
 	 */
-	class RaptorContainer : public semweb::TripleContainer {
+	class RaptorContainer : public semweb::MutableTripleContainer {
 	public:
 		/**
 		 * @param size the maximum number of triples to be stored.
 		 * @param origin the origin of the triples.
 		 */
 		RaptorContainer(uint32_t size, std::string_view origin);
+
+		/**
+		 * @param size the maximum number of triples to be stored.
+		 */
+		explicit RaptorContainer(uint32_t size);
 
 		~RaptorContainer();
 
@@ -31,14 +37,14 @@ namespace knowrob {
 		 * @param o a raptor term.
 		 * @return the added statement.
 		 */
-		StatementData *add(raptor_term *s, raptor_term *p, raptor_term *o);
+		StatementData *add(raptor_term *s, raptor_term *p, raptor_term *o, librdf_node *context = nullptr);
 
 		/**
 		 * Add a triple to the batch.
 		 * @param statement a raptor statement.
 		 * @return the added statement.
 		 */
-		StatementData *add(raptor_statement *statement);
+		StatementData *add(raptor_statement *statement, librdf_node *context = nullptr);
 
 		/**
 		 * Reset the batch to be empty.
@@ -60,13 +66,11 @@ namespace knowrob {
 		 */
 		auto size() const { return actualSize_; }
 
-		/**
-		 * @return the origin for all triples in this batch.
-		 */
-		auto origin() const { return origin_; }
+		// override TripleContainer
+		const std::vector<StatementData> &asImmutableVector() const override { return mappedData_; }
 
 		// override TripleContainer
-		const std::vector<StatementData> &asVector() const override { return mappedData_; }
+		std::vector<StatementData> &asMutableVector() override { return mappedData_; }
 
 	protected:
 		struct mapped_statement {
@@ -77,9 +81,9 @@ namespace knowrob {
 		std::vector<mapped_statement> raptorData_;
 		std::vector<StatementData> mappedData_;
 		uint32_t actualSize_;
-		std::string_view origin_;
+		std::optional<std::string_view> origin_;
 	};
 
 } // knowrob
 
-#endif //KNOWROB_TRIPLE_BATCH_H
+#endif //KNOWROB_RAPTOR_CONTAINER_H

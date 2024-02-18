@@ -7,6 +7,7 @@
 
 #include "knowrob/formulas/Predicate.h"
 #include "knowrob/semweb/StatementData.h"
+#include "knowrob/semweb/TripleContainer.h"
 #include "knowrob/terms/Constant.h"
 #include "knowrob/formulas/Literal.h"
 #include "knowrob/queries/QueryContext.h"
@@ -130,6 +131,15 @@ namespace knowrob {
     };
     using RDFLiteralPtr = std::shared_ptr<RDFLiteral>;
 
+	class RDFLiteralContainer : public semweb::TripleContainer {
+	public:
+		void push_back(const RDFLiteralPtr &triple);
+
+		const std::vector<StatementData>& asImmutableVector() const override { return data_; }
+	protected:
+		std::vector<StatementData> data_;
+		std::vector<RDFLiteralPtr> statements_;
+	};
 } // knowrob
 
 #endif //KNOWROB_FRAMED_RDF_LITERAL_H

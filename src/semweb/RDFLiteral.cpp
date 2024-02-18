@@ -319,3 +319,8 @@ StatementData RDFLiteral::toStatementData() const
 
     return data;
 }
+
+void RDFLiteralContainer::push_back(const RDFLiteralPtr &triple) {
+	statements_.emplace_back(triple);
+	data_.emplace_back(triple->toStatementData());
+}

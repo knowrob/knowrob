@@ -30,6 +30,12 @@ RaptorContainer::RaptorContainer(uint32_t size, std::string_view origin)
 		  actualSize_(0) {
 }
 
+RaptorContainer::RaptorContainer(uint32_t size)
+		: raptorData_(size),
+		  mappedData_(size),
+		  actualSize_(0) {
+}
+
 RaptorContainer::~RaptorContainer() {
 	reset();
 }
@@ -43,7 +49,7 @@ void RaptorContainer::reset() {
 	actualSize_ = 0;
 }
 
-StatementData *RaptorContainer::add(raptor_term *s, raptor_term *p, raptor_term *o) {
+StatementData *RaptorContainer::add(raptor_term *s, raptor_term *p, raptor_term *o, librdf_node *context) {
 	// validate input from raptor
 	if (!s || !p || !o) {
 		KB_WARN("received malformed data from raptor, skipping statement.");
@@ -61,7 +67,17 @@ StatementData *RaptorContainer::add(raptor_term *s, raptor_term *p, raptor_term 
 
 	// map statement to KnowRob datatype
 	auto triple = &mappedData_[actualSize_];
-	triple->graph = origin_.data();
+
+	// read graph name
+	if (context) {
+		// the context node is a string literal with the graph name
+		triple->graph = (const char *) librdf_node_get_literal_value(context);
+	} else if (origin_.has_value()) {
+		// user specified origin
+		triple->graph = origin_.value().data();
+	} else {
+		triple->graph = nullptr;
+	}
 
 	// read predicate
 	triple->predicate = (const char *) raptor_uri_as_string(c_p->value.uri);
@@ -110,8 +126,8 @@ StatementData *RaptorContainer::add(raptor_term *s, raptor_term *p, raptor_term 
 	return triple;
 }
 
-StatementData *RaptorContainer::add(raptor_statement *statement) {
-	return add(statement->subject, statement->predicate, statement->object);
+StatementData *RaptorContainer::add(raptor_statement *statement, librdf_node *context) {
+	return add(statement->subject, statement->predicate, statement->object, context);
 }
 
 void RaptorContainer::rollbackLast() {

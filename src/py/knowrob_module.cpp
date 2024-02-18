@@ -367,12 +367,13 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 	class_<DataBackend, std::shared_ptr<DataBackendWrap>, bases<DataSourceHandler>, boost::noncopyable>
 	        ("DataBackend", init<>())
 			// methods that must be implemented by backend plugins
-			.def("loadConfig", &DataBackendWrap::loadConfig)
+			.def("initializeBackend", &DataBackendWrap::initializeBackend)
 			.def("insertOne", &DataBackendWrap::insertOne)
 			.def("insertAll", &DataBackendWrap::insertAll)
 			.def("removeAll", &DataBackendWrap::removeAll)
 			.def("removeOne", &DataBackendWrap::removeOne)
-			.def("loadConfig", &DataBackendWrap::loadConfig);
+			.def("removeAllWithOrigin", &DataBackendWrap::removeAllWithOrigin)
+			.def("removeAllMatching", &DataBackendWrap::removeAllMatching);
 
 	/////////////////////////////////////////////////////
 	// mappings for the Reasoner class and it sub-classes

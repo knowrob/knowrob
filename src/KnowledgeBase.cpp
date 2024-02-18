@@ -869,23 +869,13 @@ bool KnowledgeBase::removeAll(const semweb::TripleContainerPtr &triples) {
 	return true;
 }
 
-class ReasonerTripleContainer : public semweb::TripleContainer {
-public:
-	explicit ReasonerTripleContainer(const std::vector<StatementData> *triples) : triples_(triples) {}
-
-	const std::vector<StatementData> &asVector() const override { return *triples_; }
-
-protected:
-	const std::vector<StatementData> *triples_;
-};
-
 bool KnowledgeBase::insertAll(const std::vector<StatementData> &triples) {
 	// Note: insertAll blocks until the triples are inserted, so it is safe to use the triples vector as a pointer.
-	return insertAll(std::make_shared<ReasonerTripleContainer>(&triples));
+	return insertAll(std::make_shared<semweb::ProxyTripleContainer>(&triples));
 }
 
 bool KnowledgeBase::removeAll(const std::vector<StatementData> &triples) {
-	return removeAll(std::make_shared<ReasonerTripleContainer>(&triples));
+	return removeAll(std::make_shared<semweb::ProxyTripleContainer>(&triples));
 }
 
 bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
@@ -1128,11 +1118,12 @@ bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source
 bool KnowledgeBase::loadSPARQLDataSource(const std::shared_ptr<DataSource> &source) {
 	auto service = std::static_pointer_cast<SPARQLService>(source);
 	auto serviceURI = URI::resolve(source->uri());
-	auto origin = DataSource::getNameFromURI(serviceURI);
+	auto origin = service->origin();
 	// SPARQL does not have versioning. Some endpoints may store the version as a triple,
 	// but this is not standardized. Some may encode version in the URI which we try to extract
 	// below. Otherwise, we just use the current day as version causing a re-load every day.
 	auto newVersion = DataSource::getVersionFromURI(serviceURI);
+	service->setBatchSize(tripleBatchSize_);
 
 	// get all backends that do not have the data loaded yet
 	std::vector<std::shared_ptr<DefinedBackend>> backendsToLoad = prepareLoad(origin, newVersion);
@@ -1145,7 +1136,7 @@ bool KnowledgeBase::loadSPARQLDataSource(const std::shared_ptr<DataSource> &sour
 
 	auto result = service->load([this, &backendsToLoad](const semweb::TripleContainerPtr &triples) {
 		insertAllInto(triples, backendsToLoad);
-	}, origin, tripleBatchSize_);
+	});
 	if (!result) {
 		KB_WARN("Failed to load data from SPARQL service at {}.", serviceURI);
 		return false;

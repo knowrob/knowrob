@@ -32,6 +32,9 @@ class FactxxReasoner(ReasonerWithBackend):
 	def loadConfig(self, config: ReasonerConfiguration) -> bool:
 		return True
 
+	def initializeBackend(self, config: ReasonerConfiguration) -> bool:
+		return True
+
 	def load_owl(self, uri: str, file_format: str) -> bool:
 		logInfo("pyfactxx loading file {}.".format(uri))
 		self.crs.load(uri, format=file_format)
@@ -253,7 +256,7 @@ class FactxxReasoner(ReasonerWithBackend):
 		logWarn("removeAllWithOrigin not implemented for FactxxReasoner")
 		return False
 
-	def removeMatching(self, query: RDFLiteral, do_match_many: bool) -> int:
+	def removeAllMatching(self, query: RDFLiteral, do_match_many: bool) -> int:
 		# NOTE: currently only the initial loading of OWL files is supported
 		logWarn("removeMatching not implemented for FactxxReasoner")
 		return 0

@@ -83,7 +83,7 @@ DataBackendPtr BackendManager::loadBackend(const boost::property_tree::ptree &co
 	definedBackend->backend()->setVocabulary(kb_->vocabulary());
 
 	ReasonerConfig reasonerConfig(&config);
-	if (!definedBackend->backend()->loadConfig(reasonerConfig)) {
+	if (!definedBackend->backend()->initializeBackend(reasonerConfig)) {
 		KB_WARN("Backend `{}` failed to loadConfig.", backendID);
 	} else {
 		addBackend(definedBackend);

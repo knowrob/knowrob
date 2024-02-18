@@ -27,6 +27,11 @@ namespace knowrob {
 		 */
 		auto &parentOrigin() const { return parentOrigin_; }
 
+		/**
+		 * @return the origin identifier of the ontology.
+		 */
+		virtual std::string_view origin() const = 0;
+
 	protected:
 		GraphSelectorPtr frame_;
 		std::optional<std::string> parentOrigin_;
