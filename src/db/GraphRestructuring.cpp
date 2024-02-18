@@ -54,9 +54,10 @@ void GraphRestructuring::doTransformation(GraphTransformationRule &rule) {
 	// perform query and record transformations
 	model_->query(rule.getSPARQLQuery(), [&](const SubstitutionPtr &bindings) {
 		// apply the substitution mapping to the pattern term
-		// TODO: also set origin of transformed triples
 		for (auto &p: rule.to()) {
-			transformed->push_back(std::make_shared<RDFLiteral>(*p, *bindings));
+			auto x = std::make_shared<RDFLiteral>(*p, *bindings);
+			x->setGraphName(origin_);
+			transformed->push_back(x);
 		}
 		// apply the substitution mapping to the query term
 		for (auto &p: rule.from()) {
