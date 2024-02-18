@@ -13,5 +13,6 @@ OntologyFile::OntologyFile(const URI &uri, std::string_view format)
 		: DataFile(uri, format),
 		  OntologySource(),
 		  tripleFormat_(semweb::tripleFormatFromString(format)),
-		  ontologyLanguage_(semweb::OntologyLanguage::OWL) {
+		  ontologyLanguage_(semweb::OntologyLanguage::OWL),
+		  origin_(DataSource::getNameFromURI(uri())) {
 }

@@ -121,6 +121,7 @@ namespace knowrob {
 
 	// alias declaration
 	using SubstitutionPtr = std::shared_ptr<Substitution>;
+	using SubstitutionHandler = std::function<void(const SubstitutionPtr&)>;
 }
 
 namespace std {

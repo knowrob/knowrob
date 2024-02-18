@@ -73,14 +73,12 @@ namespace knowrob {
 	public:
 		DataBackend() = default;
 
-		virtual ~DataBackend() = default;
-
 		/**
 		 * Initialize this backend from a property tree.
 		 * @param config a property tree.
 		 * @return true on success
 		 */
-		virtual bool loadConfig(const ReasonerConfig &config) = 0;
+		virtual bool initializeBackend(const ReasonerConfig &config) = 0;
 
 		/**
 		 * @return the vocabulary of this backend.

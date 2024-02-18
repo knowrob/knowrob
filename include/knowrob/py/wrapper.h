@@ -71,8 +71,8 @@ struct DataBackendWrap : public DataBackend, boost::python::wrapper<DataBackend>
 {
 	explicit DataBackendWrap(PyObject *p) : self(p), DataBackend() {}
 
-	bool loadConfig(const ReasonerConfig &config) override
-	{ return knowrob::py::call_method<bool>(self, "loadConfig", config); }
+	bool initializeBackend(const ReasonerConfig &config) override
+	{ return knowrob::py::call_method<bool>(self, "initializeBackend", config); }
 
 	bool insertOne(const StatementData &triple) override
 	{ return knowrob::py::call_method<bool>(self, "insertOne", triple); }
@@ -133,6 +133,9 @@ struct ReasonerWithBackendWrap :
 
 	bool loadConfig(const ReasonerConfig &config) override
 	{ return knowrob::py::call_method<bool>(self, "loadConfig", config); }
+
+	bool initializeBackend(const ReasonerConfig &config) override
+	{ return knowrob::py::call_method<bool>(self, "initializeBackend", config); }
 
 	bool insertOne(const StatementData &triple) override
 	{ return knowrob::py::call_method<bool>(self, "insertOne", triple); }

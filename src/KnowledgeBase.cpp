@@ -28,6 +28,7 @@
 #include "knowrob/queries/AnswerYes.h"
 #include "knowrob/semweb/TripleFormat.h"
 #include "knowrob/db/OntologyFile.h"
+#include "knowrob/db/SPARQLService.h"
 #include "knowrob/semweb/TripleContainer.h"
 #include "knowrob/semweb/rdf.h"
 #include "knowrob/semweb/owl.h"
@@ -52,34 +53,29 @@ namespace knowrob {
 	};
 }
 
-KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config)
-		: vocabulary_(std::make_shared<semweb::Vocabulary>()),
-		  importHierarchy_(std::make_unique<semweb::ImportHierarchy>()),
+KnowledgeBase::KnowledgeBase()
+		: isInitialized_(false),
 		  tripleBatchSize_(KB_DEFAULT_TRIPLE_BATCH_SIZE) {
-	// use "system" as default origin until initialization completed
-	importHierarchy_->setDefaultGraph(importHierarchy_->ORIGIN_SYSTEM);
-	backendManager_ = std::make_unique<BackendManager>(this);
-	reasonerManager_ = std::make_unique<ReasonerManager>(this, backendManager_);
+	construct();
+}
+
+KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config) : KnowledgeBase() {
 	initFromConfig(config);
 }
 
-KnowledgeBase::KnowledgeBase(const std::string_view &configFile)
-		: vocabulary_(std::make_shared<semweb::Vocabulary>()),
-		  importHierarchy_(std::make_unique<semweb::ImportHierarchy>()),
-		  tripleBatchSize_(KB_DEFAULT_TRIPLE_BATCH_SIZE) {
-	// use "system" as default origin until initialization completed
-	importHierarchy_->setDefaultGraph(importHierarchy_->ORIGIN_SYSTEM);
-	backendManager_ = std::make_unique<BackendManager>(this);
-	reasonerManager_ = std::make_unique<ReasonerManager>(this, backendManager_);
+KnowledgeBase::KnowledgeBase(const std::string_view &configFile) : KnowledgeBase() {
 	boost::property_tree::ptree config;
 	boost::property_tree::read_json(URI::resolve(configFile), config);
 	initFromConfig(config);
 }
 
-KnowledgeBase::KnowledgeBase()
-		: vocabulary_(std::make_shared<semweb::Vocabulary>()),
-		  importHierarchy_(std::make_unique<semweb::ImportHierarchy>()),
-		  tripleBatchSize_(KB_DEFAULT_TRIPLE_BATCH_SIZE) {
+KnowledgeBase::~KnowledgeBase() {
+	stopReasoner();
+}
+
+void KnowledgeBase::construct() {
+	vocabulary_ = std::make_shared<semweb::Vocabulary>();
+	importHierarchy_ = std::make_unique<semweb::ImportHierarchy>();
 	// use "system" as default origin until initialization completed
 	importHierarchy_->setDefaultGraph(importHierarchy_->ORIGIN_SYSTEM);
 	backendManager_ = std::make_unique<BackendManager>(this);
@@ -91,6 +87,7 @@ void KnowledgeBase::init() {
 	for (auto &ontoPath: {"owl/rdf-schema.xml", "owl/owl.rdf"}) {
 		loadDataSource(std::make_shared<OntologyFile>(URI(ontoPath), "rdf-xml"));
 	}
+	isInitialized_ = true;
 	// switch to "user" as default origin
 	importHierarchy_->setDefaultGraph(importHierarchy_->ORIGIN_USER);
 	startReasoner();
@@ -100,11 +97,6 @@ void KnowledgeBase::initFromConfig(const boost::property_tree::ptree &config) {
 	loadConfiguration(config);
 	//init();
 	startReasoner();
-}
-
-KnowledgeBase::~KnowledgeBase() {
-	// stop all reasoners
-	stopReasoner();
 }
 
 const std::map<std::string, std::shared_ptr<DefinedReasoner>> &KnowledgeBase::reasonerPool() const {
@@ -248,10 +240,13 @@ DataSourcePtr KnowledgeBase::createDataSource(const boost::property_tree::ptree 
 			//}
 			return ontoFile;
 		}
-		case DataSourceType::SPARQL:
-			// TODO: support SPARQL services as data sources
-			KB_WARN("sparql data sources are not supported yet.");
-			return nullptr;
+		case DataSourceType::SPARQL: {
+			auto sparqlService = std::make_shared<SPARQLService>(dataSourceURI, dataSourceFormat);
+			//if (tripleFrame) {
+			//	ontoFile->setFrame(tripleFrame);
+			//}
+			return sparqlService;
+		}
 		case DataSourceType::UNSPECIFIED:
 			return std::make_shared<DataFile>(dataSourceURI, dataSourceFormat);
 	}
@@ -265,7 +260,7 @@ bool KnowledgeBase::isMaterializedInEDB(std::string_view property) const {
 
 QueryableBackendPtr KnowledgeBase::getBackendForQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) const {
 	auto &queryable = backendManager_->queryable();
-	if(queryable.empty()) {
+	if (queryable.empty()) {
 		throw KnowledgeBaseError("no queryable backends available.");
 	}
 	return queryable.begin()->second;
@@ -275,7 +270,7 @@ QueryableBackendPtr
 KnowledgeBase::getBackendForQuery(const std::vector<RDFLiteralPtr> &query, const QueryContextPtr &ctx) const {
 	// TODO: pick backend depending on query context and queried literals
 	auto &queryable = backendManager_->queryable();
-	if(queryable.empty()) {
+	if (queryable.empty()) {
 		throw KnowledgeBaseError("no queryable backends available.");
 	}
 	return queryable.begin()->second;
@@ -789,7 +784,8 @@ bool KnowledgeBase::removeOne(const StatementData &triple) {
 	return true;
 }
 
-bool KnowledgeBase::insertAllInto(const semweb::TripleContainerPtr &triples, const std::vector<std::shared_ptr<DefinedBackend>> &backends) {
+bool KnowledgeBase::insertAllInto(const semweb::TripleContainerPtr &triples,
+								  const std::vector<std::shared_ptr<DefinedBackend>> &backends) {
 	// TODO: apply filter before inserting into backends. each backend should be able to specify GraphSelector
 	//       used for the filtering. e.g. historic triples should not be inserted into backends that do not support time.
 	if (triples->empty()) return true;
@@ -873,23 +869,13 @@ bool KnowledgeBase::removeAll(const semweb::TripleContainerPtr &triples) {
 	return true;
 }
 
-class ReasonerTripleContainer : public semweb::TripleContainer {
-public:
-	explicit ReasonerTripleContainer(const std::vector<StatementData> *triples) : triples_(triples) {}
-
-	const std::vector<StatementData> &asVector() const override { return *triples_; }
-
-protected:
-	const std::vector<StatementData> *triples_;
-};
-
 bool KnowledgeBase::insertAll(const std::vector<StatementData> &triples) {
 	// Note: insertAll blocks until the triples are inserted, so it is safe to use the triples vector as a pointer.
-	return insertAll(std::make_shared<ReasonerTripleContainer>(&triples));
+	return insertAll(std::make_shared<semweb::ProxyTripleContainer>(&triples));
 }
 
 bool KnowledgeBase::removeAll(const std::vector<StatementData> &triples) {
-	return removeAll(std::make_shared<ReasonerTripleContainer>(&triples));
+	return removeAll(std::make_shared<semweb::ProxyTripleContainer>(&triples));
 }
 
 bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
@@ -959,14 +945,14 @@ void KnowledgeBase::updateVocabularyInsert(const StatementData &tripleData) {
 		//       an interface to the vocabulary that excludes owl/rdfs/rdf terms
 		//  --> rather check for subclass of relationship to owl:Thing
 		if (vocabulary_->isDefinedClass(tripleData.object) &&
-		    semweb::owl::Class != tripleData.object &&
-		    semweb::owl::Restriction != tripleData.object &&
-		    semweb::owl::NamedIndividual != tripleData.object &&
-		    semweb::owl::AnnotationProperty != tripleData.object &&
-		    semweb::owl::ObjectProperty != tripleData.object &&
-		    semweb::owl::DatatypeProperty != tripleData.object &&
-		    semweb::rdfs::Class != tripleData.object &&
-		    semweb::rdf::Property != tripleData.object) {
+			semweb::owl::Class != tripleData.object &&
+			semweb::owl::Restriction != tripleData.object &&
+			semweb::owl::NamedIndividual != tripleData.object &&
+			semweb::owl::AnnotationProperty != tripleData.object &&
+			semweb::owl::ObjectProperty != tripleData.object &&
+			semweb::owl::DatatypeProperty != tripleData.object &&
+			semweb::rdfs::Class != tripleData.object &&
+			semweb::rdf::Property != tripleData.object) {
 			vocabulary_->increaseFrequency(tripleData.object);
 		}
 	} else if (semweb::isInverseOfIRI(tripleData.predicate)) {
@@ -983,7 +969,7 @@ void KnowledgeBase::updateVocabularyInsert(const StatementData &tripleData) {
 			KB_WARN("import statement without graph");
 		}
 	} else if (vocabulary_->isObjectProperty(tripleData.predicate) ||
-	           vocabulary_->isDatatypeProperty(tripleData.predicate)) {
+			   vocabulary_->isDatatypeProperty(tripleData.predicate)) {
 		// increase frequency of property in vocabulary
 		vocabulary_->increaseFrequency(tripleData.predicate);
 	}
@@ -1035,6 +1021,46 @@ std::optional<std::string> KnowledgeBase::getVersionOfOrigin(
 	return {};
 }
 
+std::vector<std::shared_ptr<DefinedBackend>>
+KnowledgeBase::prepareLoad(std::string_view origin, std::string_view newVersion) const {
+	std::vector<std::shared_ptr<DefinedBackend>> backendsToLoad;
+	for (auto &it: backendManager_->backendPool()) {
+		// check if the ontology is already loaded by the backend,
+		// and if so whether it has the right version.
+		auto definedBackend = it.second;
+		auto currentVersion = getVersionOfOrigin(definedBackend, origin);
+		if (currentVersion.has_value()) {
+			if (currentVersion.value() != newVersion) {
+				backendsToLoad.push_back(definedBackend);
+				// TODO: rather include this operation as part of the transaction below
+				definedBackend->backend()->removeAllWithOrigin(origin);
+			}
+		} else {
+			backendsToLoad.push_back(definedBackend);
+		}
+	}
+	return backendsToLoad;
+}
+
+void KnowledgeBase::finishLoad(const std::shared_ptr<OntologySource> &source, std::string_view origin, std::string_view newVersion) {
+	// update the version triple
+	for (auto &it: backendManager_->backendPool()) {
+		it.second->setVersionOfOrigin(origin, newVersion);
+	}
+	for (auto &it: backendManager_->persistent()) {
+		auto persistentBackend = it.second;
+		persistentBackend->setVersionOfOrigin(origin, newVersion);
+	}
+
+	// add direct import
+	// TODO: why not build the import hierarchy recursively?
+	if (source->parentOrigin().has_value()) {
+		importHierarchy_->addDirectImport(source->parentOrigin().value(), origin);
+	} else {
+		importHierarchy_->addDirectImport(importHierarchy_->defaultGraph(), origin);
+	}
+}
+
 bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source, bool followImports) {
 	std::queue<std::string> ontologyURIs;
 	// TODO resolve needed here, DS does it already or?
@@ -1047,22 +1073,7 @@ bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source
 		auto newVersion = DataSource::getVersionFromURI(resolved);
 
 		// check which backends need to load the ontology.
-		std::vector<std::shared_ptr<DefinedBackend>> backendsToLoad;
-		for (auto &it: backendManager_->backendPool()) {
-			// check if the ontology is already loaded by the backend,
-			// and if so whether it has the right version.
-			auto definedBackend = it.second;
-			auto currentVersion = getVersionOfOrigin(definedBackend, origin);
-			if (currentVersion.has_value()) {
-				if (currentVersion.value() != newVersion) {
-					backendsToLoad.push_back(definedBackend);
-					// TODO: rather include this operation as part of the transaction below
-					definedBackend->backend()->removeAllWithOrigin(origin);
-				}
-			} else {
-				backendsToLoad.push_back(definedBackend);
-			}
-		}
+		std::vector<std::shared_ptr<DefinedBackend>> backendsToLoad = prepareLoad(origin, newVersion);
 		if (backendsToLoad.empty()) continue;
 
 		// some OWL files are downloaded compile-time via CMake,
@@ -1091,23 +1102,7 @@ bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source
 			KB_WARN("Failed to parse ontology {} ({})", *importURI, source->uri());
 			return false;
 		}
-
-		// update the version triple
-		for (auto &it: backendManager_->backendPool()) {
-			it.second->setVersionOfOrigin(origin, newVersion);
-		}
-		for (auto &it: backendManager_->persistent()) {
-			auto persistentBackend = it.second;
-			persistentBackend->setVersionOfOrigin(origin, newVersion);
-		}
-
-		// add direct import
-		// TODO: why not build the import hierarchy recursively?
-		if (source->parentOrigin().has_value()) {
-			importHierarchy_->addDirectImport(source->parentOrigin().value(), origin);
-		} else {
-			importHierarchy_->addDirectImport(importHierarchy_->defaultGraph(), origin);
-		}
+		finishLoad(source, origin, newVersion);
 
 		// load imported ontologies
 		if (followImports) {
@@ -1121,9 +1116,34 @@ bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source
 }
 
 bool KnowledgeBase::loadSPARQLDataSource(const std::shared_ptr<DataSource> &source) {
-	// TODO: support SPARQL services as data sources
-	KB_WARN("SPARQL data sources are not supported yet.");
-	return false;
+	auto service = std::static_pointer_cast<SPARQLService>(source);
+	auto serviceURI = URI::resolve(source->uri());
+	auto origin = service->origin();
+	// SPARQL does not have versioning. Some endpoints may store the version as a triple,
+	// but this is not standardized. Some may encode version in the URI which we try to extract
+	// below. Otherwise, we just use the current day as version causing a re-load every day.
+	auto newVersion = DataSource::getVersionFromURI(serviceURI);
+	service->setBatchSize(tripleBatchSize_);
+
+	// get all backends that do not have the data loaded yet
+	std::vector<std::shared_ptr<DefinedBackend>> backendsToLoad = prepareLoad(origin, newVersion);
+	if (backendsToLoad.empty()) {
+		// data is already loaded
+		return true;
+	}
+	KB_INFO("Loading data from SPARQL endpoint at '{}' with version "
+			"\"{}\" and origin \"{}\".", serviceURI, newVersion, origin);
+
+	auto result = service->load([this, &backendsToLoad](const semweb::TripleContainerPtr &triples) {
+		insertAllInto(triples, backendsToLoad);
+	});
+	if (!result) {
+		KB_WARN("Failed to load data from SPARQL service at {}.", serviceURI);
+		return false;
+	}
+	finishLoad(service, origin, newVersion);
+
+	return true;
 }
 
 bool KnowledgeBase::loadNonOntologySource(const DataSourcePtr &source) const {

@@ -114,23 +114,13 @@ void Reasoner::setInferredTriples(const std::vector<StatementData> &triples) {
 	}
 }
 
-class ReasonerTripleContainer : public semweb::TripleContainer {
-public:
-	explicit ReasonerTripleContainer(const std::vector<StatementData> *triples) : triples_(triples) {}
-
-	const std::vector<StatementData> &asVector() const override { return *triples_; }
-
-protected:
-	const std::vector<StatementData> *triples_;
-};
-
 void Reasoner::addInferredTriples(const std::vector<StatementData> &triples) const {
 	// Note: insertAll blocks until the triples are inserted, so it is safe to use the triples vector as a pointer.
-	kb()->insertAll(std::make_shared<ReasonerTripleContainer>(&triples));
+	kb()->insertAll(std::make_shared<semweb::ProxyTripleContainer>(&triples));
 }
 
 void Reasoner::removeInferredTriples(const std::vector<StatementData> &triples) const {
-	kb()->removeAll(std::make_shared<ReasonerTripleContainer>(&triples));
+	kb()->removeAll(std::make_shared<semweb::ProxyTripleContainer>(&triples));
 }
 
 PredicateDescriptionPtr Reasoner::getLiteralDescription(const RDFLiteral &literal) {

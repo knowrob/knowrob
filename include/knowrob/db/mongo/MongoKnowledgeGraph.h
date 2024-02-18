@@ -99,7 +99,7 @@ namespace knowrob {
 		TokenBufferPtr watchQuery(const ConjunctiveQueryPtr &literal);
 
 		// Override KnowledgeGraph
-		bool loadConfig(const ReasonerConfig &config) override;
+		bool initializeBackend(const ReasonerConfig &config) override;
 
 		// Override IDataBackend
 		bool insertOne(const StatementData &triple) override;
