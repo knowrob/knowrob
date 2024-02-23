@@ -25,11 +25,11 @@ Unifier::Unifier(const TermPtr &t0, const TermPtr &t1)
 bool Unifier::unify(const TermPtr &t0, const TermPtr &t1) //NOLINT
 {
 	if (t1->termType() == TermType::VARIABLE) {
-		return unify((Variable *) t1.get(), t0);
+		return unify(std::static_pointer_cast<Variable>(t1), t0);
 	} else {
 		switch (t0->termType()) {
 			case TermType::VARIABLE:
-				return unify((Variable *) t0.get(), t1);
+				return unify(std::static_pointer_cast<Variable>(t0), t1);
 			case TermType::ATOMIC:
 				// if one of the terms is an atomic, the other must be an equal atomic
 				return *t0 == *t1;
@@ -59,14 +59,14 @@ bool Unifier::unify(const TermPtr &t0, const TermPtr &t1) //NOLINT
 	return true;
 }
 
-bool Unifier::unify(const Variable *var, const TermPtr &t) {
+bool Unifier::unify(const std::shared_ptr<Variable> &var, const TermPtr &t) {
 #ifdef USE_OCCURS_CHECK
-	if (t->variables().find(var) != t->variables().end()) {
+	if (t->variables().find(var.get()) != t->variables().end()) {
 		// fail if var *occurs* in t (occurs check)
 		return false;
 	} else {
 #endif
-		set(*var, t);
+		set(var, t);
 		return true;
 #ifdef USE_OCCURS_CHECK
 	}

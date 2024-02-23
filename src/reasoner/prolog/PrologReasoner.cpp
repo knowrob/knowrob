@@ -291,7 +291,7 @@ AnswerYesPtr PrologReasoner::yes(const RDFLiteralPtr &literal,
 	for (const auto &kv: rdfGoal.vars()) {
 		auto grounding = PrologTerm::toKnowRobTerm(kv.second);
 		if (grounding && grounding->termType() != TermType::VARIABLE) {
-			yes->set(Variable(kv.first), PrologTerm::toKnowRobTerm(kv.second));
+			yes->set(std::make_shared<Variable>(kv.first), PrologTerm::toKnowRobTerm(kv.second));
 		}
 	}
 

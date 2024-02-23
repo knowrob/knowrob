@@ -24,7 +24,7 @@ AnswerCursor::AnswerCursor(const std::shared_ptr<Collection> &collection)
 
 void AnswerCursor::setSubstitution(const std::shared_ptr<AnswerYes> &answer) {
 	while (bson_iter_next(&varIter_)) {
-		Variable var(bson_iter_key(&varIter_));
+		auto var = std::make_shared<Variable>(bson_iter_key(&varIter_));
 
 		if (!bson_iter_recurse(&varIter_, &valIter_)) continue;
 		if (!bson_iter_find(&valIter_, "val")) continue;

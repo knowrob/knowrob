@@ -17,18 +17,7 @@
 
 namespace knowrob {
 	/**
-	 * Queue  of reversible operations.
-	 */
-	class Reversible : public std::queue<std::function<void()>> {
-	public:
-		/**
-		 * Reverts changes made.
-		 */
-		void rollBack();
-	};
-
-	/**
-	 * A substitution is a mapping from variables to terms.
+	 * A substitution is a mapping from variable names to terms.
 	 * For example, {x1 -> t1, ..., xn -> tn} represents a substitution of
 	 * each variable xi with the corresponding term ti.
 	 * Applying a substitution to a term t means to replace occurrences
@@ -36,12 +25,28 @@ namespace knowrob {
 	 */
 	class Substitution {
 	public:
+		/**
+		 * A mapping from variable names to terms.
+		 */
+		using Map = std::map<std::string_view, std::pair<std::shared_ptr<Variable>,TermPtr>>;
+
 		Substitution() = default;
 
-		explicit Substitution(std::map<Variable, TermPtr> mapping) : mapping_(std::move(mapping)) {};
+		/**
+		 * @param mapping a mapping from variables to terms.
+		 */
+		explicit Substitution(const std::map<std::shared_ptr<Variable>, TermPtr> &mapping);
 
+		/**
+		 * @param other another substitution.
+		 * @return true if this substitution is equal to the other substitution.
+		 */
 		bool operator==(const Substitution &other) const;
 
+		/**
+		 * Combine with another substitution.
+		 * @param other another substitution.
+		 */
 		void operator+=(const Substitution &other);
 
 		/**
@@ -69,17 +74,7 @@ namespace knowrob {
 		 * @var a variable.
 		 * @term a term.
 		 */
-		void set(const Variable &var, const TermPtr &term);
-
-		/**
-		 * Map a variable to a term.
-		 * A null pointer reference is returned if the given variable
-		 * is not included in the mapping.
-		 *
-		 * @var a variable.
-		 * @return a term reference.
-		 */
-		const TermPtr &get(const Variable &var) const;
+		void set(const std::shared_ptr<Variable> &var, const TermPtr &term);
 
 		/**
 		 * Map the name of a variable to a term.
@@ -89,32 +84,31 @@ namespace knowrob {
 		 * @var a variable.
 		 * @return a term reference.
 		 */
-		const TermPtr &get(const std::string &varName) const;
+		const TermPtr &get(std::string_view varName) const;
 
 		/**
 		 * Returns true if the given var is mapped to a term by this substitution.
 		 * @var a variable.
 		 * @return true if this substitution isMoreGeneralThan the variable.
 		 */
-		bool contains(const Variable &var) const;
+		bool contains(std::string_view varName) const;
 
 		/**
 		 * Combine with another substitution.
 		 * If both substitute the same variable to some term, then
 		 * the combination maps to the unification of these terms, if one exists.
 		 * @other another substitution
-		 * @changes the diff of the substitute operation
 		 * @return true if the operation succeeded.
 		 */
-		bool unifyWith(const Substitution &other, Reversible *reversible = nullptr);
+		bool unifyWith(const Substitution &other);
 
 		/**
 		 * @return the hash of this.
 		 */
-		size_t computeHash() const;
+		size_t hash() const;
 
 	protected:
-		std::map<Variable, TermPtr> mapping_;
+		Map mapping_;
 	};
 
 	// alias declaration

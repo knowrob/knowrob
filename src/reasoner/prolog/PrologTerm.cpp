@@ -373,7 +373,7 @@ bool PrologTerm::putTerm(const TermPtr &kbTerm, term_t pl_term) { //NOLINT
 			}
 				// create a new variable
 			else if (PL_put_variable(pl_term)) {
-				vars_[qa_var->name()] = pl_term;
+				vars_[std::string(qa_var->name())] = pl_term;
 				return true;
 			} else {
 				return false;

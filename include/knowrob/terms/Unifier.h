@@ -41,7 +41,7 @@ namespace knowrob {
 		bool exists_;
 		
 		bool unify(const TermPtr &t0, const TermPtr &t1);
-		bool unify(const Variable *var, const TermPtr &t);
+		bool unify(const std::shared_ptr<Variable> &var, const TermPtr &t);
 	};
 }
 

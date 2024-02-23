@@ -73,15 +73,15 @@ public:
 		if(succeed) {
 			if(!literal->propertyTerm()->isGround()) {
 				auto v = *literal->propertyTerm()->variables().begin();
-				answer->substitution()->set(*v, IRIAtom::Tabled(p_));
+				answer->substitution()->set(std::make_shared<Variable>(v->name()), IRIAtom::Tabled(p_));
 			}
 			if(!literal->subjectTerm()->isGround()) {
 				auto v = *literal->subjectTerm()->variables().begin();
-				answer->substitution()->set(*v, IRIAtom::Tabled(s_));
+				answer->substitution()->set(std::make_shared<Variable>(v->name()), IRIAtom::Tabled(s_));
 			}
 			if(!literal->objectTerm()->isGround()) {
 				auto v = *literal->objectTerm()->variables().begin();
-				answer->substitution()->set(*v, IRIAtom::Tabled(o_));
+				answer->substitution()->set(std::make_shared<Variable>(v->name()), IRIAtom::Tabled(o_));
 			}
 			outputChannel->push(answer);
 		}
@@ -160,10 +160,9 @@ static SubstitutionPtr lookupOne(const FormulaPtr &p) {
 }
 
 static bool containsAnswer(const std::vector<SubstitutionPtr> &answers, const std::string &key, const TermPtr &value) {
-	Variable v_key(key);
 	for (auto &x: answers) {
-		if (x->contains(v_key)) {
-			auto actual = x->get(v_key);
+		if (x->contains(key)) {
+			auto actual = x->get(key);
 			if (*value == *actual) {
 				return true;
 			}
@@ -189,10 +188,10 @@ TEST_F(KnowledgeBaseTest, atomic_EDB) {
 		// the query formula:
 		(*hasSibling_)(Fred_, varX_),
 		// the expected solution as substitution mapping:
-		Substitution({{*varX_, Ernest_}}))
+		Substitution({{varX_, Ernest_}}))
 	EXPECT_ONLY_SOLUTION(
 		(*hasSibling_)(varX_, Ernest_),
-		Substitution({{*varX_, Fred_}}))
+		Substitution({{varX_, Fred_}}))
 	EXPECT_ONLY_SOLUTION(
 		(*hasSibling_)(Fred_, Ernest_),
 		Substitution())
@@ -204,8 +203,8 @@ TEST_F(KnowledgeBaseTest, conjunctive_EDB) {
 	EXPECT_ONLY_SOLUTION(
 		(*hasSibling_)(Fred_, varX_) & (*hasNumber_)(varX_, varNum_),
 		Substitution({
-			{*varNum_, std::make_shared<String>("123456")},
-			{*varX_, Ernest_}
+			{varNum_, std::make_shared<String>("123456")},
+			{varX_, Ernest_}
 		}))
 }
 
@@ -222,8 +221,8 @@ TEST_F(KnowledgeBaseTest, complex_EDB) {
 	EXPECT_ONLY_SOLUTION(
 		((*hasSibling_)(Fred_, varX_) | (*hasAncestor_)(Fred_, varX_)) & (*hasSibling_)(varX_, varY_),
 		Substitution({
-			{*varX_, Ernest_},
-			{*varY_, Fred_}
+			{varX_, Ernest_},
+			{varY_, Fred_}
 		}))
 }
 
@@ -245,16 +244,16 @@ TEST_F(KnowledgeBaseTest, negatedComplex_EDB) {
 	// Rex is an ancestor of Fred who does not have a sibling
 	EXPECT_ONLY_SOLUTION(
 		(*hasAncestor_)(Fred_, varX_) & ~(*hasSibling_)(varX_, varY_),
-		Substitution({{*varX_, Rex_}}))
+		Substitution({{varX_, Rex_}}))
 }
 
 TEST_F(KnowledgeBaseTest, atomic_IDB) {
 	EXPECT_ONLY_SOLUTION(
 		(*p_)(Ernest_, varX_),
-		Substitution({{*varX_, IRIAtom::Tabled("x")}}))
+		Substitution({{varX_, IRIAtom::Tabled("x")}}))
 	EXPECT_ONLY_SOLUTION(
 		(*q_)(IRIAtom::Tabled("x"), varX_),
-		Substitution({{*varX_, IRIAtom::Tabled("y")}}))
+		Substitution({{varX_, IRIAtom::Tabled("y")}}))
 	EXPECT_NO_SOLUTION((*p_)(IRIAtom::Tabled("x"), varX_));
 }
 
@@ -262,8 +261,8 @@ TEST_F(KnowledgeBaseTest, mixed_EDB_IDB) {
 	EXPECT_ONLY_SOLUTION(
 		(*hasSibling_)(Fred_, varX_) & (*p_)(varX_, varY_),
 		Substitution({
-			{*varX_, Ernest_},
-			{*varY_, IRIAtom::Tabled("x")}
+			{varX_, Ernest_},
+			{varY_, IRIAtom::Tabled("x")}
 		}))
 }
 
@@ -271,17 +270,17 @@ TEST_F(KnowledgeBaseTest, IDB_interaction) {
 	EXPECT_ONLY_SOLUTION(
 		(*p_)(varX_, varY_) & (*q_)(varY_, varZ_),
 		Substitution({
-			{*varX_, Ernest_},
-			{*varY_, IRIAtom::Tabled("x")},
-			{*varZ_, IRIAtom::Tabled("y")}
+			{varX_, Ernest_},
+			{varY_, IRIAtom::Tabled("x")},
+			{varZ_, IRIAtom::Tabled("y")}
 		}))
 }
 
 TEST_F(KnowledgeBaseTest, modal_EDB) {
 	EXPECT_ONLY_SOLUTION(
 		K((*hasSibling_)(Fred_, varX_)),
-		Substitution({{*varX_, Ernest_}}))
+		Substitution({{varX_, Ernest_}}))
 	EXPECT_ONLY_SOLUTION(
 		B((*hasSibling_)(Fred_, varX_)),
-		Substitution({{*varX_, Ernest_}}))
+		Substitution({{varX_, Ernest_}}))
 }

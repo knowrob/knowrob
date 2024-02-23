@@ -141,9 +141,9 @@ TEST_F(AnswerCombinerTest, CombineMany_DifferentVariables) {
 	auto answer11 = std::make_shared<AnswerYes>();
 	auto answer21 = std::make_shared<AnswerYes>();
 	auto answer22 = std::make_shared<AnswerYes>();
-	answer11->set(Variable("a"), std::make_shared<Integer>(4));
-	answer21->set(Variable("b"), std::make_shared<Integer>(6));
-	answer22->set(Variable("b"), std::make_shared<Integer>(7));
+	answer11->set(std::make_shared<Variable>("a"), std::make_shared<Integer>(4));
+	answer21->set(std::make_shared<Variable>("b"), std::make_shared<Integer>(6));
+	answer22->set(std::make_shared<Variable>("b"), std::make_shared<Integer>(7));
 	// push a partial answer via input1
 	EXPECT_EQ(output->size(), 0);
 	input1->push(answer11);
@@ -168,9 +168,9 @@ TEST_F(AnswerCombinerTest, CombineMany_Unification) {
 	auto answer21 = std::make_shared<AnswerYes>();
 	auto answer22 = std::make_shared<AnswerYes>();
 	// push "a=p(X,1)" and "a=p(2,Y)" into combiner via two channels
-	answer11->set(Variable("a"), QueryParser::parseFunction("p(X,1)"));
-	answer21->set(Variable("a"), QueryParser::parseFunction("p(2,Y)"));
-	answer22->set(Variable("a"), QueryParser::parseFunction("p(2,2)"));
+	answer11->set(std::make_shared<Variable>("a"), QueryParser::parseFunction("p(X,1)"));
+	answer21->set(std::make_shared<Variable>("a"), QueryParser::parseFunction("p(2,Y)"));
+	answer22->set(std::make_shared<Variable>("a"), QueryParser::parseFunction("p(2,2)"));
 	input1->push(answer11);
 	input2->push(answer21);
 	// expect that the combiner has one output "a=p(2,1)" unifying both inputs.
@@ -186,7 +186,7 @@ TEST_F(AnswerCombinerTest, CombineMany_Unification) {
 			if (answer->isPositive()) {
 				auto positiveAnswer = std::static_pointer_cast<const AnswerYes>(answer);
 				EXPECT_TRUE(positiveAnswer->hasGrounding(Variable("a")));
-				auto instantiation = positiveAnswer->substitution()->get(Variable("a"));
+				auto instantiation = positiveAnswer->substitution()->get("a");
 				EXPECT_EQ(*instantiation, *QueryParser::parseFunction("p(2,1)"));
 			}
 		}

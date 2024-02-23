@@ -269,7 +269,7 @@ bool RedlandModel::query(const SPARQLQuery &query, const SubstitutionHandler &ca
 			auto node = librdf_query_results_get_binding_value(results, i);
 			auto knowrobTerm = termFromNode(node);
 			if (knowrobTerm) {
-				bindings->set(Variable(name), knowrobTerm);
+				bindings->set(std::make_shared<Variable>(name), knowrobTerm);
 			} else {
 				KB_WARN("Failed to process binding for variable \"{}\".", name);
 			}

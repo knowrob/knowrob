@@ -216,7 +216,7 @@ namespace knowrob {
 		static PrologTerm nil();
 
 	protected:
-		std::map<std::string, term_t> vars_;
+		std::map<std::string, term_t, std::less<>> vars_;
 		std::optional<std::string_view> module_;
 		term_t plTerm_;
 

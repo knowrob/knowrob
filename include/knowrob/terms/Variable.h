@@ -38,7 +38,7 @@ namespace knowrob {
 		/**
 		 * @return the name of this variable.
 		 */
-		const std::string &name() const { return name_; }
+		std::string_view name() const { return name_; }
 
 		// Override Term
 		TermType termType() const final { return TermType::VARIABLE; }
@@ -60,6 +60,12 @@ namespace knowrob {
 
 		// Override Term
 		void write(std::ostream &os) const override;
+	};
+
+	using VariablePtr = std::shared_ptr<Variable>;
+
+	struct VariablePtrComparator {
+		bool operator()(const VariablePtr &lhs, const VariablePtr &rhs) const { return *lhs < *rhs; }
 	};
 }
 

@@ -53,13 +53,13 @@ namespace knowrob {
 		 * @var a variable.
 		 * @term a term.
 		 */
-		void set(const Variable &var, const TermPtr &term) { substitution_->set(var, term); }
+		void set(const std::shared_ptr<Variable> &var, const TermPtr &term) { substitution_->set(var, term); }
 
 		/**
 		 * @param var a variable.
 		 * @return true if the variable is mapped to a term.
 		 */
-		bool hasGrounding(const Variable &var) const { return substitution_->contains(var); }
+		bool hasGrounding(const Variable &var) const { return substitution_->contains(var.name()); }
 
 		/**
 		 * The answer is framed in the context of a graph selector which determines

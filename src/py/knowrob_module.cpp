@@ -371,7 +371,7 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.def("set", &Substitution::set)
 			.def("get", static_cast<Substitution_get_string>(&Substitution::get), CONST_REF_RETURN)
 			.def("contains", &Substitution::contains)
-			.def("computeHash", &Substitution::computeHash);
+			.def("hash", &Substitution::hash);
 
 	/////////////////////////////////////////////////////
 	// mappings for the QueryContext class

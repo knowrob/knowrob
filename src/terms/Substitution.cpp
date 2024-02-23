@@ -16,11 +16,9 @@
 
 using namespace knowrob;
 
-void Reversible::rollBack() {
-	while (!empty()) {
-		auto &revertFunction = front();
-		revertFunction();
-		pop();
+Substitution::Substitution(const std::map<std::shared_ptr<Variable>, TermPtr> &mapping) {
+	for (const auto &pair: mapping) {
+		set(pair.first, pair.second);
 	}
 }
 
@@ -30,7 +28,7 @@ bool Substitution::operator==(const Substitution &other) const {
 	}
 
 	for (auto &x: mapping_) {
-		auto &val1 = x.second;
+		auto &val1 = x.second.second;
 		auto &val2 = other.get(x.first);
 		if (val1 && val2) {
 			if (!(*val1 == *val2)) return false;
@@ -44,45 +42,39 @@ bool Substitution::operator==(const Substitution &other) const {
 
 void Substitution::operator+=(const Substitution &other) {
 	for (auto &x: other.mapping_) {
-		if (x.second->isGround()) {
-			set(x.first, x.second);
-		}
+		set(x.second.first, x.second.second);
 	}
 }
 
-void Substitution::set(const Variable &var, const TermPtr &term) {
-	mapping_.insert(std::pair<Variable, TermPtr>(var, term));
+void Substitution::set(const std::shared_ptr<Variable> &var, const TermPtr &term) {
+	mapping_.insert({var->name(), {var,term}});
 }
 
-bool Substitution::contains(const Variable &var) const {
-	return mapping_.find(var) != mapping_.end();
+bool Substitution::contains(std::string_view varName) const {
+	return mapping_.find(varName) != mapping_.end();
 }
 
-const TermPtr &Substitution::get(const Variable &var) const {
+const TermPtr &Substitution::get(std::string_view varName) const {
 	static const TermPtr null_term;
 
-	auto it = mapping_.find(var);
+	auto it = mapping_.find(varName);
 	if (it != mapping_.end()) {
-		return it->second;
+		return it->second.second;
 	} else {
 		return null_term;
 	}
 }
 
-const TermPtr &Substitution::get(const std::string &varName) const {
-	return get(Variable(varName));
-}
-
-size_t Substitution::computeHash() const {
+size_t Substitution::hash() const {
 	auto seed = static_cast<size_t>(0);
 
 	for (const auto &item: mapping_) {
 		// Compute the hash of the key using the in-built hash function for string.
-		hashCombine(seed, item.first.hash());
+		hashCombine(seed, std::hash<std::string_view>{}(item.first));
 
 		auto value_hash = static_cast<size_t>(0);
-		if (item.second) {
-			value_hash = item.second->hash();
+		if (item.second.second) {
+			value_hash = item.second.second->hash();
 		}
 		hashCombine(seed, value_hash);
 	}
@@ -90,24 +82,22 @@ size_t Substitution::computeHash() const {
 	return seed;
 }
 
-bool Substitution::unifyWith(const Substitution &other, Reversible *reversible) {
+bool Substitution::unifyWith(const Substitution &other) {
 	for (const auto &pair: other.mapping_) {
 		auto it = mapping_.find(pair.first);
 		if (it == mapping_.end()) {
 			// new variable instantiation
 			auto jt = mapping_.insert(pair).first;
-			if (reversible) reversible->push(([this, jt]() { mapping_.erase(jt); }));
 		} else {
 			// variable has already an instantiation, need to unify
-			TermPtr t0 = it->second;
-			TermPtr t1 = pair.second;
+			TermPtr t0 = it->second.second;
+			TermPtr t1 = pair.second.second;
 
 			// t0 and t1 are not syntactically equal -> compute a unifier
 			Unifier sigma(t0, t1);
 			if (sigma.exists()) {
 				// a unifier exists
-				it->second = sigma.apply();
-				if (reversible) reversible->push(([it, t0]() { it->second = t0; }));
+				it->second.second = sigma.apply();
 			} else {
 				// no unifier exists
 				return false;
@@ -207,7 +197,7 @@ namespace knowrob {
 				return t;
 			case TermType::VARIABLE: {
 				auto var = std::static_pointer_cast<Variable>(t);
-				auto term = bindings.get(*var);
+				auto term = bindings.get(var->name());
 				if (term) {
 					return term;
 				} else {
@@ -244,7 +234,7 @@ namespace std {
 		os << '{';
 		for (const auto &pair: omega) {
 			if (i++ > 0) os << ',';
-			os << pair.first.name() << ':' << ' ' << (*pair.second);
+			os << pair.first << ':' << ' ' << (*pair.second.second);
 		}
 		return os << '}';
 	}
