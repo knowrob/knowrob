@@ -124,12 +124,6 @@ namespace knowrob {
 		 */
 		virtual void write(std::ostream &os) const = 0;
 
-		/**
-		 * @return the string representation of this term.
-		 */
-		// TODO: remove
-		std::string constructString() const;
-
 	protected:
 		static const VariableSet noVariables_;
 

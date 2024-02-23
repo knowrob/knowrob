@@ -55,12 +55,6 @@ bool Term::operator==(const Term &other) const {
 	return false;
 }
 
-std::string Term::constructString() const {
-	std::stringstream ss;
-	write(ss);
-	return ss.str();
-}
-
 bool VariableComparator::operator()(const Variable *const &v0, const Variable *const &v1) const {
 	return *v0 < *v1;
 }

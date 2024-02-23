@@ -26,7 +26,7 @@
 #include "knowrob/terms/IRIAtom.h"
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/terms/OptionList.h"
-#include "knowrob/Logger.h"
+#include "knowrob/knowrob.h"
 
 using namespace knowrob;
 
@@ -502,7 +502,7 @@ static inline void testNumber(const TermPtr &t, const double &expected) {
 			auto *a = (Atomic*) t.get();
 			EXPECT_EQ(a->atomicType(), AtomicType::NUMERIC);
 		}
-		EXPECT_EQ(t->constructString(), (std::ostringstream() << expected).str());
+		EXPECT_EQ(readString(*t), (std::ostringstream() << expected).str());
     }
 }
 
@@ -515,7 +515,7 @@ static inline void testConstant(const TermPtr &t, const AtomicType &atomicType, 
 			auto *a = (Atomic*) t.get();
 			EXPECT_EQ(a->atomicType(), atomicType);
 		}
-		EXPECT_EQ(t->constructString(), expected);
+		EXPECT_EQ(readString(*t), expected);
     }
 }
 
