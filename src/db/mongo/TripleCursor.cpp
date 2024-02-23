@@ -5,6 +5,7 @@
 #include <boost/algorithm/string.hpp>
 #include "knowrob/Logger.h"
 #include "knowrob/db/mongo/TripleCursor.h"
+#include "knowrob/terms/RDFNode.h"
 
 using namespace knowrob::mongo;
 
@@ -52,20 +53,19 @@ bool TripleCursor::nextTriple(FramedTripleView &tripleData, const bson_oid_t **t
 			} else if (key == "o") {
 				switch (bson_iter_type(&tripleIter_)) {
 					case BSON_TYPE_UTF8: {
-						// TODO: currently mongo KG does not store the type of the literal,
-						//        so we cannot trivially distinguish between IRI and literal.
-						//        Another option is to require Vocabulary as an argument of TripleCursor.
+						// note: currently mongo KG does not store the type of the literal,
+						// so we cannot trivially distinguish between IRI and literal and need to guess here.
 						auto utf8 = bson_iter_utf8(&tripleIter_, nullptr);
-						// if the first letter is an underscore, it's a blank node
-						if (utf8[0] == '_') {
-							tripleData.setObjectBlank(utf8);
-						} else if (boost::algorithm::starts_with(utf8, "http://") ||
-								   boost::algorithm::starts_with(utf8, "https://")) {
-							// The string is an IRI.
-							// Currently we do that by checking if its prefix is "http://" or "https://".
-							tripleData.setObjectIRI(utf8);
-						} else {
-							tripleData.setStringValue(utf8);
+						switch(rdfNodeTypeGuess(utf8)) {
+							case RDFNodeType::IRI:
+								tripleData.setObjectIRI(utf8);
+								break;
+							case RDFNodeType::LITERAL:
+								tripleData.setStringValue(utf8);
+								break;
+							case RDFNodeType::BLANK:
+								tripleData.setObjectBlank(utf8);
+								break;
 						}
 						break;
 					}

@@ -27,6 +27,13 @@ namespace knowrob {
 		virtual RDFNodeType rdfNodeType() const = 0;
 	};
 
+	/**
+	 * Guess the type of an RDF node from a string.
+	 * @param str the string to guess the type from
+	 * @return the guessed type
+	 */
+	RDFNodeType rdfNodeTypeGuess(std::string_view str);
+
 } // knowrob
 
 #endif //KNOWROB_RDF_NODE_H

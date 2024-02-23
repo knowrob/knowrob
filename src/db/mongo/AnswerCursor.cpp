@@ -32,18 +32,19 @@ void AnswerCursor::setSubstitution(const std::shared_ptr<AnswerYes> &answer) {
 		// read the value of the variable
 		switch (bson_iter_type(&valIter_)) {
 			case BSON_TYPE_UTF8: {
-				// TODO: redundant with TripleCursor
 				auto utf8 = bson_iter_utf8(&valIter_, nullptr);
-				// if the first letter is an underscore, it's a blank node
-				if (utf8[0] == '_') {
-					answer->set(var, std::make_shared<Blank>(utf8));
-				} else if (boost::algorithm::starts_with(utf8, "http://") ||
-						   boost::algorithm::starts_with(utf8, "https://")) {
-					// The string is an IRI.
-					// Currently we do that by checking if its prefix is "http://" or "https://".
-					answer->set(var, std::make_shared<IRIAtom>(utf8));
-				} else {
-					answer->set(var, std::make_shared<StringView>(utf8));
+				// note: currently mongo KG does not store the type of the literal,
+				// so we cannot trivially distinguish between IRI and literal and need to guess here.
+				switch(rdfNodeTypeGuess(utf8)) {
+					case RDFNodeType::BLANK:
+						answer->set(var, std::make_shared<Blank>(utf8));
+						break;
+					case RDFNodeType::IRI:
+						answer->set(var, std::make_shared<IRIAtom>(utf8));
+						break;
+					case RDFNodeType::LITERAL:
+						answer->set(var, std::make_shared<StringView>(utf8));
+						break;
 				}
 				break;
 			}

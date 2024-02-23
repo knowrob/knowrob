@@ -299,7 +299,8 @@ add_library(knowrob SHARED
         src/terms/Function.cpp
         src/terms/XSDAtomic.cpp
         src/terms/IRIAtom.cpp
-        src/terms/Blank.cpp)
+        src/terms/Blank.cpp
+        src/terms/RDFNode.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

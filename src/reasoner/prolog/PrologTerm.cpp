@@ -552,14 +552,14 @@ TermPtr PrologTerm::toKnowRobTerm(const term_t &t) { //NOLINT
 				return Top::get()->functor();
 			} else {
 				std::string_view charForm = PL_atom_chars(atom);
-				// FIXME: below is a hack, Prolog should properly encode IRI atoms and blanks instead
-				if(charForm[0] == '_') {
-					return Blank::Tabled(charForm);
-				} else if (boost::algorithm::starts_with(charForm, "http://") ||
-						   boost::algorithm::starts_with(charForm, "https://")) {
-					return IRIAtom::Tabled(charForm);
-				} else {
-					return Atom::Tabled(charForm);
+				// TODO: support that Prolog returns typed literals instead of guessing the type
+				switch(rdfNodeTypeGuess(charForm)) {
+					case RDFNodeType::BLANK:
+						return Blank::Tabled(charForm);
+					case RDFNodeType::IRI:
+						return IRIAtom::Tabled(charForm);
+					case RDFNodeType::LITERAL:
+						return Atom::Tabled(charForm);
 				}
 			}
 		}
