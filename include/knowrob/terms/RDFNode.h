@@ -6,6 +6,8 @@
 #ifndef KNOWROB_RDF_NODE_H
 #define KNOWROB_RDF_NODE_H
 
+#include <string>
+
 namespace knowrob {
 	/**
 	 * The type of an RDF node.
