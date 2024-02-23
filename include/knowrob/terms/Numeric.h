@@ -169,7 +169,7 @@ namespace knowrob {
 		mutable std::optional<T1> numericForm_;
 
 		// override Term
-		void write(std::ostream &os) const override { os << std::fixed << numericForm(); }
+		void write(std::ostream &os) const override { os << std::defaultfloat << numericForm(); }
 	};
 
 	/**
