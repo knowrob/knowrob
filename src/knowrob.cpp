@@ -10,6 +10,8 @@
 #include <knowrob/Logger.h>
 #include <Python.h>
 #include <filesystem>
+#include <iostream>
+#include <locale>
 
 namespace knowrob {
 	// stores the name of the executable as provided in argv[0]
@@ -33,6 +35,9 @@ namespace knowrob {
 		// remember the program name.
 		// it is assumed here that argv stays valid during program execution.
 		knowrob::NAME_OF_EXECUTABLE = argv[0];
+		// set the locale to classic to avoid problems with number formatting,
+		// especially regarding use of dot or comma as decimal separator.
+		std::cout.imbue(std::locale::classic());
 		// configure the logger
 		Logger::initialize();
 		// Allow Python to load modules KnowRob-related directories.
