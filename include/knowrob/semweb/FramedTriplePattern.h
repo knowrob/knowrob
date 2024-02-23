@@ -1,6 +1,7 @@
-//
-// Created by daniel on 07.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_FRAMED_TRIPLE_PATTERN_H
 #define KNOWROB_FRAMED_TRIPLE_PATTERN_H
