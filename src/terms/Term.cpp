@@ -11,7 +11,7 @@
 
 using namespace knowrob;
 
-const VariableSet Term::noVariables_ = {};
+const std::set<std::string_view> Term::noVariables_ = {};
 
 bool Term::isIRI() const {
 	return false;
@@ -53,10 +53,6 @@ bool Term::operator==(const Term &other) const {
 			return ((Function *) this)->isSameFunction(*((Function *) &other));
 	}
 	return false;
-}
-
-bool VariableComparator::operator()(const Variable *const &v0, const Variable *const &v1) const {
-	return *v0 < *v1;
 }
 
 namespace std {

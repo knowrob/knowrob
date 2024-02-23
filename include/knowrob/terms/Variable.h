@@ -47,7 +47,7 @@ namespace knowrob {
 		bool isAtomic() const override { return false; }
 
 		// Override Term
-		const VariableSet &variables() const override { return variables_; }
+		const std::set<std::string_view> &variables() const override { return variables_; }
 
 		// Override Term
 		size_t hash() const override { return std::hash<std::string>{}(name_); }
@@ -56,7 +56,7 @@ namespace knowrob {
 		// TODO: should really each variable have its own copy? better support string_view too,
 		//        or maybe simply use a tabled atom?
 		const std::string name_;
-		const VariableSet variables_;
+		const std::set<std::string_view> variables_;
 
 		// Override Term
 		void write(std::ostream &os) const override;

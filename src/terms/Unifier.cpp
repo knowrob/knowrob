@@ -61,7 +61,7 @@ bool Unifier::unify(const TermPtr &t0, const TermPtr &t1) //NOLINT
 
 bool Unifier::unify(const std::shared_ptr<Variable> &var, const TermPtr &t) {
 #ifdef USE_OCCURS_CHECK
-	if (t->variables().find(var.get()) != t->variables().end()) {
+	if (t->variables().find(var->name()) != t->variables().end()) {
 		// fail if var *occurs* in t (occurs check)
 		return false;
 	} else {

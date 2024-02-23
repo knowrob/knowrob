@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2023, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -14,13 +11,13 @@
 
 using namespace knowrob;
 
-static inline bool has_intersection(const VariableSet &a, const VariableSet &b)
+static inline bool has_intersection(const std::set<std::string_view> &a, const std::set<std::string_view> &b)
 {
     // TODO: is there a more standard way of doing this?
-    const VariableSet &smaller = (a.size()<b.size() ? a : b);
-    const VariableSet &larger = ((&smaller == &a) ? b : a);
+    const std::set<std::string_view> &smaller = (a.size()<b.size() ? a : b);
+    const std::set<std::string_view> &larger = ((&smaller == &a) ? b : a);
     return std::any_of(smaller.cbegin(), smaller.cend(),
-                       [larger](auto *v){ return larger.count(v)>0; });
+                       [larger](auto &v){ return larger.count(v)>0; });
 }
 
 void DependencyGraph::operator+=(const DependencyNodePtr &node)

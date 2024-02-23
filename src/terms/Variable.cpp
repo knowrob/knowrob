@@ -12,7 +12,7 @@ using namespace knowrob;
 Variable::Variable(std::string_view name)
 		: Term(),
 		  name_(name),
-		  variables_({this}) {
+		  variables_({name_}) {
 }
 
 bool Variable::isSameVariable(const Variable &other) const {

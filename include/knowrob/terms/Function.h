@@ -58,7 +58,7 @@ namespace knowrob {
 		bool isAtomic() const override { return arguments_.empty(); }
 
 		// Override Term
-		const VariableSet &variables() const override { return variables_; }
+		const std::set<std::string_view> &variables() const override { return variables_; }
 
 		// Override Term
 		size_t hash() const override;
@@ -66,9 +66,9 @@ namespace knowrob {
 	protected:
 		const std::shared_ptr<Atom> functor_;
 		const std::vector<TermPtr> arguments_;
-		const VariableSet variables_;
+		const std::set<std::string_view> variables_;
 
-		VariableSet getVariables1() const;
+		std::set<std::string_view> getVariables1() const;
 
 		// Override Term
 		void write(std::ostream &os) const override;

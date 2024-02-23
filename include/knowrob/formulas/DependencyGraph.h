@@ -19,7 +19,7 @@ namespace knowrob {
 		/**
 		 * @return the set of variables appearing in literal nodes.
 		 */
-		const VariableSet &variables() const { return literal_->predicate()->variables(); }
+		const std::set<std::string_view> &variables() const { return literal_->predicate()->variables(); }
 
 		/**
 		 * @return number of free variables in this node.
@@ -57,7 +57,7 @@ namespace knowrob {
 	 * @tparam NodeType the node type.
 	 */
 	struct DependencyGroup {
-		VariableSet variables_;
+		std::set<std::string_view> variables_;
 		std::list<DependencyNodePtr> member_;
 
 		void operator+=(const DependencyGroup &other) {

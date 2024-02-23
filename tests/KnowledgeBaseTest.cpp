@@ -73,15 +73,15 @@ public:
 		if(succeed) {
 			if(!literal->propertyTerm()->isGround()) {
 				auto v = *literal->propertyTerm()->variables().begin();
-				answer->substitution()->set(std::make_shared<Variable>(v->name()), IRIAtom::Tabled(p_));
+				answer->substitution()->set(std::make_shared<Variable>(v), IRIAtom::Tabled(p_));
 			}
 			if(!literal->subjectTerm()->isGround()) {
 				auto v = *literal->subjectTerm()->variables().begin();
-				answer->substitution()->set(std::make_shared<Variable>(v->name()), IRIAtom::Tabled(s_));
+				answer->substitution()->set(std::make_shared<Variable>(v), IRIAtom::Tabled(s_));
 			}
 			if(!literal->objectTerm()->isGround()) {
 				auto v = *literal->objectTerm()->variables().begin();
-				answer->substitution()->set(std::make_shared<Variable>(v->name()), IRIAtom::Tabled(o_));
+				answer->substitution()->set(std::make_shared<Variable>(v), IRIAtom::Tabled(o_));
 			}
 			outputChannel->push(answer);
 		}

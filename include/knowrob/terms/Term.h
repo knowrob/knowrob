@@ -23,22 +23,6 @@ namespace knowrob {
 		FUNCTION
 	};
 
-	// TODO: revise the variable handling in Term class
-	// forward declaration
-	class Variable;
-
-	/**
-	 * Used to compare variable pointers by value.
-	 */
-	struct VariableComparator {
-		/**
-		 * Compares Variable pointers by value.
-		 */
-		bool operator()(const Variable *const &v0, const Variable *const &v1) const;
-	};
-	// a set of const variable pointers compared by value.
-	using VariableSet = std::set<const Variable *, VariableComparator>;
-
 	/**
 	 * Terms are used as components of formulas and are recursively
 	 * constructed over the set of constants, variables, and function symbols.
@@ -112,7 +96,7 @@ namespace knowrob {
 		/**
 		 * @return set of variables of this term.
 		 */
-		virtual const VariableSet &variables() const = 0;
+		virtual const std::set<std::string_view> &variables() const = 0;
 
 		/**
 		 * @return the hash of this.
@@ -120,7 +104,7 @@ namespace knowrob {
 		virtual size_t hash() const = 0;
 
 	protected:
-		static const VariableSet noVariables_;
+		static const std::set<std::string_view> noVariables_;
 
 		/**
 		 * Write the term into an ostream.

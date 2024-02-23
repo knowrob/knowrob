@@ -64,7 +64,7 @@ namespace knowrob {
 		bool isAtomic() const final { return true; }
 
 		// Override Term
-		const VariableSet &variables() const final { return Term::noVariables_; }
+		const std::set<std::string_view> &variables() const final { return Term::noVariables_; }
 
 	protected:
 		// override Term

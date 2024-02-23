@@ -31,8 +31,8 @@ bool Predicate::isEqual(const Formula &other) const {
 	}
 }
 
-VariableSet Predicate::getVariables1() const {
-	VariableSet out;
+std::set<std::string_view> Predicate::getVariables1() const {
+	std::set<std::string_view> out;
 	for (auto &arg: arguments_) {
 		out.insert(arg->variables().begin(), arg->variables().end());
 	}

@@ -17,6 +17,19 @@
 #include "knowrob/terms/Function.h"
 
 namespace knowrob {
+	// TODO: Remove this
+	/**
+	 * Used to compare variable pointers by value.
+	 */
+	struct VariableComparator {
+		/**
+		 * Compares Variable pointers by value.
+		 */
+		bool operator()(const Variable *const &v0, const Variable *const &v1) const;
+	};
+	// a set of const variable pointers compared by value.
+	using VariableSet = std::set<const Variable *, VariableComparator>;
+
 	/**
 	 * A predicate with a functor and a number of term arguments.
 	 */
@@ -56,7 +69,7 @@ namespace knowrob {
 		bool isGround() const override { return variables_.empty(); }
 
 		// Override Term
-		const VariableSet &variables() { return variables_; }
+		const std::set<std::string_view> &variables() { return variables_; }
 
 		// Override Formula
 		void write(std::ostream &os) const override;
@@ -71,9 +84,9 @@ namespace knowrob {
 	protected:
 		const AtomPtr functor_;
 		const std::vector<TermPtr> arguments_;
-		const VariableSet variables_;
+		const std::set<std::string_view> variables_;
 
-		VariableSet getVariables1() const;
+		std::set<std::string_view> getVariables1() const;
 
 		bool isEqual(const Formula &other) const override;
 	};

@@ -21,8 +21,8 @@ Function::Function(std::string_view functor, const std::vector<TermPtr> &argumen
 		: Function(Atom::Tabled(functor), arguments) {
 }
 
-VariableSet Function::getVariables1() const {
-	VariableSet out;
+std::set<std::string_view> Function::getVariables1() const {
+	std::set<std::string_view> out;
 	for (auto &arg: arguments_) {
 		out.insert(arg->variables().begin(), arg->variables().end());
 	}
