@@ -17,19 +17,6 @@
 #include "knowrob/terms/Function.h"
 
 namespace knowrob {
-	// TODO: Remove this
-	/**
-	 * Used to compare variable pointers by value.
-	 */
-	struct VariableComparator {
-		/**
-		 * Compares Variable pointers by value.
-		 */
-		bool operator()(const Variable *const &v0, const Variable *const &v1) const;
-	};
-	// a set of const variable pointers compared by value.
-	using VariableSet = std::set<const Variable *, VariableComparator>;
-
 	/**
 	 * A predicate with a functor and a number of term arguments.
 	 */
