@@ -15,7 +15,7 @@
 #include "knowrob/db/mongo/TripleCursor.h"
 #include "knowrob/db/mongo/aggregation/graph.h"
 #include "knowrob/db/mongo/aggregation/triples.h"
-#include "knowrob/semweb/RDFLiteral.h"
+#include "knowrob/semweb/FramedTriplePattern.h"
 #include "knowrob/semweb/rdf.h"
 #include "knowrob/semweb/rdfs.h"
 #include "knowrob/semweb/owl.h"
@@ -340,7 +340,7 @@ std::optional<std::string> MongoKnowledgeGraph::getVersionOfOrigin(std::string_v
 }
 
 bson_t *MongoKnowledgeGraph::getSelector(
-		const RDFLiteral &tripleExpression,
+		const FramedTriplePattern &tripleExpression,
 		bool b_isTaxonomicProperty) {
 	auto doc = bson_new();
 	aggregation::appendTripleSelector(doc, tripleExpression, b_isTaxonomicProperty, importHierarchy_);
@@ -350,7 +350,7 @@ bson_t *MongoKnowledgeGraph::getSelector(
 bson_t *MongoKnowledgeGraph::getSelector(
 		const FramedTriple &triple,
 		bool b_isTaxonomicProperty) {
-	return getSelector(RDFLiteral(triple), b_isTaxonomicProperty);
+	return getSelector(FramedTriplePattern(triple), b_isTaxonomicProperty);
 }
 
 bool MongoKnowledgeGraph::insertOne(const FramedTriple &tripleData) {
@@ -425,7 +425,7 @@ bool MongoKnowledgeGraph::removeAllWithOrigin(std::string_view graphName) {
 	return dropOrigin(graphName);
 }
 
-bool MongoKnowledgeGraph::removeAllMatching(const RDFLiteral &query) {
+bool MongoKnowledgeGraph::removeAllMatching(const FramedTriplePattern &query) {
 	static const bool doMatchMany = true;
 	bool b_isTaxonomicProperty = isTaxonomicProperty(query.propertyTerm());
 	if (doMatchMany) {
@@ -437,7 +437,7 @@ bool MongoKnowledgeGraph::removeAllMatching(const RDFLiteral &query) {
 	return true;
 }
 
-AnswerCursorPtr MongoKnowledgeGraph::lookup(const RDFLiteral &tripleExpression) {
+AnswerCursorPtr MongoKnowledgeGraph::lookup(const FramedTriplePattern &tripleExpression) {
 	bson_t pipelineDoc = BSON_INITIALIZER;
 	bson_t pipelineArray;
 
@@ -459,7 +459,7 @@ AnswerCursorPtr MongoKnowledgeGraph::lookup(const RDFLiteral &tripleExpression) 
 }
 
 mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const FramedTriple &tripleData) {
-	return lookup(RDFLiteral(tripleData));
+	return lookup(FramedTriplePattern(tripleData));
 }
 
 mongo::AnswerCursorPtr
@@ -549,7 +549,7 @@ void MongoKnowledgeGraph::updateTimeInterval(const FramedTriple &tripleData) {
 	TripleCursor cursor(tripleCollection_);
 	bson_t selectorDoc = BSON_INITIALIZER;
 
-	RDFLiteral overlappingExpr(tripleData);
+	FramedTriplePattern overlappingExpr(tripleData);
 	overlappingExpr.setTemporalOperator(TemporalOperator::SOMETIMES);
 	aggregation::appendTripleSelector(&selectorDoc, overlappingExpr, b_isTaxonomicProperty, importHierarchy_);
 	cursor.filter(&selectorDoc);
@@ -930,7 +930,7 @@ protected:
 		return out;
 	}
 
-	static RDFLiteral parse(const std::string &str) {
+	static FramedTriplePattern parse(const std::string &str) {
 		auto p = QueryParser::parsePredicate(str);
 		return {p->arguments()[0], p->arguments()[1], p->arguments()[2],
 				false, *DefaultGraphSelector()};
@@ -993,7 +993,7 @@ TEST_F(MongoKnowledgeGraphTest, QueryTriple) {
 }
 
 TEST_F(MongoKnowledgeGraphTest, QueryNegatedTriple) {
-	auto negated = std::make_shared<RDFLiteral>(
+	auto negated = std::make_shared<FramedTriplePattern>(
 			QueryParser::parsePredicate("p(x,y)"),
 			true, *DefaultGraphSelector());
 	EXPECT_EQ(lookup(*negated).size(), 1);

@@ -110,7 +110,7 @@ namespace knowrob {
 		 * @param literal a literal.
 		 * @return a predicate description or a null reference.
 		 */
-		PredicateDescriptionPtr getLiteralDescription(const RDFLiteral &literal);
+		PredicateDescriptionPtr getLiteralDescription(const FramedTriplePattern &literal);
 
 		/**
 		 * Start the reasoner.

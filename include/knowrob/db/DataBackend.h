@@ -7,7 +7,7 @@
 #define KNOWROB_DATA_BACKEND_H
 
 #include <boost/property_tree/ptree.hpp>
-#include "knowrob/semweb/RDFLiteral.h"
+#include "knowrob/semweb/FramedTriplePattern.h"
 #include "knowrob/semweb/FramedTriple.h"
 #include "knowrob/semweb/TripleContainer.h"
 #include "knowrob/semweb/Vocabulary.h"
@@ -59,7 +59,7 @@ namespace knowrob {
 		 * @param query an expression used to match triples in the backend.
 		 * @return the number of deleted triples.
 		 */
-		virtual bool removeAllMatching(const RDFLiteral &query) = 0;
+		virtual bool removeAllMatching(const FramedTriplePattern &query) = 0;
 	};
 
 	/**

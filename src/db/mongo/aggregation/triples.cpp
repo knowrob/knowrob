@@ -178,24 +178,24 @@ static void setTripleVariables(
 	}
 }
 
-static inline const char *getOperatorString(knowrob::RDFLiteral::OperatorType operatorType) {
+static inline const char *getOperatorString(knowrob::FramedTriplePattern::OperatorType operatorType) {
 	switch (operatorType) {
-		case RDFLiteral::EQ:
+		case FramedTriplePattern::EQ:
 			return nullptr;
-		case RDFLiteral::LEQ:
+		case FramedTriplePattern::LEQ:
 			return MONGO_OPERATOR_LTE;
-		case RDFLiteral::GEQ:
+		case FramedTriplePattern::GEQ:
 			return MONGO_OPERATOR_GTE;
-		case RDFLiteral::LT:
+		case FramedTriplePattern::LT:
 			return MONGO_OPERATOR_LT;
-		case RDFLiteral::GT:
+		case FramedTriplePattern::GT:
 			return MONGO_OPERATOR_GT;
 	}
 	return nullptr;
 }
 
 void aggregation::appendGraphSelector(bson_t *selectorDoc,
-									  const RDFLiteral &tripleExpression,
+									  const FramedTriplePattern &tripleExpression,
 									  const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy) {
 	auto gt = tripleExpression.graphTerm();
 	if (!gt) return;
@@ -226,7 +226,7 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc,
 	}
 }
 
-void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const RDFLiteral &tripleExpression) {
+void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const FramedTriplePattern &tripleExpression) {
 	static const bool allowConfidenceNullValues = true;
 	static auto zero = std::make_shared<Integer>(0);
 	auto ct = tripleExpression.confidenceTerm();
@@ -279,7 +279,7 @@ void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const RDFLiteral 
 	}
 }
 
-void aggregation::appendTimeSelector(bson_t *selectorDoc, const RDFLiteral &tripleExpression) {
+void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedTriplePattern &tripleExpression) {
 	static const bool allowNullValues = true;
 	static auto b_occasional = std::make_shared<Integer>(static_cast<int32_t>(true));
 	static auto b_always = std::make_shared<Integer>(static_cast<int32_t>(false));
@@ -334,7 +334,7 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const RDFLiteral &trip
 
 void aggregation::appendTripleSelector(
 		bson_t *selectorDoc,
-		const RDFLiteral &tripleExpression,
+		const FramedTriplePattern &tripleExpression,
 		bool b_isTaxonomicProperty,
 		const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy) {
 	// "s"" field

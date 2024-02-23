@@ -12,17 +12,17 @@
 #include "knowrob/db/mongo/Pipeline.h"
 #include "knowrob/semweb/ImportHierarchy.h"
 #include "knowrob/semweb/Vocabulary.h"
-#include "knowrob/semweb/RDFLiteral.h"
+#include "knowrob/semweb/FramedTriplePattern.h"
 
 namespace knowrob::mongo::aggregation {
 	struct TripleLookupData {
-		explicit TripleLookupData(const RDFLiteral *expr)
+		explicit TripleLookupData(const FramedTriplePattern *expr)
 				: expr(expr),
 				  maxNumOfTriples(0),
 				  mayHasMoreGroundings(true),
 				  forceTransitiveLookup(false) {}
 
-		const RDFLiteral *expr;
+		const FramedTriplePattern *expr;
 		uint32_t maxNumOfTriples;
 		std::set<std::string_view> knownGroundedVariables;
 		bool mayHasMoreGroundings;
@@ -31,22 +31,22 @@ namespace knowrob::mongo::aggregation {
 
 	void appendTripleSelector(
 			bson_t *selectorDoc,
-			const RDFLiteral &tripleExpression,
+			const FramedTriplePattern &tripleExpression,
 			bool b_isTaxonomicProperty,
 			const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy);
 
 	void appendGraphSelector(
 			bson_t *selectorDoc,
-			const RDFLiteral &tripleExpression,
+			const FramedTriplePattern &tripleExpression,
 			const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy);
 
 	void appendEpistemicSelector(
 			bson_t *selectorDoc,
-			const RDFLiteral &tripleExpression);
+			const FramedTriplePattern &tripleExpression);
 
 	void appendTimeSelector(
 			bson_t *selectorDoc,
-			const RDFLiteral &tripleExpression);
+			const FramedTriplePattern &tripleExpression);
 
 	void lookupTriple(
 			aggregation::Pipeline &pipeline,

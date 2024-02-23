@@ -153,7 +153,7 @@ namespace knowrob {
 		bool removeAllWithOrigin(std::string_view origin) override;
 
 		// override DataBackend
-		bool removeAllMatching(const RDFLiteral &query) override;
+		bool removeAllMatching(const FramedTriplePattern &query) override;
 
 	protected:
 		librdf_world *ownedWorld_;

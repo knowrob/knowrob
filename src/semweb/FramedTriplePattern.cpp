@@ -4,7 +4,7 @@
 
 #include <utility>
 
-#include "knowrob/semweb/RDFLiteral.h"
+#include "knowrob/semweb/FramedTriplePattern.h"
 #include "knowrob/Logger.h"
 #include "knowrob/queries/QueryError.h"
 #include "knowrob/modalities/BeliefModality.h"
@@ -17,7 +17,7 @@
 
 using namespace knowrob;
 
-RDFLiteral::RDFLiteral(const FramedTriple &data, bool isNegated)
+FramedTriplePattern::FramedTriplePattern(const FramedTriple &data, bool isNegated)
 : FirstOrderLiteral(getRDFPredicate(data), isNegated),
   subjectTerm_(predicate_->arguments()[0]),
   propertyTerm_(predicate_->arguments()[1]),
@@ -43,7 +43,7 @@ RDFLiteral::RDFLiteral(const FramedTriple &data, bool isNegated)
     }
 }
 
-RDFLiteral::RDFLiteral(const PredicatePtr &predicate, bool isNegated, const GraphSelector &selector)
+FramedTriplePattern::FramedTriplePattern(const PredicatePtr &predicate, bool isNegated, const GraphSelector &selector)
 : FirstOrderLiteral(getRDFPredicate(predicate), isNegated),
   subjectTerm_(predicate_->arguments()[0]),
   propertyTerm_(predicate_->arguments()[1]),
@@ -69,7 +69,7 @@ RDFLiteral::RDFLiteral(const PredicatePtr &predicate, bool isNegated, const Grap
     }
 }
 
-RDFLiteral::RDFLiteral(const RDFLiteral &other, const Substitution &sub)
+FramedTriplePattern::FramedTriplePattern(const FramedTriplePattern &other, const Substitution &sub)
 : FirstOrderLiteral(other, sub),
   subjectTerm_(predicate_->arguments()[0]),
   propertyTerm_(predicate_->arguments()[1]),
@@ -86,7 +86,7 @@ RDFLiteral::RDFLiteral(const RDFLiteral &other, const Substitution &sub)
     // todo: substitute other variables of RDFLiteral too!
 }
 
-RDFLiteral::RDFLiteral(
+FramedTriplePattern::FramedTriplePattern(
             const TermPtr &s,
             const TermPtr &p,
             const TermPtr &o,
@@ -119,7 +119,7 @@ RDFLiteral::RDFLiteral(
 	}
 }
 
-std::shared_ptr<Term> RDFLiteral::getGraphTerm(const std::string_view &graphName)
+std::shared_ptr<Term> FramedTriplePattern::getGraphTerm(const std::string_view &graphName)
 {
     static std::map<std::string, TermPtr, std::less<>> graphTerms;
     if(!graphName.empty()) {
@@ -136,12 +136,12 @@ std::shared_ptr<Term> RDFLiteral::getGraphTerm(const std::string_view &graphName
     return {};
 }
 
-std::shared_ptr<Predicate> RDFLiteral::getRDFPredicate(const TermPtr &s, const TermPtr &p, const TermPtr &o)
+std::shared_ptr<Predicate> FramedTriplePattern::getRDFPredicate(const TermPtr &s, const TermPtr &p, const TermPtr &o)
 {
     return std::make_shared<Predicate>("triple", std::vector<TermPtr>({s,p,o}));
 }
 
-std::shared_ptr<Predicate> RDFLiteral::getRDFPredicate(const PredicatePtr &predicate)
+std::shared_ptr<Predicate> FramedTriplePattern::getRDFPredicate(const PredicatePtr &predicate)
 {
 	if(predicate->arity()==3 && predicate->functor()->stringForm() == "triple") {
 		return predicate;
@@ -156,7 +156,7 @@ std::shared_ptr<Predicate> RDFLiteral::getRDFPredicate(const PredicatePtr &predi
 	}
 }
 
-std::shared_ptr<Predicate> RDFLiteral::getRDFPredicate(const FramedTriple &data)
+std::shared_ptr<Predicate> FramedTriplePattern::getRDFPredicate(const FramedTriple &data)
 {
     TermPtr s,p,o;
     p = IRIAtom::Tabled(data.predicate());
@@ -173,57 +173,57 @@ std::shared_ptr<Predicate> RDFLiteral::getRDFPredicate(const FramedTriple &data)
     return std::make_shared<Predicate>("triple", std::vector<TermPtr>({s,p,o}));
 }
 
-std::shared_ptr<Term> RDFLiteral::subjectTerm() const
+std::shared_ptr<Term> FramedTriplePattern::subjectTerm() const
 {
     return subjectTerm_;
 }
 
-std::shared_ptr<Term> RDFLiteral::objectTerm() const
+std::shared_ptr<Term> FramedTriplePattern::objectTerm() const
 {
     return objectTerm_;
 }
 
-RDFLiteral::OperatorType RDFLiteral::objectOperator() const
+FramedTriplePattern::OperatorType FramedTriplePattern::objectOperator() const
 {
     return objectOperator_;
 }
 
-std::shared_ptr<Term> RDFLiteral::propertyTerm() const
+std::shared_ptr<Term> FramedTriplePattern::propertyTerm() const
 {
     return propertyTerm_;
 }
 
-std::shared_ptr<Term> RDFLiteral::graphTerm() const
+std::shared_ptr<Term> FramedTriplePattern::graphTerm() const
 {
     return graphTerm_;
 }
 
-void RDFLiteral::setGraphName(const std::string_view &graphName)
+void FramedTriplePattern::setGraphName(const std::string_view &graphName)
 {
     graphTerm_ = getGraphTerm(graphName);
 }
 
-std::shared_ptr<Term> RDFLiteral::agentTerm() const
+std::shared_ptr<Term> FramedTriplePattern::agentTerm() const
 {
     return agentTerm_;
 }
 
-std::shared_ptr<Term> RDFLiteral::confidenceTerm() const
+std::shared_ptr<Term> FramedTriplePattern::confidenceTerm() const
 {
     return confidenceTerm_;
 }
 
-std::shared_ptr<Term> RDFLiteral::beginTerm() const
+std::shared_ptr<Term> FramedTriplePattern::beginTerm() const
 {
     return beginTerm_;
 }
 
-std::shared_ptr<Term> RDFLiteral::endTerm() const
+std::shared_ptr<Term> FramedTriplePattern::endTerm() const
 {
     return endTerm_;
 }
 
-uint32_t RDFLiteral::numVariables() const
+uint32_t FramedTriplePattern::numVariables() const
 {
     int varCounter=0;
     for(auto &t : {
@@ -247,7 +247,7 @@ static inline std::string_view readStringConstant(const TermPtr &term)
 static inline double readDoubleConstant(const TermPtr &term)
 { return std::static_pointer_cast<Numeric>(term)->asDouble(); }
 
-bool RDFLiteral::toStatementData(FramedTriple &data) const
+bool FramedTriplePattern::toStatementData(FramedTriple &data) const
 {
     if(numVariables()>0) {
         KB_WARN("Only ground literals can be mapped to StatementData, but "

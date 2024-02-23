@@ -11,7 +11,7 @@
 #include "knowrob/formulas/Formula.h"
 #include "knowrob/formulas/CompoundFormula.h"
 #include "knowrob/semweb/FramedTriple.h"
-#include "knowrob/semweb/RDFLiteral.h"
+#include "knowrob/semweb/FramedTriplePattern.h"
 #include "knowrob/terms/Function.h"
 #include "knowrob/terms/ListTerm.h"
 #include <iostream>
@@ -88,7 +88,7 @@ namespace knowrob {
 		/**
 		 * @param literal an RDF literal
 		 */
-		explicit PrologTerm(const RDFLiteral &literal);
+		explicit PrologTerm(const FramedTriplePattern &literal);
 
 		/**
 		 * Generates a Prolog term holding a KnowRob triple.

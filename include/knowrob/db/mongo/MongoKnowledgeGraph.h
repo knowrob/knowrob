@@ -74,7 +74,7 @@ namespace knowrob {
 		 * @param tripleExpression a triple expression
 		 * @return a cursor over matching triples
 		 */
-		mongo::AnswerCursorPtr lookup(const RDFLiteral &tripleExpression);
+		mongo::AnswerCursorPtr lookup(const FramedTriplePattern &tripleExpression);
 
 		/**
 		 * Lookup up all matching triples.
@@ -118,7 +118,7 @@ namespace knowrob {
 		bool removeAllWithOrigin(std::string_view origin) override;
 
 		// Override IDataBackend
-		bool removeAllMatching(const RDFLiteral &query) override;
+		bool removeAllMatching(const FramedTriplePattern &query) override;
 
 		// Override PersistentBackend
 		std::optional<std::string> getVersionOfOrigin(std::string_view origin) override;
@@ -157,7 +157,7 @@ namespace knowrob {
 
 		void updateTimeInterval(const FramedTriple &tripleLoader);
 
-		bson_t *getSelector(const RDFLiteral &tripleExpression, bool isTaxonomicProperty);
+		bson_t *getSelector(const FramedTriplePattern &tripleExpression, bool isTaxonomicProperty);
 
 		bson_t *getSelector(const FramedTriple &triple, bool isTaxonomicProperty);
 

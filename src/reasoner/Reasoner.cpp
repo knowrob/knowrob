@@ -129,7 +129,7 @@ void Reasoner::removeInferredTriples(const InferredTripleContainer &triples) con
 	kb()->removeAll(triplesVector);
 }
 
-PredicateDescriptionPtr Reasoner::getLiteralDescription(const RDFLiteral &literal) {
+PredicateDescriptionPtr Reasoner::getLiteralDescription(const FramedTriplePattern &literal) {
 	if (literal.propertyTerm()->termType() == TermType::ATOMIC) {
 		auto p = std::static_pointer_cast<Atomic>(literal.propertyTerm());
 		return getDescription(std::make_shared<PredicateIndicator>(p->stringForm().data(), 2));

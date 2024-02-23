@@ -61,7 +61,7 @@ PrologTerm::PrologTerm(const FramedTriple &triple, std::string_view functor)
 	putTriple(functor, triple);
 }
 
-PrologTerm::PrologTerm(const RDFLiteral &literal)
+PrologTerm::PrologTerm(const FramedTriplePattern &literal)
 		: PrologTerm(triple_f, literal.subjectTerm(), literal.propertyTerm(), literal.objectTerm()) {
 	// TODO: add support for object operator. Idea would be to use operator as unary functor for obj term.
 	//       but will need operator support in sw_triple/4 predicate.

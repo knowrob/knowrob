@@ -2,8 +2,8 @@
 // Created by daniel on 07.04.23.
 //
 
-#ifndef KNOWROB_FRAMED_RDF_LITERAL_H
-#define KNOWROB_FRAMED_RDF_LITERAL_H
+#ifndef KNOWROB_FRAMED_TRIPLE_PATTERN_H
+#define KNOWROB_FRAMED_TRIPLE_PATTERN_H
 
 #include "knowrob/formulas/Predicate.h"
 #include "knowrob/semweb/FramedTriple.h"
@@ -16,7 +16,7 @@ namespace knowrob {
      * A triple expression where subject, predicate and object are
      * represented as a term, and an additional unary operator can be applied to the object.
      */
-    class RDFLiteral : public FirstOrderLiteral {
+    class FramedTriplePattern : public FirstOrderLiteral {
     public:
         /**
          * Unary operators that can be applied on terms.
@@ -28,27 +28,27 @@ namespace knowrob {
 		 * @param tripleData input data, can be deleted afterwards.
 		 * @param isNegated a value of true refers to the statement being false.
 		 */
-        explicit RDFLiteral(const FramedTriple &tripleData, bool isNegated=false);
+        explicit FramedTriplePattern(const FramedTriple &tripleData, bool isNegated=false);
 
 		/**
 		 * @param predicate a predicate with two arguments.
 		 * @param isNegated a value of true refers to the statement being false.
 		 * @param selector a selector for the graph, agent, begin, end and confidence.
 		 */
-		RDFLiteral(const PredicatePtr &predicate, bool isNegated, const GraphSelector &selector);
+		FramedTriplePattern(const PredicatePtr &predicate, bool isNegated, const GraphSelector &selector);
 
         /**
          * Substitution constructor.
          * @other a literal.
          * @sub a mapping from terms to variables.
          */
-        RDFLiteral(const RDFLiteral &other, const Substitution &sub);
+        FramedTriplePattern(const FramedTriplePattern &other, const Substitution &sub);
 
-        RDFLiteral(const TermPtr &s,
-                   const TermPtr &p,
-                   const TermPtr &o,
-                   bool isNegated,
-                   const GraphSelector &selector);
+        FramedTriplePattern(const TermPtr &s,
+							const TermPtr &p,
+							const TermPtr &o,
+							bool isNegated,
+							const GraphSelector &selector);
 
         /**
          * @return the subject term of this expression.
@@ -130,7 +130,7 @@ namespace knowrob {
         static std::shared_ptr<Predicate> getRDFPredicate(const FramedTriple &data);
         static std::shared_ptr<Predicate> getRDFPredicate(const PredicatePtr &predicate);
     };
-    using RDFLiteralPtr = std::shared_ptr<RDFLiteral>;
+    using RDFLiteralPtr = std::shared_ptr<FramedTriplePattern>;
 
 	class RDFLiteralContainer : public semweb::TripleContainer {
 	public:
@@ -143,4 +143,4 @@ namespace knowrob {
 	};
 } // knowrob
 
-#endif //KNOWROB_FRAMED_RDF_LITERAL_H
+#endif //KNOWROB_FRAMED_TRIPLE_PATTERN_H

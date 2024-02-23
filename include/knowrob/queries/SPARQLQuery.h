@@ -7,7 +7,7 @@
 #define KNOWROB_SPARQL_QUERY_H
 
 #include "knowrob/semweb/FramedTriple.h"
-#include "knowrob/semweb/RDFLiteral.h"
+#include "knowrob/semweb/FramedTriplePattern.h"
 
 namespace knowrob {
 	/**
@@ -19,7 +19,7 @@ namespace knowrob {
 		 * Create a SPARQL query that selects all triples matching the given pattern.
 		 * @param triplePattern the pattern to match.
 		 */
-		explicit SPARQLQuery(const RDFLiteral &triplePattern);
+		explicit SPARQLQuery(const FramedTriplePattern &triplePattern);
 
 		/**
 		 * @param triplePatterns the patterns to match.
@@ -46,7 +46,7 @@ namespace knowrob {
 
 		static void dot(std::ostream &os);
 
-		static void where(std::ostream &os, const RDFLiteral &triplePattern);
+		static void where(std::ostream &os, const FramedTriplePattern &triplePattern);
 
 		static void where(std::ostream &os, const TermPtr &term);
 	};

@@ -37,6 +37,7 @@
 
 #include "knowrob/py/converter.h"
 #include "knowrob/py/wrapper.h"
+#include "knowrob/knowrob.h"
 
 using namespace knowrob;
 namespace python = boost::python;
@@ -87,7 +88,7 @@ BOOST_PYTHON_MODULE (knowrob) {
 	class_<Term, std::shared_ptr<TermWrap>, boost::noncopyable>
 	        ("Term", python::no_init)
 			.def("__eq__", &Term::operator==)
-			.def("__str__", +[](Term &t){ return t.constructString(); })
+			.def("__str__", +[](Term &t){ return readString(t); })
 			.def("termType", &Term::termType)
 			.def("isGround", python::pure_virtual(&Term::isGround))
 			.def("isAtomic", python::pure_virtual(&Term::isAtomic))
@@ -103,7 +104,7 @@ BOOST_PYTHON_MODULE (knowrob) {
 	class_<Variable, std::shared_ptr<Variable>, bases<Term>>
 			("Variable", init<std::string>())
 			.def(self < self)
-			.def("name", &Variable::name, CONST_REF_RETURN);
+			.def("name", &Variable::name);
 	class_<Blank, std::shared_ptr<Blank>, bases<Variable,RDFNode>>
 			("Blank", init<std::string_view>());
 	class_<Function, std::shared_ptr<Function>, bases<Term>>("Function", init<std::string_view, const TermList &>())
@@ -339,37 +340,36 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.def("arity", &FirstOrderLiteral::arity)
 					// FIXME: is a virtual method, might need a wrapper
 			.def("numVariables", &FirstOrderLiteral::numVariables);
-	class_<RDFLiteral, std::shared_ptr<RDFLiteral>, bases<FirstOrderLiteral>>
-			("RDFLiteral", init<const FramedTriple &, bool>())
+	class_<FramedTriplePattern, std::shared_ptr<FramedTriplePattern>, bases<FirstOrderLiteral>>
+			("FramedTriplePattern", init<const FramedTriple &, bool>())
 			.def(init<const FramedTriple &>())
-			.def(init<const RDFLiteral &, const Substitution &>())
-			.def("subjectTerm", &RDFLiteral::subjectTerm)
-			.def("propertyTerm", &RDFLiteral::propertyTerm)
-			.def("objectTerm", &RDFLiteral::objectTerm)
-			.def("graphTerm", &RDFLiteral::graphTerm)
-			.def("agentTerm", &RDFLiteral::agentTerm)
-			.def("beginTerm", &RDFLiteral::beginTerm)
-			.def("endTerm", &RDFLiteral::endTerm)
-			.def("confidenceTerm", &RDFLiteral::confidenceTerm)
-			.def("objectOperator", &RDFLiteral::objectOperator)
-			.def("temporalOperator", &RDFLiteral::temporalOperator)
-			.def("epistemicOperator", &RDFLiteral::epistemicOperator)
-			.def("setGraphName", &RDFLiteral::setGraphName)
-			.def("toStatementData", &RDFLiteral::toStatementData);
+			.def(init<const FramedTriplePattern &, const Substitution &>())
+			.def("subjectTerm", &FramedTriplePattern::subjectTerm)
+			.def("propertyTerm", &FramedTriplePattern::propertyTerm)
+			.def("objectTerm", &FramedTriplePattern::objectTerm)
+			.def("graphTerm", &FramedTriplePattern::graphTerm)
+			.def("agentTerm", &FramedTriplePattern::agentTerm)
+			.def("beginTerm", &FramedTriplePattern::beginTerm)
+			.def("endTerm", &FramedTriplePattern::endTerm)
+			.def("confidenceTerm", &FramedTriplePattern::confidenceTerm)
+			.def("objectOperator", &FramedTriplePattern::objectOperator)
+			.def("temporalOperator", &FramedTriplePattern::temporalOperator)
+			.def("epistemicOperator", &FramedTriplePattern::epistemicOperator)
+			.def("setGraphName", &FramedTriplePattern::setGraphName)
+			.def("toStatementData", &FramedTriplePattern::toStatementData);
 
 	/////////////////////////////////////////////////////
 	// mappings for the Substitution class
 	/////////////////////////////////////////////////////
 	// need to select one overload for get, there is another for Variable as argument
 	// which currently cannot be addressed in Python.
-	using Substitution_get_string = const TermPtr &(Substitution::*)(const std::string &) const;
 	class_<Substitution, std::shared_ptr<Substitution>>("Substitution", init<>())
-			.def(init<std::map<Variable, TermPtr>>())
+			.def(init<std::map<std::shared_ptr<Variable>, TermPtr>>())
 			.def("__eq__", &Substitution::operator==)
 			.def("__iter__", range(&Substitution::begin, &Substitution::end))
 			.def("empty", &Substitution::empty)
 			.def("set", &Substitution::set)
-			.def("get", static_cast<Substitution_get_string>(&Substitution::get), CONST_REF_RETURN)
+			.def("get", &Substitution::get, CONST_REF_RETURN)
 			.def("contains", &Substitution::contains)
 			.def("hash", &Substitution::hash);
 

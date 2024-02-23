@@ -309,7 +309,7 @@ public:
 			for (auto &psi: qt.begin()->nodes()) {
 				switch (psi->type()) {
 					case knowrob::FormulaType::PREDICATE:
-						buf[dataIndex] = std::make_shared<RDFLiteral>(
+						buf[dataIndex] = std::make_shared<FramedTriplePattern>(
 								std::static_pointer_cast<Predicate>(psi),
 								false,
 								*DefaultGraphSelector());

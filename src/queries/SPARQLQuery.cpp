@@ -10,7 +10,7 @@
 
 using namespace knowrob;
 
-SPARQLQuery::SPARQLQuery(const RDFLiteral &triplePattern) {
+SPARQLQuery::SPARQLQuery(const FramedTriplePattern &triplePattern) {
 	std::stringstream os;
 	selectBegin(os);
 	where(os, triplePattern);
@@ -40,7 +40,7 @@ void SPARQLQuery::dot(std::ostream &os) {
 	os << ". ";
 }
 
-void SPARQLQuery::where(std::ostream &os, const RDFLiteral &triplePattern) {
+void SPARQLQuery::where(std::ostream &os, const FramedTriplePattern &triplePattern) {
 	where(os, triplePattern.subjectTerm());
 	where(os, triplePattern.propertyTerm());
 	where(os, triplePattern.objectTerm());

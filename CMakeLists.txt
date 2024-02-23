@@ -219,7 +219,7 @@ add_library(knowrob SHARED
 		src/semweb/rdf.cpp
 		src/semweb/Property.cpp
 		src/semweb/Class.cpp
-		src/semweb/RDFLiteral.cpp
+        src/semweb/FramedTriplePattern.cpp
 		src/semweb/ImportHierarchy.cpp
 		src/reasoner/DefinedPredicate.cpp
 		src/reasoner/ReasonerPlugin.cpp

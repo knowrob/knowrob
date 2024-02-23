@@ -560,7 +560,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 }
 
 TokenBufferPtr KnowledgeBase::submitQuery(const FirstOrderLiteralPtr &literal, const QueryContextPtr &ctx) {
-	auto rdfLiteral = std::make_shared<RDFLiteral>(
+	auto rdfLiteral = std::make_shared<FramedTriplePattern>(
 			literal->predicate(), literal->isNegated(), ctx->selector_);
 	return submitQuery(std::make_shared<ConjunctiveQuery>(
 			ConjunctiveQuery({rdfLiteral}, ctx)));
@@ -585,7 +585,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 		for (auto &node: path.nodes()) {
 			switch (node->type()) {
 				case FormulaType::PREDICATE:
-					posLiterals.push_back(std::make_shared<RDFLiteral>(
+					posLiterals.push_back(std::make_shared<FramedTriplePattern>(
 							std::static_pointer_cast<Predicate>(node),
 							false, ctx->selector_));
 					break;
@@ -599,7 +599,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 					auto negated = negation->negatedFormula();
 					switch (negated->type()) {
 						case FormulaType::PREDICATE:
-							negLiterals.push_back(std::make_shared<RDFLiteral>(
+							negLiterals.push_back(std::make_shared<FramedTriplePattern>(
 									std::static_pointer_cast<Predicate>(negated),
 									true, ctx->selector_));
 							break;
@@ -918,7 +918,7 @@ bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
 	return true;
 }
 
-bool KnowledgeBase::removeAllMatching(const RDFLiteral &query) {
+bool KnowledgeBase::removeAllMatching(const FramedTriplePattern &query) {
 	bool all_succeed = true;
 	for (auto &kg: backendManager_->backendPool()) {
 		all_succeed = kg.second->backend()->removeAllMatching(query) && all_succeed;

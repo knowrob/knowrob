@@ -198,7 +198,7 @@ struct DataBackendWrap : public DataBackend, boost::python::wrapper<DataBackend>
 	bool removeAllWithOrigin(std::string_view origin) override
 	{ return knowrob::py::call_method<bool>(self, "removeAllWithOrigin", origin.data()); }
 
-	bool removeAllMatching(const RDFLiteral &query) override
+	bool removeAllMatching(const FramedTriplePattern &query) override
 	{ return knowrob::py::call_method<int>(self, "removeAllMatching", query); }
 
 private:
@@ -261,7 +261,7 @@ struct ReasonerWithBackendWrap :
 	bool removeAllWithOrigin(std::string_view origin) override
 	{ return knowrob::py::call_method<bool>(self, "removeAllWithOrigin", origin.data()); }
 
-	bool removeAllMatching(const RDFLiteral &query) override
+	bool removeAllMatching(const FramedTriplePattern &query) override
 	{ return knowrob::py::call_method<int>(self, "removeAllMatching", query); }
 
 	PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override

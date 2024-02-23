@@ -8,7 +8,7 @@
 #include "Cursor.h"
 #include "knowrob/queries/Answer.h"
 #include "knowrob/queries/AnswerYes.h"
-#include "knowrob/semweb/RDFLiteral.h"
+#include "knowrob/semweb/FramedTriplePattern.h"
 
 namespace knowrob::mongo {
 	/**

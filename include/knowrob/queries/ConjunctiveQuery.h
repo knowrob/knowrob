@@ -7,7 +7,7 @@
 #define KNOWROB_CONJUNCTIVE_QUERY_H
 
 #include "Query.h"
-#include "knowrob/semweb/RDFLiteral.h"
+#include "knowrob/semweb/FramedTriplePattern.h"
 
 namespace knowrob {
 	/**

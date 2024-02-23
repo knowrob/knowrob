@@ -38,7 +38,7 @@ bool PrologBackend::removeAllWithOrigin(std::string_view origin) {
 	return PROLOG_ENGINE_EVAL(PrologTerm(rdf_retractall, PrologTerm(), PrologTerm(), PrologTerm(), origin));
 }
 
-bool PrologBackend::removeAllMatching(const RDFLiteral &query) {
+bool PrologBackend::removeAllMatching(const FramedTriplePattern &query) {
 	return PROLOG_ENGINE_EVAL(PrologTerm(rdf_retractall, query));
 }
 

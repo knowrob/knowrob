@@ -6,14 +6,14 @@
 #ifndef KNOWROB_RDF_COMPUTABLE_H
 #define KNOWROB_RDF_COMPUTABLE_H
 
-#include "RDFLiteral.h"
+#include "FramedTriplePattern.h"
 #include "knowrob/reasoner/Reasoner.h"
 
 namespace knowrob {
-	class RDFComputable : public RDFLiteral {
+	class RDFComputable : public FramedTriplePattern {
 	public:
-		RDFComputable(const RDFLiteral &lit, const std::vector <std::shared_ptr<Reasoner>> &reasonerList)
-				: RDFLiteral(lit), reasonerList_(reasonerList) {}
+		RDFComputable(const FramedTriplePattern &lit, const std::vector <std::shared_ptr<Reasoner>> &reasonerList)
+				: FramedTriplePattern(lit), reasonerList_(reasonerList) {}
 
 		const auto &reasonerList() const { return reasonerList_; }
 

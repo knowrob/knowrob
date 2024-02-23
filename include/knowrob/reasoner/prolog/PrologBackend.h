@@ -40,7 +40,7 @@ namespace knowrob {
 		bool removeAllWithOrigin(std::string_view origin) override;
 
 		// override DataBackend
-		bool removeAllMatching(const RDFLiteral &query) override;
+		bool removeAllMatching(const FramedTriplePattern &query) override;
 
 	protected:
 		static PrologTerm transaction(std::string_view rdf_functor, const semweb::TripleContainerPtr &triples);
