@@ -5,12 +5,12 @@
 
 #include <list>
 #include <stack>
+#include <boost/algorithm/string.hpp>
 #include "knowrob/reasoner/prolog/PrologTerm.h"
 #include "knowrob/formulas/Predicate.h"
 #include "knowrob/formulas/Negation.h"
 #include "knowrob/formulas/Implication.h"
 #include "knowrob/Logger.h"
-#include "knowrob/terms/Constant.h"
 #include "knowrob/terms/ListTerm.h"
 #include "knowrob/formulas/Bottom.h"
 #include "knowrob/formulas/Top.h"
@@ -19,6 +19,10 @@
 #include "knowrob/queries/QueryError.h"
 #include "knowrob/semweb/xsd.h"
 #include "knowrob/semweb/ImportHierarchy.h"
+#include "knowrob/terms/Numeric.h"
+#include "knowrob/terms/String.h"
+#include "knowrob/terms/IRIAtom.h"
+#include "knowrob/terms/Blank.h"
 
 using namespace knowrob;
 
@@ -52,7 +56,7 @@ PrologTerm::PrologTerm()
 	vars_[getVarName(plTerm_)] = plTerm_;
 }
 
-PrologTerm::PrologTerm(const StatementData &triple, std::string_view functor)
+PrologTerm::PrologTerm(const FramedTriple &triple, std::string_view functor)
 		: plTerm_(PL_new_term_ref()) {
 	putTriple(functor, triple);
 }
@@ -172,59 +176,76 @@ static inline bool putTypedLiteral(term_t pl_arg, const char *value, const std::
 }
 #else
 
-static inline bool putTypedLiteral(term_t pl_arg, const char *value, const std::string &xsdType) {
+static inline bool putTypedLiteral(term_t pl_arg, const std::string &value, std::string_view xsdType) {
 	// with semweb/rdf_db, literals are represented as compound terms of the form `literal(type(Type,Value))`
 	static functor_t literalFunctor = PL_new_functor(PL_new_atom("literal"), 1);
 	static functor_t literalTypeFunctor = PL_new_functor(PL_new_atom("type"), 2);
 	term_t typedLiteral = PL_new_term_refs(3);
-	return PL_put_atom_chars(typedLiteral, xsdType.c_str()) &&
-		   PL_put_atom_chars(typedLiteral + 1, value) &&
+	return PL_put_atom_chars(typedLiteral, xsdType.data()) &&
+		   PL_put_atom_chars(typedLiteral + 1, value.c_str()) &&
 		   PL_cons_functor_v(typedLiteral + 2, literalTypeFunctor, typedLiteral) &&
 		   PL_cons_functor_v(pl_arg, literalFunctor, typedLiteral + 2);
 }
 
 #endif
 
-bool PrologTerm::putTriple(std::string_view functor, const StatementData &triple) {
+bool PrologTerm::putTriple(std::string_view functor, const FramedTriple &triple) {
+	static const auto a_true = "true";
+	static const auto a_false = "false";
+
 	term_t pl_arg = PL_new_term_refs(4);
-	if (!PL_put_atom_chars(pl_arg, triple.subject) ||
-		!PL_put_atom_chars(pl_arg + 1, triple.predicate)) {
+	if (!PL_put_atom_chars(pl_arg, triple.subject().data()) ||
+		!PL_put_atom_chars(pl_arg + 1, triple.predicate().data())) {
 		PL_reset_term_refs(pl_arg);
 		return false;
 	}
-	switch (triple.objectType) {
-		case RDF_RESOURCE:
-		case RDF_STRING_LITERAL:
-			if (!PL_put_atom_chars(pl_arg + 2, triple.object)) {
-				PL_reset_term_refs(pl_arg);
-				return false;
-			}
-			break;
-		case RDF_INT64_LITERAL: {
-			if (!putTypedLiteral(pl_arg + 2, triple.object, xsd::IRI_integer)) {
-				PL_reset_term_refs(pl_arg);
-				return false;
-			}
-			break;
-		}
-		case RDF_DOUBLE_LITERAL: {
-			if (!putTypedLiteral(pl_arg + 2, triple.object, xsd::IRI_double)) {
-				PL_reset_term_refs(pl_arg);
-				return false;
-			}
-			break;
-		}
-		case RDF_BOOLEAN_LITERAL: {
-			if (!putTypedLiteral(pl_arg + 2, triple.object, xsd::IRI_boolean)) {
-				PL_reset_term_refs(pl_arg);
-				return false;
-			}
-			break;
+	bool o_put = false;
+	if (triple.isObjectIRI() || triple.isObjectBlank()) {
+		o_put = PL_put_atom_chars(pl_arg + 2, triple.valueAsString().data());
+	} else if (triple.xsdType()) {
+		auto xsdType = xsdTypeToIRI(triple.xsdType().value());
+		switch (triple.xsdType().value()) {
+			case XSDType::DOUBLE:
+				o_put = putTypedLiteral(pl_arg + 2, (std::ostringstream()<<std::fixed<<(triple.valueAsDouble())).str(), xsdType);
+				break;
+			case XSDType::FLOAT:
+				o_put = putTypedLiteral(pl_arg + 2, (std::ostringstream()<<std::fixed<<(triple.valueAsFloat())).str(), xsdType);
+				break;
+			case XSDType::NON_NEGATIVE_INTEGER:
+			case XSDType::INTEGER:
+				o_put = putTypedLiteral(pl_arg + 2, std::to_string(triple.valueAsInt()), xsdType);
+				break;
+			case XSDType::LONG:
+				o_put = putTypedLiteral(pl_arg + 2, std::to_string(triple.valueAsLong()), xsdType);
+				break;
+			case XSDType::SHORT:
+				o_put = putTypedLiteral(pl_arg + 2, std::to_string(triple.valueAsShort()), xsdType);
+				break;
+			case XSDType::UNSIGNED_LONG:
+				o_put = putTypedLiteral(pl_arg + 2, std::to_string(triple.valueAsUnsignedLong()), xsdType);
+				break;
+			case XSDType::UNSIGNED_INT:
+				o_put = putTypedLiteral(pl_arg + 2, std::to_string(triple.valueAsUnsignedInt()), xsdType);
+				break;
+			case XSDType::UNSIGNED_SHORT:
+				o_put = putTypedLiteral(pl_arg + 2, std::to_string(triple.valueAsUnsignedShort()), xsdType);
+				break;
+			case XSDType::BOOLEAN:
+				o_put = putTypedLiteral(pl_arg + 2, triple.valueAsBoolean() ? a_true : a_false, xsdType);
+				break;
+			case XSDType::STRING:
+			case XSDType::LAST:
+				o_put = putTypedLiteral(pl_arg + 2, triple.valueAsString().data(), xsdType);
+				break;
 		}
 	}
+	if (!o_put) {
+		PL_reset_term_refs(pl_arg);
+		return false;
+	}
 
-	if (triple.graph) {
-		if (!PL_put_atom_chars(pl_arg + 3, triple.graph)) {
+	if (triple.graph()) {
+		if (!PL_put_atom_chars(pl_arg + 3, (*triple.graph()).data())) {
 			PL_reset_term_refs(pl_arg);
 			return false;
 		}
@@ -257,11 +278,8 @@ bool PrologTerm::putFormula(const FormulaPtr &phi, term_t plTerm) { //NOLINT
 	static auto implicationFun = PL_new_functor(PL_new_atom(":-"), 2);
 
 	switch (phi->type()) {
-		case FormulaType::PREDICATE: {
-			auto qa_pred = std::static_pointer_cast<Predicate>(phi);
-			auto qa_term = std::static_pointer_cast<Term>(qa_pred);
-			return putTerm(qa_term, plTerm);
-		}
+		case FormulaType::PREDICATE:
+			return putTerm(Predicate::toFunction(std::static_pointer_cast<Predicate>(phi)), plTerm);
 
 		case FormulaType::NEGATION: {
 			auto negated = std::static_pointer_cast<Negation>(phi)->negatedFormula();
@@ -297,32 +315,53 @@ bool PrologTerm::putTerm(const TermPtr &kbTerm) {
 	return putTerm(kbTerm, plTerm_);
 }
 
+bool PrologTerm::putFunction(Function *fn, term_t pl_term) { //NOLINT
+	if (fn->arity() > 0) {
+		// create a term reference for each argument of qa_pred
+		term_t pl_arg = PL_new_term_refs(fn->arity());
+		term_t pl_arg0 = pl_arg;
+		// construct argument terms
+		for (const auto &qa_arg: fn->arguments()) {
+			if (!putTerm(qa_arg, pl_arg)) {
+				return false;
+			}
+			pl_arg += 1;
+		}
+		// construct output term
+		// TODO: caching result of PL_new_functor() could be a good idea
+		return PL_cons_functor_v(pl_term,
+								 PL_new_functor(
+										 PL_new_atom(fn->functor()->stringForm().data()),
+										 fn->arity()),
+								 pl_arg0);
+	} else {
+		// 0-ary predicates are atoms
+		return PL_put_atom_chars(pl_term,
+								 fn->functor()->stringForm().data());
+	}
+}
+
+bool PrologTerm::putList(ListTerm *list, term_t pl_term) { //NOLINT
+	if (!PL_put_nil(pl_term)) return false;
+	term_t pl_elem = PL_new_term_ref();
+	for (auto &elem: list->elements()) {
+		if (!putTerm(elem, pl_elem) ||
+			!PL_cons_list(pl_term, pl_elem, pl_term)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+
 bool PrologTerm::putTerm(const TermPtr &kbTerm, term_t pl_term) { //NOLINT
-	switch (kbTerm->type()) {
-		case TermType::PREDICATE: {
-			auto *qa_pred = (Predicate *) kbTerm.get();
-			if (qa_pred->indicator()->arity() > 0) {
-				// create a term reference for each argument of qa_pred
-				term_t pl_arg = PL_new_term_refs(qa_pred->indicator()->arity());
-				term_t pl_arg0 = pl_arg;
-				// construct argument terms
-				for (const auto &qa_arg: qa_pred->arguments()) {
-					if (!putTerm(qa_arg, pl_arg)) {
-						return false;
-					}
-					pl_arg += 1;
-				}
-				// construct output term
-				// TODO: caching result of PL_new_functor() could be a good idea
-				return PL_cons_functor_v(pl_term,
-										 PL_new_functor(
-												 PL_new_atom(qa_pred->indicator()->functor().c_str()),
-												 qa_pred->indicator()->arity()),
-										 pl_arg0);
+	switch (kbTerm->termType()) {
+		case TermType::FUNCTION: {
+			auto *fn = (Function *) kbTerm.get();
+			if (*fn->functor() == *ListTerm::listFunctor()) {
+				return putList((ListTerm *) fn, pl_term);
 			} else {
-				// 0-ary predicates are atoms
-				return PL_put_atom_chars(pl_term,
-										 qa_pred->indicator()->functor().c_str());
+				return putFunction(fn, pl_term);
 			}
 		}
 		case TermType::VARIABLE: {
@@ -340,29 +379,45 @@ bool PrologTerm::putTerm(const TermPtr &kbTerm, term_t pl_term) { //NOLINT
 				return false;
 			}
 		}
-		case TermType::STRING:
-			return PL_put_atom_chars(pl_term,
-									 ((StringTerm *) kbTerm.get())->value().c_str());
-		case TermType::DOUBLE:
-			return PL_put_float(pl_term,
-								((DoubleTerm *) kbTerm.get())->value());
-		case TermType::INT32:
-			return PL_put_integer(pl_term,
-								  ((Integer32Term *) kbTerm.get())->value());
-		case TermType::LONG:
-			return PL_put_integer(pl_term,
-								  ((LongTerm *) kbTerm.get())->value());
-		case TermType::LIST: {
-			if (!PL_put_nil(pl_term)) return false;
-			auto *list = (ListTerm *) kbTerm.get();
-			term_t pl_elem = PL_new_term_ref();
-			for (auto &elem: list->elements()) {
-				if (!putTerm(elem, pl_elem) ||
-					!PL_cons_list(pl_term, pl_elem, pl_term)) {
-					return false;
+		case TermType::ATOMIC: {
+			auto *atomic = (Atomic *) kbTerm.get();
+
+			switch (atomic->atomicType()) {
+				case AtomicType::ATOM:
+					return PL_put_atom_chars(pl_term, atomic->stringForm().data());
+
+				case AtomicType::STRING:
+					return PL_put_string_chars(pl_term, atomic->stringForm().data());
+
+				case AtomicType::NUMERIC: {
+					auto *numeric = (Numeric *) kbTerm.get();
+					switch (numeric->xsdType()) {
+						case XSDType::DOUBLE:
+							return PL_put_float(pl_term, numeric->asDouble());
+						case XSDType::FLOAT:
+							return PL_put_float(pl_term, numeric->asFloat());
+						case XSDType::NON_NEGATIVE_INTEGER:
+						case XSDType::INTEGER:
+							return PL_put_integer(pl_term, numeric->asInteger());
+						case XSDType::LONG:
+							return PL_put_int64(pl_term, numeric->asLong());
+						case XSDType::SHORT:
+							return PL_put_integer(pl_term, numeric->asShort());
+						case XSDType::UNSIGNED_LONG:
+							return PL_put_uint64(pl_term, numeric->asUnsignedLong());
+						case XSDType::UNSIGNED_INT:
+							return PL_put_integer(pl_term, numeric->asUnsignedInteger());
+						case XSDType::UNSIGNED_SHORT:
+							return PL_put_integer(pl_term, numeric->asUnsignedShort());
+						case XSDType::BOOLEAN:
+							return PL_put_bool(pl_term, numeric->asBoolean());
+						case XSDType::STRING:
+						case XSDType::LAST:
+							break;
+					}
+					break;
 				}
 			}
-			return true;
 		}
 	}
 
@@ -476,7 +531,7 @@ TermPtr PrologTerm::toKnowRobTerm(const term_t &t) { //NOLINT
 				}
 			}
 			// construct Predicate object
-			return std::make_shared<Predicate>(functorName, arguments);
+			return std::make_shared<Function>(functorName, arguments);
 		}
 		case PL_VARIABLE: {
 			// TODO: could reuse existing variables here.
@@ -490,29 +545,38 @@ TermPtr PrologTerm::toKnowRobTerm(const term_t &t) { //NOLINT
 			//   not sure if predicates with arity 0 generally appear here as atoms...
 			// map `fail/0` and `false/0` to BottomTerm
 			if (atom == PrologTerm::ATOM_fail() || atom == PrologTerm::ATOM_false()) {
-				return Bottom::get();
+				return Bottom::get()->functor();
 			}
 				// map `true/0` to TopTerm
 			else if (atom == PrologTerm::ATOM_true()) {
-				return Top::get();
+				return Top::get()->functor();
 			} else {
-				return std::make_shared<StringTerm>(std::string(PL_atom_chars(atom)));
+				std::string_view charForm = PL_atom_chars(atom);
+				// FIXME: below is a hack, Prolog should properly encode IRI atoms and blanks instead
+				if(charForm[0] == '_') {
+					return Blank::Tabled(charForm);
+				} else if (boost::algorithm::starts_with(charForm, "http://") ||
+						   boost::algorithm::starts_with(charForm, "https://")) {
+					return IRIAtom::Tabled(charForm);
+				} else {
+					return Atom::Tabled(charForm);
+				}
 			}
 		}
 		case PL_INTEGER: {
 			long val = 0;
 			if (!PL_get_long(t, &val)) break;
-			return std::make_shared<LongTerm>(val);
+			return std::make_shared<Long>(val);
 		}
 		case PL_FLOAT: {
 			double val = 0.0;
 			if (!PL_get_float(t, &val)) break;
-			return std::make_shared<DoubleTerm>(val);
+			return std::make_shared<Double>(val);
 		}
 		case PL_STRING: {
 			char *s;
 			if (!PL_get_chars(t, &s, CVT_ALL)) break;
-			return std::make_shared<StringTerm>(std::string(s));
+			return std::make_shared<String>(s);
 		}
 		case PL_NIL:
 			return ListTerm::nil();
@@ -531,7 +595,7 @@ TermPtr PrologTerm::toKnowRobTerm(const term_t &t) { //NOLINT
 	}
 
 	KB_WARN("Failed to read Prolog term of type {}.", PL_term_type(t));
-	return Bottom::get();
+	return Bottom::get()->functor();
 }
 
 FormulaPtr PrologTerm::toKnowRobFormula() const {
@@ -544,18 +608,18 @@ FormulaPtr PrologTerm::toKnowRobFormula(const TermPtr &t) //NOLINT
 	static std::string semicolon_functor = ";";
 
 	std::shared_ptr<Predicate> p = (
-			t->type() == TermType::PREDICATE ?
-			std::static_pointer_cast<Predicate>(t) :
+			t->termType() == TermType::FUNCTION ?
+			Predicate::fromFunction(std::static_pointer_cast<Function>(t)) :
 			Bottom::get());
 
-	if (p->indicator()->functor() == comma_functor) {
-		std::vector<FormulaPtr> formulas(p->indicator()->arity());
+	if (p->functor()->stringForm() == comma_functor) {
+		std::vector<FormulaPtr> formulas(p->arity());
 		for (int i = 0; i < formulas.size(); i++) {
 			formulas[i] = toKnowRobFormula(p->arguments()[i]);
 		}
 		return std::make_shared<Conjunction>(formulas);
-	} else if (p->indicator()->functor() == semicolon_functor) {
-		std::vector<FormulaPtr> formulas(p->indicator()->arity());
+	} else if (p->functor()->stringForm() == semicolon_functor) {
+		std::vector<FormulaPtr> formulas(p->arity());
 		for (int i = 0; i < formulas.size(); i++) {
 			formulas[i] = toKnowRobFormula(p->arguments()[i]);
 		}

@@ -4,9 +4,9 @@
 
 
 #include "knowrob/db/mongo/aggregation/terms.h"
-#include "knowrob/terms/Constant.h"
 #include "knowrob/terms/ListTerm.h"
 #include "knowrob/Logger.h"
+#include "knowrob/terms/Numeric.h"
 
 using namespace knowrob;
 using namespace knowrob::mongo;
@@ -45,32 +45,48 @@ void aggregation::appendTermQuery( //NOLINT
         valueKey = key;
     }
 
-    switch(term->type()) {
-        case TermType::STRING:
-            BSON_APPEND_UTF8(valueDocument, valueKey,
-                             ((StringTerm*)term.get())->value().c_str());
-            break;
-        case TermType::VARIABLE:
-            break;
-        case TermType::DOUBLE:
-            BSON_APPEND_DOUBLE(valueDocument, valueKey,
-                               ((DoubleTerm*)term.get())->value());
-            break;
-        case TermType::INT32:
-            BSON_APPEND_INT32(valueDocument, valueKey,
-                              ((Integer32Term*)term.get())->value());
-            break;
-        case TermType::LONG:
-            BSON_APPEND_INT64(valueDocument, valueKey,
-                              ((LongTerm*)term.get())->value());
-            break;
-        case TermType::LIST:
+    if (term->termType() == TermType::ATOMIC) {
+    	auto atomic = std::static_pointer_cast<Atomic>(term);
+		switch (atomic->atomicType()) {
+			case AtomicType::STRING:
+			case AtomicType::ATOM:
+				BSON_APPEND_UTF8(valueDocument, valueKey, atomic->stringForm().data());
+				break;
+			case AtomicType::NUMERIC: {
+				auto numeric = std::static_pointer_cast<Numeric>(atomic);
+				switch (numeric->xsdType()) {
+					case XSDType::FLOAT:
+					case XSDType::DOUBLE:
+						BSON_APPEND_DOUBLE(valueDocument, valueKey, numeric->asDouble());
+						break;
+					case XSDType::NON_NEGATIVE_INTEGER:
+					case XSDType::UNSIGNED_INT:
+					case XSDType::INTEGER:
+						BSON_APPEND_INT32(valueDocument, valueKey, numeric->asInteger());
+						break;
+					case XSDType::UNSIGNED_LONG:
+					case XSDType::LONG:
+						BSON_APPEND_INT64(valueDocument, valueKey, numeric->asLong());
+						break;
+					case XSDType::UNSIGNED_SHORT:
+					case XSDType::SHORT:
+						BSON_APPEND_INT32(valueDocument, valueKey, numeric->asShort());
+						break;
+					case XSDType::BOOLEAN:
+						BSON_APPEND_BOOL(valueDocument, valueKey, numeric->asBoolean());
+						break;
+					case XSDType::STRING:
+					case XSDType::LAST:
+						break;
+				}
+				break;
+			}
+		}
+    } else if (term->termType() == TermType::FUNCTION) {
+
             appendArrayQuery(valueDocument, valueKey,
                              ((ListTerm*)term.get())->elements());
-            break;
-        case TermType::PREDICATE:
-            break;
-    }
+	}
 
     if(queryOperator) {
         bson_append_document_end(matchNullValues ? &orCase2 : doc, &queryOperatorDoc);
@@ -97,7 +113,6 @@ void aggregation::appendArrayQuery( // NOLINT
     for(auto &term : terms) {
         bson_uint32_to_string(arrIndex++,
             &arrIndexKey, arrIndexStr, sizeof arrIndexStr);
-		KB_INFO("array elem {} = {}", arrIndexKey, *term);
         appendTermQuery(&orArray, arrIndexKey, term);
     }
     bson_append_array_end(&orOperator, &orArray);

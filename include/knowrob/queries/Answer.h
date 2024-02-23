@@ -8,6 +8,7 @@
 
 #include "Token.h"
 #include "Query.h"
+#include "knowrob/terms/Atom.h"
 
 namespace knowrob {
 	/**
@@ -53,7 +54,7 @@ namespace knowrob {
 		/**
 		 * @return the name of the reasoner that was used to generate this answer.
 		 */
-		void setReasonerTerm(const std::shared_ptr<const StringTerm> &reasonerTerm) { reasonerTerm_ = reasonerTerm; }
+		void setReasonerTerm(const AtomPtr &reasonerTerm) { reasonerTerm_ = reasonerTerm; }
 
 		// override Token
 		bool indicatesEndOfEvaluation() const override { return false; }
@@ -65,7 +66,7 @@ namespace knowrob {
 		size_t hash() const override;
 
 	protected:
-		std::shared_ptr<const StringTerm> reasonerTerm_;
+		AtomPtr reasonerTerm_;
 	};
 
 	// alias

@@ -116,7 +116,13 @@ sw_triple(Subject, Predicate, Object, _Context) :-
     var(Object),!,
     rdf_has(Subject, Predicate, Value),
     % convert XSD atom value into native type
-    ( atom(Value) -> Object=Value ; rdf_literal_value(Value,Object) ).
+    once( atom(Value) -> Object=Value
+    	; rdf_literal_value(Value,Object)
+    	% rdf_literal_value does not handle boolean.
+    	% So in case it fails, we just strip the type
+    	; Value=literal(type(_,Object))
+    	; Value=literal(Object)
+    ).
 
 sw_triple(Subject, Predicate, Object, _Context) :-
     compound(Object),!,
@@ -253,11 +259,6 @@ sw_restriction_expr(R, Expr) :-
 
 restriction_expr0(R, P, Expr) :-
 	rdf(R,owl:onClass,Cls),
-writeln(foobarrestr4),
-writeln(foobarrestr4),
-writeln(foobarrestr(R,Cls)),
-writeln(foobarrestr5),
-writeln(foobarrestr5),
 	sw_class_expr(Cls,ClsExpr),
 	restriction_expr2(R, P, ClsExpr, Expr).
 restriction_expr0(R, P, Expr) :- restriction_expr1(R, P, Expr).

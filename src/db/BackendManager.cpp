@@ -160,7 +160,7 @@ void BackendManager::removeBackend(const std::shared_ptr<DefinedBackend> &backen
 	backendPool_.erase(backend->name());
 }
 
-std::shared_ptr<DefinedBackend> BackendManager::getBackendWithID(const std::string &backendID) {
+std::shared_ptr<DefinedBackend> BackendManager::getBackendWithID(std::string_view backendID) {
 	auto it = backendPool_.find(backendID);
 	if (it != backendPool_.end()) {
 		return it->second;

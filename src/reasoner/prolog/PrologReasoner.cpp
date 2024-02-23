@@ -22,6 +22,7 @@
 #include "knowrob/reasoner/prolog/PrologBackend.h"
 #include "knowrob/reasoner/ReasonerError.h"
 #include "knowrob/queries/AnswerNo.h"
+#include "knowrob/terms/Numeric.h"
 
 using namespace knowrob;
 
@@ -112,7 +113,7 @@ bool PrologReasoner::loadConfig(const ReasonerConfig &cfg) {
 	// this is needed mainly for `reasoner_setting/2` that provides reasoner instance specific settings.
 	for (auto &pair: cfg) {
 		auto key_t = cfg.createKeyTerm(pair.first, ":");
-		auto val_t = std::make_shared<StringTerm>(pair.second);
+		auto val_t = std::make_shared<Atom>(pair.second);
 		setReasonerSetting(key_t, val_t);
 	}
 	// load reasoner default packages. this is usually the code that implements the reasoner.
@@ -137,7 +138,7 @@ PrologTerm PrologReasoner::getReasonerQuery(const PrologTerm &goal) {
 	static const auto b_setval_f = "b_setval";
 	static const auto reasoner_module_a = "reasoner_module";
 	static const auto reasoner_manager_a = "reasoner_manager";
-	auto managerID = std::make_shared<Integer32Term>(reasonerManager().managerID());
+	auto managerID = std::make_shared<Integer>(reasonerManager().managerID());
 	return PrologTerm(b_setval_f, reasoner_module_a, reasonerName()) &
 		   PrologTerm(b_setval_f, reasoner_manager_a, managerID) &
 		   goal;
@@ -176,8 +177,7 @@ bool PrologReasoner::load_rdf_xml(const std::filesystem::path &rdfFile) {
 }
 
 PredicateDescriptionPtr PrologReasoner::getDescription(const PredicateIndicatorPtr &indicator) {
-	static auto current_predicate_f = std::make_shared<PredicateIndicator>(
-			"reasoner_defined_predicate", 2);
+	static auto current_predicate_f = "reasoner_defined_predicate";
 
 	// TODO: rather cache predicate descriptions centrally for all reasoner
 	auto it = predicateDescriptions_.find(*indicator);
@@ -186,7 +186,7 @@ PredicateDescriptionPtr PrologReasoner::getDescription(const PredicateIndicatorP
 	} else {
 		// evaluate query
 		auto type_v = std::make_shared<Variable>("Type");
-		TermPtr kbTerm = std::make_shared<Predicate>(Predicate(
+		TermPtr kbTerm = std::make_shared<Function>(Function(
 				current_predicate_f, {indicator->toTerm(), type_v}));
 		auto solution = PROLOG_ENGINE_ONE_SOL(PrologTerm(kbTerm));
 
@@ -290,14 +290,14 @@ AnswerYesPtr PrologReasoner::yes(const RDFLiteralPtr &literal,
 	// add substitutions
 	for (const auto &kv: rdfGoal.vars()) {
 		auto grounding = PrologTerm::toKnowRobTerm(kv.second);
-		if (grounding && grounding->type() != TermType::VARIABLE) {
+		if (grounding && grounding->termType() != TermType::VARIABLE) {
 			yes->set(Variable(kv.first), PrologTerm::toKnowRobTerm(kv.second));
 		}
 	}
 
 	// store instantiation of literal
 	auto p = literal->predicate();
-	auto p_instance = p->applySubstitution(*yes->substitution());
+	auto p_instance = applyBindings(p, *yes->substitution());
 	yes->addGrounding(std::static_pointer_cast<Predicate>(p_instance), answerFrame_ro, literal->isNegated());
 
 	return yes;
@@ -470,16 +470,14 @@ std::shared_ptr<GraphSelector> PrologReasoner::createAnswerFrame(const PrologTer
 }
 
 std::list<TermPtr> PrologReasoner::runTests(const std::string &target) {
-	static const auto xunit_indicator =
-			std::make_shared<PredicateIndicator>("xunit_term", 1);
 	static const auto xunit_var = std::make_shared<Variable>("Term");
-	static const auto silent_flag = std::make_shared<StringTerm>("silent");
-	static const auto xunit_opt = std::make_shared<Predicate>(Predicate(xunit_indicator, {xunit_var}));
+	static const auto silent_flag = Atom::Tabled("silent");
+	static const auto xunit_opt = std::make_shared<Function>(Function("xunit_term", {xunit_var}));
 
-	TermPtr pred = std::make_shared<Predicate>(Predicate(
+	TermPtr pred = std::make_shared<Function>(Function(
 			"test_and_report", {
 					// unittest target
-					std::make_shared<StringTerm>(target),
+					Atom::Tabled(target),
 					// options
 					std::make_shared<ListTerm>(ListTerm({xunit_opt, silent_flag}))
 			}));

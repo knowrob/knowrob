@@ -2,8 +2,12 @@
 // Created by daniel on 08.04.23.
 //
 
+#include <boost/algorithm/string/predicate.hpp>
 #include "knowrob/Logger.h"
 #include "knowrob/db/mongo/AnswerCursor.h"
+#include "knowrob/terms/Numeric.h"
+#include "knowrob/terms/IRIAtom.h"
+#include "knowrob/terms/Blank.h"
 
 using namespace knowrob;
 using namespace knowrob::mongo;
@@ -27,20 +31,33 @@ void AnswerCursor::setSubstitution(const std::shared_ptr<AnswerYes> &answer) {
 
 		// read the value of the variable
 		switch (bson_iter_type(&valIter_)) {
-			case BSON_TYPE_UTF8:
-				answer->set(var, std::make_shared<StringTerm>(bson_iter_utf8(&valIter_, nullptr)));
+			case BSON_TYPE_UTF8: {
+				// TODO: redundant with TripleCursor
+				auto utf8 = bson_iter_utf8(&valIter_, nullptr);
+				// if the first letter is an underscore, it's a blank node
+				if (utf8[0] == '_') {
+					answer->set(var, std::make_shared<Blank>(utf8));
+				} else if (boost::algorithm::starts_with(utf8, "http://") ||
+						   boost::algorithm::starts_with(utf8, "https://")) {
+					// The string is an IRI.
+					// Currently we do that by checking if its prefix is "http://" or "https://".
+					answer->set(var, std::make_shared<IRIAtom>(utf8));
+				} else {
+					answer->set(var, std::make_shared<StringView>(utf8));
+				}
 				break;
+			}
 			case BSON_TYPE_INT32:
-				answer->set(var, std::make_shared<Integer32Term>(bson_iter_int32(&valIter_)));
+				answer->set(var, std::make_shared<Integer>(bson_iter_int32(&valIter_)));
 				break;
 			case BSON_TYPE_INT64:
-				answer->set(var, std::make_shared<LongTerm>(bson_iter_int64(&valIter_)));
+				answer->set(var, std::make_shared<Long>(bson_iter_int64(&valIter_)));
 				break;
 			case BSON_TYPE_BOOL:
-				answer->set(var, std::make_shared<Integer32Term>(bson_iter_bool(&valIter_)));
+				answer->set(var, std::make_shared<Integer>(bson_iter_bool(&valIter_)));
 				break;
 			case BSON_TYPE_DOUBLE:
-				answer->set(var, std::make_shared<DoubleTerm>(bson_iter_double(&valIter_)));
+				answer->set(var, std::make_shared<Double>(bson_iter_double(&valIter_)));
 				break;
 			default:
 				KB_WARN("unsupported type {} for predicate arguments.", bson_iter_type(&valIter_));
@@ -67,7 +84,7 @@ std::shared_ptr<GraphSelector> AnswerCursor::readAnswerFrame(const std::shared_p
 				std::string_view timeKey(bson_iter_key(&timeIter_));
 				if (timeKey == "since") {
 					frame->begin = bson_iterOptionalDouble(&timeIter_);
-					if(frame->begin.value() == 0) {
+					if (frame->begin.value() == 0) {
 						frame->begin = std::nullopt;
 					}
 				} else if (timeKey == "until") {
@@ -85,7 +102,7 @@ std::shared_ptr<GraphSelector> AnswerCursor::readAnswerFrame(const std::shared_p
 		} else if (scopeKey == "agent") {
 			if (!frame) frame = std::make_shared<GraphSelector>();
 			auto agent_iri = bson_iter_utf8(&timeIter_, nullptr);
-			if(!frame->epistemicOperator.has_value()) {
+			if (!frame->epistemicOperator.has_value()) {
 				frame->epistemicOperator = EpistemicOperator::KNOWLEDGE;
 			}
 			frame->agent = Agent::get(agent_iri);
@@ -136,7 +153,7 @@ bool AnswerCursor::nextAnswer(
 	// add predicate groundings to the answer
 	for (auto &rdfLiteral: literals) {
 		auto p = rdfLiteral->predicate();
-		auto p_instance = p->applySubstitution(*answer->substitution());
+		auto p_instance = applyBindings(p, *answer->substitution());
 		answer->addGrounding(
 				std::static_pointer_cast<Predicate>(p_instance),
 				frame_readonly,

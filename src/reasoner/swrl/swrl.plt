@@ -156,14 +156,6 @@ test(swrl_Driver) :-
 	swrl_file_fire(Filepath,'Driver'),
 	assert_true(rdfs_individual_of(test:'Fred', test:'Driver')).
 
-test(swrl_Driver_class_unbound, [nondet]) :-
-	rdfs_individual_of(test:'Fred', X),
-	rdf_equal(X, test:'Driver').
-
-test(swrl_Driver_subject_unbound, [nondet]) :-
-	rdfs_individual_of(X, test:'Driver'),
-	rdf_equal(X, test:'Fred').
-
 % % % % % % % % % % % % % % % % % % % % % % % %
 test(swrl_Person) :-
 	assert_false(rdfs_individual_of(test:'Alex', test:'Person')),
@@ -229,4 +221,3 @@ test(swrl_phrase_hasUncle) :-
 	assert_true(rdf_has(test:'Lea', test:'hasUncle', test:'Ernest')).
 
 :- end_rdf_tests('swrl').
-

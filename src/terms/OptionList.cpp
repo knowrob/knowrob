@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -9,103 +6,93 @@
 #include "knowrob/terms/OptionList.h"
 #include "knowrob/terms/ListTerm.h"
 #include "knowrob/formulas/Predicate.h"
-#include "knowrob/terms/Constant.h"
+#include "knowrob/terms/Numeric.h"
 
 using namespace knowrob;
 
-OptionList::OptionList(const TermPtr &t)
-{
-	if(t->type() == TermType::LIST) {
-		auto *list = (ListTerm*)t.get();
-		for(const auto &option : (*list)) {
-			readOption(option);
+OptionList::OptionList(const TermPtr &t) {
+	bool optionsRead = false;
+	if (t->isFunction()) {
+		auto *fn = (Function *) t.get();
+		if (*fn->functor() == *ListTerm::listFunctor()) {
+			for (auto &arg: fn->arguments()) {
+				readOption(arg);
+			}
+			optionsRead = true;
 		}
 	}
-	else {
+	if (!optionsRead) {
 		readOption(t);
 	}
 }
 
 void OptionList::readOption(const TermPtr &option) {
-	if(option->type() != TermType::PREDICATE) return;
-	auto *p = (Predicate*)option.get();
+	static const auto a_eq = Atom::Tabled("=");
 
-	if(p->indicator()->arity()==2) {
+	if (option->termType() != TermType::FUNCTION) return;
+	auto *fn = (Function *) option.get();
+
+	if (fn->arity() == 2 && *fn->functor() == *a_eq) {
 		// an option of the form `Key = Value`
-		if (p->indicator()->functor() != "=") return;
-		auto keyTerm = p->arguments()[0];
-		auto valTerm = p->arguments()[1];
+		auto keyTerm = fn->arguments()[0];
+		auto valTerm = fn->arguments()[1];
 		// TODO: rather allow nullary predicate here?
-		if (keyTerm->type() != TermType::STRING) return;
-		options_[((StringTerm *) keyTerm.get())->value()] = valTerm;
-	}
-	else if(p->indicator()->arity()==1) {
+		if (keyTerm->isAtom()) {
+			auto keyAtom = std::static_pointer_cast<Atom>(keyTerm);
+			options_[std::string(keyAtom->stringForm())] = valTerm;
+		}
+	} else if (fn->arity() == 1) {
 		// an option of the form `Key(Value)`
-		options_[p->indicator()->functor()] = p->arguments()[0];
+		options_[std::string(fn->functor()->stringForm())] = fn->arguments()[0];
 	}
 }
 
 bool OptionList::contains(const std::string &key) const {
-	return options_.count(key)>0;
+	return options_.count(key) > 0;
 }
 
-const TermPtr& OptionList::get(const std::string &key, const TermPtr &defaultValue) const {
+const TermPtr &OptionList::get(const std::string &key, const TermPtr &defaultValue) const {
 	auto it = options_.find(key);
-	if(it == options_.end()) {
+	if (it == options_.end()) {
 		return defaultValue;
-	}
-	else {
+	} else {
 		return it->second;
 	}
 }
 
-const std::string& OptionList::getString(const std::string &key, const std::string &defaultValue) const {
+std::string_view OptionList::getString(const std::string &key, const std::string &defaultValue) const {
 	auto it = options_.find(key);
-	if(it == options_.end()) {
+	if (it == options_.end()) {
 		return defaultValue;
-	}
-	else if(it->second->type() == TermType::STRING) {
-		return ((StringTerm*)it->second.get())->value();
-	}
-	else if(it->second->type() == TermType::PREDICATE) {
-		Predicate *p = ((Predicate*)it->second.get());
-		if(p->indicator()->arity()==0) {
-			return p->indicator()->functor();
-		}
-		else {
+	} else if (it->second->termType() == TermType::FUNCTION) {
+		Function *fn = ((Function *) it->second.get());
+		if (fn->arity() == 0) {
+			return fn->functor()->stringForm();
+		} else {
 			return defaultValue;
 		}
+	} else if (it->second->isAtomic()) {
+		return std::static_pointer_cast<Atomic>(it->second)->stringForm();
 	}
 	return defaultValue;
 }
 
 long OptionList::getLong(const std::string &key, long defaultValue) const {
 	auto it = options_.find(key);
-	if(it == options_.end()) {
+	if (it == options_.end()) {
 		return defaultValue;
-	}
-	else if(it->second->type() == TermType::INT32) {
-		return ((Integer32Term*)it->second.get())->value();
-	}
-	else if(it->second->type() == TermType::LONG) {
-		return ((LongTerm*)it->second.get())->value();
+	} else if (it->second->isNumeric()) {
+		return std::static_pointer_cast<Numeric>(it->second)->asLong();
 	}
 	return defaultValue;
 }
 
 std::optional<double> OptionList::getDouble(const std::string &key) const {
 	auto it = options_.find(key);
-	if(it == options_.end()) {
+	if (it == options_.end()) {
 		return std::nullopt;
-	}
-	else if(it->second->type() == TermType::DOUBLE) {
-		return ((DoubleTerm*)it->second.get())->value();
-	}
-	else if(it->second->type() == TermType::LONG) {
-		return (double)((LongTerm*)it->second.get())->value();
-	}
-	else if(it->second->type() == TermType::INT32) {
-		return (double)((Integer32Term*)it->second.get())->value();
+	} else if (it->second->isNumeric()) {
+		return std::static_pointer_cast<Numeric>(it->second)->asDouble();
 	}
 	return std::nullopt;
 }

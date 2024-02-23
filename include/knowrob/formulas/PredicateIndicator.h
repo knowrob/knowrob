@@ -26,20 +26,21 @@ namespace knowrob {
 		 * @functor the functor name.
 		 * @arity thr arity of this predicate.
 		 */
-		PredicateIndicator(std::string functor, unsigned int arity);
+		PredicateIndicator(std::string_view functor, unsigned int arity);
 
-        // Override '==' operator
-        bool operator==(const PredicateIndicator& other) const;
+		// Override '==' operator
+		bool operator==(const PredicateIndicator &other) const;
+
 		// Override '<' operator
-		bool operator< (const PredicateIndicator& other) const;
-		
+		bool operator<(const PredicateIndicator &other) const;
+
 		/**
 		 * Get the functor of this predicate.
 		 *
 		 * @return the functor name.
 		 */
-		const std::string& functor() const { return functor_; }
-		
+		const std::string &functor() const { return functor_; }
+
 		/**
 		 * Get the arity of this predicate.
 		 *
@@ -53,14 +54,14 @@ namespace knowrob {
 		 */
 		std::shared_ptr<Term> toTerm() const;
 
-		void write(std::ostream& os) const;
-	
+		void write(std::ostream &os) const;
+
 	private:
 		const std::string functor_;
 		const unsigned int arity_;
 	};
 
-    using PredicateIndicatorPtr = std::shared_ptr<PredicateIndicator>;
+	using PredicateIndicatorPtr = std::shared_ptr<PredicateIndicator>;
 }
 
 #endif //KNOWROB_PREDICATE_INDICATOR_H_

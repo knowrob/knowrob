@@ -1,45 +1,72 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
 
 #include "sstream"
 #include "knowrob/terms/Term.h"
-#include "knowrob/formulas/Bottom.h"
-#include "knowrob/formulas/Top.h"
+#include "knowrob/terms/Atomic.h"
+#include "knowrob/terms/Function.h"
+#include "knowrob/terms/Variable.h"
 
 using namespace knowrob;
 
 const VariableSet Term::noVariables_ = {};
 
-Term::Term(TermType type)
-: type_(type)
-{}
-
-bool Term::operator==(const Term& other) const
-{
-	// note: isEqual can safely perform static cast as type id's do match
-	return typeid(*this) == typeid(other) && isEqual(other);
+bool Term::isIRI() const {
+	return false;
 }
 
-std::string Term::toString() const
-{
+bool Term::isBlank() const {
+	return false;
+}
+
+bool Term::isAtom() const {
+	return termType() == TermType::ATOMIC && ((Atomic *) this)->atomicType() == AtomicType::ATOM;
+}
+
+bool Term::isVariable() const {
+	return termType() == TermType::VARIABLE;
+}
+
+bool Term::isFunction() const {
+	return termType() == TermType::FUNCTION;
+}
+
+bool Term::isNumeric() const {
+	return termType() == TermType::ATOMIC && ((Atomic *) this)->atomicType() == AtomicType::NUMERIC;
+}
+
+bool Term::isString() const {
+	return termType() == TermType::ATOMIC && ((Atomic *) this)->atomicType() == AtomicType::STRING;
+}
+
+bool Term::operator==(const Term &other) const {
+	if (this == &other) return true;
+	if (termType() != other.termType()) return false;
+	switch (termType()) {
+		case TermType::ATOMIC:
+			return ((Atomic *) this)->isSameAtomic(*((Atomic *) &other));
+		case TermType::VARIABLE:
+			return ((Variable *) this)->isSameVariable(*((Variable *) &other));
+		case TermType::FUNCTION:
+			return ((Function *) this)->isSameFunction(*((Function *) &other));
+	}
+	return false;
+}
+
+std::string Term::constructString() const {
 	std::stringstream ss;
 	write(ss);
 	return ss.str();
 }
 
-bool VariableComparator::operator()(const Variable* const &v0, const Variable* const &v1) const
-{
+bool VariableComparator::operator()(const Variable *const &v0, const Variable *const &v1) const {
 	return *v0 < *v1;
 }
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const Term& t) //NOLINT
-	{
+	ostream &operator<<(ostream &os, const knowrob::Term &t) { //NOLINT
 		t.write(os);
 		return os;
 	}

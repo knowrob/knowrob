@@ -8,125 +8,110 @@
 #include <list>
 #include <optional>
 #include "knowrob/terms/Term.h"
-#include "knowrob/terms/Constant.h"
 
 namespace knowrob {
-    /**
-     * The type of a modal operator.
-     */
-    enum class ModalOperatorType {
-        NECESSITY,
-        POSSIBILITY
-    };
-    class Modality;
+	/**
+	 * The type of a modal operator.
+	 */
+	enum class ModalOperatorType {
+		NECESSITY,
+		POSSIBILITY
+	};
 
-    /**
-     * An operator of a modal language, e.g. "B" is often used for "belief" and
-     * "K" for "knowledge".
-     */
-    class ModalOperator : public StringTerm {
-    public:
-        ModalOperator(const std::shared_ptr<Modality> &modality, ModalOperatorType operatorType);
+	class Modality;
 
-        /**
-         * @return the modalFrame associated to this operator.
-         */
-        const auto& modality() const { return *modality_; }
+	/**
+	 * An operator of a modal language, e.g. "B" is often used for "belief" and
+	 * "K" for "knowledge".
+	 */
+	class ModalOperator {
+	public:
+		ModalOperator(const std::shared_ptr<Modality> &modality, ModalOperatorType operatorType);
 
-        bool isModalNecessity() const;
+		/**
+		 * @return the modalFrame associated to this operator.
+		 */
+		const auto &modality() const { return *modality_; }
 
-        bool isModalPossibility() const;
+		bool isModalNecessity() const;
 
-        /**
-         * @return the type of this operator.
-         */
-        auto operatorType() const { return operatorType_; }
+		bool isModalPossibility() const;
 
-        /**
-         * @return true if the accessibility relation of this modalFrame is transitive.
-         */
-        bool isTransitive() const;
+		/**
+		 * @return the type of this operator.
+		 */
+		auto operatorType() const { return operatorType_; }
 
-        /**
-         * @return true if the accessibility relation of this modalFrame is euclidean.
-         */
-        bool isEuclidean() const;
+		/**
+		 * @return true if the accessibility relation of this modalFrame is transitive.
+		 */
+		bool isTransitive() const;
 
-        /**
-         * @return the symbol of this modal operator.
-         */
-        const char* symbol() const;
+		/**
+		 * @return true if the accessibility relation of this modalFrame is euclidean.
+		 */
+		bool isEuclidean() const;
 
-        // Override Term
-        bool isGround() const override { return true; }
+		/**
+		 * @return the symbol of this modal operator.
+		 */
+		const char *symbol() const;
 
-        // Override Term
-        bool isAtomic() const override { return true; }
+		void write(std::ostream &os) const;
 
-        // Override Term
-        const VariableSet& getVariables() override { return Term::noVariables_; }
+		bool isSameModalOperator(const ModalOperator &other) const;
 
-        // Override Term
-        void write(std::ostream& os) const override;
+	protected:
+		const std::shared_ptr<Modality> modality_;
+		const ModalOperatorType operatorType_;
+	};
 
-		// Override Term
-		// FIXME: must include operator type, parameters etc. in ModalOperator hash
-        size_t computeHash() const override { return std::hash<std::string>{}(symbol()); }
+	using ModalOperatorPtr = std::shared_ptr<ModalOperator>;
 
-    protected:
-        const std::shared_ptr<Modality> modality_;
-        const ModalOperatorType operatorType_;
+	/**
+	 * An iteration over modalities.
+	 * Each iteration corresponds to applying the accessibility relation once.
+	 */
+	class ModalIteration {
+	public:
+		ModalIteration() = default;
 
-        // Override Term
-        bool isEqual(const Term &other) const override;
-    };
+		/**
+		 * @param other another iteration.
+		 * @return true if this and other are the same iterations.
+		 */
+		bool operator==(const ModalIteration &other) const;
 
-    using ModalOperatorPtr = std::shared_ptr<ModalOperator>;
+		/**
+		 * @param modalOperator add an operator to this iteration.
+		 */
+		void operator+=(const ModalOperatorPtr &modalOperator);
 
-    /**
-     * An iteration over modalities.
-     * Each iteration corresponds to applying the accessibility relation once.
-     */
-    class ModalIteration {
-    public:
-        ModalIteration() = default;
+		ModalIteration operator+(const ModalOperatorPtr &modalOperator) const;
 
-        /**
-         * @param other another iteration.
-         * @return true if this and other are the same iterations.
-         */
-        bool operator==(const ModalIteration &other) const;
+		/**
+		 * @return number of operators in this sequence.
+		 */
+		auto numOperators() const { return modalitySequence_.size(); }
 
-        /**
-         * @param modalOperator add an operator to this iteration.
-         */
-        void operator+=(const ModalOperatorPtr &modalOperator);
+		/**
+		 * @return begin iterator of modal operators.
+		 */
+		auto begin() const { return modalitySequence_.begin(); }
 
-        ModalIteration operator+(const ModalOperatorPtr &modalOperator) const;
+		/**
+		 * @return end iterator of modal operators.
+		 */
+		auto end() const { return modalitySequence_.end(); }
 
-        /**
-         * @return number of operators in this sequence.
-         */
-        auto numOperators() const { return modalitySequence_.size(); }
+		/**
+		 * @return an empty iteration.
+		 */
+		static const ModalIteration &emptyIteration();
 
-        /**
-         * @return begin iterator of modal operators.
-         */
-        auto begin() const { return modalitySequence_.begin(); }
-
-        /**
-         * @return end iterator of modal operators.
-         */
-        auto end() const { return modalitySequence_.end(); }
-
-        /**
-         * @return an empty iteration.
-         */
-        static const ModalIteration& emptyIteration();
-
-    protected:
-        std::list<ModalOperatorPtr> modalitySequence_;
-    };
+	protected:
+		std::list<ModalOperatorPtr> modalitySequence_;
+	};
 
 } // knowrob
 

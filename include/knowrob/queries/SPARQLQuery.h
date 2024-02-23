@@ -6,7 +6,7 @@
 #ifndef KNOWROB_SPARQL_QUERY_H
 #define KNOWROB_SPARQL_QUERY_H
 
-#include "knowrob/semweb/StatementData.h"
+#include "knowrob/semweb/FramedTriple.h"
 #include "knowrob/semweb/RDFLiteral.h"
 
 namespace knowrob {

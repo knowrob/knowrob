@@ -180,7 +180,6 @@ add_library(knowrob SHARED
 		src/terms/OptionList.cpp
 		src/terms/Substitution.cpp
 		src/terms/Unifier.cpp
-		src/terms/Constant.cpp
 		src/formulas/Formula.cpp
 		src/formulas/CompoundFormula.cpp
 		src/formulas/Conjunction.cpp
@@ -280,7 +279,7 @@ add_library(knowrob SHARED
 		src/queries/QueryStageLiteral.cpp
 		src/queries/QueryStageFormula.cpp
 		src/py/utils.cpp
-		src/semweb/StatementData.cpp
+        src/semweb/FramedTriple.cpp
         src/semweb/Transformation.cpp
         src/semweb/TripleFormat.cpp
         src/semweb/OntologyLanguage.cpp
@@ -294,7 +293,13 @@ add_library(knowrob SHARED
         src/db/GraphRestructuring.cpp
         src/db/RedlandModel.cpp
         src/db/GraphTransformation.cpp
-        src/queries/SPARQLQuery.cpp)
+        src/queries/SPARQLQuery.cpp
+        src/terms/Atom.cpp
+        src/terms/Atomic.cpp
+        src/terms/Function.cpp
+        src/terms/XSDAtomic.cpp
+        src/terms/IRIAtom.cpp
+        src/terms/Blank.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

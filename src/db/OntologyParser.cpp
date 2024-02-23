@@ -130,25 +130,25 @@ raptor_parser *OntologyParser::createParser(knowrob::semweb::TripleFormat format
 	return raptor_new_parser(world_, mimeType(format));
 }
 
-void OntologyParser::applyFrame(StatementData *triple) {
+void OntologyParser::applyFrame(FramedTriple *triple) {
 	if (frame_) {
 		if (frame_->confidence.has_value()) {
-			triple->confidence = frame_->confidence.value();
+			triple->setConfidence(frame_->confidence.value());
 		}
 		if (frame_->agent.has_value()) {
-			triple->agent = frame_->agent.value()->iri().c_str();
+			triple->setAgent(frame_->agent.value()->iri());
 		}
 		if (frame_->epistemicOperator.has_value()) {
-			triple->epistemicOperator = frame_->epistemicOperator.value();
+			triple->setEpistemicOperator(frame_->epistemicOperator.value());
 		}
 		if (frame_->temporalOperator.has_value()) {
-			triple->temporalOperator = frame_->temporalOperator.value();
+			triple->setTemporalOperator(frame_->temporalOperator.value());
 		}
 		if (frame_->begin.has_value()) {
-			triple->begin = frame_->begin.value();
+			triple->setBegin(frame_->begin.value());
 		}
 		if (frame_->end.has_value()) {
-			triple->end = frame_->end.value();
+			triple->setEnd(frame_->end.value());
 		}
 	}
 }
@@ -170,8 +170,8 @@ void OntologyParser::add(raptor_statement *statement, const semweb::TripleHandle
 	}
 	applyFrame(triple);
 	// remember imports
-	if (triple && semweb::owl::imports == triple->predicate) {
-		imports_.emplace_back(triple->object);
+	if (triple && semweb::owl::imports == triple->predicate()) {
+		imports_.emplace_back(triple->valueAsString());
 	}
 	// flush if batch is full
 	if (currentBatch_->size() >= batchSize_) {

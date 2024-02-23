@@ -160,12 +160,11 @@ class FactxxReasoner(ReasonerWithBackend):
 		if len(filtered_rows) == 0:
 			logDebug("pyfactxx has no inferences.")
 			return
-		kb_triples = list(self.createTriples(len(filtered_rows)))
+		kb_triples = self.createTriples(len(filtered_rows))
 
 		# convert result to knowrob triples
 		triple_index = 0
-		for row in filtered_rows:
-			kb_triple = kb_triples[triple_index]
+		for kb_triple, row in zip(kb_triples, filtered_rows):
 			self.triple_from_python(kb_triple, row)
 			triple_index += 1
 

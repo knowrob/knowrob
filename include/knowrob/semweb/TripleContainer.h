@@ -7,7 +7,7 @@
 #define KNOWROB_TRIPLE_CONTAINER_H
 
 #include <vector>
-#include "knowrob/semweb/StatementData.h"
+#include "knowrob/semweb/FramedTriple.h"
 
 namespace knowrob::semweb {
 	class TripleContainer {
@@ -18,16 +18,16 @@ namespace knowrob::semweb {
 
 		auto empty() const { return asImmutableVector().begin() == asImmutableVector().end(); }
 
-		virtual const std::vector<StatementData> &asImmutableVector() const = 0;
+		virtual const std::vector<FramedTriplePtr> &asImmutableVector() const = 0;
 	};
 
 	class ProxyTripleContainer : public TripleContainer {
 	public:
-		explicit ProxyTripleContainer(const std::vector<StatementData> *triples) : triples_(triples) {}
+		explicit ProxyTripleContainer(const std::vector<FramedTriplePtr> *triples) : triples_(triples) {}
 
-		const std::vector<StatementData>& asImmutableVector() const override { return *triples_; }
+		const std::vector<FramedTriplePtr>& asImmutableVector() const override { return *triples_; }
 	protected:
-		const std::vector<StatementData> *triples_;
+		const std::vector<FramedTriplePtr> *triples_;
 	};
 
 	class MutableTripleContainer : public TripleContainer {
@@ -38,7 +38,7 @@ namespace knowrob::semweb {
 
 		auto endMutable() { return asMutableVector().end(); }
 
-		virtual std::vector<StatementData> &asMutableVector() = 0;
+		virtual std::vector<FramedTriplePtr> &asMutableVector() = 0;
 	};
 
 	using ImmutableTripleContainer = TripleContainer;
@@ -49,7 +49,7 @@ namespace knowrob::semweb {
 	using MutableTripleContainerPtr = std::shared_ptr<MutableTripleContainer>;
 	using MutableTripleHandler = std::function<void(const semweb::MutableTripleContainerPtr&)>;
 
-	using TripleFilter = std::function<bool(const StatementData&)>;
+	using TripleFilter = std::function<bool(const FramedTriple&)>;
 }
 
 #endif //KNOWROB_TRIPLE_CONTAINER_H

@@ -99,7 +99,7 @@ void KnowledgeBase::initFromConfig(const boost::property_tree::ptree &config) {
 	startReasoner();
 }
 
-const std::map<std::string, std::shared_ptr<DefinedReasoner>> &KnowledgeBase::reasonerPool() const {
+const std::map<std::string, std::shared_ptr<DefinedReasoner>, std::less<>> &KnowledgeBase::reasonerPool() const {
 	return reasonerManager_->reasonerPool();
 }
 
@@ -365,9 +365,9 @@ void KnowledgeBase::createComputationPipeline(
 		// or if the predicate is a variable.
 		// --------------------------------------
 		bool isEDBStageNeeded = true;
-		if (lit->propertyTerm() && lit->propertyTerm()->type() == TermType::STRING) {
-			auto st = (StringTerm *) lit->propertyTerm().get();
-			isEDBStageNeeded = isMaterializedInEDB(st->value());
+		if (lit->propertyTerm() && lit->propertyTerm()->termType() == TermType::ATOMIC) {
+			isEDBStageNeeded = isMaterializedInEDB(
+				std::static_pointer_cast<Atomic>(lit->propertyTerm())->stringForm());
 		}
 		if (isEDBStageNeeded) {
 			auto edb = getBackendForQuery(lit, ctx);
@@ -454,8 +454,8 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 		if (l_reasoner.empty()) {
 			edbOnlyLiterals.push_back(l);
 			auto l_p = l->propertyTerm();
-			if (l_p && l_p->type() == TermType::STRING &&
-				!isMaterializedInEDB(std::static_pointer_cast<StringTerm>(l_p)->value())) {
+			if (l_p && l_p->termType() == TermType::ATOMIC &&
+				!isMaterializedInEDB(std::static_pointer_cast<Atomic>(l_p)->stringForm())) {
 				// generate a "don't know" message and return.
 				auto out = std::make_shared<TokenBuffer>();
 				auto channel = TokenStream::Channel::create(out);
@@ -707,13 +707,13 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 	return out;
 }
 
-DataBackendPtr KnowledgeBase::findSourceBackend(const StatementData &triple) {
-	if (!triple.graph) return {};
+DataBackendPtr KnowledgeBase::findSourceBackend(const FramedTriple &triple) {
+	if (!triple.graph()) return {};
 
-	auto definedBackend = backendManager_->getBackendWithID(triple.graph);
+	auto definedBackend = backendManager_->getBackendWithID(triple.graph().value());
 	if (definedBackend) return definedBackend->backend();
 
-	auto definedReasoner = reasonerManager_->getReasonerWithID(triple.graph);
+	auto definedReasoner = reasonerManager_->getReasonerWithID(triple.graph().value());
 	if (definedReasoner) {
 		return reasonerManager_->getReasonerBackend(definedReasoner);
 	}
@@ -740,7 +740,7 @@ static inline std::shared_ptr<T> createTransaction(
 
 static inline std::shared_ptr<ThreadPool::Runner> pushPerTripleWork(
 		const semweb::TripleContainerPtr &triples,
-		const std::function<void(const StatementData &)> &fn) {
+		const std::function<void(const FramedTriplePtr&)> &fn) {
 	auto perTripleWorker =
 			std::make_shared<ThreadPool::LambdaRunner>([fn, triples](const ThreadPool::LambdaRunner::StopChecker &) {
 				std::for_each(triples->begin(), triples->end(), fn);
@@ -752,7 +752,7 @@ static inline std::shared_ptr<ThreadPool::Runner> pushPerTripleWork(
 	return perTripleWorker;
 }
 
-bool KnowledgeBase::insertOne(const StatementData &triple) {
+bool KnowledgeBase::insertOne(const FramedTriple &triple) {
 	// find the source backend, if any
 	auto sourceBackend = findSourceBackend(triple);
 	// insert into all other backends
@@ -768,7 +768,7 @@ bool KnowledgeBase::insertOne(const StatementData &triple) {
 	return true;
 }
 
-bool KnowledgeBase::removeOne(const StatementData &triple) {
+bool KnowledgeBase::removeOne(const FramedTriple &triple) {
 	// find the source backend, if any
 	auto sourceBackend = findSourceBackend(triple);
 	// insert into all other backends
@@ -791,11 +791,11 @@ bool KnowledgeBase::insertAllInto(const semweb::TripleContainerPtr &triples,
 	if (triples->empty()) return true;
 
 	// find the source backend, if any.
-	auto sourceBackend = findSourceBackend(*triples->begin());
+	auto sourceBackend = findSourceBackend(**triples->begin());
 	// push a worker goal that updates the vocabulary
 	auto vocabWorker = pushPerTripleWork(triples,
-										 [this](const StatementData &triple) {
-											 updateVocabularyInsert(triple);
+										 [this](const FramedTriplePtr &triple) {
+											 updateVocabularyInsert(*triple);
 										 });
 
 	// insert into all other backends. currently only a warning is printed if insertion fails for a backend.
@@ -822,11 +822,11 @@ bool KnowledgeBase::insertAll(const semweb::TripleContainerPtr &triples) {
 	if (triples->empty()) return true;
 
 	// find the source backend, if any.
-	auto sourceBackend = findSourceBackend(*triples->begin());
+	auto sourceBackend = findSourceBackend(**triples->begin());
 	// push a worker goal that updates the vocabulary
 	auto vocabWorker = pushPerTripleWork(triples,
-										 [this](const StatementData &triple) {
-											 updateVocabularyInsert(triple);
+										 [this](const FramedTriplePtr &triple) {
+											 updateVocabularyInsert(*triple);
 										 });
 
 	// insert into all other backends. currently only a warning is printed if insertion fails for a backend.
@@ -848,11 +848,11 @@ bool KnowledgeBase::removeAll(const semweb::TripleContainerPtr &triples) {
 	if (triples->empty()) return true;
 
 	// find the source backend, if any.
-	auto sourceBackend = findSourceBackend(*triples->begin());
+	auto sourceBackend = findSourceBackend(**triples->begin());
 	// push a worker goal that updates the vocabulary
 	auto vocabWorker = pushPerTripleWork(triples,
-										 [this](const StatementData &triple) {
-											 updateVocabularyRemove(triple);
+										 [this](const FramedTriplePtr &triple) {
+											 updateVocabularyRemove(*triple);
 										 });
 
 	// remove from all backends. currently only a warning is printed if removal fails for a backend.
@@ -869,17 +869,16 @@ bool KnowledgeBase::removeAll(const semweb::TripleContainerPtr &triples) {
 	return true;
 }
 
-bool KnowledgeBase::insertAll(const std::vector<StatementData> &triples) {
+bool KnowledgeBase::insertAll(const std::vector<FramedTriplePtr> &triples) {
 	// Note: insertAll blocks until the triples are inserted, so it is safe to use the triples vector as a pointer.
 	return insertAll(std::make_shared<semweb::ProxyTripleContainer>(&triples));
 }
 
-bool KnowledgeBase::removeAll(const std::vector<StatementData> &triples) {
+bool KnowledgeBase::removeAll(const std::vector<FramedTriplePtr> &triples) {
 	return removeAll(std::make_shared<semweb::ProxyTripleContainer>(&triples));
 }
 
 bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
-	KB_INFO("unloading origin '{}'", origin);
 	// remove all triples with a given origin from all backends.
 	std::vector<std::shared_ptr<ThreadPool::Runner>> transactions;
 	for (auto &it: backendManager_->backendPool()) {
@@ -927,55 +926,55 @@ bool KnowledgeBase::removeAllMatching(const RDFLiteral &query) {
 	return all_succeed;
 }
 
-void KnowledgeBase::updateVocabularyInsert(const StatementData &tripleData) {
+void KnowledgeBase::updateVocabularyInsert(const FramedTriple &tripleData) {
 	// keep track of imports, subclasses, and subproperties
-	if (semweb::isSubClassOfIRI(tripleData.predicate)) {
-		auto sub = vocabulary_->defineClass(tripleData.subject);
-		auto sup = vocabulary_->defineClass(tripleData.object);
+	if (semweb::isSubClassOfIRI(tripleData.predicate())) {
+		auto sub = vocabulary_->defineClass(tripleData.subject());
+		auto sup = vocabulary_->defineClass(tripleData.valueAsString());
 		sub->addDirectParent(sup);
-	} else if (semweb::isSubPropertyOfIRI(tripleData.predicate)) {
-		auto sub = vocabulary_->defineProperty(tripleData.subject);
-		auto sup = vocabulary_->defineProperty(tripleData.object);
+	} else if (semweb::isSubPropertyOfIRI(tripleData.predicate())) {
+		auto sub = vocabulary_->defineProperty(tripleData.subject());
+		auto sup = vocabulary_->defineProperty(tripleData.valueAsString());
 		sub->addDirectParent(sup);
-	} else if (semweb::isTypeIRI(tripleData.predicate)) {
-		vocabulary_->addResourceType(tripleData.subject, tripleData.object);
+	} else if (semweb::isTypeIRI(tripleData.predicate())) {
+		vocabulary_->addResourceType(tripleData.subject(), tripleData.valueAsString());
 		// increase frequency in vocabulary
 		//vocabulary_->increaseFrequency(tripleData.subject);
 		// TODO: string comparison below is not efficient, could put all classes in a map here, or add
 		//       an interface to the vocabulary that excludes owl/rdfs/rdf terms
 		//  --> rather check for subclass of relationship to owl:Thing
-		if (vocabulary_->isDefinedClass(tripleData.object) &&
-			semweb::owl::Class != tripleData.object &&
-			semweb::owl::Restriction != tripleData.object &&
-			semweb::owl::NamedIndividual != tripleData.object &&
-			semweb::owl::AnnotationProperty != tripleData.object &&
-			semweb::owl::ObjectProperty != tripleData.object &&
-			semweb::owl::DatatypeProperty != tripleData.object &&
-			semweb::rdfs::Class != tripleData.object &&
-			semweb::rdf::Property != tripleData.object) {
-			vocabulary_->increaseFrequency(tripleData.object);
+		if (vocabulary_->isDefinedClass(tripleData.valueAsString()) &&
+			semweb::owl::Class != tripleData.valueAsString() &&
+			semweb::owl::Restriction != tripleData.valueAsString() &&
+			semweb::owl::NamedIndividual != tripleData.valueAsString() &&
+			semweb::owl::AnnotationProperty != tripleData.valueAsString() &&
+			semweb::owl::ObjectProperty != tripleData.valueAsString() &&
+			semweb::owl::DatatypeProperty != tripleData.valueAsString() &&
+			semweb::rdfs::Class != tripleData.valueAsString() &&
+			semweb::rdf::Property != tripleData.valueAsString()) {
+			vocabulary_->increaseFrequency(tripleData.valueAsString());
 		}
-	} else if (semweb::isInverseOfIRI(tripleData.predicate)) {
-		auto p = vocabulary_->defineProperty(tripleData.subject);
-		auto q = vocabulary_->defineProperty(tripleData.object);
+	} else if (semweb::isInverseOfIRI(tripleData.predicate())) {
+		auto p = vocabulary_->defineProperty(tripleData.subject());
+		auto q = vocabulary_->defineProperty(tripleData.valueAsString());
 		p->setInverse(q);
 		q->setInverse(p);
-	} else if (semweb::owl::imports == tripleData.predicate) {
-		auto resolvedImport = URI::resolve(tripleData.object);
+	} else if (semweb::owl::imports == tripleData.predicate()) {
+		auto resolvedImport = URI::resolve(tripleData.valueAsString());
 		auto importedGraph = DataSource::getNameFromURI(resolvedImport);
-		if (tripleData.graph) {
-			importHierarchy_->addDirectImport(tripleData.graph, importedGraph);
+		if (tripleData.graph()) {
+			importHierarchy_->addDirectImport(tripleData.graph().value(), importedGraph);
 		} else {
 			KB_WARN("import statement without graph");
 		}
-	} else if (vocabulary_->isObjectProperty(tripleData.predicate) ||
-			   vocabulary_->isDatatypeProperty(tripleData.predicate)) {
+	} else if (vocabulary_->isObjectProperty(tripleData.predicate()) ||
+			   vocabulary_->isDatatypeProperty(tripleData.predicate())) {
 		// increase frequency of property in vocabulary
-		vocabulary_->increaseFrequency(tripleData.predicate);
+		vocabulary_->increaseFrequency(tripleData.predicate());
 	}
 }
 
-void KnowledgeBase::updateVocabularyRemove(const StatementData &tripleData) {
+void KnowledgeBase::updateVocabularyRemove(const FramedTriple &tripleData) {
 	// TODO: implement
 }
 
@@ -1090,8 +1089,8 @@ bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source
 		parser.setOrigin(origin);
 		parser.setFrame(source->frame());
 		// filter is called for each triple, if it returns false, the triple is skipped
-		parser.setFilter([this](const StatementData &triple) {
-			return !vocabulary_->isAnnotationProperty(triple.predicate);
+		parser.setFilter([this](const FramedTriple &triple) {
+			return !vocabulary_->isAnnotationProperty(triple.predicate());
 		});
 		// define a prefix for naming blank nodes
 		parser.setBlankPrefix(std::string("_") + origin);
@@ -1199,16 +1198,16 @@ bool KnowledgeBase::EDBComparator::operator()(const RDFLiteralPtr &a, const RDFL
 	if (numVars_a != numVars_b) return (numVars_a > numVars_b);
 
 	// - prefer literals with grounded predicate
-	bool hasProperty_a = (a->propertyTerm() && a->propertyTerm()->type() == TermType::STRING);
-	bool hasProperty_b = (b->propertyTerm() && b->propertyTerm()->type() == TermType::STRING);
+	bool hasProperty_a = (a->propertyTerm() && a->propertyTerm()->termType() == TermType::ATOMIC);
+	bool hasProperty_b = (b->propertyTerm() && b->propertyTerm()->termType() == TermType::ATOMIC);
 	if (hasProperty_a != hasProperty_b) return (hasProperty_a < hasProperty_b);
 
 	// - prefer properties that appear less often in the EDB
 	if (hasProperty_a) {
 		auto numAsserts_a = vocabulary_->frequency(
-				std::static_pointer_cast<StringTerm>(a->propertyTerm())->value());
+				std::static_pointer_cast<Atomic>(a->propertyTerm())->stringForm());
 		auto numAsserts_b = vocabulary_->frequency(
-				std::static_pointer_cast<StringTerm>(b->propertyTerm())->value());
+				std::static_pointer_cast<Atomic>(b->propertyTerm())->stringForm());
 		if (numAsserts_a != numAsserts_b) return (numAsserts_a > numAsserts_b);
 	}
 
@@ -1222,25 +1221,25 @@ bool KnowledgeBase::IDBComparator::operator()(const RDFComputablePtr &a, const R
 	if (numVars_a != numVars_b) return (numVars_a > numVars_b);
 
 	// - prefer literals with grounded predicate
-	bool hasProperty_a = (a->propertyTerm() && a->propertyTerm()->type() == TermType::STRING);
-	bool hasProperty_b = (b->propertyTerm() && b->propertyTerm()->type() == TermType::STRING);
+	bool hasProperty_a = (a->propertyTerm() && a->propertyTerm()->termType() == TermType::ATOMIC);
+	bool hasProperty_b = (b->propertyTerm() && b->propertyTerm()->termType() == TermType::ATOMIC);
 	if (hasProperty_a != hasProperty_b) return (hasProperty_a < hasProperty_b);
 
 	// - prefer literals with EDB assertions over literals without
 	if (hasProperty_a) {
 		auto hasEDBAssertion_a = vocabulary_->isDefinedProperty(
-				std::static_pointer_cast<StringTerm>(a->propertyTerm())->value());
+				std::static_pointer_cast<Atomic>(a->propertyTerm())->stringForm());
 		auto hasEDBAssertion_b = vocabulary_->isDefinedProperty(
-				std::static_pointer_cast<StringTerm>(b->propertyTerm())->value());
+				std::static_pointer_cast<Atomic>(b->propertyTerm())->stringForm());
 		if (hasEDBAssertion_a != hasEDBAssertion_b) return (hasEDBAssertion_a < hasEDBAssertion_b);
 	}
 
 	// - prefer properties that appear less often in the EDB
 	if (hasProperty_a) {
 		auto numAsserts_a = vocabulary_->frequency(
-				std::static_pointer_cast<StringTerm>(a->propertyTerm())->value());
+				std::static_pointer_cast<Atomic>(a->propertyTerm())->stringForm());
 		auto numAsserts_b = vocabulary_->frequency(
-				std::static_pointer_cast<StringTerm>(b->propertyTerm())->value());
+				std::static_pointer_cast<Atomic>(b->propertyTerm())->stringForm());
 		if (numAsserts_a != numAsserts_b) return (numAsserts_a > numAsserts_b);
 	}
 

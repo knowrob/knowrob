@@ -25,13 +25,13 @@ namespace knowrob {
 		bool initializeBackend(const ReasonerConfig &cfg) override;
 
 		// override DataBackend
-		bool insertOne(const StatementData &triple) override;
+		bool insertOne(const FramedTriple &triple) override;
 
 		// override DataBackend
 		bool insertAll(const semweb::TripleContainerPtr &triples) override;
 
 		// override DataBackend
-		bool removeOne(const StatementData &triple) override;
+		bool removeOne(const FramedTriple &triple) override;
 
 		// override DataBackend
 		bool removeAll(const semweb::TripleContainerPtr &triples) override;

@@ -9,7 +9,7 @@
 #include <raptor.h>
 #include <librdf.h>
 #include "knowrob/semweb/TripleContainer.h"
-#include "knowrob/semweb/StatementData.h"
+#include "knowrob/semweb/FramedTriple.h"
 
 namespace knowrob {
 	/**
@@ -37,14 +37,14 @@ namespace knowrob {
 		 * @param o a raptor term.
 		 * @return the added statement.
 		 */
-		StatementData *add(raptor_term *s, raptor_term *p, raptor_term *o, librdf_node *context = nullptr);
+		FramedTriple *add(raptor_term *s, raptor_term *p, raptor_term *o, librdf_node *context = nullptr);
 
 		/**
 		 * Add a triple to the batch.
 		 * @param statement a raptor statement.
 		 * @return the added statement.
 		 */
-		StatementData *add(raptor_statement *statement, librdf_node *context = nullptr);
+		FramedTriple *add(raptor_statement *statement, librdf_node *context = nullptr);
 
 		/**
 		 * Reset the batch to be empty.
@@ -67,10 +67,10 @@ namespace knowrob {
 		auto size() const { return actualSize_; }
 
 		// override TripleContainer
-		const std::vector<StatementData> &asImmutableVector() const override { return mappedData_; }
+		const std::vector<FramedTriplePtr> &asImmutableVector() const override { return mappedData_; }
 
 		// override TripleContainer
-		std::vector<StatementData> &asMutableVector() override { return mappedData_; }
+		std::vector<FramedTriplePtr> &asMutableVector() override { return mappedData_; }
 
 	protected:
 		struct mapped_statement {
@@ -79,7 +79,7 @@ namespace knowrob {
 			raptor_term *o;
 		};
 		std::vector<mapped_statement> raptorData_;
-		std::vector<StatementData> mappedData_;
+		std::vector<FramedTriplePtr> mappedData_;
 		uint32_t actualSize_;
 		std::optional<std::string_view> origin_;
 	};

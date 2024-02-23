@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -16,87 +13,76 @@
 #include "PredicateIndicator.h"
 #include "knowrob/terms/Term.h"
 #include "knowrob/terms/Substitution.h"
+#include "knowrob/terms/Atom.h"
+#include "knowrob/terms/Function.h"
 
 namespace knowrob {
 	/**
 	 * A predicate with a functor and a number of term arguments.
 	 */
-	class Predicate : public Term, public Formula {
+	class Predicate : public Formula {
 	public:
 		/**
 		 * @functor the functor name.
 		 * @arguments vector of predicate arguments.
 		 */
-		explicit Predicate(
-			const std::string &functor,
-			const std::vector<TermPtr> &arguments={});
-		
-		/**
-		 * @indicator a predicate indicator reference.
-		 * @arguments vector of predicate arguments.
-		 */
-		Predicate(
-			const std::shared_ptr<PredicateIndicator> &indicator,
-			const std::vector<TermPtr> &arguments);
-		
-		/**
-		 * Substitution constructor.
-		 *
-		 * @other a predicate.
-		 * @sub a mapping from terms to variables.
-		 */
-		Predicate(const Predicate &other, const Substitution &sub);
+		explicit Predicate(std::string_view functor, const std::vector<TermPtr> &arguments = {});
 
 		/**
-		 * Get the indicator of this predicate.
-		 * @return the indicator of this predicate.
+		 * @functor the functor name.
+		 * @arguments vector of predicate arguments.
 		 */
-		const std::shared_ptr<PredicateIndicator>& indicator() const { return indicator_; }
+		explicit Predicate(const AtomPtr &functor, const std::vector<TermPtr> &arguments = {});
+
+		/**
+		 * Get the functor of this predicate.
+		 * @return the functor.
+		 */
+		auto &functor() const { return functor_; }
+
+		/**
+		 * Get the arity of this predicate.
+		 * @return the arity.
+		 */
+		auto arity() const { return arguments().size(); }
 
 		/**
 		 * Get the arguments of this predicate.
 		 * @return a vector of predicate arguments.
 		 */
-		const std::vector<TermPtr>& arguments() const { return arguments_; }
+		const std::vector<TermPtr> &arguments() const { return arguments_; }
 
-        // Override Formula
-        FormulaPtr applySubstitution(const Substitution &sub) const override;
-		
 		// Override Term, Formula
 		bool isGround() const override { return variables_.empty(); }
-		
-		// Override Term
-		bool isAtomic() const override { return false; }
 
 		// Override Term
-		const VariableSet& getVariables() override { return variables_; }
-		
-		// Override Term, Formula
-		void write(std::ostream& os) const override;
+		const VariableSet &variables() { return variables_; }
+
+		// Override Formula
+		void write(std::ostream &os) const override;
 
 		// Override Term
-        size_t computeHash() const override;
-	
+		size_t hash() const;
+
+		static FunctionPtr toFunction(const std::shared_ptr<Predicate> &predicate);
+
+		static std::shared_ptr<Predicate> fromFunction(const FunctionPtr &fn);
+
 	protected:
-		const std::shared_ptr<PredicateIndicator> indicator_;
+		const AtomPtr functor_;
 		const std::vector<TermPtr> arguments_;
 		const VariableSet variables_;
 
 		VariableSet getVariables1() const;
-		// Override Term
-		bool isEqual(const Term &other) const override;
+
 		bool isEqual(const Formula &other) const override;
-		
-		static std::vector<TermPtr> applySubstitution(
-			const std::vector<TermPtr> &in,
-			const Substitution &sub) ;
 	};
 
-    using PredicatePtr = std::shared_ptr<Predicate>;
+	using PredicatePtr = std::shared_ptr<Predicate>;
 }
 
 namespace std {
-    std::ostream& operator<<(std::ostream& os, const knowrob::Predicate& p);
+	std::ostream &operator<<(std::ostream &os, const knowrob::Predicate &p);
 }
 
 #endif //KNOWROB_PREDICATE_H_

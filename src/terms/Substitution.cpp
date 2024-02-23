@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -9,6 +6,13 @@
 #include "knowrob/terms/Substitution.h"
 #include "knowrob/terms/Unifier.h"
 #include "knowrob/knowrob.h"
+#include "knowrob/formulas/CompoundFormula.h"
+#include "knowrob/formulas/ModalFormula.h"
+#include "knowrob/formulas/Implication.h"
+#include "knowrob/formulas/Negation.h"
+#include "knowrob/formulas/Conjunction.h"
+#include "knowrob/formulas/Disjunction.h"
+#include "knowrob/terms/Function.h"
 
 using namespace knowrob;
 
@@ -74,11 +78,11 @@ size_t Substitution::computeHash() const {
 
 	for (const auto &item: mapping_) {
 		// Compute the hash of the key using the in-built hash function for string.
-		hashCombine(seed, item.first.computeHash());
+		hashCombine(seed, item.first.hash());
 
 		auto value_hash = static_cast<size_t>(0);
 		if (item.second) {
-			value_hash = item.second->computeHash();
+			value_hash = item.second->hash();
 		}
 		hashCombine(seed, value_hash);
 	}
@@ -114,6 +118,124 @@ bool Substitution::unifyWith(const Substitution &other, Reversible *reversible) 
 	return true;
 }
 
+template<class T>
+std::shared_ptr<T> applyCompoundBindings( //NOLINT
+		const std::shared_ptr<T> &phi,
+		const Substitution &bindings) {
+	std::vector<FormulaPtr> formulae;
+	bool hasNewFormula = false;
+	for (const auto &f: phi->formulae()) {
+		auto f1 = applyBindings(f, bindings);
+		if (f1 != f) {
+			hasNewFormula = true;
+		}
+		formulae.push_back(applyBindings(f, bindings));
+	}
+	if (!hasNewFormula) {
+		return phi;
+	} else {
+		return std::make_shared<T>(formulae);
+	}
+}
+
+namespace knowrob {
+	FormulaPtr applyBindings(const FormulaPtr &phi, const Substitution &bindings) { //NOLINT
+		if (phi->isGround()) {
+			return phi;
+		}
+		switch (phi->type()) {
+			case FormulaType::MODAL: {
+				auto modal = std::static_pointer_cast<ModalFormula>(phi);
+				auto inner = applyBindings(modal->modalFormula(), bindings);
+				if (inner == modal->modalFormula()) {
+					return modal;
+				} else {
+					return std::make_shared<ModalFormula>(modal->modalOperator(), inner);
+				}
+			}
+			case FormulaType::IMPLICATION: {
+				auto implication = std::static_pointer_cast<Implication>(phi);
+				auto antecedent = applyBindings(implication->antecedent(), bindings);
+				auto consequent = applyBindings(implication->consequent(), bindings);
+				if (antecedent == implication->antecedent() && consequent == implication->consequent()) {
+					return implication;
+				} else {
+					return std::make_shared<Implication>(antecedent, consequent);
+				}
+			}
+			case FormulaType::NEGATION: {
+				auto negation = std::static_pointer_cast<Negation>(phi);
+				auto negated = applyBindings(negation->negatedFormula(), bindings);
+				if (negated == negation->negatedFormula()) {
+					return negation;
+				} else {
+					return std::make_shared<Negation>(negated);
+				}
+			}
+			case FormulaType::CONJUNCTION:
+				return applyCompoundBindings<Conjunction>(std::static_pointer_cast<Conjunction>(phi), bindings);
+			case FormulaType::DISJUNCTION:
+				return applyCompoundBindings<Disjunction>(std::static_pointer_cast<Disjunction>(phi), bindings);
+			case FormulaType::PREDICATE: {
+				auto predicate = std::static_pointer_cast<Predicate>(phi);
+				auto args = predicate->arguments();
+				auto newArgs = std::vector<TermPtr>(args.size());
+				auto hasNewArg = false;
+				for (uint32_t i = 0; i < args.size(); i++) {
+					auto arg = applyBindings(args[i], bindings);
+					if (arg != args[i]) {
+						hasNewArg = true;
+					}
+					newArgs[i] = arg;
+				}
+				if (!hasNewArg) {
+					return predicate;
+				} else {
+					return std::make_shared<Predicate>(predicate->functor(), newArgs);
+				}
+			}
+		}
+		return phi;
+	}
+
+	TermPtr applyBindings(const TermPtr &t, const Substitution &bindings) { //NOLINT
+		if (t->isGround()) {
+			return t;
+		}
+		switch (t->termType()) {
+			case TermType::ATOMIC:
+				return t;
+			case TermType::VARIABLE: {
+				auto var = std::static_pointer_cast<Variable>(t);
+				auto term = bindings.get(*var);
+				if (term) {
+					return term;
+				} else {
+					return var;
+				}
+			}
+			case TermType::FUNCTION: {
+				auto function = std::static_pointer_cast<Function>(t);
+				auto args = function->arguments();
+				auto newArgs = std::vector<TermPtr>(args.size());
+				auto hasNewArg = false;
+				for (uint32_t i = 0; i < args.size(); i++) {
+					auto arg = applyBindings(args[i], bindings);
+					if (arg != args[i]) {
+						hasNewArg = true;
+					}
+					newArgs[i] = arg;
+				}
+				if (!hasNewArg) {
+					return function;
+				} else {
+					return std::make_shared<Function>(function->functor(), newArgs);
+				}
+			}
+		}
+		return t;
+	}
+}
 
 namespace std {
 	std::ostream &operator<<(std::ostream &os, const Substitution &omega) //NOLINT

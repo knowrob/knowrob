@@ -11,7 +11,6 @@
 
 #include <memory>
 #include <ostream>
-#include "knowrob/terms/Substitution.h"
 
 namespace knowrob {
 	/**
@@ -25,11 +24,11 @@ namespace knowrob {
 		CONJUNCTION,
 		// A formula of the form `phi_1 OR ... OR phi_n` where each phi_i is a formula.
 		DISJUNCTION,
-        NEGATION,
-        IMPLICATION,
-        MODAL
+		NEGATION,
+		IMPLICATION,
+		MODAL
 	};
-	
+
 	/**
 	 * A propositional formula.
 	 * Note that all formulas are immutable.
@@ -45,73 +44,66 @@ namespace knowrob {
 		 * @param other another formula
 		 * @return true if both formulas are syntactically equal
 		 */
-        bool operator==(const Formula& other) const;
+		bool operator==(const Formula &other) const;
 
 		/**
 		 * @return the type of this formula.
 		 */
 		FormulaType type() const { return type_; }
-		
+
 		/**
 		 * Is this formula free of subformulas?
 		 *
 		 * @return true if this formula is atomic.
 		 */
 		bool isAtomic() const;
-		
+
 		/**
 		 * @return true if this formula isMoreGeneralThan no free variables.
 		 */
 		virtual bool isGround() const = 0;
 
-        /**
-         * @return true if this is the top concept.
-         */
-        bool isTop() const;
-
-        /**
-         * @return true if this is the bottom concept.
-         */
-        bool isBottom() const;
-		
 		/**
-		 * Replaces variables in the formula with terms.
-		 * @sub a substitution mapping.
-		 * @return the created formula.
+		 * @return true if this is the top concept.
 		 */
-		virtual std::shared_ptr<Formula> applySubstitution(const Substitution &sub) const = 0;
-		
+		bool isTop() const;
+
+		/**
+		 * @return true if this is the bottom concept.
+		 */
+		bool isBottom() const;
+
 		/**
 		 * Write the formula into an ostream.
 		 */
-		virtual void write(std::ostream& os) const = 0;
-	
+		virtual void write(std::ostream &os) const = 0;
+
 	protected:
 		const FormulaType type_;
 
 		virtual bool isEqual(const Formula &other) const = 0;
 	};
 
-    /**
-     * A label for a formula.
-     */
-    class FormulaLabel {
-    public:
-        FormulaLabel() = default;
+	/**
+	 * A label for a formula.
+	 */
+	class FormulaLabel {
+	public:
+		FormulaLabel() = default;
 
-        bool operator==(const FormulaLabel &other);
+		bool operator==(const FormulaLabel &other);
 
-    protected:
-        virtual bool isEqual(const FormulaLabel &other) const = 0;
-    };
+	protected:
+		virtual bool isEqual(const FormulaLabel &other) const = 0;
+	};
 
-    // alias declaration
-    using FormulaPtr = std::shared_ptr<Formula>;
-    using FormulaLabelPtr = std::shared_ptr<FormulaLabel>;
+	// alias declaration
+	using FormulaPtr = std::shared_ptr<Formula>;
+	using FormulaLabelPtr = std::shared_ptr<FormulaLabel>;
 }
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const knowrob::Formula& phi);
+	std::ostream &operator<<(std::ostream &os, const knowrob::Formula &phi);
 }
 
 #endif //KNOWROB_FORMULA_H_

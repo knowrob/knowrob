@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -31,7 +28,7 @@ namespace knowrob {
 		/**
 		 * @return the option map.
 		 */
-		const std::map<std::string, TermPtr>& options() const { return options_; }
+		const std::map<std::string, TermPtr> &options() const { return options_; }
 
 		/**
 		 * @param key key of option.
@@ -44,7 +41,7 @@ namespace knowrob {
 		 * @param defaultValue a default value
 		 * @return the option value, or the default value
 		 */
-		const TermPtr& get(const std::string &key, const TermPtr &defaultValue) const;
+		const TermPtr &get(const std::string &key, const TermPtr &defaultValue) const;
 
 		/**
 		 * Read option value as a string.
@@ -52,7 +49,7 @@ namespace knowrob {
 		 * @param defaultValue a default value
 		 * @return the option value, or the default value
 		 */
-		const std::string& getString(const std::string &key, const std::string &defaultValue) const;
+		std::string_view getString(const std::string &key, const std::string &defaultValue) const;
 
 		/**
 		 * Read option value as a long.

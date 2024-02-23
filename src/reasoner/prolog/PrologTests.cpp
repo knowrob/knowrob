@@ -31,11 +31,11 @@ void PrologTestsBase::runPrologTests(
 		numTests += 1;
 
 		// each result is a term element/3
-		ASSERT_EQ(t->type(), TermType::PREDICATE);
-		auto *pElem = (Predicate *) t.get();
-		ASSERT_EQ(pElem->indicator()->functor(), "element");
-		ASSERT_EQ(pElem->indicator()->arity(), 3);
-		ASSERT_EQ(*(pElem->arguments()[0]), StringTerm("testcase"));
+		ASSERT_EQ(t->termType(), TermType::FUNCTION);
+		auto *pElem = (Function *) t.get();
+		ASSERT_EQ(*pElem->functor(), *Atom::Tabled("element"));
+		ASSERT_EQ(pElem->arity(), 3);
+		ASSERT_EQ(*(pElem->arguments()[0]), *Atom::Tabled("testcase"));
 
 		// the second argument has the form:
 		// [name=::string, file=::string, line=::int, time=::double]
@@ -44,7 +44,7 @@ void PrologTestsBase::runPrologTests(
 		ASSERT_TRUE(trace.contains("line"));
 		ASSERT_TRUE(trace.contains("name"));
 		const auto &name = trace.getString("name", "");
-		const char *file = trace.getString("file", "").c_str();
+		const char *file = trace.getString("file", "").data();
 		const long line = trace.getLong("line", 0);
 
 		// the third argument is a list of failures.
@@ -53,22 +53,32 @@ void PrologTestsBase::runPrologTests(
 			numFailedTests += 1;
 		}
 		for (const auto &failureTerm: (*failureList)) {
-			ASSERT_EQ(failureTerm->type(), TermType::PREDICATE);
+			ASSERT_EQ(failureTerm->termType(), TermType::FUNCTION);
 			// each failure is a term element/3
-			auto *errElem = (Predicate *) failureTerm.get();
-			ASSERT_EQ(errElem->indicator()->functor(), "element");
-			ASSERT_EQ(errElem->indicator()->arity(), 3);
-			ASSERT_EQ(*(errElem->arguments()[0]), StringTerm("failure"));
+			auto *errElem = (Function *) failureTerm.get();
+			ASSERT_EQ(*errElem->functor(), *Atom::Tabled("element"));
+			ASSERT_EQ(errElem->arity(), 3);
+			ASSERT_EQ(*(errElem->arguments()[0]), *Atom::Tabled("failure"));
 
 			OptionList errOpts(errElem->arguments()[1]);
 			ASSERT_TRUE(errOpts.contains("type"));
 			ASSERT_TRUE(errOpts.contains("message"));
-			auto message = errOpts.getString("type", "") + ": " + errOpts.getString("message", "");
+
+			std::ostringstream message_os;
+			message_os << errOpts.getString("type", "");
+			message_os << ": ";
+			message_os << errOpts.getString("message", "");
+			auto message = message_os.str();
+
+			std::ostringstream summary_os;
+			summary_os << "test: ";
+			summary_os << name;
+			auto summary = summary_os.str();
 
 			// the second argument has the form: [ type=error|failure, message='...' ]
 			// the third argument is the exact same message, which is a bit strange.
 			//ADD_FAILURE_AT(file,line) << message;
-			GTEST_MESSAGE_AT_(file, line, ("test: " + name).c_str(), \
+			GTEST_MESSAGE_AT_(file, line, summary.c_str(), \
                               testing::TestPartResult::kNonFatalFailure) << unescapeString(message);
 		}
 	}

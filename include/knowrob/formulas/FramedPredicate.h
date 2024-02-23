@@ -19,8 +19,7 @@ namespace knowrob {
 		 * @param predicate the predicate.
 		 * @param graphSelector the graph selector.
 		 */
-		FramedPredicate(PredicatePtr predicate, GraphSelectorPtr graphSelector,
-				std::shared_ptr<const StringTerm> reasonerTerm)
+		FramedPredicate(PredicatePtr predicate, GraphSelectorPtr graphSelector, AtomPtr reasonerTerm)
 				: predicate_(std::move(predicate)),
 				  graphSelector_(std::move(graphSelector)),
 				  reasonerTerm_(std::move(reasonerTerm)) {}
@@ -43,8 +42,8 @@ namespace knowrob {
 	protected:
 		PredicatePtr predicate_;
 		GraphSelectorPtr graphSelector_;
-		std::shared_ptr<const StringTerm> reasonerTerm_;
+		AtomPtr reasonerTerm_;
 	};
 }
 
-#endif //KNOWROB_PREDICATE_DESCRIPTION_H
+#endif //KNOWROB_FRAMED_PREDICATE_H

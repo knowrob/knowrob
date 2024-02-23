@@ -8,74 +8,74 @@
 
 #include <memory>
 #include "Predicate.h"
-#include "knowrob/semweb/StatementData.h"
+#include "knowrob/semweb/FramedTriple.h"
 
 namespace knowrob {
-    /**
-     * A FOL literal is an atomic formula or its negation.
-     */
-    class FirstOrderLiteral {
-    public:
-        FirstOrderLiteral(const PredicatePtr &predicate, bool isNegative);
+	/**
+	 * A FOL literal is an atomic formula or its negation.
+	 */
+	class FirstOrderLiteral {
+	public:
+		FirstOrderLiteral(const PredicatePtr &predicate, bool isNegative);
 
-        /**
-         * Substitution constructor.
-         * @other a literal.
-         * @sub a mapping from terms to variables.
-         */
-        FirstOrderLiteral(const FirstOrderLiteral &other, const Substitution &sub);
+		/**
+		 * Substitution constructor.
+		 * @other a literal.
+		 * @sub a mapping from terms to variables.
+		 */
+		FirstOrderLiteral(const FirstOrderLiteral &other, const Substitution &sub);
 
-        /**
-         * @return the predicate of this literal.
-         */
-        const auto& predicate() const { return predicate_; }
+		/**
+		 * @return the predicate of this literal.
+		 */
+		const auto &predicate() const { return predicate_; }
 
-        /**
-         * @return true if this is a negative literal.
-         */
-        auto isNegated() const { return isNegated_; }
+		/**
+		 * @return true if this is a negative literal.
+		 */
+		auto isNegated() const { return isNegated_; }
 
-        /**
-         * Set the negated flag of this literal.
-         * @param isNegated true indicates the literal is negated.
-         */
-        void setIsNegated(bool isNegated) { isNegated_ = isNegated; }
+		/**
+		 * Set the negated flag of this literal.
+		 * @param isNegated true indicates the literal is negated.
+		 */
+		void setIsNegated(bool isNegated) { isNegated_ = isNegated; }
 
-        /**
-         * Get the functor of this literal.
-         *
-         * @return the functor name.
-         */
-        auto& functor() const { return predicate_->indicator()->functor(); }
+		/**
+		 * Get the functor of this literal.
+		 *
+		 * @return the functor name.
+		 */
+		auto &functor() const { return predicate_->functor(); }
 
-        /**
-         * Get the arity of this predicate.
-         *
-         * @return arity of predicate
-         */
-        auto arity() const { return predicate_->indicator()->arity(); }
+		/**
+		 * Get the arity of this predicate.
+		 *
+		 * @return arity of predicate
+		 */
+		auto arity() const { return predicate_->arity(); }
 
-        /**
-         * @return The number of variables contained in this literal.
-         */
-        virtual uint32_t numVariables() const { return predicate_->getVariables().size(); }
+		/**
+		 * @return The number of variables contained in this literal.
+		 */
+		virtual uint32_t numVariables() const { return predicate_->variables().size(); }
 
-        /**
-         * Write the literal into an ostream.
-         */
-        virtual std::ostream& write(std::ostream& os) const;
+		/**
+		 * Write the literal into an ostream.
+		 */
+		virtual std::ostream &write(std::ostream &os) const;
 
-    protected:
-        const PredicatePtr predicate_;
-        bool isNegated_;
-    };
+	protected:
+		const PredicatePtr predicate_;
+		bool isNegated_;
+	};
 
-    using FirstOrderLiteralPtr = std::shared_ptr<FirstOrderLiteral>;
+	using FirstOrderLiteralPtr = std::shared_ptr<FirstOrderLiteral>;
 
 } // knowrob
 
 namespace std {
-    std::ostream& operator<<(std::ostream& os, const knowrob::FirstOrderLiteral& l);
+	std::ostream &operator<<(std::ostream &os, const knowrob::FirstOrderLiteral &l);
 }
 
 #endif //KNOWROB_FIRST_ORDER_LITERAL_H

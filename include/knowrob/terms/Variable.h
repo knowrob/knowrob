@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -24,40 +21,45 @@ namespace knowrob {
 		/**
 		 * @name the name of the variable.
 		 */
-		explicit Variable(std::string name);
+		explicit Variable(std::string_view name);
 
 		/**
 		 * @param other another variable.
 		 * @return true if this name is alphabetically before other
 		 */
-		bool operator< (const Variable& other) const;
-		
+		bool operator<(const Variable &other) const;
+
+		/**
+		 * @param other another variable.
+		 * @return true if the names of the two variables are the same.
+		 */
+		bool isSameVariable(const Variable &other) const;
+
 		/**
 		 * @return the name of this variable.
 		 */
-		const std::string& name() const { return name_; }
-		
+		const std::string &name() const { return name_; }
+
 		// Override Term
-		bool isGround() const override { return false; }
-		
+		TermType termType() const final { return TermType::VARIABLE; }
+
 		// Override Term
 		bool isAtomic() const override { return false; }
 
 		// Override Term
-		const VariableSet& getVariables() override { return variables_; }
-		
-		// Override Term
-		void write(std::ostream& os) const override;
+		const VariableSet &variables() const override { return variables_; }
 
 		// Override Term
-        size_t computeHash() const override { return std::hash<std::string>{}(name_); }
+		void write(std::ostream &os) const override;
+
+		// Override Term
+		size_t hash() const override { return std::hash<std::string>{}(name_); }
 
 	protected:
+		// TODO: should really each variable have its own copy? better support string_view too,
+		//        or maybe simply use a tabled atom?
 		const std::string name_;
 		const VariableSet variables_;
-
-		// Override Term
-		bool isEqual(const Term &other) const override;
 	};
 }
 

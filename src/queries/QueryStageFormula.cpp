@@ -16,7 +16,7 @@ QueryStageFormula::QueryStageFormula(FormulaPtr formula, const QueryContextPtr &
 
 TokenBufferPtr QueryStageFormula::submitQuery(const Substitution &substitution) {
 	// apply the substitution mapping
-	auto formulaInstance = formula_->applySubstitution(substitution);
+	auto formulaInstance = applyBindings(formula_, substitution);
 	// submit a query
 	return submitQuery(formulaInstance);
 }

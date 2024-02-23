@@ -10,8 +10,11 @@
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
 #include "knowrob/Logger.h"
-#include "knowrob/terms/Constant.h"
 #include "knowrob/terms/ListTerm.h"
+#include "knowrob/terms/Numeric.h"
+#include "knowrob/terms/Blank.h"
+#include "knowrob/terms/String.h"
+#include "knowrob/terms/IRIAtom.h"
 #include "knowrob/formulas/Bottom.h"
 #include "knowrob/formulas/Top.h"
 #include "knowrob/formulas/Negation.h"
@@ -42,7 +45,7 @@ BOOST_PYTHON_MODULE (knowrob) {
 	using namespace boost::python;
 	typedef std::vector<TermPtr> TermList;
 	typedef std::vector<FormulaPtr> FormulaList;
-	typedef std::vector<StatementData> StatementList;
+	typedef std::vector<FramedTriple*> StatementList;
 
 	/////////////////////////////////////////////////////
 	// logging
@@ -62,44 +65,112 @@ BOOST_PYTHON_MODULE (knowrob) {
 			.def("get", &Agent::get);
 
 	/////////////////////////////////////////////////////
+	// RDF types
+	/////////////////////////////////////////////////////
+
+	enum_<RDFNodeType>("RDFNodeType")
+	        .value("BLANK", RDFNodeType::BLANK)
+			.value("IRI", RDFNodeType::IRI)
+			.value("LITERAL", RDFNodeType::LITERAL);
+
+	class_<RDFNode, std::shared_ptr<RDFNodeWrap>, boost::noncopyable>("RDFNode", no_init)
+			.def("rdfNodeType", python::pure_virtual(&RDFNode::rdfNodeType));
+
+	/////////////////////////////////////////////////////
 	// mappings for the Term and its subclasses
 	/////////////////////////////////////////////////////
 	enum_<TermType>("TermType")
-			.value("PREDICATE", TermType::PREDICATE)
-			.value("DOUBLE", TermType::DOUBLE)
-			.value("INT32", TermType::INT32)
-			.value("LONG", TermType::LONG)
-			.value("STRING", TermType::STRING)
-			.value("VARIABLE", TermType::VARIABLE)
-			.value("LIST", TermType::LIST);
-	class_<Term, std::shared_ptr<TermWrap>, boost::noncopyable>("Term", python::no_init)
-			.def("type", &Term::type, CONST_REF_RETURN)
+			.value("FUNCTION", TermType::FUNCTION)
+			.value("ATOMIC", TermType::ATOMIC)
+			.value("VARIABLE", TermType::VARIABLE);
+
+	class_<Term, std::shared_ptr<TermWrap>, boost::noncopyable>
+	        ("Term", python::no_init)
 			.def("__eq__", &Term::operator==)
-			.def("__str__", +[](Term &t){ return t.toString(); })
+			.def("__str__", +[](Term &t){ return t.constructString(); })
+			.def("termType", &Term::termType)
 			.def("isGround", python::pure_virtual(&Term::isGround))
 			.def("isAtomic", python::pure_virtual(&Term::isAtomic))
-			.def("computeHash", python::pure_virtual(&Term::computeHash))
-			.def("write", python::pure_virtual(&Term::write))
-			.def("getVariables", python::pure_virtual(&Term::getVariables), CONST_REF_RETURN);
-	class_<Variable, std::shared_ptr<Variable>, bases<Term>>("Variable", init<std::string>())
+			.def("isAtom", &Term::isAtom)
+			.def("isVariable", &Term::isVariable)
+			.def("isFunction", &Term::isFunction)
+			.def("isNumeric", &Term::isNumeric)
+			.def("isString", &Term::isString)
+			.def("isIRI", &Term::isIRI)
+			.def("isBlank", &Term::isBlank)
+			.def("hash", python::pure_virtual(&Term::hash))
+			.def("variables", python::pure_virtual(&Term::variables), CONST_REF_RETURN);
+	class_<Variable, std::shared_ptr<Variable>, bases<Term>>
+			("Variable", init<std::string>())
 			.def(self < self)
 			.def("name", &Variable::name, CONST_REF_RETURN);
-	class_<ListTerm, std::shared_ptr<ListTerm>, bases<Term>>("ListTerm", init<const std::vector<TermPtr> &>())
+	class_<Blank, std::shared_ptr<Blank>, bases<Variable,RDFNode>>
+			("Blank", init<std::string_view>());
+	class_<Function, std::shared_ptr<Function>, bases<Term>>("Function", init<std::string_view, const TermList &>())
+			.def(init<const AtomPtr &, const TermList &>())
+			.def("functor", &Function::functor, CONST_REF_RETURN)
+			.def("arguments", &Function::arguments, CONST_REF_RETURN);
+	class_<ListTerm, std::shared_ptr<ListTerm>, bases<Function>>("ListTerm", init<const std::vector<TermPtr> &>())
 			.def("__iter__", range(&ListTerm::begin, &ListTerm::end))
 			.def("isNIL", &ListTerm::isNIL)
 			.def("elements", &ListTerm::elements, CONST_REF_RETURN);
-	class_<StringTerm, std::shared_ptr<StringTerm>, bases<Term>>
-			("StringTerm", init<std::string>())
-			.def("value", &StringTerm::value, CONST_REF_RETURN);
-	class_<DoubleTerm, std::shared_ptr<DoubleTerm>, bases<Term>>
-			("DoubleTerm", init<double>())
-			.def("value", &DoubleTerm::value, CONST_REF_RETURN);
-	class_<LongTerm, std::shared_ptr<LongTerm>, bases<Term>>
-			("LongTerm", init<long>())
-			.def("value", &LongTerm::value, CONST_REF_RETURN);
-	class_<Integer32Term, std::shared_ptr<Integer32Term>, bases<Term>>
-			("Integer32Term", init<int32_t>())
-			.def("value", &Integer32Term::value, CONST_REF_RETURN);
+	class_<Atomic, std::shared_ptr<AtomicWrap>, bases<Term>, boost::noncopyable>
+			("Atomic", no_init)
+			.def("stringForm", python::pure_virtual(&Atomic::stringForm))
+			.def("atomicType", python::pure_virtual(&Atomic::atomicType))
+			.def("isSameAtomic", &Atomic::isSameAtomic);
+	class_<Atom, std::shared_ptr<Atom>, bases<Atomic>>("Atom", no_init)
+			.def("Tabled", &Atom::Tabled)
+			.def("atomType", &Atom::atomType)
+			.def("isSameAtom", &Atom::isSameAtom);
+	class_<IRIAtom, std::shared_ptr<IRIAtom>, bases<Atom,RDFNode>>("IRIAtom", no_init)
+			.def("Tabled", &IRIAtom::Tabled)
+			.def("rdfNodeType", &IRIAtom::rdfNodeType)
+			.def("isIRI", &IRIAtom::isIRI);
+	class_<XSDAtomic, std::shared_ptr<XSDAtomicWrap>, bases<Atomic,RDFNode>, boost::noncopyable>
+	        ("XSDAtomic", no_init)
+			.def("xsdTypeIRI", &XSDAtomic::xsdTypeIRI)
+			.def("xsdType", python::pure_virtual(&XSDAtomic::xsdType));
+	class_<StringBase, std::shared_ptr<StringBase>, bases<XSDAtomic>, boost::noncopyable>
+			("StringTerm", no_init)
+			.def("isSameString", &StringBase::isSameString);
+	class_<String, std::shared_ptr<String>, bases<StringBase>>
+			("String", init<std::string_view>());
+	class_<StringView, std::shared_ptr<StringView>, bases<StringBase>>
+			("StringView", init<std::string_view>());
+	class_<Numeric, std::shared_ptr<NumericWrap>, bases<XSDAtomic>, boost::noncopyable>
+	        ("Numeric", no_init)
+			.def("isFloatingNumber", &Numeric::isFloatingNumber)
+			.def("isSameNumeric", &Numeric::isSameNumeric)
+			.def("asDouble", python::pure_virtual(&Numeric::asDouble))
+			.def("asFloat", python::pure_virtual(&Numeric::asFloat))
+			.def("asInteger", python::pure_virtual(&Numeric::asInteger))
+			.def("asLong", python::pure_virtual(&Numeric::asLong))
+			.def("asShort", python::pure_virtual(&Numeric::asShort))
+			.def("asUnsignedInteger", python::pure_virtual(&Numeric::asUnsignedInteger))
+			.def("asUnsignedLong", python::pure_virtual(&Numeric::asUnsignedLong))
+			.def("asUnsignedShort", python::pure_virtual(&Numeric::asUnsignedShort))
+			.def("asBoolean", python::pure_virtual(&Numeric::asBoolean));
+	class_<Double, std::shared_ptr<Double>, bases<Numeric>>
+			("Double", init<double>())
+			.def(init<std::string_view>())
+			.def("numericForm", &Double::numericForm);
+	class_<Float, std::shared_ptr<Float>, bases<Numeric>>
+			("Float", init<float>())
+			.def(init<std::string_view>())
+			.def("numericForm", &Float::numericForm);
+	class_<Integer, std::shared_ptr<Integer>, bases<Numeric>>
+			("Integer", init<int>())
+			.def(init<std::string_view>())
+			.def("numericForm", &Integer::numericForm);
+	class_<Long, std::shared_ptr<Long>, bases<Numeric>>
+			("Long", init<long>())
+			.def(init<std::string_view>())
+			.def("numericForm", &Long::numericForm);
+	class_<Short, std::shared_ptr<Short>, bases<Numeric>>
+			("Short", init<short>())
+			.def(init<std::string_view>())
+			.def("numericForm", &Short::numericForm);
 
 	// allow conversion between std::vector and python::list for Term objects.
 	custom_vector_from_seq<TermPtr>();
@@ -120,7 +191,6 @@ BOOST_PYTHON_MODULE (knowrob) {
 			.def("__eq__", &Formula::operator==)
 			.def("isGround", python::pure_virtual(&Formula::isGround))
 			.def("write", python::pure_virtual(&Formula::write))
-			.def("applySubstitution", python::pure_virtual(&Formula::applySubstitution))
 			.def("isAtomic", &Formula::isAtomic)
 			.def("isTop", &Formula::isTop)
 			.def("isBottom", &Formula::isBottom);
@@ -162,7 +232,7 @@ BOOST_PYTHON_MODULE (knowrob) {
 			.def("modalFormula", &ModalFormula::modalFormula, CONST_REF_RETURN)
 			.def("isModalPossibility", &ModalFormula::isModalPossibility)
 			.def("isModalNecessity", &ModalFormula::isModalNecessity);
-	class_<ModalOperator, std::shared_ptr<ModalOperator>, bases<Term>>
+	class_<ModalOperator, std::shared_ptr<ModalOperator>>
 			("ModalOperator", init<const std::shared_ptr<Modality> &, ModalOperatorType>())
 			.def("modality", &ModalOperator::modality, CONST_REF_RETURN)
 			.def("isModalNecessity", &ModalOperator::isModalNecessity)
@@ -209,12 +279,11 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.def("indicator", &PredicateDescription::indicator, CONST_REF_RETURN)
 			.def("type", &PredicateDescription::type)
 			.def("materializationStrategy", &PredicateDescription::materializationStrategy);
-	class_<Predicate, std::shared_ptr<Predicate>, bases<Formula, Term>>
-			("Predicate", init<const std::string &, const TermList &>())
-			.def(init<const std::shared_ptr<PredicateIndicator> &, const TermList &>())
-			.def(init<const Predicate &, const Substitution &>())
+	class_<Predicate, std::shared_ptr<Predicate>, bases<Formula>>
+			("Predicate", init<std::string_view, const TermList &>())
+			.def(init<const AtomPtr &, const TermList &>())
 			.def("arguments", &Predicate::arguments, CONST_REF_RETURN)
-			.def("indicator", &Predicate::indicator, CONST_REF_RETURN);
+			.def("functor", &Predicate::functor, CONST_REF_RETURN);
 	class_<Bottom, std::shared_ptr<Bottom>, bases<Predicate>>("Bottom", no_init)
 			.def("get", &Bottom::get, CONST_REF_RETURN);
 	class_<Top, std::shared_ptr<Top>, bases<Predicate>>("Top", no_init)
@@ -224,33 +293,35 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 	// mappings for StatementData
 	/////////////////////////////////////////////////////
 
-	enum_<RDFType>("RDFType")
-			.value("BOOLEAN_LITERAL", RDF_BOOLEAN_LITERAL)
-			.value("INT64_LITERAL", RDF_INT64_LITERAL)
-			.value("DOUBLE_LITERAL", RDF_DOUBLE_LITERAL)
-			.value("STRING_LITERAL", RDF_STRING_LITERAL)
-			.value("RESOURCE", RDF_RESOURCE);
+	class_<FramedTriple, std::shared_ptr<FramedTripleWrap>, boost::noncopyable>
+	        ("FramedTriple", no_init)
+	        .def("__eq__", &FramedTriple::operator==)
+			.def("setSubject", python::pure_virtual(&FramedTriple::setSubject))
+			.def("setPredicate", python::pure_virtual(&FramedTriple::setPredicate))
+			.def("setSubjectBlank", python::pure_virtual(&FramedTriple::setSubjectBlank))
+			.def("setObjectIRI", python::pure_virtual(&FramedTriple::setObjectIRI))
+			.def("setObjectBlank", python::pure_virtual(&FramedTriple::setObjectBlank))
+			.def("setXSDValue", &FramedTriple::setXSDValue)
+			.def("setGraph", python::pure_virtual(&FramedTriple::setGraph))
+			.def("setAgent", python::pure_virtual(&FramedTriple::setAgent))
+			.def("setTemporalOperator", &FramedTriple::setTemporalOperator)
+			.def("setEpistemicOperator", &FramedTriple::setEpistemicOperator)
+			.def("setBegin", &FramedTriple::setBegin)
+			.def("setEnd", &FramedTriple::setEnd)
+			.def("setConfidence", &FramedTriple::setConfidence)
+			.def("xsdType", &FramedTriple::xsdType)
+			.def("subject", python::pure_virtual(&FramedTriple::subject))
+			.def("predicate", python::pure_virtual(&FramedTriple::predicate))
+			.def("graph", python::pure_virtual(&FramedTriple::graph))
+			.def("agent", python::pure_virtual(&FramedTriple::agent))
+			.def("temporalOperator", &FramedTriple::temporalOperator)
+			.def("epistemicOperator", &FramedTriple::epistemicOperator)
+			.def("begin", &FramedTriple::begin)
+			.def("end", &FramedTriple::end)
+			.def("confidence", &FramedTriple::confidence);
 
-	class_<StatementData, std::shared_ptr<StatementData>>("StatementData", init<>())
-			.def(init<const char *, const char *, const char *, const char *, const char *>())
-			.def_readwrite("documentID", &StatementData::documentID)
-			.def_readwrite("subject", &StatementData::subject)
-			.def_readwrite("predicate", &StatementData::predicate)
-			.def_readwrite("object", &StatementData::object)
-			.def_readwrite("graph", &StatementData::graph)
-			.def_readwrite("agent", &StatementData::agent)
-			.def_readwrite("objectDouble", &StatementData::objectDouble)
-			.def_readwrite("objectInteger", &StatementData::objectInteger)
-			.def_readwrite("objectType", &StatementData::objectType)
-			.BOOST_PYTHON_ADD_OPTIONAL("temporalOperator", &StatementData::temporalOperator)
-			.BOOST_PYTHON_ADD_OPTIONAL("epistemicOperator", &StatementData::epistemicOperator)
-			.BOOST_PYTHON_ADD_OPTIONAL("begin", &StatementData::begin)
-			.BOOST_PYTHON_ADD_OPTIONAL("end", &StatementData::end)
-			.BOOST_PYTHON_ADD_OPTIONAL("confidence", &StatementData::confidence);
-
-	// allow conversion between std::vector and python::list for Formula objects.
-	custom_vector_from_seq<StatementData>();
-	class_<StatementList>("StatementList").def(vector_indexing_suite<StatementList, true>());
+	//custom_vector_from_seq<FramedTriple*>();
+	//class_<StatementList>("StatementList").def(vector_indexing_suite<StatementList, true>());
 
 	// abstract container which is used in the DataBackend class
 	class_<semweb::TripleContainer, std::shared_ptr<semweb::TripleContainer>, boost::noncopyable>
@@ -269,8 +340,8 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 					// FIXME: is a virtual method, might need a wrapper
 			.def("numVariables", &FirstOrderLiteral::numVariables);
 	class_<RDFLiteral, std::shared_ptr<RDFLiteral>, bases<FirstOrderLiteral>>
-			("RDFLiteral", init<const StatementData &, bool>())
-			.def(init<const StatementData &>())
+			("RDFLiteral", init<const FramedTriple &, bool>())
+			.def(init<const FramedTriple &>())
 			.def(init<const RDFLiteral &, const Substitution &>())
 			.def("subjectTerm", &RDFLiteral::subjectTerm)
 			.def("propertyTerm", &RDFLiteral::propertyTerm)
@@ -381,7 +452,6 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.def("get", &ReasonerConfig::get)
 			.def("dataSources", &ReasonerConfig::dataSources, CONST_REF_RETURN);
 	class_<Reasoner, std::shared_ptr<ReasonerWrap>, bases<DataSourceHandler>, boost::noncopyable>("Reasoner", init<>())
-			.def("createTriple", &ReasonerWrap::createTriple)
 			.def("createTriples", &ReasonerWrap::createTriples)
 			.def("pushWork", +[](Reasoner &x, python::object &fn){ x.pushWork(fn); })
 			.def("setInferredTriples", &ReasonerWrap::setInferredTriples)
@@ -402,6 +472,7 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 	/////////////////////////////////////////////////////
 	python_optional<TemporalOperator>();
 	python_optional<EpistemicOperator>();
+	python_optional<std::string_view>();
 	python_optional<double>();
 	python_optional<AgentPtr>();
 }

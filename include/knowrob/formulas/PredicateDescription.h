@@ -1,6 +1,7 @@
-//
-// Created by daniel on 27.01.24.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_PREDICATE_DESCRIPTION_H
 #define KNOWROB_PREDICATE_DESCRIPTION_H
@@ -76,7 +77,7 @@ namespace knowrob {
 		/**
 		 * @return the indicator of the predicate.
 		 */
-		const std::shared_ptr<PredicateIndicator>& indicator() const { return indicator_; }
+		const std::shared_ptr<PredicateIndicator> &indicator() const { return indicator_; }
 
 		/**
 		 * @return the type of the predicate.
@@ -94,7 +95,7 @@ namespace knowrob {
 		MaterializationStrategy materializationStrategy_;
 	};
 
-    using PredicateDescriptionPtr = std::shared_ptr<PredicateDescription>;
+	using PredicateDescriptionPtr = std::shared_ptr<PredicateDescription>;
 }
 
 #endif //KNOWROB_PREDICATE_DESCRIPTION_H

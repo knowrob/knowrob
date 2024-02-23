@@ -57,7 +57,7 @@ namespace knowrob {
 		/**
 		 * @return the set of reasoner of this KB.
 		 */
-		const std::map<std::string, std::shared_ptr<DefinedReasoner>> &reasonerPool() const;
+		const std::map<std::string, std::shared_ptr<DefinedReasoner>, std::less<>> &reasonerPool() const;
 
 		/**
 		 * Load a data source into the knowledge base.
@@ -122,20 +122,20 @@ namespace knowrob {
 		void init();
 
 		// override IDataBackend
-		bool insertOne(const StatementData &triple) override;
+		bool insertOne(const FramedTriple &triple) override;
 
 		// override IDataBackend
 		bool insertAll(const semweb::TripleContainerPtr &triples) override;
 
-		bool insertAll(const std::vector<StatementData> &triples);
+		bool insertAll(const std::vector<FramedTriplePtr> &triples);
 
 		// override IDataBackend
-		bool removeOne(const StatementData &triple) override;
+		bool removeOne(const FramedTriple &triple) override;
 
 		// override IDataBackend
 		bool removeAll(const semweb::TripleContainerPtr &triples) override;
 
-		bool removeAll(const std::vector<StatementData> &triples);
+		bool removeAll(const std::vector<FramedTriplePtr> &triples);
 
 		// override IDataBackend
 		bool removeAllWithOrigin(std::string_view origin) override;
@@ -196,7 +196,7 @@ namespace knowrob {
 
 		void stopReasoner();
 
-		DataBackendPtr findSourceBackend(const StatementData &triple);
+		DataBackendPtr findSourceBackend(const FramedTriple &triple);
 
 		std::vector<std::shared_ptr<DefinedBackend>> prepareLoad(std::string_view origin, std::string_view newVersion) const;
 
@@ -213,9 +213,9 @@ namespace knowrob {
 		static DataSourceType getDataSourceType(const std::string &format, const boost::optional<std::string> &language,
 												const boost::optional<std::string> &type);
 
-		void updateVocabularyInsert(const StatementData &tripleData);
+		void updateVocabularyInsert(const FramedTriple &tripleData);
 
-		void updateVocabularyRemove(const StatementData &tripleData);
+		void updateVocabularyRemove(const FramedTriple &tripleData);
 
 		std::optional<std::string> getVersionOfOrigin(const std::shared_ptr<DefinedBackend> &definedBackend,
 													  std::string_view origin) const;

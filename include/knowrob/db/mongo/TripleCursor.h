@@ -6,33 +6,35 @@
 #define KNOWROB_MONGO_TRIPLE_CURSOR_H
 
 #include "Cursor.h"
-#include "knowrob/semweb/StatementData.h"
+#include "knowrob/semweb/FramedTriple.h"
 
 namespace knowrob::mongo {
-    /**
-     * A cursor that iterates over different results of a query,
-     * and fills a StatementData structure with the data.
-     */
-    class TripleCursor : public Cursor {
-    public:
-        explicit TripleCursor(const std::shared_ptr<Collection> &collection);
+	/**
+	 * A cursor that iterates over different results of a query,
+	 * and fills a StatementData structure with the data.
+	 */
+	class TripleCursor : public Cursor {
+	public:
+		explicit TripleCursor(const std::shared_ptr<Collection> &collection);
 
-        /**
-         * Get the next triple from this cursor if any.
-         * @param tripleData a triple data structure
-         * @return true on success
-         */
-        bool nextTriple(StatementData &tripleData);
+		bool nextTriple(FramedTripleView &tripleData, const bson_oid_t **tripleOID);
 
-        /**
-         * @return the last document fetched by this cursor, or null if no document was fetched before.
-         */
-        auto tripleDocument() { return tripleDocument_; }
+		/**
+		 * Get the next triple from this cursor if any.
+		 * @param tripleData a triple data structure
+		 * @return true on success
+		 */
+		bool nextTriple(FramedTripleView &tripleData);
 
-    protected:
-        const bson_t *tripleDocument_;
-        bson_iter_t tripleIter_;
-    };
+		/**
+		 * @return the last document fetched by this cursor, or null if no document was fetched before.
+		 */
+		auto tripleDocument() { return tripleDocument_; }
+
+	protected:
+		const bson_t *tripleDocument_;
+		bson_iter_t tripleIter_;
+	};
 
 } // knowrob
 

@@ -5,24 +5,24 @@
 #define EPISTEMIC_MODALITY_SINCE_KEY "since"
 #define EPISTEMIC_MODALITY_UNTIL_KEY "until"
 
-#include "knowrob/terms/Constant.h"
+#include "knowrob/terms/Numeric.h"
 #include "knowrob/modalities/TemporalModality.h"
 
 using namespace knowrob;
 
 TemporalModality::TemporalModality()
-        : timeInterval_(std::nullopt), Modality() {}
+		: timeInterval_(std::nullopt), Modality() {}
 
 TemporalModality::TemporalModality(const TimeInterval &timeInterval)
-        : timeInterval_(timeInterval), Modality() {
-    if(timeInterval_->since().has_value()) {
-        parameters_[EPISTEMIC_MODALITY_SINCE_KEY] =
-                std::make_shared<DoubleTerm>(timeInterval_->since().value().value());
-    }
-    if(timeInterval_->until().has_value()) {
-        parameters_[EPISTEMIC_MODALITY_UNTIL_KEY] =
-                std::make_shared<DoubleTerm>(timeInterval_->until().value().value());
-    }
+		: timeInterval_(timeInterval), Modality() {
+	if (timeInterval_->since().has_value()) {
+		parameters_[EPISTEMIC_MODALITY_SINCE_KEY] =
+				std::make_shared<Double>(timeInterval_->since().value().value());
+	}
+	if (timeInterval_->until().has_value()) {
+		parameters_[EPISTEMIC_MODALITY_UNTIL_KEY] =
+				std::make_shared<Double>(timeInterval_->until().value().value());
+	}
 }
 
-const std::optional<TimeInterval>& TemporalModality::timeInterval() const { return timeInterval_; }
+const std::optional<TimeInterval> &TemporalModality::timeInterval() const { return timeInterval_; }

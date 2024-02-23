@@ -65,10 +65,9 @@ test('>(Short3,Short1)') :-
 test('>(Short4,Short3)') :-
 	assert_false(interval_after(test:'Short2', test:'Short3')).
 
-
-/********************************
- *	    QUALITATIVE INPUT     	*
- ********************************/
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% QUALITATIVE INPUT
+%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 test('s(Event0,Event1)') :-
 	assert_true(interval_starts(test:'Event0', test:'Event1')).
@@ -122,9 +121,9 @@ test('<(Event1,Event2)') :-
 test('<(Event1,Event3)') :-
 	assert_false(interval_before(test:'Event1', test:'Event3')).
 
-/********************************
- *	    MIXED INPUT	     		*
- ********************************/
+%%%%%%%%%%%%%%%%%%%
+%% MIXED INPUT
+%%%%%%%%%%%%%%%%%%%
 
 test('<(Event6,Short3)') :-
 	assert_true(interval_before(test:'Event6', test:'Short3')).
@@ -136,9 +135,9 @@ test('<(Event6,Short4)', [ fixme('support mixing of quantitative+qualitative inp
 test('<(Event7,Short4)', [ fixme('support mixing of quantitative+qualitative input') ]) :-
 	interval_before(test:'Event7', test:'Short4').
 
-/********************************
- *	    DYNAMIC ASSERTIONS     	*
- ********************************/
+%%%%%%%%%%%%%%%%%%%
+%% DYNAMIC ASSERTIONS
+%%%%%%%%%%%%%%%%%%%
 
 % TODO: tests adding axioms, connect to pre-loaded events
 %         that won't work at the moment! because ESGs are

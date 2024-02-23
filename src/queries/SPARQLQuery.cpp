@@ -6,6 +6,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <sstream>
 #include "knowrob/queries/SPARQLQuery.h"
+#include "knowrob/terms/Atom.h"
 
 using namespace knowrob;
 
@@ -47,16 +48,13 @@ void SPARQLQuery::where(std::ostream &os, const RDFLiteral &triplePattern) {
 }
 
 void SPARQLQuery::where(std::ostream &os, const TermPtr &term) {
-	switch (term->type()) {
+	switch (term->termType()) {
 		case TermType::VARIABLE:
 			os << "?" << ((Variable *) term.get())->name() << " ";
 			break;
-		case TermType::STRING: {
-			// FIXME: need to distinguish strings and resources! below is a temporary HACK
-			auto str = term->toString();
-			if (boost::algorithm::starts_with(str, "http") ||
-				boost::algorithm::starts_with(str, "_")) {
-				os << "<" << *term << "> ";
+		case TermType::ATOMIC: {
+			if(term->isIRI()) {
+				os << "<" << std::static_pointer_cast<Atomic>(term)->stringForm() << "> ";
 				break;
 			}
 		}

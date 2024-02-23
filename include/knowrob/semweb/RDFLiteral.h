@@ -6,9 +6,8 @@
 #define KNOWROB_FRAMED_RDF_LITERAL_H
 
 #include "knowrob/formulas/Predicate.h"
-#include "knowrob/semweb/StatementData.h"
+#include "knowrob/semweb/FramedTriple.h"
 #include "knowrob/semweb/TripleContainer.h"
-#include "knowrob/terms/Constant.h"
 #include "knowrob/formulas/FirstOrderLiteral.h"
 #include "knowrob/queries/QueryContext.h"
 
@@ -29,7 +28,7 @@ namespace knowrob {
 		 * @param tripleData input data, can be deleted afterwards.
 		 * @param isNegated a value of true refers to the statement being false.
 		 */
-        explicit RDFLiteral(const StatementData &tripleData, bool isNegated=false);
+        explicit RDFLiteral(const FramedTriple &tripleData, bool isNegated=false);
 
 		/**
 		 * @param predicate a predicate with two arguments.
@@ -100,13 +99,15 @@ namespace knowrob {
 
         std::optional<TemporalOperator> temporalOperator() const { return temporalOperator_; };
 
+        void setTemporalOperator(TemporalOperator temporalOperator) { temporalOperator_ = temporalOperator; }
+
         std::optional<EpistemicOperator> epistemicOperator() const { return epistemicOperator_; };
 
         void setObjectOperator(OperatorType objectOperator) { objectOperator_ = objectOperator; }
 
         uint32_t numVariables() const override;
 
-        StatementData toStatementData() const;
+        bool toStatementData(FramedTriple &data) const;
 
     protected:
         std::shared_ptr<Term> subjectTerm_;
@@ -126,7 +127,7 @@ namespace knowrob {
         static std::shared_ptr<Term> getGraphTerm(const std::string_view &graphName);
 
         static std::shared_ptr<Predicate> getRDFPredicate(const TermPtr &s, const TermPtr &p, const TermPtr &o);
-        static std::shared_ptr<Predicate> getRDFPredicate(const StatementData &data);
+        static std::shared_ptr<Predicate> getRDFPredicate(const FramedTriple &data);
         static std::shared_ptr<Predicate> getRDFPredicate(const PredicatePtr &predicate);
     };
     using RDFLiteralPtr = std::shared_ptr<RDFLiteral>;
@@ -135,9 +136,9 @@ namespace knowrob {
 	public:
 		void push_back(const RDFLiteralPtr &triple);
 
-		const std::vector<StatementData>& asImmutableVector() const override { return data_; }
+		const std::vector<FramedTriplePtr>& asImmutableVector() const override { return data_; }
 	protected:
-		std::vector<StatementData> data_;
+		std::vector<FramedTriplePtr> data_;
 		std::vector<RDFLiteralPtr> statements_;
 	};
 } // knowrob

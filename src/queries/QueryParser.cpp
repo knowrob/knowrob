@@ -10,7 +10,6 @@
 #include <boost/spirit/include/phoenix_operator.hpp>
 
 #include "knowrob/queries/QueryParser.h"
-#include "knowrob/terms/Constant.h"
 #include "knowrob/formulas/Negation.h"
 #include "knowrob/formulas/Implication.h"
 #include "knowrob/formulas/Conjunction.h"
@@ -22,6 +21,9 @@
 #include "knowrob/modalities/PastModality.h"
 #include "knowrob/queries/QueryError.h"
 #include "knowrob/terms/ListTerm.h"
+#include "knowrob/terms/Numeric.h"
+#include "knowrob/terms/String.h"
+#include "knowrob/terms/IRIAtom.h"
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/terms/OptionList.h"
 #include "knowrob/Logger.h"
@@ -35,9 +37,11 @@ namespace ascii = boost::spirit::ascii;
 
 using Iterator = std::string::const_iterator;
 // parser rules with different output types (second argument)
-using TermRule = qi::rule<Iterator, std::shared_ptr<Term>()>;
+using TermRule = qi::rule<Iterator, std::shared_ptr<Term>(), ascii::space_type>;
 using PredicateRule = qi::rule<Iterator, std::shared_ptr<Predicate>(), ascii::space_type>;
+using FunctionRule = qi::rule<Iterator, std::shared_ptr<Function>(), ascii::space_type>;
 using FormulaRule = qi::rule<Iterator, std::shared_ptr<Formula>(), ascii::space_type>;
+using AtomRule = qi::rule<Iterator, std::shared_ptr<Atom>(), ascii::space_type>;
 using StringRule = qi::rule<Iterator, std::string()>;
 
 namespace knowrob {
@@ -62,13 +66,12 @@ namespace knowrob {
         PredicateRule predicateWithArgs;
 
         // a rule that matches a single argument of a predicate
-        TermRule argument;
-        TermRule compound;
+        TermRule term;
+        FunctionRule function;
         TermRule variable;
-        TermRule constant;
-        TermRule constantList;
+        TermRule atomic;
+        TermRule list;
         TermRule number;
-        TermRule atom;
         TermRule string;
         TermRule option;
         //TermRule optionFlag;
@@ -76,13 +79,19 @@ namespace knowrob {
         TermRule options;
         TermRule nil;
 
+        AtomRule atom;
+		AtomRule atom_regular;
+        AtomRule iri_atom;
+
+
         StringRule singleQuotes;
         StringRule doubleQuotes;
         StringRule lowerPrefix;
         StringRule upperPrefix;
         StringRule atomRaw;
+        StringRule atomRawWithIRI;
 
-        StringRule iri;
+        StringRule iri_raw;
         StringRule iri_ns;
         StringRule iri_entity;
     };
@@ -132,28 +141,31 @@ static void reportUnrecognized(const TermPtr &option) {
 
 static ModalOperatorPtr createK(const TermPtr &optionsTerm)
 {
+	static const auto a_agent1 = Atom::Tabled("agent");
+	static const auto a_agent2 = Atom::Tabled("a");
+
     if (optionsTerm && optionsTerm.get() != ListTerm::nil().get()) {
         auto listTerm = (ListTerm*)optionsTerm.get();
         std::optional<std::string> agentName;
 
         for(auto &option : *listTerm) {
             // handle options without key
-            if(!agentName.has_value() && option->type() == TermType::STRING) {
+            if(!agentName.has_value() && option->isAtom()) {
                 // assume first string that appears to be the agent name
-                agentName = ((StringTerm*)option.get())->value();
+                agentName = std::static_pointer_cast<Atomic>(option)->stringForm();
                 continue;
             }
             // handle options with a key
-            else if(option->type() == TermType::PREDICATE) {
+            else if(option->termType() == TermType::FUNCTION) {
                 // a key was specified for this option, ensure it is the "agent" ("a") key and use the value.
-                auto predicate = (Predicate*)option.get();
-                if(predicate->indicator()->arity()==2) {
-                    auto &key = predicate->arguments()[0];
-                    auto &value = predicate->arguments()[1];
-                    if(!agentName.has_value() && value->type() == knowrob::TermType::STRING &&
-                            (*key == StringTerm("agent") || *key == StringTerm("a")))
+                auto fn = std::static_pointer_cast<Function>(option);
+                if(fn->arity()==2) {
+                    auto &key = fn->arguments()[0];
+                    auto &value = fn->arguments()[1];
+                    if(!agentName.has_value() && value->isAtom() &&
+                            (*key == *a_agent1 || *key == *a_agent2))
                     {
-                        agentName = ((StringTerm*)value.get())->value();
+                        agentName = std::static_pointer_cast<Atomic>(value)->stringForm();
                         continue;
                     }
                 }
@@ -171,6 +183,11 @@ static ModalOperatorPtr createK(const TermPtr &optionsTerm)
 
 static ModalOperatorPtr createB(const TermPtr &optionsTerm)
 {
+	static const auto a_agent1 = Atom::Tabled("agent");
+	static const auto a_agent2 = Atom::Tabled("a");
+	static const auto a_confidence1 = Atom::Tabled("confidence");
+	static const auto a_confidence2 = Atom::Tabled("c");
+
     if (optionsTerm && optionsTerm.get() != ListTerm::nil().get()) {
         auto listTerm = (ListTerm*)optionsTerm.get();
         std::optional<std::string> agentName;
@@ -178,33 +195,33 @@ static ModalOperatorPtr createB(const TermPtr &optionsTerm)
 
         for(auto &option : *listTerm) {
             // handle options without key
-            if(!agentName.has_value() && option->type() == TermType::STRING) {
+            if(!agentName.has_value() && option->isAtom()) {
                 // assume first string that appears to be the agent name
-                agentName = ((StringTerm*)option.get())->value();
+                agentName = std::static_pointer_cast<Atomic>(option)->stringForm();
                 continue;
             }
-            else if(!confidenceValue.has_value() && option->type() == TermType::DOUBLE) {
+            else if(!confidenceValue.has_value() && option->isNumeric()) {
                 // assume first string that appears to be the agent name
-                confidenceValue = ((DoubleTerm*)option.get())->value();
+                confidenceValue = std::static_pointer_cast<Numeric>(option)->asDouble();
                 continue;
             }
             // handle options with a key
-            else if(option->type() == TermType::PREDICATE) {
+            else if(option->isFunction()) {
                 // a key was specified for this option, ensure it is the "agent" ("a") key and use the value.
-                auto predicate = (Predicate*)option.get();
-                if(predicate->indicator()->arity()==2) {
-                    auto &key = predicate->arguments()[0];
-                    auto &value = predicate->arguments()[1];
-                    if(!agentName.has_value() && value->type() == knowrob::TermType::STRING &&
-                            (*key == StringTerm("agent") || *key == StringTerm("a")))
+                auto fn = std::static_pointer_cast<Function>(option);
+                if(fn->arity()==2) {
+                    auto &key = fn->arguments()[0];
+                    auto &value = fn->arguments()[1];
+                    if(!agentName.has_value() && value->isAtom() &&
+                            (*key == *a_agent1 || *key == *a_agent2))
                     {
-                        agentName = ((StringTerm*)value.get())->value();
+                        agentName = std::static_pointer_cast<Atomic>(value)->stringForm();
                         continue;
                     }
-                    else if(!confidenceValue.has_value() && value->type() == knowrob::TermType::DOUBLE &&
-                            (*key == StringTerm("confidence") || *key == StringTerm("c")))
+                    else if(!confidenceValue.has_value() && value->isNumeric() &&
+                            (*key == *a_confidence1 || *key == *a_confidence2))
                     {
-                        confidenceValue = ((DoubleTerm*)value.get())->value();
+                        confidenceValue = std::static_pointer_cast<Numeric>(value)->asDouble();
                         continue;
                     }
                 }
@@ -231,42 +248,48 @@ static ModalOperatorPtr createB(const TermPtr &optionsTerm)
 
 static inline std::optional<TimeInterval> readTimeInterval(ListTerm *options)
 {
+	static const auto a_begin = Atom::Tabled("begin");
+	static const auto a_since = Atom::Tabled("since");
+	static const auto a_end = Atom::Tabled("end");
+	static const auto a_until = Atom::Tabled("until");
+
     std::optional<TimePoint> beginTime, endTime;
 
     for(auto &option : *options)
     {
-        // handle options without key
         // TODO: allow eg `H[,20] phi`? i.e. empty for first arg?
-        if(option->type() == TermType::DOUBLE) {
-            if(!beginTime.has_value()) {
-                beginTime = ((DoubleTerm*)option.get())->value();
-                continue;
+
+		if(option->termType() == TermType::FUNCTION) {
+        	// handle options with a key
+            auto function = (Function*)option.get();
+            if(function->arity()==2) {
+                auto &key = function->arguments()[0];
+                auto &value = function->arguments()[1];
+                if(value->isNumeric()) {
+                	auto numeric = std::static_pointer_cast<Numeric>(value);
+					if(!beginTime.has_value() && (*key == *a_begin || *key == *a_since)) {
+						beginTime = numeric->asDouble();
+						continue;
+					}
+					else if(!endTime.has_value() && (*key == *a_end || *key == *a_until)) {
+						endTime = numeric->asDouble();
+						continue;
+					}
+				}
             }
-            else if(!endTime.has_value()) {
-                endTime = ((DoubleTerm*)option.get())->value();
-                continue;
-            }
-        }
-        // handle options with a key
-        else if(option->type() == TermType::PREDICATE) {
-            // a key was specified for this option, ensure it is the "agent" ("a") key and use the value.
-            auto predicate = (Predicate*)option.get();
-            if(predicate->indicator()->arity()==2) {
-                auto &key = predicate->arguments()[0];
-                auto &value = predicate->arguments()[1];
-                if(!beginTime.has_value() && value->type() == knowrob::TermType::DOUBLE &&
-                    (*key == StringTerm("begin") || *key == StringTerm("since")))
-                {
-                    beginTime = ((DoubleTerm*)value.get())->value();
-                    continue;
-                }
-                else if(!endTime.has_value() && value->type() == knowrob::TermType::DOUBLE &&
-                    (*key == StringTerm("end") || *key == StringTerm("until")))
-                {
-                    endTime = ((DoubleTerm*)value.get())->value();
-                    continue;
-                }
-            }
+        } else if (option->isNumeric()) {
+        	// handle options without key
+        	auto numeric = std::static_pointer_cast<Numeric>(option);
+        	if(numeric) {
+				if(!beginTime.has_value()) {
+					beginTime = numeric->asDouble();
+					continue;
+				}
+				else if(!endTime.has_value()) {
+					endTime = numeric->asDouble();
+					continue;
+				}
+        	}
         }
         reportUnrecognized(option);
     }
@@ -303,9 +326,14 @@ static ModalOperatorPtr createH(const TermPtr &optionsTerm) {
 
 static std::vector<TermPtr> createTermVector2(const TermPtr &a, const TermPtr &b) { return {a, b}; }
 
+static AtomPtr makeAtom(std::string_view stringForm) { return Atom::Tabled(stringForm); }
+static AtomPtr makeIRI(std::string_view stringForm) { return IRIAtom::Tabled(stringForm); }
+
 QueryParser::QueryParser() {
     static const std::string equalFunctor = "=";
-    static const std::shared_ptr<StringTerm> flagTerm = std::make_shared<StringTerm>("flag");
+
+    // TODO: handle blanks here! Use Prolog convention that blank
+    //       is indicated by a not enquoted word starting with an underscore.
 
     bnf_ = new ParserRules();
     bnf_->singleQuotes %= qi::lexeme['\'' >> +(qi::char_ - '\'') >> '\''];
@@ -313,8 +341,11 @@ QueryParser::QueryParser() {
     bnf_->lowerPrefix %= qi::raw[ascii::lower >> *(ascii::alnum | '_')];
     bnf_->upperPrefix %= qi::raw[ascii::upper >> *(ascii::alnum | '_')];
 
-    // the raw string data of an atom. also handles IRI expansion.
-    bnf_->atomRaw %= (bnf_->singleQuotes | bnf_->iri | bnf_->lowerPrefix);
+    // atoms are either a single quoted string, or words that start with a lowercase letter.
+    bnf_->atomRaw %= (bnf_->singleQuotes | bnf_->lowerPrefix);
+    bnf_->atom_regular = (bnf_->atomRaw
+    		[qi::_val = boost::phoenix::bind(&makeAtom, qi::_1)]);
+
     // a IRI namespace is an alphanumeric word.
     // note that no single quotes are allowed, the greedy parser would match the `singleQuotes` rule before.
     bnf_->iri_ns %= (qi::raw[ascii::alpha >> *(ascii::alnum | '_')]);
@@ -322,43 +353,50 @@ QueryParser::QueryParser() {
     // Note that there is no need to enquote entities whose name starts with an uppercase character.
     bnf_->iri_entity %= (bnf_->singleQuotes | qi::raw[ascii::alpha >> *(ascii::alnum | '_')]);
     // IRI's are encoded as "ns:entity", ns must be a registered namespace at parse-time
-    bnf_->iri = ((bnf_->iri_ns >> qi::char_(':') >> bnf_->iri_entity)
+    bnf_->iri_raw = ((bnf_->iri_ns >> qi::char_(':') >> bnf_->iri_entity)
             [qi::_val = boost::phoenix::bind(&createIRI, qi::_1, qi::_3)]);
+	// TODO: support explicit typing of IRIs, e.g. iri('..')
+	// TODO: parse string and guess if it is a IRI or not?
+    bnf_->iri_atom = (bnf_->iri_raw
+            [qi::_val = boost::phoenix::bind(&makeIRI, qi::_1)]);
+
+    bnf_->atomRawWithIRI %= (bnf_->iri_raw | bnf_->atomRaw);
 
     ///////////////////////////
     // atomic constants: strings, numbers etc.
-    bnf_->atom = (bnf_->atomRaw
-            [qi::_val = ptr_<StringTerm>()(qi::_1)]);
+    bnf_->atom %= (bnf_->iri_atom | bnf_->atom_regular);
     bnf_->string = (bnf_->doubleQuotes
-            [qi::_val = ptr_<StringTerm>()(qi::_1)]);
+            [qi::_val = ptr_<String>()(qi::_1)]);
+	// TODO: support explicit typing of numbers, e.g. `123::int`
     bnf_->number = (qi::double_
-            [qi::_val = ptr_<DoubleTerm>()(qi::_1)]);
+            [qi::_val = ptr_<Double>()(qi::_1)]);
 
     ///////////////////////////
     // option lists
-    bnf_->keyvalue = ((((bnf_->atom) >> qi::char_('=')) >> (bnf_->constant))
-            [qi::_val = ptr_<Predicate>()(equalFunctor,
+    bnf_->keyvalue = ((((bnf_->atom) >> qi::char_('=')) >> (bnf_->atomic))
+            [qi::_val = ptr_<Function>()(equalFunctor,
              boost::phoenix::bind(&createTermVector2, qi::_1, qi::_3))]);
-    bnf_->option %= (bnf_->keyvalue | bnf_->constant);
+    bnf_->option %= (bnf_->keyvalue | bnf_->atomic);
     bnf_->options = ((qi::char_('[') >> (bnf_->option % ',') >> qi::char_(']'))
             [qi::_val = ptr_<ListTerm>()(qi::_2)]);
     bnf_->nil = qi::attr(ListTerm::nil());
 
     ///////////////////////////
     // arguments of predicates: constants or variables
-    bnf_->constant %= (bnf_->atom | bnf_->string | bnf_->number);
-    bnf_->constantList = ((qi::char_('[') >> (bnf_->constant % ',') >> qi::char_(']'))
+    bnf_->atomic %= (bnf_->atom | bnf_->string | bnf_->number);
+    bnf_->list = ((qi::char_('[') >> (bnf_->atomic % ',') >> qi::char_(']'))
             [qi::_val = ptr_<ListTerm>()(qi::_2)]);
     bnf_->variable = (bnf_->upperPrefix[qi::_val = ptr_<Variable>()(qi::_1)]);
     // TODO: also support some operators like '<', '>' etc. without quotes
-    bnf_->compound = (((bnf_->atomRaw) >>
-            qi::char_('(') >> (bnf_->argument % ',') >> ')')
-            [qi::_val = ptr_<Predicate>()(qi::_1, qi::_3)]);
-    bnf_->argument %= bnf_->compound | bnf_->variable | bnf_->constant | bnf_->constantList;
+    // TODO: needs atom type
+    bnf_->function = (((bnf_->atom) >>
+            qi::char_('(') >> (bnf_->term % ',') >> ')')
+            [qi::_val = ptr_<Function>()(qi::_1, qi::_3)]);
+    bnf_->term %= bnf_->function | bnf_->variable | bnf_->atomic | bnf_->list;
 
     ///////////////////////////
     // predicates
-    bnf_->predicateWithArgs = (((bnf_->atomRaw) >> qi::char_('(') >> (bnf_->argument % ',') >> ')')
+    bnf_->predicateWithArgs = (((bnf_->atomRaw) >> qi::char_('(') >> (bnf_->term % ',') >> ')')
             [qi::_val = ptr_<Predicate>()(qi::_1, qi::_3)]);
     bnf_->predicateNullary = ((bnf_->atomRaw)
             [qi::_val = ptr_<Predicate>()(qi::_1, std::vector<TermPtr>())]);
@@ -437,12 +475,16 @@ PredicatePtr QueryParser::parsePredicate(const std::string &queryString) {
     return parse_<PredicatePtr, PredicateRule>(queryString, get()->predicate);
 }
 
+FunctionPtr QueryParser::parseFunction(const std::string &queryString) {
+    return parse_<FunctionPtr, FunctionRule>(queryString, get()->function);
+}
+
 TermPtr QueryParser::parseConstant(const std::string &queryString) {
-    return parse_<TermPtr, TermRule>(queryString, get()->constant);
+    return parse_<TermPtr, TermRule>(queryString, get()->atomic);
 }
 
 std::string QueryParser::parseRawAtom(const std::string &queryString) {
-    return parse_<std::string, StringRule>(queryString, get()->atomRaw);
+    return parse_<std::string, StringRule>(queryString, get()->atomRawWithIRI);
 }
 
 // fixture class for testing
@@ -455,30 +497,34 @@ protected:
 static inline void testNumber(const TermPtr &t, const double &expected) {
     EXPECT_NE(t.get(), nullptr);
     if (t) {
-        EXPECT_EQ(t->type(), TermType::DOUBLE);
-        if (t->type() == TermType::DOUBLE) {
-            EXPECT_DOUBLE_EQ(((DoubleTerm *) t.get())->value(), expected);
-        }
+        EXPECT_EQ(t->termType(), TermType::ATOMIC);
+        if(t->termType() == TermType::ATOMIC) {
+			auto *a = (Atomic*) t.get();
+			EXPECT_EQ(a->atomicType(), AtomicType::NUMERIC);
+		}
+		EXPECT_EQ(t->constructString(), (std::ostringstream() << expected).str());
     }
 }
 
 template<typename ConstantType, typename PrimitiveType>
-static inline void testConstant(const TermPtr &t, const TermType &termType, const PrimitiveType &expected) {
+static inline void testConstant(const TermPtr &t, const AtomicType &atomicType, const std::string &expected) {
     EXPECT_NE(t.get(), nullptr);
     if (t) {
-        EXPECT_EQ(t->type(), termType);
-        if (t->type() == termType) {
-            EXPECT_EQ(((ConstantType *) t.get())->value(), expected);
-        }
+        EXPECT_EQ(t->termType(), TermType::ATOMIC);
+        if(t->termType() == TermType::ATOMIC) {
+			auto *a = (Atomic*) t.get();
+			EXPECT_EQ(a->atomicType(), atomicType);
+		}
+		EXPECT_EQ(t->constructString(), expected);
     }
 }
 
 static inline void testAtom(const TermPtr &t, const std::string &expected) {
-    testConstant<StringTerm, std::string>(t, TermType::STRING, expected);
+    testConstant<Atom, std::string>(t, AtomicType::ATOM, expected);
 }
 
 static inline void testString(const TermPtr &t, const std::string &expected) {
-    testConstant<StringTerm, std::string>(t, TermType::STRING, expected);
+    testConstant<String, std::string>(t, AtomicType::STRING, expected);
 }
 
 static inline void testPredicate(
@@ -488,12 +534,12 @@ static inline void testPredicate(
         std::vector<TermType> expectedTypes) {
     EXPECT_NE(p.get(), nullptr);
     if (p) {
-        EXPECT_EQ(p->indicator()->functor(), expectedFunctor);
-        EXPECT_EQ(p->indicator()->arity(), expectedArity);
+        EXPECT_EQ(p->functor()->stringForm(), expectedFunctor);
+        EXPECT_EQ(p->arity(), expectedArity);
         EXPECT_EQ(p->arguments().size(), expectedArity);
         if (p->arguments().size() == expectedArity) {
             for (int i = 0; i < expectedArity; ++i) {
-                EXPECT_EQ(p->arguments()[i]->type(), expectedTypes[i]);
+                EXPECT_EQ(p->arguments()[i]->termType(), expectedTypes[i]);
             }
         }
     }
@@ -546,21 +592,22 @@ TEST_F(QueryParserTest, RawAtoms) {
     TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("p_2"), "p_2"))
     TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("'Foo'"), "Foo"))
     TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("owl:foo"), "http://www.w3.org/2002/07/owl#foo"))
-    TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("owl:Foo"), "http://www.w3.org/2002/07/owl#Foo"))
-    TEST_NO_THROW(EXPECT_EQ(QueryParser::parseRawAtom("owl:'Foo'"), "http://www.w3.org/2002/07/owl#Foo"))
 }
 
 TEST_F(QueryParserTest, Atoms) {
     TEST_NO_THROW(testAtom(QueryParser::parseConstant("p"), "p"))
     TEST_NO_THROW(testAtom(QueryParser::parseConstant("p2"), "p2"))
     TEST_NO_THROW(testAtom(QueryParser::parseConstant("pSDd2"), "pSDd2"))
-    TEST_NO_THROW(testAtom(QueryParser::parseConstant("'Foo'"), "Foo"))
+    TEST_NO_THROW(testAtom(QueryParser::parseConstant("'Foo'"), "'Foo'"))
     TEST_NO_THROW(testAtom(QueryParser::parseConstant("'x#/&%s'"), "x#/&%s"))
+    TEST_NO_THROW(testAtom(QueryParser::parseConstant("owl:foo"), "http://www.w3.org/2002/07/owl#foo"))
+    TEST_NO_THROW(testAtom(QueryParser::parseConstant("owl:Foo"), "http://www.w3.org/2002/07/owl#Foo"))
+    TEST_NO_THROW(testAtom(QueryParser::parseConstant("owl:'Foo'"), "http://www.w3.org/2002/07/owl#Foo"))
 }
 
 TEST_F(QueryParserTest, Strings) {
-    TEST_NO_THROW(testString(QueryParser::parseConstant("\"Foo\""), "Foo"))
-    TEST_NO_THROW(testString(QueryParser::parseConstant("\"x#/&%s\""), "x#/&%s"))
+    TEST_NO_THROW(testString(QueryParser::parseConstant("\"Foo\""), "\"Foo\""))
+    TEST_NO_THROW(testString(QueryParser::parseConstant("\"x#/&%s\""), "\"x#/&%s\""))
 }
 
 TEST_F(QueryParserTest, InvalidConstant) {
@@ -572,13 +619,13 @@ TEST_F(QueryParserTest, InvalidConstant) {
 TEST_F(QueryParserTest, Predicates) {
     TEST_NO_THROW(testPredicate(
             QueryParser::parsePredicate("p(X,a)"),
-            "p", 2, {TermType::VARIABLE, TermType::STRING}))
+            "p", 2, {TermType::VARIABLE, TermType::ATOMIC}))
     TEST_NO_THROW(testPredicate(
             QueryParser::parsePredicate("'X1'(x1)"),
-            "X1", 1, {TermType::STRING}))
+            "X1", 1, {TermType::ATOMIC}))
     TEST_NO_THROW(testPredicate(
             QueryParser::parsePredicate("q  (   3   ,    \"x\"   )"),
-            "q", 2, {TermType::DOUBLE, TermType::STRING}))
+            "q", 2, {TermType::ATOMIC, TermType::ATOMIC}))
     TEST_NO_THROW(testPredicate(
             QueryParser::parsePredicate("nullary"),
             "nullary", 0, {}))
@@ -587,11 +634,10 @@ TEST_F(QueryParserTest, Predicates) {
 TEST_F(QueryParserTest, PredicateWithCompundArgument) {
     TEST_NO_THROW(testPredicate(
             QueryParser::parsePredicate("p(X,'<'(a))"),
-            // TODO: rather use compound type here
-            "p", 2, {TermType::VARIABLE, TermType::PREDICATE}));
+            "p", 2, {TermType::VARIABLE, TermType::FUNCTION}));
     TEST_NO_THROW(testPredicate(
             QueryParser::parsePredicate("p(X,[a,b])"),
-            "p", 2, {TermType::VARIABLE, TermType::LIST}));
+            "p", 2, {TermType::VARIABLE, TermType::FUNCTION}));
 }
 
 TEST_F(QueryParserTest, InvalidPredicates) {

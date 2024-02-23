@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -19,13 +16,14 @@ namespace knowrob {
 	 */
 	class Bottom : public Predicate {
 	public:
-		static const std::shared_ptr<Bottom>& get();
+		static const std::shared_ptr<Bottom> &get();
 
 		// Override Term
-		void write(std::ostream& os) const override;
+		void write(std::ostream &os) const override;
 
 	private:
 		Bottom();
+
 	protected:
 		bool isEqual(const Formula &other) const override;
 	};

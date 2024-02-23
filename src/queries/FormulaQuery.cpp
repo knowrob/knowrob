@@ -18,7 +18,7 @@ std::shared_ptr<FormulaQuery> FormulaQuery::applySubstitution(const Substitution
 	return std::make_shared<FormulaQuery>(
 		formula_->isGround() ?
 		formula_ :
-		formula_->applySubstitution(sub),
+		applyBindings(formula_, sub),
 		ctx_
 	);
 }

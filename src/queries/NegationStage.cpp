@@ -104,7 +104,7 @@ bool ModalNegationStage::succeeds(const AnswerYesPtr &answer) {
 
 	// run "submitQuery" for each negated modal, and collect results in outputStream
 	for (auto &modal: negatedModals_) {
-		auto modalInstance = modal->applySubstitution(*answer->substitution());
+		auto modalInstance = applyBindings(modal, *answer->substitution());
 		auto modalOutput = kb_->submitQuery(modalInstance, ctx_);
 		modalOutput >> outputStream;
 		modalOutput->stopBuffering();

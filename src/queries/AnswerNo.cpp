@@ -65,7 +65,7 @@ bool AnswerNo::mergeWith(const AnswerNo &other) {
 
 std::ostream &AnswerNo::write(std::ostream &os) const {
 	if(reasonerTerm_) {
-		os << "[" << reasonerTerm_->value() << "] ";
+		os << "[" << *reasonerTerm_ << "] ";
 	}
 	if(isUncertain()) {
 		os << "probably ";
@@ -76,14 +76,14 @@ std::ostream &AnswerNo::write(std::ostream &os) const {
 		for(auto &x : positiveUngrounded_) {
 			os << '\t' << *x.graphSelector() << ' ' << '~' << *x.predicate();
 			if(x.reasonerTerm() && x.reasonerTerm() != reasonerTerm_) {
-				os << ' ' << '[' << x.reasonerTerm()->value() << "]";
+				os << ' ' << '[' << *x.reasonerTerm() << "]";
 			}
 			os << '\n';
 		}
 		for(auto &x : negativeUngrounded_) {
 			os << '\t' << *x.graphSelector() << *x.predicate();
 			if(x.reasonerTerm() && x.reasonerTerm() != reasonerTerm_) {
-				os << ' ' << '[' << x.reasonerTerm()->value() << "]";
+				os << ' ' << '[' << *x.reasonerTerm() << "]";
 			}
 			os << '\n';
 		}

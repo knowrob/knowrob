@@ -211,7 +211,7 @@ void ReasonerManager::removeReasoner(const std::shared_ptr<DefinedReasoner> &rea
 	reasonerPool_.erase(reasoner->name());
 }
 
-std::shared_ptr<DefinedReasoner> ReasonerManager::getReasonerWithID(const std::string &reasonerID) {
+std::shared_ptr<DefinedReasoner> ReasonerManager::getReasonerWithID(std::string_view reasonerID) {
 	auto it = reasonerPool_.find(reasonerID);
 	if (it != reasonerPool_.end()) {
 		return it->second;

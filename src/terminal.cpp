@@ -238,7 +238,7 @@ public:
 				auto query = std::make_shared<FormulaQuery>(phi, ctx);
 				if (query->formula()->type() == FormulaType::PREDICATE) {
 					auto p = std::dynamic_pointer_cast<Predicate>(query->formula());
-					auto needle = firstOrderCommands_.find(p->indicator()->functor());
+					auto needle = firstOrderCommands_.find(p->functor()->stringForm());
 					if (needle != firstOrderCommands_.end()) {
 						needle->second.runCommand(p->arguments());
 						isQueryHandled = true;
@@ -294,7 +294,7 @@ public:
 	}
 
 	bool assertStatements(const std::vector<FormulaPtr> &args) {
-		std::vector<StatementData> data(args.size());
+		std::vector<FramedTriplePtr> data(args.size());
 		std::vector<RDFLiteralPtr> buf(args.size());
 		uint32_t dataIndex = 0;
 
@@ -313,7 +313,10 @@ public:
 								std::static_pointer_cast<Predicate>(psi),
 								false,
 								*DefaultGraphSelector());
-						data[dataIndex++] = buf[dataIndex]->toStatementData();
+						data[dataIndex].ptr = new FramedTripleCopy();
+						data[dataIndex].owned = true;
+						buf[dataIndex]->toStatementData(*data[dataIndex].ptr);
+						dataIndex += 1;
 						break;
 					default:
 						throw QueryError("Invalid assertion: '{}'", *phi);
@@ -608,7 +611,7 @@ protected:
 	std::string currentQuery_;
 	std::string historyFile_;
 	QueryHistory history_;
-	std::map<std::string, TerminalCommand<TermPtr>> firstOrderCommands_;
+	std::map<std::string, TerminalCommand<TermPtr>, std::less<>> firstOrderCommands_;
 	std::map<std::string, TerminalCommand<FormulaPtr>> higherOrderCommands_;
 };
 

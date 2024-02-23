@@ -20,7 +20,7 @@ void Reasoner::setReasonerManager(ReasonerManager *reasonerManager) {
 }
 
 void Reasoner::setReasonerName(std::string_view name) {
-	t_reasonerName_ = std::make_shared<StringTerm>(name.data());
+	t_reasonerName_ = Atom::Tabled(name);
 }
 
 KnowledgeBase *Reasoner::kb() const {
@@ -46,10 +46,11 @@ std::shared_ptr<semweb::ImportHierarchy> Reasoner::importHierarchy() const {
 class ReasonerTask : public ThreadPool::Runner {
 public:
 	explicit ReasonerTask(const std::function<void()> &fn) : fn_(fn) {}
+
 	void run() override { fn_(); }
 
-	protected:
-		std::function<void()> fn_;
+protected:
+	std::function<void()> fn_;
 };
 
 void Reasoner::pushWork(const std::function<void(void)> &fn) {
@@ -61,72 +62,77 @@ void Reasoner::pushWork(const std::function<void(void)> &fn) {
 	});
 }
 
-
-void Reasoner::initTriple(StatementData *triple) const {
-	triple->graph = reasonerName().c_str();
-	// TODO: also set other parameters of the triple frame.
-}
-
-
-StatementData Reasoner::createTriple() const {
-	StatementData triple;
-	initTriple(&triple);
-	return triple;
-}
-
-std::vector<StatementData> Reasoner::createTriples(uint32_t count) const {
-	std::vector<StatementData> triple(count);
+InferredTripleContainer Reasoner::createTriples(uint32_t count) const {
+	auto triples = std::make_shared<std::vector<std::shared_ptr<FramedTriple>>>(count);
 	for (uint32_t i = 0; i < count; i++) {
-		initTriple(&triple[i]);
+		(*triples)[i] = std::make_shared<FramedTripleView>();
+		(*triples)[i]->setGraph(reasonerName());
 	}
-	return triple;
+	return triples;
 }
 
-void Reasoner::setInferredTriples(const std::vector<StatementData> &triples) {
+bool Reasoner::InferredComparator::operator()(
+		const std::shared_ptr<FramedTriple> &v0,
+		const std::shared_ptr<FramedTriple> &v1) const {
+	return *v0 < *v1;
+}
+
+void Reasoner::setInferredTriples(const InferredTripleContainer &triples) {
 	if (inferredTriples_.empty()) {
-		inferredTriples_.insert(triples.begin(), triples.end());
+		inferredTriples_.insert(triples->begin(), triples->end());
 		addInferredTriples(triples);
 	} else {
 		auto &oldTriples = inferredTriples_;
 		// ensure that input triples are sorted which is required for set_difference
-		std::set<StatementData> newTriples(triples.begin(), triples.end());
-		std::vector<StatementData> triplesToRemove, triplesToAdd;
+		InferredeSet newTriples(triples->begin(), triples->end());
+
+		auto triplesToRemove = std::make_shared<std::vector<std::shared_ptr<FramedTriple>>>();
+		auto triplesToAdd = std::make_shared<std::vector<std::shared_ptr<FramedTriple>>>();
 		// old inferences without new inferences are the ones that do not hold anymore.
 		std::set_difference(oldTriples.begin(), oldTriples.end(),
 							newTriples.begin(), newTriples.end(),
-							std::inserter(triplesToRemove, triplesToRemove.begin()));
+							std::inserter(*triplesToRemove, triplesToRemove->begin()));
 		// new inferences without old inferences are the ones that are really new.
 		std::set_difference(newTriples.begin(), newTriples.end(),
 							oldTriples.begin(), oldTriples.end(),
-							std::inserter(triplesToAdd, triplesToAdd.begin()));
+							std::inserter(*triplesToAdd, triplesToAdd->begin()));
 		// update the set of inferred triples.
-		for (auto &triple: triplesToRemove) {
+		for (auto &triple: *triplesToRemove) {
 			inferredTriples_.erase(triple);
 		}
-		inferredTriples_.insert(triplesToAdd.begin(), triplesToAdd.end());
+		inferredTriples_.insert(triplesToAdd->begin(), triplesToAdd->end());
 		// update the knowledge base
-		if(!triplesToAdd.empty()) {
+		if (!triplesToAdd->empty()) {
 			addInferredTriples(triplesToAdd);
 		}
-		if(!triplesToRemove.empty()) {
+		if (!triplesToRemove->empty()) {
 			removeInferredTriples(triplesToRemove);
 		}
 	}
 }
 
-void Reasoner::addInferredTriples(const std::vector<StatementData> &triples) const {
-	// Note: insertAll blocks until the triples are inserted, so it is safe to use the triples vector as a pointer.
-	kb()->insertAll(std::make_shared<semweb::ProxyTripleContainer>(&triples));
+void Reasoner::addInferredTriples(const InferredTripleContainer &triples) const {
+	std::vector<FramedTriplePtr> triplesVector(triples->size());
+	for (size_t i = 0; i < triples->size(); i++) {
+		triplesVector[i].ptr = (*triples)[i].get();
+		triplesVector[i].owned = false;
+	}
+	kb()->insertAll(triplesVector);
 }
 
-void Reasoner::removeInferredTriples(const std::vector<StatementData> &triples) const {
-	kb()->removeAll(std::make_shared<semweb::ProxyTripleContainer>(&triples));
+void Reasoner::removeInferredTriples(const InferredTripleContainer &triples) const {
+	std::vector<FramedTriplePtr> triplesVector(triples->size());
+	for (size_t i = 0; i < triples->size(); i++) {
+		triplesVector[i].ptr = (*triples)[i].get();
+		triplesVector[i].owned = false;
+	}
+	kb()->removeAll(triplesVector);
 }
 
 PredicateDescriptionPtr Reasoner::getLiteralDescription(const RDFLiteral &literal) {
-	if (literal.propertyTerm()->type() == TermType::STRING) {
-		auto p = std::static_pointer_cast<StringTerm>(literal.propertyTerm());
-		return getDescription(std::make_shared<PredicateIndicator>(p->value(), 2));
+	if (literal.propertyTerm()->termType() == TermType::ATOMIC) {
+		auto p = std::static_pointer_cast<Atomic>(literal.propertyTerm());
+		return getDescription(std::make_shared<PredicateIndicator>(p->stringForm().data(), 2));
 	} else {
 		return {};
 	}

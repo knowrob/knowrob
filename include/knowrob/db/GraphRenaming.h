@@ -9,7 +9,7 @@
 #include "string"
 #include "map"
 #include "GraphTransformation.h"
-#include "knowrob/semweb/StatementData.h"
+#include "knowrob/semweb/FramedTriple.h"
 
 namespace knowrob {
 	/**
@@ -41,7 +41,7 @@ namespace knowrob {
 		 * Rename the entities in the given triple.
 		 * @param triple the triple to rename
 		 */
-		void rename(StatementData &triple);
+		void rename(FramedTriple &triple);
 
 		/**
 		 * Add a renaming rule to the renaming map.

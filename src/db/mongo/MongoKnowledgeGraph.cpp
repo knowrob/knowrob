@@ -50,6 +50,7 @@ KNOWROB_BUILTIN_BACKEND("MongoDB", MongoKnowledgeGraph)
 
 // AGGREGATION PIPELINES
 bson_t *newRelationCounter(const char *collection);
+
 bson_t *newClassCounter(const char *collection);
 
 const std::string MongoKnowledgeGraph::DB_URI_DEFAULT = "mongodb://localhost:27017";
@@ -67,7 +68,7 @@ MongoKnowledgeGraph::MongoKnowledgeGraph()
 
 bool MongoKnowledgeGraph::init(std::string_view db_uri, std::string_view db_name, std::string_view collectionName) {
 	tripleCollection_ = connect(db_uri, db_name, collectionName);
-	if(tripleCollection_) {
+	if (tripleCollection_) {
 		initialize();
 		dropSessionOrigins();
 		return true;
@@ -80,7 +81,7 @@ bool MongoKnowledgeGraph::initializeBackend(const ReasonerConfig &config) {
 	auto ptree = config.ptree();
 	if (!ptree) {
 		tripleCollection_ = connect(DB_URI_DEFAULT, DB_NAME_KNOWROB, COLL_NAME_TESTS);
-		if(tripleCollection_) {
+		if (tripleCollection_) {
 			initialize();
 			dropSessionOrigins();
 			return true;
@@ -128,7 +129,7 @@ std::shared_ptr<Collection> MongoKnowledgeGraph::connect(
 		const std::string_view db_name,
 		const std::string_view collectionName) {
 	auto coll = MongoInterface::get().connect(db_uri.data(), db_name.data(), collectionName.data());
-	if(coll) {
+	if (coll) {
 		KB_INFO("[mongodb] connected to {} ({}.{}).", db_uri, db_name, collectionName);
 	} else {
 		KB_ERROR("[mongodb] failed to connect to {} ({}.{}).", db_uri, db_name, collectionName);
@@ -197,14 +198,14 @@ void MongoKnowledgeGraph::initialize() {
 	}
 
 	// initialize vocabulary
-	StatementData tripleData;
+	FramedTripleView tripleData;
 	{
 		// iterate over all rdf::type assertions
 		TripleCursor cursor(tripleCollection_);
 		cursor.filter(Document(BCON_NEW(
 									   "p", BCON_UTF8(rdf::type.data()))).bson());
 		while (cursor.nextTriple(tripleData))
-			vocabulary_->addResourceType(tripleData.subject, tripleData.object);
+			vocabulary_->addResourceType(tripleData.subject(), tripleData.valueAsString());
 	}
 	{
 		// iterate over all rdfs::subClassOf assertions
@@ -212,7 +213,7 @@ void MongoKnowledgeGraph::initialize() {
 		cursor.filter(Document(BCON_NEW(
 									   "p", BCON_UTF8(rdfs::subClassOf.data()))).bson());
 		while (cursor.nextTriple(tripleData))
-			vocabulary_->addSubClassOf(tripleData.subject, tripleData.object);
+			vocabulary_->addSubClassOf(tripleData.subject(), tripleData.valueAsString());
 	}
 	{
 		// iterate over all rdfs::subPropertyOf assertions
@@ -220,7 +221,7 @@ void MongoKnowledgeGraph::initialize() {
 		cursor.filter(Document(BCON_NEW(
 									   "p", BCON_UTF8(rdfs::subPropertyOf.data()))).bson());
 		while (cursor.nextTriple(tripleData))
-			vocabulary_->addSubPropertyOf(tripleData.subject, tripleData.object);
+			vocabulary_->addSubPropertyOf(tripleData.subject(), tripleData.valueAsString());
 	}
 	{
 		// iterate over all owl::inverseOf assertions
@@ -228,7 +229,7 @@ void MongoKnowledgeGraph::initialize() {
 		cursor.filter(Document(BCON_NEW(
 									   "p", BCON_UTF8(owl::inverseOf.data()))).bson());
 		while (cursor.nextTriple(tripleData))
-			vocabulary_->setInverseOf(tripleData.subject, tripleData.object);
+			vocabulary_->setInverseOf(tripleData.subject(), tripleData.valueAsString());
 	}
 
 	// query number of assertions of each property.
@@ -265,7 +266,7 @@ void MongoKnowledgeGraph::initialize() {
 	}
 
 	// initialize the import hierarchy
-	for(auto &persistedOrigin : tripleCollection_->distinctValues("graph")) {
+	for (auto &persistedOrigin: tripleCollection_->distinctValues("graph")) {
 		importHierarchy_->addDirectImport(importHierarchy_->ORIGIN_SYSTEM, persistedOrigin);
 	}
 }
@@ -347,21 +348,21 @@ bson_t *MongoKnowledgeGraph::getSelector(
 }
 
 bson_t *MongoKnowledgeGraph::getSelector(
-		const StatementData &triple,
+		const FramedTriple &triple,
 		bool b_isTaxonomicProperty) {
 	return getSelector(RDFLiteral(triple), b_isTaxonomicProperty);
 }
 
-bool MongoKnowledgeGraph::insertOne(const StatementData &tripleData) {
+bool MongoKnowledgeGraph::insertOne(const FramedTriple &tripleData) {
 	auto &fallbackOrigin = importHierarchy_->defaultGraph();
-	bool isTaxonomic = isTaxonomicProperty(tripleData.predicate);
+	bool isTaxonomic = isTaxonomicProperty(tripleData.predicate());
 	auto document = createTripleDocument(tripleData, fallbackOrigin, isTaxonomic);
 	tripleCollection_->storeOne(Document(document));
 
-	if (semweb::isSubClassOfIRI(tripleData.predicate)) {
-		updateHierarchy({{tripleData.subject, tripleData.object}}, {});
-	} else if (semweb::isSubPropertyOfIRI(tripleData.predicate)) {
-		updateHierarchy({}, {{tripleData.subject, tripleData.object}});
+	if (semweb::isSubClassOfIRI(tripleData.predicate())) {
+		updateHierarchy({{tripleData.subject(), tripleData.valueAsString()}}, {});
+	} else if (semweb::isSubPropertyOfIRI(tripleData.predicate())) {
+		updateHierarchy({}, {{tripleData.subject(), tripleData.valueAsString()}});
 	}
 	updateTimeInterval(tripleData);
 	return true;
@@ -378,28 +379,28 @@ bool MongoKnowledgeGraph::insertAll(const semweb::TripleContainerPtr &triples) {
 
 	std::for_each(triples->begin(), triples->end(),
 				  [&](auto &data) {
-					  bool isTaxonomic = isTaxonomicProperty(data.predicate);
+					  bool isTaxonomic = isTaxonomicProperty(data->predicate().data());
 
-					  auto document = createTripleDocument(data, fallbackOrigin, isTaxonomic);
+					  auto document = createTripleDocument(*data, fallbackOrigin, isTaxonomic);
 					  bulk->pushInsert(document);
 					  bson_free(document);
 
-					  if (semweb::isSubClassOfIRI(data.predicate)) {
-						  tAssertions.subClassAssertions.emplace_back(data.subject, data.object);
-					  } else if (semweb::isSubPropertyOfIRI(data.predicate)) {
-						  tAssertions.subPropertyAssertions.emplace_back(data.subject, data.object);
+					  if (semweb::isSubClassOfIRI(data->predicate())) {
+						  tAssertions.subClassAssertions.emplace_back(data->subject(), data->valueAsString());
+					  } else if (semweb::isSubPropertyOfIRI(data->predicate())) {
+						  tAssertions.subPropertyAssertions.emplace_back(data->subject(), data->valueAsString());
 					  }
 				  });
 	bulk->execute();
 
 	updateHierarchy(tAssertions.subClassAssertions, tAssertions.subPropertyAssertions);
-	for (auto &data: *triples) updateTimeInterval(data);
+	for (auto &data: *triples) updateTimeInterval(*data);
 
 	return true;
 }
 
-bool MongoKnowledgeGraph::removeOne(const StatementData &triple) {
-	bool b_isTaxonomicProperty = isTaxonomicProperty(triple.predicate);
+bool MongoKnowledgeGraph::removeOne(const FramedTriple &triple) {
+	bool b_isTaxonomicProperty = isTaxonomicProperty(triple.predicate());
 	tripleCollection_->removeOne(Document(getSelector(triple, b_isTaxonomicProperty)));
 	return true;
 }
@@ -408,8 +409,8 @@ bool MongoKnowledgeGraph::removeAll(const semweb::TripleContainerPtr &triples) {
 	auto bulk = tripleCollection_->createBulkOperation();
 	std::for_each(triples->begin(), triples->end(),
 				  [this, bulk](auto &data) {
-					  bool isTaxonomic = isTaxonomicProperty(data.predicate);
-					  auto document = getSelector(data, isTaxonomic);
+					  bool isTaxonomic = isTaxonomicProperty(data->predicate());
+					  auto document = getSelector(*data, isTaxonomic);
 					  bulk->pushRemoveOne(document);
 					  bson_free(document);
 				  });
@@ -457,7 +458,7 @@ AnswerCursorPtr MongoKnowledgeGraph::lookup(const RDFLiteral &tripleExpression) 
 	return cursor;
 }
 
-mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const StatementData &tripleData) {
+mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const FramedTriple &tripleData) {
 	return lookup(RDFLiteral(tripleData));
 }
 
@@ -483,7 +484,7 @@ MongoKnowledgeGraph::lookup(const std::vector<RDFLiteralPtr> &tripleExpressions,
 }
 
 void MongoKnowledgeGraph::evaluateQuery(const ConjunctiveQueryPtr &query, const TokenBufferPtr &resultStream) {
-	static const auto edbTerm = std::make_shared<const StringTerm>("EDB");
+	static const auto edbTerm = Atom::Tabled("EDB");
 
 	auto channel = TokenStream::Channel::create(resultStream);
 
@@ -540,39 +541,39 @@ TokenBufferPtr MongoKnowledgeGraph::watchQuery(const ConjunctiveQueryPtr &litera
 	return {};
 }
 
-void MongoKnowledgeGraph::updateTimeInterval(const StatementData &tripleData) {
-	if (!tripleData.begin.has_value() && !tripleData.end.has_value()) return;
-	bool b_isTaxonomicProperty = vocabulary_->isTaxonomicProperty(tripleData.predicate);
+void MongoKnowledgeGraph::updateTimeInterval(const FramedTriple &tripleData) {
+	if (!tripleData.begin().has_value() && !tripleData.end().has_value()) return;
+	bool b_isTaxonomicProperty = vocabulary_->isTaxonomicProperty(tripleData.predicate());
 
 	// filter overlapping triples
 	TripleCursor cursor(tripleCollection_);
 	bson_t selectorDoc = BSON_INITIALIZER;
 
-	StatementData tripleDataCopy(tripleData);
-	tripleDataCopy.temporalOperator = TemporalOperator::SOMETIMES;
-	RDFLiteral overlappingExpr(tripleDataCopy);
+	RDFLiteral overlappingExpr(tripleData);
+	overlappingExpr.setTemporalOperator(TemporalOperator::SOMETIMES);
 	aggregation::appendTripleSelector(&selectorDoc, overlappingExpr, b_isTaxonomicProperty, importHierarchy_);
 	cursor.filter(&selectorDoc);
 
 	// iterate overlapping triples, remember document ids and compute
 	// union of time intervals
-	StatementData overlappingTriple;
+	FramedTripleView overlappingTriple;
 	std::list<bson_oid_t> documentIDs;
-	std::optional<double> begin = tripleData.begin;
-	std::optional<double> end = tripleData.end;
-	while (cursor.nextTriple(overlappingTriple)) {
+	std::optional<double> begin = tripleData.begin();
+	std::optional<double> end = tripleData.end();
+	const bson_oid_t *overlappingOID = nullptr;
+	while (cursor.nextTriple(overlappingTriple, &overlappingOID)) {
 		// remember the ID of overlapping documents
 		auto &oid = documentIDs.emplace_back();
 		bson_oid_init(&oid, nullptr);
-		bson_oid_copy((bson_oid_t *) overlappingTriple.documentID, &oid);
+		bson_oid_copy(overlappingOID, &oid);
 		// compute intersection of time interval
-		if (overlappingTriple.begin.has_value()) {
-			if (begin.has_value()) begin = std::min(begin.value(), overlappingTriple.begin.value());
-			else begin = overlappingTriple.begin;
+		if (overlappingTriple.begin().has_value()) {
+			if (begin.has_value()) begin = std::min(begin.value(), overlappingTriple.begin().value());
+			else begin = overlappingTriple.begin();
 		}
-		if (overlappingTriple.end.has_value()) {
-			if (end.has_value()) end = std::max(end.value(), overlappingTriple.end.value());
-			else end = overlappingTriple.end;
+		if (overlappingTriple.end().has_value()) {
+			if (end.has_value()) end = std::max(end.value(), overlappingTriple.end().value());
+			else end = overlappingTriple.end();
 		}
 	}
 
@@ -674,23 +675,58 @@ void MongoKnowledgeGraph::updateHierarchy(
 	bson_destroy(&pipelineDoc);
 }
 
-bool MongoKnowledgeGraph::isTaxonomicProperty(const char *property) {
-	if (property) {
-		return vocabulary_->isTaxonomicProperty(property);
-	} else {
-		return false;
-	}
+bool MongoKnowledgeGraph::isTaxonomicProperty(std::string_view property) {
+	return vocabulary_->isTaxonomicProperty(property);
 }
 
 bool MongoKnowledgeGraph::isTaxonomicProperty(const TermPtr &propertyTerm) {
-	if (propertyTerm->type() == TermType::STRING) {
-		return vocabulary_->isTaxonomicProperty(((StringTerm *) propertyTerm.get())->value());
+	if (propertyTerm->termType() == TermType::ATOMIC) {
+		return vocabulary_->isTaxonomicProperty(((Atomic *) propertyTerm.get())->stringForm());
 	} else {
 		return false;
 	}
 }
 
-bson_t *MongoKnowledgeGraph::createTripleDocument(const StatementData &tripleData,
+static inline void appendXSDLiteral(bson_t *tripleDoc, const FramedTriple &tripleData) {
+	auto xsdType = tripleData.xsdType().has_value() ? tripleData.xsdType().value() : XSDType::STRING;
+	switch (xsdType) {
+		case XSDType::STRING:
+			BSON_APPEND_UTF8(tripleDoc, "o", tripleData.valueAsString().data());
+			break;
+		case XSDType::DOUBLE:
+			BSON_APPEND_DOUBLE(tripleDoc, "o", tripleData.valueAsDouble());
+			break;
+		case XSDType::FLOAT:
+			BSON_APPEND_DOUBLE(tripleDoc, "o", tripleData.valueAsFloat());
+			break;
+		case XSDType::LONG:
+			BSON_APPEND_INT64(tripleDoc, "o", tripleData.valueAsLong());
+			break;
+		case XSDType::NON_NEGATIVE_INTEGER:
+		case XSDType::INTEGER:
+			BSON_APPEND_INT32(tripleDoc, "o", tripleData.valueAsInt());
+			break;
+		case XSDType::SHORT:
+			BSON_APPEND_INT32(tripleDoc, "o", tripleData.valueAsShort());
+			break;
+		case XSDType::BOOLEAN:
+			BSON_APPEND_BOOL(tripleDoc, "o", tripleData.valueAsBoolean());
+			break;
+		case XSDType::UNSIGNED_INT:
+			BSON_APPEND_INT32(tripleDoc, "o", tripleData.valueAsUnsignedInt());
+			break;
+		case XSDType::UNSIGNED_SHORT:
+			BSON_APPEND_INT32(tripleDoc, "o", tripleData.valueAsUnsignedShort());
+			break;
+		case XSDType::UNSIGNED_LONG:
+			BSON_APPEND_INT64(tripleDoc, "o", tripleData.valueAsUnsignedLong());
+			break;
+		case XSDType::LAST:
+			break;
+	}
+}
+
+bson_t *MongoKnowledgeGraph::createTripleDocument(const FramedTriple &tripleData,
 												  const std::string &fallbackOrigin,
 												  bool isTaxonomic) {
 	bson_t parentsArray;
@@ -698,66 +734,46 @@ bson_t *MongoKnowledgeGraph::createTripleDocument(const StatementData &tripleDat
 	auto counterPtr = &arrIndex;
 
 	bson_t *tripleDoc = bson_new();
-	BSON_APPEND_UTF8(tripleDoc, "s", tripleData.subject);
-	BSON_APPEND_UTF8(tripleDoc, "p", tripleData.predicate);
+	BSON_APPEND_UTF8(tripleDoc, "s", tripleData.subject().data());
+	BSON_APPEND_UTF8(tripleDoc, "p", tripleData.predicate().data());
 
 	if (isTaxonomic) {
-		switch (tripleData.objectType) {
-			case RDF_STRING_LITERAL:
-			case RDF_RESOURCE: {
-				BSON_APPEND_UTF8(tripleDoc, "o", tripleData.object);
-
-				BSON_APPEND_ARRAY_BEGIN(tripleDoc, "o*", &parentsArray);
-				auto parentsPtr = &parentsArray;
-				if (vocabulary_->isDefinedProperty(tripleData.object)) {
-					vocabulary_->getDefinedProperty(tripleData.object)->forallParents(
-							[parentsPtr, counterPtr](const auto &parent) {
-								auto counterKey = std::to_string((*counterPtr)++);
-								BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().c_str());
-							});
-				} else if (vocabulary_->isDefinedClass(tripleData.object)) {
-					// read parents array
-					vocabulary_->getDefinedClass(tripleData.object)->forallParents(
-							[parentsPtr, counterPtr](const auto &parent) {
-								auto counterKey = std::to_string((*counterPtr)++);
-								BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().c_str());
-							});
-				} else {
-					BSON_APPEND_UTF8(&parentsArray, "0", tripleData.object);
-				}
-				bson_append_array_end(tripleDoc, &parentsArray);
-				break;
+		if (tripleData.isObjectIRI() || tripleData.isObjectBlank()) {
+			auto objectIRI = tripleData.valueAsString();
+			BSON_APPEND_UTF8(tripleDoc, "o", objectIRI.data());
+			// also create a field "o*" with the parents of the object
+			BSON_APPEND_ARRAY_BEGIN(tripleDoc, "o*", &parentsArray);
+			auto parentsPtr = &parentsArray;
+			if (vocabulary_->isDefinedProperty(objectIRI)) {
+				vocabulary_->getDefinedProperty(objectIRI)->forallParents(
+						[parentsPtr, counterPtr](const auto &parent) {
+							auto counterKey = std::to_string((*counterPtr)++);
+							BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().c_str());
+						});
+			} else if (vocabulary_->isDefinedClass(objectIRI)) {
+				// read parents array
+				vocabulary_->getDefinedClass(objectIRI)->forallParents(
+						[parentsPtr, counterPtr](const auto &parent) {
+							auto counterKey = std::to_string((*counterPtr)++);
+							BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().c_str());
+						});
+			} else {
+				BSON_APPEND_UTF8(&parentsArray, "0", objectIRI.data());
 			}
-			case RDF_DOUBLE_LITERAL:
-				BSON_APPEND_DOUBLE(tripleDoc, "o", tripleData.objectDouble);
-				break;
-			case RDF_INT64_LITERAL:
-				BSON_APPEND_INT64(tripleDoc, "o", tripleData.objectInteger);
-				break;
-			case RDF_BOOLEAN_LITERAL:
-				BSON_APPEND_BOOL(tripleDoc, "o", tripleData.objectInteger);
-				break;
+			bson_append_array_end(tripleDoc, &parentsArray);
+		} else {
+			appendXSDLiteral(tripleDoc, tripleData);
 		}
 	} else {
-		switch (tripleData.objectType) {
-			case RDF_RESOURCE:
-			case RDF_STRING_LITERAL:
-				BSON_APPEND_UTF8(tripleDoc, "o", tripleData.object);
-				break;
-			case RDF_DOUBLE_LITERAL:
-				BSON_APPEND_DOUBLE(tripleDoc, "o", tripleData.objectDouble);
-				break;
-			case RDF_INT64_LITERAL:
-				BSON_APPEND_INT64(tripleDoc, "o", tripleData.objectInteger);
-				break;
-			case RDF_BOOLEAN_LITERAL:
-				BSON_APPEND_BOOL(tripleDoc, "o", tripleData.objectInteger);
-				break;
+		if (tripleData.isObjectIRI() || tripleData.isObjectBlank()) {
+			BSON_APPEND_UTF8(tripleDoc, "o", tripleData.valueAsString().data());
+		} else {
+			appendXSDLiteral(tripleDoc, tripleData);
 		}
 		// read parents array
 		BSON_APPEND_ARRAY_BEGIN(tripleDoc, "p*", &parentsArray);
 		auto parentsPtr = &parentsArray;
-		vocabulary_->defineProperty(tripleData.predicate)->forallParents(
+		vocabulary_->defineProperty(tripleData.predicate())->forallParents(
 				[parentsPtr, counterPtr](const auto &parent) {
 					auto counterKey = std::to_string((*counterPtr)++);
 					BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().c_str());
@@ -765,38 +781,39 @@ bson_t *MongoKnowledgeGraph::createTripleDocument(const StatementData &tripleDat
 		bson_append_array_end(tripleDoc, &parentsArray);
 	}
 
-	if (tripleData.graph) {
-		BSON_APPEND_UTF8(tripleDoc, "graph", tripleData.graph);
+	if (tripleData.graph()) {
+		BSON_APPEND_UTF8(tripleDoc, "graph", tripleData.graph().value().data());
 	} else {
 		BSON_APPEND_UTF8(tripleDoc, "graph", fallbackOrigin.c_str());
 	}
 
-	if (tripleData.agent)
-		BSON_APPEND_UTF8(tripleDoc, "agent", tripleData.agent);
+	if (tripleData.agent())
+		BSON_APPEND_UTF8(tripleDoc, "agent", tripleData.agent().value().data());
 
 	bool isBelief = false;
-	if (tripleData.confidence.has_value()) {
-		BSON_APPEND_DOUBLE(tripleDoc, "confidence", tripleData.confidence.value());
+	if (tripleData.confidence().has_value()) {
+		BSON_APPEND_DOUBLE(tripleDoc, "confidence", tripleData.confidence().value());
 		isBelief = true;
-	} else if (tripleData.epistemicOperator.has_value()) {
-		isBelief = (tripleData.epistemicOperator.value() == EpistemicOperator::BELIEF);
+	} else if (tripleData.epistemicOperator().has_value()) {
+		isBelief = (tripleData.epistemicOperator().value() == EpistemicOperator::BELIEF);
 	}
 	if (isBelief) {
 		// flag the statement as "uncertain"
 		BSON_APPEND_BOOL(tripleDoc, "uncertain", true);
 	}
 
-	if (tripleData.temporalOperator.has_value() && tripleData.temporalOperator.value() == TemporalOperator::SOMETIMES) {
+	if (tripleData.temporalOperator().has_value() &&
+		tripleData.temporalOperator().value() == TemporalOperator::SOMETIMES) {
 		// flag the statement as "occasional", meaning it is only known that it was true at some past instants
 		BSON_APPEND_BOOL(tripleDoc, "occasional", true);
 	}
 
-	if (tripleData.begin.has_value() || tripleData.end.has_value()) {
+	if (tripleData.begin().has_value() || tripleData.end().has_value()) {
 		bson_t scopeDoc, timeDoc;
 		BSON_APPEND_DOCUMENT_BEGIN(tripleDoc, "scope", &scopeDoc);
 		BSON_APPEND_DOCUMENT_BEGIN(&scopeDoc, "time", &timeDoc);
-		if (tripleData.begin.has_value()) BSON_APPEND_DOUBLE(&timeDoc, "since", tripleData.begin.value());
-		if (tripleData.end.has_value()) BSON_APPEND_DOUBLE(&timeDoc, "until", tripleData.end.value());
+		if (tripleData.begin().has_value()) BSON_APPEND_DOUBLE(&timeDoc, "since", tripleData.begin().value());
+		if (tripleData.end().has_value()) BSON_APPEND_DOUBLE(&timeDoc, "until", tripleData.end().value());
 		bson_append_document_end(&scopeDoc, &timeDoc);
 		bson_append_document_end(tripleDoc, &scopeDoc);
 	}
@@ -808,35 +825,35 @@ bson_t *MongoKnowledgeGraph::createTripleDocument(const StatementData &tripleDat
 
 bson_t *newRelationCounter(const char *collection) {
 	return BCON_NEW("pipeline", "[",
-						"{", "$match", "{",
-							"p", BCON_UTF8(rdf::type.data()),
-							"$expr", "{", "$in", "[", "$o", "[",
-								BCON_UTF8(owl::ObjectProperty.data()),
-								BCON_UTF8(owl::DatatypeProperty.data()),
-							"]", "]", "}",
-						"}", "}",
-						"{", "$group", "{",
-							"_id", BCON_NULL,
-							"s", "{", "$addToSet", "$s", "}",
-						"}", "}",
-						"{", "$unwind", "$s", "}",
-						"{", "$lookup", "{",
-							"from", BCON_UTF8(collection),
-							"as", BCON_UTF8("x"),
-							"let", "{", "outer", BCON_UTF8("$s"), "}",
-							"pipeline", "[",
-								"{", "$match", "{",
-									"$expr", "{", "$eq", "[", BCON_UTF8("$p"), BCON_UTF8("$$outer"), "]", "}",
-								"}", "}",
-							"]",
-						"}", "}",
-						"{", "$project", "{",
-							"property", BCON_UTF8("$s"),
-							"count", "{", "$size", BCON_UTF8("$x"), "}",
-						"}", "}",
-						"{", "$match", "{",
-							"$expr", "{", "$gt", "[", "$count", BCON_INT32(0), "]", "}",
-						"}", "}",
+					"{", "$match", "{",
+					"p", BCON_UTF8(rdf::type.data()),
+					"$expr", "{", "$in", "[", "$o", "[",
+					BCON_UTF8(owl::ObjectProperty.data()),
+					BCON_UTF8(owl::DatatypeProperty.data()),
+					"]", "]", "}",
+					"}", "}",
+					"{", "$group", "{",
+					"_id", BCON_NULL,
+					"s", "{", "$addToSet", "$s", "}",
+					"}", "}",
+					"{", "$unwind", "$s", "}",
+					"{", "$lookup", "{",
+					"from", BCON_UTF8(collection),
+					"as", BCON_UTF8("x"),
+					"let", "{", "outer", BCON_UTF8("$s"), "}",
+					"pipeline", "[",
+					"{", "$match", "{",
+					"$expr", "{", "$eq", "[", BCON_UTF8("$p"), BCON_UTF8("$$outer"), "]", "}",
+					"}", "}",
+					"]",
+					"}", "}",
+					"{", "$project", "{",
+					"property", BCON_UTF8("$s"),
+					"count", "{", "$size", BCON_UTF8("$x"), "}",
+					"}", "}",
+					"{", "$match", "{",
+					"$expr", "{", "$gt", "[", "$count", BCON_INT32(0), "]", "}",
+					"}", "}",
 					"]"
 	);
 }
@@ -844,34 +861,34 @@ bson_t *newRelationCounter(const char *collection) {
 bson_t *newClassCounter(const char *collection) {
 	// TODO: skip classes that start with "_" character as these are blank nodes
 	return BCON_NEW("pipeline", "[",
-						"{", "$match", "{",
-							"p", BCON_UTF8(rdf::type.data()),
-							"$expr", "{", "$in", "[", "$o", "[",
-								BCON_UTF8(owl::Class.data()),
-							"]", "]", "}",
-						"}", "}",
-						"{", "$group", "{",
-							"_id", BCON_NULL,
-							"s", "{", "$addToSet", "$s", "}",
-						"}", "}",
-						"{", "$unwind", "$s", "}",
-						"{", "$lookup", "{",
-							"from", BCON_UTF8(collection),
-							"as", BCON_UTF8("x"),
-							"let", "{", "outer", BCON_UTF8("$s"), "}",
-							"pipeline", "[",
-								"{", "$match", "{",
-									"$expr", "{", "$eq", "[", BCON_UTF8("$o"), BCON_UTF8("$$outer"), "]", "}",
-								"}", "}",
-							"]",
-						"}", "}",
-						"{", "$project", "{",
-							"class", BCON_UTF8("$s"),
-							"count", "{", "$size", BCON_UTF8("$x"), "}",
-						"}", "}",
-						"{", "$match", "{",
-							"$expr", "{", "$gt", "[", "$count", BCON_INT32(0), "]", "}",
-						"}", "}",
+					"{", "$match", "{",
+					"p", BCON_UTF8(rdf::type.data()),
+					"$expr", "{", "$in", "[", "$o", "[",
+					BCON_UTF8(owl::Class.data()),
+					"]", "]", "}",
+					"}", "}",
+					"{", "$group", "{",
+					"_id", BCON_NULL,
+					"s", "{", "$addToSet", "$s", "}",
+					"}", "}",
+					"{", "$unwind", "$s", "}",
+					"{", "$lookup", "{",
+					"from", BCON_UTF8(collection),
+					"as", BCON_UTF8("x"),
+					"let", "{", "outer", BCON_UTF8("$s"), "}",
+					"pipeline", "[",
+					"{", "$match", "{",
+					"$expr", "{", "$eq", "[", BCON_UTF8("$o"), BCON_UTF8("$$outer"), "]", "}",
+					"}", "}",
+					"]",
+					"}", "}",
+					"{", "$project", "{",
+					"class", BCON_UTF8("$s"),
+					"count", "{", "$size", BCON_UTF8("$x"), "}",
+					"}", "}",
+					"{", "$match", "{",
+					"$expr", "{", "$gt", "[", "$count", BCON_INT32(0), "]", "}",
+					"}", "}",
 					"]"
 	);
 }
@@ -890,9 +907,9 @@ protected:
 		kg_->setVocabulary(vocabulary_);
 		kg_->setImportHierarchy(std::make_shared<semweb::ImportHierarchy>());
 		kg_->init(
-			MongoKnowledgeGraph::DB_URI_DEFAULT,
-			MongoKnowledgeGraph::DB_NAME_KNOWROB,
-			MongoKnowledgeGraph::COLL_NAME_TESTS);
+				MongoKnowledgeGraph::DB_URI_DEFAULT,
+				MongoKnowledgeGraph::DB_NAME_KNOWROB,
+				MongoKnowledgeGraph::COLL_NAME_TESTS);
 		kg_->drop();
 		kg_->createSearchIndices();
 	}
@@ -925,8 +942,8 @@ protected:
 		auto vocab = vocabulary_;
 		OntologyParser parser(resolved, semweb::TripleFormat::RDF_XML, 100);
 		// filter is called for each triple, if it returns false, the triple is skipped
-		parser.setFilter([vocab](const StatementData &triple) {
-			return !vocab->isAnnotationProperty(triple.predicate);
+		parser.setFilter([vocab](const FramedTriple &triple) {
+			return !vocab->isAnnotationProperty(triple.predicate());
 		});
 		// define a prefix for naming blank nodes
 		parser.setBlankPrefix(std::string("_") + origin);
@@ -946,7 +963,7 @@ std::shared_ptr<MongoKnowledgeGraph> MongoKnowledgeGraphTest::kg_ = {};
 std::shared_ptr<semweb::Vocabulary> MongoKnowledgeGraphTest::vocabulary_ = {};
 
 TEST_F(MongoKnowledgeGraphTest, Assert_a_b_c) {
-	StatementData data_abc("a", "b", "c");
+	FramedTripleCopy data_abc("a", "b", "c");
 	EXPECT_NO_THROW(kg_->insertOne(data_abc));
 	EXPECT_EQ(lookup(data_abc).size(), 1);
 	EXPECT_EQ(lookup(parse("triple(x,b,c)")).size(), 0);
@@ -968,7 +985,7 @@ TEST_F(MongoKnowledgeGraphTest, LoadSOMAandDUL) {
 #define swrl_test_ "http://knowrob.org/kb/swrl_test#"
 
 TEST_F(MongoKnowledgeGraphTest, QueryTriple) {
-	StatementData triple(
+	FramedTripleCopy triple(
 			swrl_test_"Adult",
 			rdfs::subClassOf.data(),
 			swrl_test_"TestThing");
@@ -980,13 +997,13 @@ TEST_F(MongoKnowledgeGraphTest, QueryNegatedTriple) {
 			QueryParser::parsePredicate("p(x,y)"),
 			true, *DefaultGraphSelector());
 	EXPECT_EQ(lookup(*negated).size(), 1);
-	StatementData statement("x", "p", "y");
+	FramedTripleCopy statement("x", "p", "y");
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(*negated).size(), 0);
 }
 
 TEST_F(MongoKnowledgeGraphTest, DeleteSubclassOf) {
-	StatementData triple(
+	FramedTripleCopy triple(
 			swrl_test_"Adult",
 			rdfs::subClassOf.data(),
 			swrl_test_"TestThing");
@@ -995,11 +1012,11 @@ TEST_F(MongoKnowledgeGraphTest, DeleteSubclassOf) {
 }
 
 TEST_F(MongoKnowledgeGraphTest, AssertSubclassOf) {
-	StatementData existing(
+	FramedTripleCopy existing(
 			swrl_test_"Adult",
 			rdfs::subClassOf.data(),
 			swrl_test_"TestThing");
-	StatementData not_existing(
+	FramedTripleCopy not_existing(
 			swrl_test_"Adult",
 			rdfs::subClassOf.data(),
 			swrl_test_"Car");
@@ -1009,20 +1026,20 @@ TEST_F(MongoKnowledgeGraphTest, AssertSubclassOf) {
 }
 
 TEST_F(MongoKnowledgeGraphTest, Knowledge) {
-	StatementData statement(swrl_test_"Lea", swrl_test_"hasName", "X");
-	statement.epistemicOperator = EpistemicOperator::KNOWLEDGE;
+	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "X");
+	statement.setEpistemicOperator(EpistemicOperator::KNOWLEDGE);
 	EXPECT_EQ(lookup(statement).size(), 0);
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
-	statement.epistemicOperator = EpistemicOperator::BELIEF;
+	statement.setEpistemicOperator(EpistemicOperator::BELIEF);
 	EXPECT_EQ(lookup(statement).size(), 1);
 }
 
 TEST_F(MongoKnowledgeGraphTest, KnowledgeOfAgent) {
 	// assert knowledge of a named agent
-	StatementData statement(swrl_test_"Lea", swrl_test_"hasName", "Y");
-	statement.epistemicOperator = EpistemicOperator::KNOWLEDGE;
-	statement.agent = "agent_a";
+	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "Y");
+	statement.setEpistemicOperator(EpistemicOperator::KNOWLEDGE);
+	statement.setAgent("agent_a");
 	EXPECT_EQ(lookup(statement).size(), 0);
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
@@ -1030,17 +1047,14 @@ TEST_F(MongoKnowledgeGraphTest, KnowledgeOfAgent) {
 		EXPECT_TRUE(solution->isCertain());
 	}
 	// the statement is not known to be true for other agents
-	statement.agent = "agent_b";
-	EXPECT_EQ(lookup(statement).size(), 0);
-	// a null value is seen as "self", i.e. the agent running this knowledge base
-	statement.agent = nullptr;
+	statement.setAgent("agent_b");
 	EXPECT_EQ(lookup(statement).size(), 0);
 }
 
 TEST_F(MongoKnowledgeGraphTest, Belief) {
 	// assert uncertain statement
-	StatementData statement(swrl_test_"Lea", swrl_test_"hasName", "Lea");
-	statement.epistemicOperator = EpistemicOperator::BELIEF;
+	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "Lea");
+	statement.setEpistemicOperator(EpistemicOperator::BELIEF);
 	EXPECT_EQ(lookup(statement).size(), 0);
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
@@ -1048,15 +1062,15 @@ TEST_F(MongoKnowledgeGraphTest, Belief) {
 		EXPECT_TRUE(solution->isUncertain());
 	}
 	// statement is filtered if knowledge operator is selected
-	statement.epistemicOperator = EpistemicOperator::KNOWLEDGE;
+	statement.setEpistemicOperator(EpistemicOperator::KNOWLEDGE);
 	EXPECT_EQ(lookup(statement).size(), 0);
 }
 
 TEST_F(MongoKnowledgeGraphTest, WithConfidence) {
 	// assert uncertain statement with confidence=0.5
-	StatementData statement(swrl_test_"Lea", swrl_test_"hasName", "A");
-	statement.epistemicOperator = EpistemicOperator::BELIEF;
-	statement.confidence = 0.5;
+	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "A");
+	statement.setEpistemicOperator(EpistemicOperator::BELIEF);
+	statement.setConfidence(0.5);
 	EXPECT_EQ(lookup(statement).size(), 0);
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
@@ -1064,18 +1078,18 @@ TEST_F(MongoKnowledgeGraphTest, WithConfidence) {
 		EXPECT_TRUE(solution->isUncertain());
 	}
 	// confidence threshold of 0.0 does not filter the statement
-	statement.confidence = 0.0;
+	statement.setConfidence(0.0);
 	EXPECT_EQ(lookup(statement).size(), 1);
 	// confidence threshold of 0.9 filters the statement
-	statement.confidence = 0.9;
+	statement.setConfidence(0.9);
 	EXPECT_EQ(lookup(statement).size(), 0);
 }
 
 TEST_F(MongoKnowledgeGraphTest, WithTimeInterval) {
 	// assert a statement with time interval [5,10]
-	StatementData statement(swrl_test_"Rex", swrl_test_"hasName", "Rex");
-	statement.begin = 5.0;
-	statement.end = 10.0;
+	FramedTripleCopy statement(swrl_test_"Rex", swrl_test_"hasName", "Rex");
+	statement.setBegin(5.0);
+	statement.setEnd(10.0);
 	EXPECT_EQ(lookup(statement).size(), 0);
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
@@ -1089,18 +1103,18 @@ TEST_F(MongoKnowledgeGraphTest, WithTimeInterval) {
 			EXPECT_EQ(solution->frame()->end.value(), 10.0);
 	}
 	// no solution because statement only known to be true until 10.0
-	statement.end = 20.0;
+	statement.setEnd(20.0);
 	EXPECT_EQ(lookup(statement).size(), 0);
 	// but temporal overlap is sufficient if "sometimes" operator is used
-	statement.temporalOperator = TemporalOperator::SOMETIMES;
+	statement.setTemporalOperator(TemporalOperator::SOMETIMES);
 	EXPECT_EQ(lookup(statement).size(), 1);
 }
 
 TEST_F(MongoKnowledgeGraphTest, ExtendsTimeInterval) {
 	// assert a statement with time interval [10,20]
-	StatementData statement(swrl_test_"Rex", swrl_test_"hasName", "Rex");
-	statement.begin = 10.0;
-	statement.end = 20.0;
+	FramedTripleCopy statement(swrl_test_"Rex", swrl_test_"hasName", "Rex");
+	statement.setBegin(10.0);
+	statement.setEnd(20.0);
 	EXPECT_EQ(lookup(statement).size(), 0);
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
@@ -1113,12 +1127,12 @@ TEST_F(MongoKnowledgeGraphTest, ExtendsTimeInterval) {
 			EXPECT_EQ(solution->frame()->end.value(), 20.0);
 	}
 	// time interval was merged with existing one into [5,20]
-	statement.begin = 5.0;
+	statement.setBegin(5.0);
 	EXPECT_EQ(lookup(statement).size(), 1);
 	// no solution because statement only known to be true since 5.0
-	statement.begin = 0.0;
+	statement.setBegin(0.0);
 	EXPECT_EQ(lookup(statement).size(), 0);
 	// temporal overlap is sufficient if "sometimes" operator is used
-	statement.temporalOperator = TemporalOperator::SOMETIMES;
+	statement.setTemporalOperator(TemporalOperator::SOMETIMES);
 	EXPECT_EQ(lookup(statement).size(), 1);
 }

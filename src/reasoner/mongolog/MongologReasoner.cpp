@@ -12,6 +12,7 @@
 #include "knowrob/queries/QueryError.h"
 #include "knowrob/URI.h"
 #include "knowrob/reasoner/ReasonerError.h"
+#include "knowrob/terms/Numeric.h"
 
 using namespace knowrob;
 
@@ -163,58 +164,54 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
 								term_t t_confidenceTerm) {
 	auto mongolog = getMongologReasoner(t_reasonerManager, t_reasonerModule);
 	if (mongolog) {
-		StatementData tripleData;
+		FramedTripleView tripleData;
 
 		// "s" field
 		auto subjectTerm = PrologTerm::toKnowRobTerm(t_subjectTerm);
-		if (subjectTerm->type() != TermType::STRING) throw QueryError("invalid subject term {}", *subjectTerm);
-		tripleData.subject = ((StringTerm *) subjectTerm.get())->value().c_str();
+		if (subjectTerm->termType() != TermType::ATOMIC) throw QueryError("invalid subject term {}", *subjectTerm);
+		tripleData.setSubject(((Atomic *) subjectTerm.get())->stringForm());
 
 		// "p" field
 		auto propertyTerm = PrologTerm::toKnowRobTerm(t_propertyTerm);
-		if (propertyTerm->type() != TermType::STRING) throw QueryError("invalid property term {}", *propertyTerm);
-		tripleData.predicate = ((StringTerm *) propertyTerm.get())->value().c_str();
+		if (propertyTerm->termType() != TermType::ATOMIC) throw QueryError("invalid property term {}", *propertyTerm);
+		tripleData.setPredicate(((Atomic *) propertyTerm.get())->stringForm());
 
 		// "o" field
 		auto objectTerm = PrologTerm::toKnowRobTerm(t_objectTerm);
-		switch (objectTerm->type()) {
-			case TermType::STRING:
-				tripleData.objectType = RDF_STRING_LITERAL;
-				tripleData.object = ((StringTerm *) objectTerm.get())->value().c_str();
-				break;
-			case TermType::DOUBLE:
-				tripleData.objectType = RDF_DOUBLE_LITERAL;
-				tripleData.objectDouble = ((DoubleTerm *) objectTerm.get())->value();
-				break;
-			case TermType::INT32:
-			case TermType::LONG:
-				tripleData.objectType = RDF_INT64_LITERAL;
-				tripleData.objectInteger = ((LongTerm *) objectTerm.get())->value();
-				break;
-			default:
-				throw QueryError("object term {} of triple has an invalid type", *objectTerm);
+		if(objectTerm->termType() == TermType::ATOMIC) {
+			auto atomic = std::static_pointer_cast<Atomic>(objectTerm);
+			if (atomic->isNumeric()) {
+				tripleData.setXSDValue(atomic->stringForm(),
+					std::static_pointer_cast<Numeric>(atomic)->xsdType());
+			} else if (atomic->isIRI()) {
+				tripleData.setObjectIRI(atomic->stringForm());
+			} else if (atomic->isBlank()) {
+				tripleData.setObjectBlank(atomic->stringForm());
+			} else {
+				tripleData.setStringValue(atomic->stringForm());
+			}
+		} else {
+			throw QueryError("object term {} of triple has an invalid type", *objectTerm);
 		}
 
 		// "g" field
 		TermPtr graphTerm;
 		if (!PL_is_variable(t_graphTerm)) {
 			graphTerm = PrologTerm::toKnowRobTerm(t_graphTerm);
-			if (graphTerm->type() != TermType::STRING) throw QueryError("invalid property term {}", *graphTerm);
-			tripleData.graph = ((StringTerm *) graphTerm.get())->value().c_str();
+			if (graphTerm->termType() != TermType::ATOMIC) throw QueryError("invalid property term {}", *graphTerm);
+			tripleData.setGraph(((Atomic *) graphTerm.get())->stringForm());
 		} else {
-			tripleData.graph = mongolog->importHierarchy()->defaultGraph().c_str();
+			tripleData.setGraph(mongolog->importHierarchy()->defaultGraph());
 		}
 
 		// "c" field
 		TermPtr confidenceTerm;
 		if (!PL_is_variable(t_confidenceTerm)) {
 			confidenceTerm = PrologTerm::toKnowRobTerm(t_confidenceTerm);
-			switch (confidenceTerm->type()) {
-				case TermType::DOUBLE:
-					tripleData.confidence = ((DoubleTerm *) confidenceTerm.get())->value();
-					break;
-				default:
-					throw QueryError("invalid confidence term {}", *confidenceTerm);
+			if (confidenceTerm->isNumeric()) {
+				tripleData.setConfidence(std::static_pointer_cast<Numeric>(confidenceTerm)->asDouble());
+			} else {
+				throw QueryError("invalid confidence term {}", *confidenceTerm);
 			}
 		}
 
@@ -222,18 +219,10 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
 		TermPtr beginTerm;
 		if (!PL_is_variable(t_beginTerm)) {
 			beginTerm = PrologTerm::toKnowRobTerm(t_beginTerm);
-			switch (beginTerm->type()) {
-				case TermType::DOUBLE:
-					tripleData.begin = ((DoubleTerm *) beginTerm.get())->value();
-					break;
-				case TermType::INT32:
-					tripleData.begin = ((Integer32Term *) beginTerm.get())->value();
-					break;
-				case TermType::LONG:
-					tripleData.begin = ((LongTerm *) beginTerm.get())->value();
-					break;
-				default:
-					throw QueryError("invalid begin term {}", *beginTerm);
+			if (beginTerm->isNumeric()) {
+				tripleData.setBegin(std::static_pointer_cast<Numeric>(beginTerm)->asDouble());
+			} else {
+				throw QueryError("invalid begin term {}", *beginTerm);
 			}
 		}
 
@@ -241,25 +230,19 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
 		TermPtr endTerm;
 		if (!PL_is_variable(t_endTerm)) {
 			endTerm = PrologTerm::toKnowRobTerm(t_endTerm);
-			switch (endTerm->type()) {
-				case TermType::DOUBLE:
-					tripleData.end = ((DoubleTerm *) endTerm.get())->value();
-					break;
-				case TermType::INT32:
-					tripleData.end = ((Integer32Term *) endTerm.get())->value();
-					break;
-				case TermType::LONG:
-					tripleData.end = ((LongTerm *) endTerm.get())->value();
-					break;
-				default:
-					throw QueryError("invalid end term {}", *endTerm);
+			if (endTerm->isNumeric()) {
+				tripleData.setEnd(std::static_pointer_cast<Numeric>(endTerm)->asDouble());
+			} else {
+				throw QueryError("invalid end term {}", *endTerm);
 			}
 		}
 
 		mongolog->kb()->insertOne(tripleData);
 		return true;
+	} else {
+		KB_WARN("[mongolog] unable to assert triple: reasoner not found");
+		return false;
 	}
-	return false;
 }
 
 class MongologTests : public PrologTestsBase {

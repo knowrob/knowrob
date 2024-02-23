@@ -138,13 +138,13 @@ namespace knowrob {
 		bool foreach(const semweb::MutableTripleHandler &callback) const;
 
 		// override DataBackend
-		bool insertOne(const StatementData &triple) override;
+		bool insertOne(const FramedTriple &triple) override;
 
 		// override DataBackend
 		bool insertAll(const semweb::TripleContainerPtr &triples) override;
 
 		// override DataBackend
-		bool removeOne(const StatementData &triple) override;
+		bool removeOne(const FramedTriple &triple) override;
 
 		// override DataBackend
 		bool removeAll(const semweb::TripleContainerPtr &triples) override;
@@ -163,10 +163,8 @@ namespace knowrob {
 
 		// the uris are created within the context of a librdf_world, so
 		// they cannot be defined statically.
-		RedlandURI uri_xsdString_;
-		RedlandURI uri_xsdInteger_;
-		RedlandURI uri_xsdDouble_;
-		RedlandURI uri_xsdBoolean_;
+		RedlandURI xsdURIs_[static_cast<int>(XSDType::LAST)];
+		RedlandURI& xsdURI(XSDType xsdType);
 
 		std::map<std::string, librdf_node *, std::less<>> contextNodes_;
 
@@ -183,11 +181,11 @@ namespace knowrob {
 
 		std::string getStorageOptions() const;
 
-		void knowrobToRaptor(const StatementData &triple, raptor_statement *raptorTriple);
+		void knowrobToRaptor(const FramedTriple &triple, raptor_statement *raptorTriple);
 
 		librdf_node *getContextNode(std::string_view origin);
 
-		librdf_node *getContextNode(const StatementData &triple);
+		librdf_node *getContextNode(const FramedTriple &triple);
 
 	private:
 		void finalize();

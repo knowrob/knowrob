@@ -1,25 +1,20 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob/Logger.h"
 #include "knowrob/reasoner/ReasonerConfig.h"
-#include "knowrob/terms/Constant.h"
 #include "knowrob/formulas/Predicate.h"
+#include "knowrob/terms/Atom.h"
+#include "knowrob/terms/Function.h"
 
 using namespace knowrob;
 
 ReasonerConfig::ReasonerConfig()
-: ptree_(nullptr)
-{}
+		: ptree_(nullptr) {}
 
 ReasonerConfig::ReasonerConfig(const boost::property_tree::ptree *ptree)
-: ptree_(ptree)
-{
+		: ptree_(ptree) {
 	static const std::string formatDefault = {};
 
 	auto config = *ptree;
@@ -89,7 +84,6 @@ std::string_view ReasonerConfig::get(std::string_view key, std::string_view defa
 }
 
 TermPtr ReasonerConfig::createKeyTerm(std::string_view key, std::string_view delimiter) const {
-	auto delimiter_f = std::make_shared<PredicateIndicator>(std::string(delimiter), 2);
 	TermPtr last_key, next_key;
 
 	size_t pos_start = 0, pos_end, delim_len = delimiter.length();
@@ -99,16 +93,16 @@ TermPtr ReasonerConfig::createKeyTerm(std::string_view key, std::string_view del
 	while ((pos_end = key.find(delimiter, pos_start)) != std::string::npos) {
 		token = key.substr(pos_start, pos_end - pos_start);
 		pos_start = pos_end + delim_len;
-		next_key = std::make_shared<StringTerm>(std::string(token));
+		next_key = Atom::Tabled(token);
 		if (last_key) {
-			last_key = std::make_shared<Predicate>(Predicate(delimiter_f, {last_key, next_key}));
+			last_key = std::make_shared<Function>(Function(delimiter, {last_key, next_key}));
 		} else {
 			last_key = next_key;
 		}
 		res.push_back(token);
 	}
-	if(!last_key) {
-		last_key = std::make_shared<StringTerm>(std::string(key));
+	if (!last_key) {
+		last_key = Atom::Tabled(key);
 	}
 
 	return last_key;

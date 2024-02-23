@@ -29,11 +29,11 @@ std::string_view GraphRenaming::rename(const std::string_view &entity) {
 	return entity;
 }
 
-void GraphRenaming::rename(StatementData &triple) {
-	triple.subject = rename(triple.subject).data();
-	triple.predicate = rename(triple.predicate).data();
-	if (triple.objectType == RDFType::RDF_RESOURCE) {
-		triple.object = rename(triple.object).data();
+void GraphRenaming::rename(FramedTriple &triple) {
+	triple.setSubject(rename(triple.subject()));
+	triple.setPredicate(rename(triple.predicate()));
+	if (triple.isObjectIRI()) {
+		triple.setObjectIRI(rename(triple.valueAsString()));
 	}
 }
 
@@ -47,7 +47,7 @@ void GraphRenaming::finalizeTransformation() {
 
 void GraphRenaming::pushInputTriples(const semweb::MutableTripleContainerPtr &triples) {
 	for (auto it = triples->beginMutable(); it != triples->endMutable(); ++it) {
-		rename(*it);
+		rename(**it);
 	}
 	pushOutputTriples(triples);
 }

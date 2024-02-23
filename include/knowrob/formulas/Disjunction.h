@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -23,25 +20,21 @@ namespace knowrob {
 		 * @formulae list of sub-formulas.
 		 */
 		explicit Disjunction(const std::vector<FormulaPtr> &formulae);
-		
-		// Override Formula
-		FormulaPtr applySubstitution(const Substitution &sub) const override;
-		
+
 		// Override ConnectiveFormula
-		const char* operator_symbol() const override { return "\u2228"; }
-	
+		const char *operator_symbol() const override { return "\u2228"; }
+
 	protected:
-		Disjunction(const Disjunction &other, const Substitution &sub);
 		bool isEqual(const Formula &other) const override;
 	};
 
-    /**
-     * Construct conjunction of formulae.
-     * @param phi a formula
-     * @param psi a formula
-     * @return conjunction of phi and psi.
-     */
-    FormulaPtr operator|(const FormulaPtr& phi, const FormulaPtr &psi);
+	/**
+	 * Construct conjunction of formulae.
+	 * @param phi a formula
+	 * @param psi a formula
+	 * @return conjunction of phi and psi.
+	 */
+	FormulaPtr operator|(const FormulaPtr &phi, const FormulaPtr &psi);
 }
 
 #endif //KNOWROB_DISJUNCTION_FORMULA_H_

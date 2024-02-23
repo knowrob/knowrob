@@ -32,7 +32,7 @@ size_t AnswerDontKnow::hash() const {
 
 std::ostream &AnswerDontKnow::write(std::ostream &os) const {
 	if(reasonerTerm_) {
-		os << "[" << reasonerTerm_->value() << "] ";
+		os << "[" << *reasonerTerm_ << "] ";
 	}
 	return os << "don't know\n";
 }

@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -16,6 +13,7 @@
 #include <ostream>
 #include "Term.h"
 #include "Variable.h"
+#include "knowrob/formulas/Formula.h"
 
 namespace knowrob {
 	/**
@@ -121,7 +119,23 @@ namespace knowrob {
 
 	// alias declaration
 	using SubstitutionPtr = std::shared_ptr<Substitution>;
-	using SubstitutionHandler = std::function<void(const SubstitutionPtr&)>;
+	using SubstitutionHandler = std::function<void(const SubstitutionPtr &)>;
+
+	/**
+	 * Apply a substitution to a term.
+	 * @param term a term.
+	 * @param bindings a substitution.
+	 * @return the term with the substitution applied.
+	 */
+	TermPtr applyBindings(const TermPtr &term, const Substitution &bindings);
+
+	/**
+	 * Apply a substitution to a formula.
+	 * @param phi a formula.
+	 * @param bindings a substitution.
+	 * @return the formula with the substitution applied.
+	 */
+	FormulaPtr applyBindings(const FormulaPtr &phi, const Substitution &bindings);
 }
 
 namespace std {

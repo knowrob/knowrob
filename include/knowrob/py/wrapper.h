@@ -30,18 +30,130 @@ namespace knowrob::py {
 	}
 }
 
-// this struct is needed because Term has pure virtual methods
-struct TermWrap : public Term, boost::python::wrapper<Term>
-{
-	explicit TermWrap(TermType type) : Term(type) {}
+// this struct is needed because FramedTriple has pure virtual methods
+struct FramedTripleWrap : public FramedTriple, boost::python::wrapper<FramedTriple> {
+	explicit FramedTripleWrap(PyObject *p) : self(p), FramedTriple() {}
 
-	bool isGround() const override 					{ return this->get_override("isGround")(); }
-	bool isAtomic() const override 					{ return this->get_override("isAtomic")(); }
-	size_t computeHash() const override 			{ return this->get_override("computeHash")(); }
-	void write(std::ostream& os) const override 	{ this->get_override("write")(os); }
-	const VariableSet& getVariables() override 		{ return this->get_override("getVariables")(); }
-	// protected:
-	bool isEqual(const Term &other) const override	{ return this->get_override("isEqual")(other); }
+	void setSubject(std::string_view subject) override
+	{ knowrob::py::call_method<void>(self, "setSubject", subject); }
+
+	void setPredicate(std::string_view predicate) override
+	{ knowrob::py::call_method<void>(self, "setPredicate", predicate); }
+
+	void setObjectIRI(std::string_view object) override
+	{ knowrob::py::call_method<void>(self, "setObjectIRI", object); }
+
+	void setSubjectBlank(std::string_view str) override
+	{ knowrob::py::call_method<void>(self, "setSubjectBlank", str); }
+
+	void setObjectBlank(std::string_view str) override
+	{ knowrob::py::call_method<void>(self, "setObjectBlank", str); }
+
+	std::string_view subject() const override
+	{ return knowrob::py::call_method<std::string_view>(self, "subject"); }
+
+	std::string_view predicate() const override
+	{ return knowrob::py::call_method<std::string_view>(self, "predicate"); }
+
+	void setGraph(std::string_view graph) override
+	{ knowrob::py::call_method<void>(self, "setGraph", graph); }
+
+	void setAgent(std::string_view agent) override
+	{ knowrob::py::call_method<void>(self, "setAgent", agent); }
+
+	std::optional<std::string_view> graph() const override
+	{ return knowrob::py::call_method<std::optional<std::string_view>>(self, "graph"); }
+
+	std::optional<std::string_view> agent() const override
+	{ return knowrob::py::call_method<std::optional<std::string_view>>(self, "agent"); }
+private:
+	PyObject *self;
+};
+
+// this struct is needed because RDFNode has pure virtual methods
+struct RDFNodeWrap : public RDFNode, boost::python::wrapper<RDFNode> {
+	explicit RDFNodeWrap(PyObject *p) : self(p), RDFNode() {}
+
+	RDFNodeType rdfNodeType() const override
+	{ return knowrob::py::call_method<RDFNodeType>(self, "rdfNodeType"); }
+private:
+	PyObject *self;
+};
+
+// this struct is needed because Term has pure virtual methods
+struct TermWrap : public Term, boost::python::wrapper<Term> {
+	explicit TermWrap(PyObject *p) : self(p), Term() {}
+
+	bool isAtomic() const override
+	{ return knowrob::py::call_method<bool>(self, "isAtomic"); }
+
+	TermType termType() const override
+	{ return knowrob::py::call_method<TermType>(self, "termType"); }
+
+	size_t hash() const override
+	{ return knowrob::py::call_method<size_t>(self, "hash"); }
+
+	const VariableSet& variables() const override
+	{ return knowrob::py::call_method<VariableSet&>(self, "variables"); }
+private:
+	PyObject *self;
+};
+
+// this struct is needed because Atomic has pure virtual methods
+struct AtomicWrap : public Atomic, boost::python::wrapper<Atomic> {
+	explicit AtomicWrap(PyObject *p) : self(p), Atomic() {}
+
+	AtomicType atomicType() const override
+	{ return knowrob::py::call_method<AtomicType>(self, "atomicType"); }
+
+	std::string_view stringForm() const override
+	{ return knowrob::py::call_method<std::string_view>(self, "stringForm"); }
+private:
+	PyObject *self;
+};
+
+// this struct is needed because XSDAtomic has pure virtual methods
+struct XSDAtomicWrap : public XSDAtomic, boost::python::wrapper<XSDAtomic> {
+	explicit XSDAtomicWrap(PyObject *p) : self(p), XSDAtomic() {}
+
+	XSDType xsdType() const override
+	{ return knowrob::py::call_method<XSDType>(self, "xsdType"); }
+private:
+	PyObject *self;
+};
+
+// this struct is needed because Numeric has pure virtual methods
+struct NumericWrap : public Numeric, boost::python::wrapper<Numeric> {
+	explicit NumericWrap(PyObject *p) : self(p), Numeric() {}
+
+	double asDouble() const override
+	{ return knowrob::py::call_method<double>(self, "asDouble"); }
+
+	float asFloat() const override
+	{ return knowrob::py::call_method<float>(self, "asFloat"); }
+
+	int asInteger() const override
+	{ return knowrob::py::call_method<int>(self, "asInteger"); }
+
+	long asLong() const override
+	{ return knowrob::py::call_method<long>(self, "asLong"); }
+
+	short asShort() const override
+	{ return knowrob::py::call_method<short>(self, "asShort"); }
+
+	unsigned int asUnsignedInteger() const override
+	{ return knowrob::py::call_method<unsigned int>(self, "asUnsignedInteger"); }
+
+	unsigned long asUnsignedLong() const override
+	{ return knowrob::py::call_method<unsigned long>(self, "asUnsignedLong"); }
+
+	unsigned short asUnsignedShort() const override
+	{ return knowrob::py::call_method<unsigned short>(self, "asUnsignedShort"); }
+
+	bool asBoolean() const override
+	{ return knowrob::py::call_method<bool>(self, "asBoolean"); }
+private:
+	PyObject *self;
 };
 
 // this struct is needed because Formula has pure virtual methods
@@ -51,9 +163,6 @@ struct FormulaWrap : public Formula, boost::python::wrapper<Formula>
 
 	bool isGround() const override 					{ return this->get_override("isGround")(); }
 	void write(std::ostream& os) const override 	{ this->get_override("write")(os); }
-
-	std::shared_ptr<Formula> applySubstitution(const Substitution &substitution) const override
-	{ return this->get_override("applySubstitution")(substitution); }
 
 	// protected:
 	bool isEqual(const Formula &other) const override { return this->get_override("isEqual")(other); }
@@ -74,14 +183,14 @@ struct DataBackendWrap : public DataBackend, boost::python::wrapper<DataBackend>
 	bool initializeBackend(const ReasonerConfig &config) override
 	{ return knowrob::py::call_method<bool>(self, "initializeBackend", config); }
 
-	bool insertOne(const StatementData &triple) override
-	{ return knowrob::py::call_method<bool>(self, "insertOne", triple); }
+	bool insertOne(const FramedTriple &triple) override
+	{ return knowrob::py::call_method<bool>(self, "insertOne", &triple); }
 
 	bool insertAll(const semweb::TripleContainerPtr &triples) override
 	{ return knowrob::py::call_method<bool>(self, "insertAll", triples); }
 
-	bool removeOne(const StatementData &triple) override
-	{ return knowrob::py::call_method<bool>(self, "removeOne", triple); }
+	bool removeOne(const FramedTriple &triple) override
+	{ return knowrob::py::call_method<bool>(self, "removeOne", &triple); }
 
 	bool removeAll(const semweb::TripleContainerPtr &triples) override
 	{ return knowrob::py::call_method<bool>(self, "removeAll", triples); }
@@ -137,14 +246,14 @@ struct ReasonerWithBackendWrap :
 	bool initializeBackend(const ReasonerConfig &config) override
 	{ return knowrob::py::call_method<bool>(self, "initializeBackend", config); }
 
-	bool insertOne(const StatementData &triple) override
-	{ return knowrob::py::call_method<bool>(self, "insertOne", triple); }
+	bool insertOne(const FramedTriple &triple) override
+	{ return knowrob::py::call_method<bool>(self, "insertOne", &triple); }
 
 	bool insertAll(const semweb::TripleContainerPtr &triples) override
 	{ return knowrob::py::call_method<bool>(self, "insertAll", triples); }
 
-	bool removeOne(const StatementData &triple) override
-	{ return knowrob::py::call_method<bool>(self, "removeOne", triple); }
+	bool removeOne(const FramedTriple &triple) override
+	{ return knowrob::py::call_method<bool>(self, "removeOne", &triple); }
 
 	bool removeAll(const semweb::TripleContainerPtr &triples) override
 	{ return knowrob::py::call_method<bool>(self, "removeAll", triples); }

@@ -74,7 +74,7 @@ namespace knowrob {
 		 * @param backendID a backend ID string.
 		 * @return a backend instance or a null pointer reference.
 		 */
-		std::shared_ptr<DefinedBackend> getBackendWithID(const std::string &backendID);
+		std::shared_ptr<DefinedBackend> getBackendWithID(std::string_view backendID);
 
 		/**
 		 * Add a backend to this manager.
@@ -119,7 +119,7 @@ namespace knowrob {
 		std::mutex staticMutex_;
 		// pool of all backend instances created via this manager
 		// maps backend ID to backend instance.
-		std::map<std::string, std::shared_ptr<DefinedBackend>> backendPool_;
+		std::map<std::string, std::shared_ptr<DefinedBackend>, std::less<>> backendPool_;
 		std::map<std::string, PersistentBackendPtr> persistent_;
 		std::map<std::string, QueryableBackendPtr> queryable_;
 		// maps plugin names to factories used to create backend instances

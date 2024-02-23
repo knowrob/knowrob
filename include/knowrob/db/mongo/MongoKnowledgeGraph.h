@@ -22,7 +22,7 @@ namespace knowrob {
 	 * A knowledge graph implemented with MongoDB.
 	 */
 	class MongoKnowledgeGraph : public DataBackend,
-			                    public QueryableBackend,
+								public QueryableBackend,
 								public PersistentBackend {
 	public:
 		static const std::string DB_URI_DEFAULT;
@@ -40,7 +40,8 @@ namespace knowrob {
 		 * @param collectionName the name of the collection for triples.
 		 * @return true on success
 		 */
-		bool init(std::string_view db_uri, std::string_view db_name = "knowrob", std::string_view collectionName = "triples");
+		bool init(std::string_view db_uri, std::string_view db_name = "knowrob",
+				  std::string_view collectionName = "triples");
 
 		/**
 		 * @return the name of the database.
@@ -80,7 +81,7 @@ namespace knowrob {
 		 * @param tripleData an atomic proposition
 		 * @return a cursor over matching triples
 		 */
-		mongo::AnswerCursorPtr lookup(const StatementData &tripleData);
+		mongo::AnswerCursorPtr lookup(const FramedTriple &tripleData);
 
 		/**
 		 * Lookup up a path of matching triples.
@@ -102,13 +103,13 @@ namespace knowrob {
 		bool initializeBackend(const ReasonerConfig &config) override;
 
 		// Override IDataBackend
-		bool insertOne(const StatementData &triple) override;
+		bool insertOne(const FramedTriple &triple) override;
 
 		// Override IDataBackend
 		bool insertAll(const semweb::TripleContainerPtr &triples) override;
 
 		// Override IDataBackend
-		bool removeOne(const StatementData &triple) override;
+		bool removeOne(const FramedTriple &triple) override;
 
 		// Override IDataBackend
 		bool removeAll(const semweb::TripleContainerPtr &triples) override;
@@ -139,13 +140,14 @@ namespace knowrob {
 
 		static std::shared_ptr<mongo::Collection> connect(const boost::property_tree::ptree &config);
 
-		static std::shared_ptr<mongo::Collection> connect(std::string_view db_uri, std::string_view db_name, std::string_view collectionName);
+		static std::shared_ptr<mongo::Collection>
+		connect(std::string_view db_uri, std::string_view db_name, std::string_view collectionName);
 
 		static std::string getDBName(const boost::property_tree::ptree &config);
 
 		static std::string getCollectionName(const boost::property_tree::ptree &config);
 
-		bson_t *createTripleDocument(const StatementData &tripleData, const std::string &graphName, bool isTaxonomic);
+		bson_t *createTripleDocument(const FramedTriple &tripleData, const std::string &graphName, bool isTaxonomic);
 
 		static std::string getURI(const boost::property_tree::ptree &config);
 
@@ -153,15 +155,15 @@ namespace knowrob {
 				const std::vector<StringPair> &subClassAssertions,
 				const std::vector<StringPair> &subPropertyAssertions);
 
-		void updateTimeInterval(const StatementData &tripleLoader);
+		void updateTimeInterval(const FramedTriple &tripleLoader);
 
 		bson_t *getSelector(const RDFLiteral &tripleExpression, bool isTaxonomicProperty);
 
-		bson_t *getSelector(const StatementData &triple, bool isTaxonomicProperty);
+		bson_t *getSelector(const FramedTriple &triple, bool isTaxonomicProperty);
 
 		bool isTaxonomicProperty(const TermPtr &propertyTerm);
 
-		bool isTaxonomicProperty(const char *property);
+		bool isTaxonomicProperty(std::string_view property);
 
 		bool dropOrigin(std::string_view origin);
 

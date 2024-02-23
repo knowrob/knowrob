@@ -23,12 +23,12 @@ bool PrologBackend::initializeBackend(const ReasonerConfig &cfg) {
 	return true;
 }
 
-bool PrologBackend::insertOne(const StatementData &triple) {
+bool PrologBackend::insertOne(const FramedTriple &triple) {
 	// :- rdf_assert($triple.subject, $triple.predicate, $triple.object, $triple.origin).
 	return PROLOG_ENGINE_EVAL(PrologTerm(triple, rdf_assert));
 }
 
-bool PrologBackend::removeOne(const StatementData &triple) {
+bool PrologBackend::removeOne(const FramedTriple &triple) {
 	// :- rdf_retractall($triple.subject, $triple.predicate, $triple.object, $triple.origin).
 	return PROLOG_ENGINE_EVAL(PrologTerm(triple, rdf_retractall));
 }
@@ -56,7 +56,7 @@ PrologTerm PrologBackend::transaction(std::string_view rdf_functor, const semweb
 	// transactionTerm = rdf_transaction((rdf_functor(s, p, o, g), ...)).
 	PrologTerm transactionGoal;
 	for (const auto &triple: *triples) {
-		transactionGoal = (transactionGoal & PrologTerm(triple, rdf_functor));
+		transactionGoal = (transactionGoal & PrologTerm(*triple, rdf_functor));
 	}
 	return PrologTerm(rdf_transaction, transactionGoal);
 }

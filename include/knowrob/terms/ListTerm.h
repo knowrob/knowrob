@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -12,22 +9,24 @@
 #include <vector>
 #include <memory>
 #include <ostream>
-#include "Term.h"
+#include "Function.h"
 
 namespace knowrob {
 	/**
-	 * A composite term that isMoreGeneralThan a list of terms.
-	 * The empty list is a special constant NIL.
+	 * A Function representing a list of terms, the functor '[]' is used.
+	 * The empty list is a special constant NIL represented as null-ary '[]'.
 	 */
-	class ListTerm : public Term {
+	class ListTerm : public Function {
 	public:
 		explicit ListTerm(const std::vector<TermPtr> &elements);
-		
+
+		static const AtomPtr &listFunctor();
+
 		/**
 		 * @return the NIL constant.
 		 */
 		static std::shared_ptr<ListTerm> nil();
-		
+
 		/**
 		 * @return true if this list term is the NIL constant.
 		 */
@@ -37,40 +36,20 @@ namespace knowrob {
 		 * Get the elements of this list.
 		 * @return a vector of list elements.
 		 */
-		const std::vector<TermPtr>& elements() const { return elements_; }
+		auto &elements() const { return arguments_; }
 
 		/**
 		 * @return an iterator ovr the elements of this list.
 		 */
-		std::vector<TermPtr>::const_iterator begin() { return elements_.begin(); }
+		auto begin() { return arguments_.begin(); }
 
 		/**
 		 * @return the iterator object indicating the end of iteration.
 		 */
-		std::vector<TermPtr>::const_iterator end()   { return elements_.end(); }
-		
-		// Override Term
-		bool isGround() const override { return variables_.empty(); }
-		
-		// Override Term
-		bool isAtomic() const override { return isNIL(); }
+		auto end() { return arguments_.end(); }
 
 		// Override Term
-		const VariableSet& getVariables() override { return variables_; }
-		
-		// Override Term
-		void write(std::ostream& os) const override;
-
-		// Override Term
-        size_t computeHash() const override;
-	
-	protected:
-		const std::vector<TermPtr> elements_;
-		const VariableSet variables_;
-
-		VariableSet getVariables1() const;
-		// Override Term
-		bool isEqual(const Term &other) const override;
+		void write(std::ostream &os) const override;
 	};
 }
 

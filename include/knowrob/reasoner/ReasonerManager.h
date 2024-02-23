@@ -77,7 +77,7 @@ namespace knowrob {
 		 * @param reasonerID a reasoner ID string.
 		 * @return a reasoner instance or a null pointer reference.
 		 */
-		std::shared_ptr<DefinedReasoner> getReasonerWithID(const std::string &reasonerID);
+		std::shared_ptr<DefinedReasoner> getReasonerWithID(std::string_view reasonerID);
 
 		/**
 		 * Return the backend associated with a reasoner if any.
@@ -121,12 +121,12 @@ namespace knowrob {
 		std::mutex staticMutex_;
 		// pool of all reasoner instances created via this manager
 		// maps reasoner ID to reasoner instance.
-		std::map<std::string, std::shared_ptr<DefinedReasoner>> reasonerPool_;
+		std::map<std::string, std::shared_ptr<DefinedReasoner>, std::less<>> reasonerPool_;
 		// maps plugin names to factories used to create reasoner instances
 		std::map<std::string, std::shared_ptr<ReasonerPlugin>> loadedPlugins_;
 		std::map<std::string, std::shared_ptr<ReasonerModule>> loadedModules_;
 		// maps reasoner to their backends
-		std::map<std::string, std::shared_ptr<DataBackend>> reasonerBackends_;
+		std::map<std::string_view, std::shared_ptr<DataBackend>, std::less<>> reasonerBackends_;
 		// a counter used to generate unique IDs
 		uint32_t reasonerIndex_;
 		// an identifier for this manager

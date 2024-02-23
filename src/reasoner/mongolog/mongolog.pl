@@ -687,6 +687,9 @@ mongolog_assert(triple(S,P,O)) :-
 	sw_default_graph(G),
 	mng_assert_triple_cpp(ReasonerManager, ReasonerModule, S, P, O, G, _, _, _).
 
+mongolog_assert(Term) :-
+	throw(error(mongolog_error, assert(Term))).
+
 mongolog_assert(Fact) :-
 	mongolog_universal_scope(QScope),
 	mongolog_call(assert(Fact),[query_scope(QScope)]).

@@ -5,39 +5,41 @@
 #include <utility>
 
 #include "knowrob/semweb/RDFLiteral.h"
-#include "knowrob/terms/Constant.h"
 #include "knowrob/Logger.h"
 #include "knowrob/queries/QueryError.h"
 #include "knowrob/modalities/BeliefModality.h"
+#include "knowrob/terms/Atomic.h"
+#include "knowrob/terms/Numeric.h"
+#include "knowrob/terms/Atom.h"
+#include "knowrob/terms/IRIAtom.h"
+#include "knowrob/terms/String.h"
+#include "knowrob/terms/Blank.h"
 
 using namespace knowrob;
 
-static auto TRIPLE_INDICATOR =
-        std::make_shared<PredicateIndicator>("triple",3);
-
-RDFLiteral::RDFLiteral(const StatementData &data, bool isNegated)
+RDFLiteral::RDFLiteral(const FramedTriple &data, bool isNegated)
 : FirstOrderLiteral(getRDFPredicate(data), isNegated),
   subjectTerm_(predicate_->arguments()[0]),
   propertyTerm_(predicate_->arguments()[1]),
   objectTerm_(predicate_->arguments()[2]),
   objectOperator_(EQ),
-  epistemicOperator_(data.epistemicOperator),
-  temporalOperator_(data.temporalOperator)
+  epistemicOperator_(data.epistemicOperator()),
+  temporalOperator_(data.temporalOperator())
 {
-    if(data.confidence.has_value()) {
-        confidenceTerm_ = std::make_shared<DoubleTerm>(data.confidence.value());
+    if(data.confidence().has_value()) {
+        confidenceTerm_ = std::make_shared<Double>(data.confidence().value());
     }
-    if(data.begin.has_value()) {
-        beginTerm_ = std::make_shared<DoubleTerm>(data.begin.value());
+    if(data.begin().has_value()) {
+        beginTerm_ = std::make_shared<Double>(data.begin().value());
     }
-    if(data.end.has_value()) {
-        endTerm_ = std::make_shared<DoubleTerm>(data.end.value());
+    if(data.end().has_value()) {
+        endTerm_ = std::make_shared<Double>(data.end().value());
     }
-    if(data.graph) {
-        graphTerm_ = getGraphTerm(data.graph);
+    if(data.graph()) {
+        graphTerm_ = getGraphTerm(data.graph().value());
     }
-    if(data.agent) {
-        agentTerm_ = std::make_shared<StringTerm>(data.agent);
+    if(data.agent()) {
+        agentTerm_ = Atom::Tabled(data.agent().value());
     }
 }
 
@@ -51,19 +53,19 @@ RDFLiteral::RDFLiteral(const PredicatePtr &predicate, bool isNegated, const Grap
   temporalOperator_(selector.temporalOperator)
 {
     if(selector.confidence.has_value()) {
-        confidenceTerm_ = std::make_shared<DoubleTerm>(selector.confidence.value());
+        confidenceTerm_ = std::make_shared<Double>(selector.confidence.value());
     }
     if(selector.begin.has_value()) {
-        beginTerm_ = std::make_shared<DoubleTerm>(selector.begin.value());
+        beginTerm_ = std::make_shared<Double>(selector.begin.value());
     }
     if(selector.end.has_value()) {
-        endTerm_ = std::make_shared<DoubleTerm>(selector.end.value());
+        endTerm_ = std::make_shared<Double>(selector.end.value());
     }
     if(selector.graph) {
         graphTerm_ = getGraphTerm(selector.graph);
     }
     if(selector.agent) {
-        agentTerm_ = std::make_shared<StringTerm>(selector.agent.value()->iri());
+        agentTerm_ = Atom::Tabled(selector.agent.value()->iri());
     }
 }
 
@@ -99,21 +101,20 @@ RDFLiteral::RDFLiteral(
 	if(selector.epistemicOperator) {
 		epistemicOperator_ = selector.epistemicOperator;
 		if(selector.agent.has_value()) {
-			// TODO: avoid copy, map memory. safe as Agent string is allocated globally
-			agentTerm_ = std::make_shared<StringTerm>(selector.agent.value()->iri());
+			agentTerm_ = Atom::Tabled(selector.agent.value()->iri());
 		}
 		if(selector.confidence.has_value()) {
-			confidenceTerm_ = std::make_shared<DoubleTerm>(selector.confidence.value());
+			confidenceTerm_ = std::make_shared<Double>(selector.confidence.value());
 		}
 	}
 
 	if(selector.temporalOperator) {
 		temporalOperator_ = selector.temporalOperator;
 		if(selector.begin.has_value()) {
-			beginTerm_ = std::make_shared<DoubleTerm>(selector.begin.value());
+			beginTerm_ = std::make_shared<Double>(selector.begin.value());
 		}
 		if(selector.end.has_value()) {
-			endTerm_ = std::make_shared<DoubleTerm>(selector.end.value());
+			endTerm_ = std::make_shared<Double>(selector.end.value());
 		}
 	}
 }
@@ -124,7 +125,7 @@ std::shared_ptr<Term> RDFLiteral::getGraphTerm(const std::string_view &graphName
     if(!graphName.empty()) {
         auto it = graphTerms.find(graphName);
         if(it == graphTerms.end()) {
-            auto graphTerm = std::make_shared<StringTerm>(graphName.data());
+            auto graphTerm = Atom::Tabled(graphName.data());
             graphTerms[graphName.data()] = graphTerm;
             return graphTerm;
         }
@@ -137,17 +138,17 @@ std::shared_ptr<Term> RDFLiteral::getGraphTerm(const std::string_view &graphName
 
 std::shared_ptr<Predicate> RDFLiteral::getRDFPredicate(const TermPtr &s, const TermPtr &p, const TermPtr &o)
 {
-    return std::make_shared<Predicate>(TRIPLE_INDICATOR, std::vector<TermPtr>({s,p,o}));
+    return std::make_shared<Predicate>("triple", std::vector<TermPtr>({s,p,o}));
 }
 
 std::shared_ptr<Predicate> RDFLiteral::getRDFPredicate(const PredicatePtr &predicate)
 {
-	if(predicate->indicator()->arity()==3 && predicate->indicator()->functor() == "triple") {
+	if(predicate->arity()==3 && predicate->functor()->stringForm() == "triple") {
 		return predicate;
 	}
-	else if(predicate->indicator()->arity()==2) {
+	else if(predicate->arity()==2) {
 		return getRDFPredicate(predicate->arguments()[0],
-							   std::make_shared<StringTerm>(predicate->indicator()->functor()),
+							   predicate->functor(),
 							   predicate->arguments()[1]);
 	}
 	else {
@@ -155,27 +156,21 @@ std::shared_ptr<Predicate> RDFLiteral::getRDFPredicate(const PredicatePtr &predi
 	}
 }
 
-std::shared_ptr<Predicate> RDFLiteral::getRDFPredicate(const StatementData &data)
+std::shared_ptr<Predicate> RDFLiteral::getRDFPredicate(const FramedTriple &data)
 {
     TermPtr s,p,o;
-    s = std::make_shared<StringTerm>(data.subject);
-    p = std::make_shared<StringTerm>(data.predicate);
-    switch(data.objectType) {
-        case RDF_RESOURCE:
-        case RDF_STRING_LITERAL:
-            o = std::make_shared<StringTerm>(data.object);
-            break;
-        case RDF_DOUBLE_LITERAL:
-            o = std::make_shared<DoubleTerm>(data.objectDouble);
-            break;
-        case RDF_BOOLEAN_LITERAL:
-            o = std::make_shared<LongTerm>(data.objectInteger);
-            break;
-        case RDF_INT64_LITERAL:
-            o = std::make_shared<Integer32Term>(data.objectInteger);
-            break;
+    p = IRIAtom::Tabled(data.predicate());
+    if (data.isSubjectBlank()) {
+		s = Blank::Tabled(data.subject());
+	} else {
+		s = IRIAtom::Tabled(data.subject());
     }
-    return std::make_shared<Predicate>(TRIPLE_INDICATOR, std::vector<TermPtr>({s,p,o}));
+    if(data.isObjectBlank()) {
+    	o = Blank::Tabled(data.valueAsString());
+    } else {
+    	o = Atomic::makeTripleValue(data);
+    }
+    return std::make_shared<Predicate>("triple", std::vector<TermPtr>({s,p,o}));
 }
 
 std::shared_ptr<Term> RDFLiteral::subjectTerm() const
@@ -241,86 +236,84 @@ uint32_t RDFLiteral::numVariables() const
         endTerm_,
         confidenceTerm_ })
     {
-        if(t && t->type() == TermType::VARIABLE) varCounter+=1;
+        if(t && t->termType() == TermType::VARIABLE) varCounter+=1;
     }
     return varCounter;
 }
 
-static inline const char* readStringConstant(const TermPtr &term)
-{ return std::static_pointer_cast<StringTerm>(term)->value().c_str(); }
+static inline std::string_view readStringConstant(const TermPtr &term)
+{ return std::static_pointer_cast<Atomic>(term)->stringForm(); }
 
 static inline double readDoubleConstant(const TermPtr &term)
-{ return std::static_pointer_cast<DoubleTerm>(term)->value(); }
+{ return std::static_pointer_cast<Numeric>(term)->asDouble(); }
 
-StatementData RDFLiteral::toStatementData() const
+bool RDFLiteral::toStatementData(FramedTriple &data) const
 {
-    StatementData data;
     if(numVariables()>0) {
-        throw QueryError("Only ground literals can be mapped to StatementData, but "
+        KB_WARN("Only ground literals can be mapped to StatementData, but "
                          "the literal '{}' has variables.", *this);
+		return false;
     }
     if(isNegated()) {
-        throw QueryError("Only positive literals can be mapped to StatementData, but "
+        KB_WARN("Only positive literals can be mapped to StatementData, but "
                          "the literal '{}' is negative.", *this);
+		return false;
     }
-    data.subject = readStringConstant(subjectTerm_);
-    data.predicate = readStringConstant(propertyTerm_);
-    switch(objectTerm_->type()) {
-        case TermType::STRING:
-            data.object = ((StringTerm*)objectTerm_.get())->value().c_str();
-            // TODO: RDF_RESOURCE or RDF_STRING_LITERAL?
-            data.objectType = RDF_RESOURCE;
-            break;
-        case TermType::DOUBLE:
-            data.objectDouble = ((DoubleTerm*)objectTerm_.get())->value();
-            data.objectType = RDF_DOUBLE_LITERAL;
-            break;
-        case TermType::INT32:
-            data.objectInteger = ((Integer32Term*)objectTerm_.get())->value();
-            data.objectType = RDF_INT64_LITERAL;
-            break;
-        case TermType::LONG:
-            data.objectInteger = ((LongTerm*)objectTerm_.get())->value();
-            data.objectType = RDF_INT64_LITERAL;
-            break;
-        case TermType::VARIABLE:
-            KB_WARN("Literal has a variable as an argument in '{}' which is not allowed.", *this);
-            break;
-        case TermType::PREDICATE:
-            KB_WARN("Literal has a predicate as an argument in '{}' which is not allowed.", *this);
-            break;
-        case TermType::LIST:
-            KB_WARN("Literal has a list as an argument in '{}' which is not allowed.", *this);
-            break;
-    }
-    if(graphTerm_) data.graph = readStringConstant(graphTerm_);
+    data.setSubject(readStringConstant(subjectTerm_));
+    data.setPredicate(readStringConstant(propertyTerm_));
+
+    if(objectTerm_->isNumeric()) {
+    	auto numeric = std::static_pointer_cast<Numeric>(objectTerm_);
+    	data.setXSDValue(numeric->stringForm(), numeric->xsdType());
+	} else if (objectTerm_->isAtom()) {
+		auto atom = std::static_pointer_cast<Atomic>(objectTerm_);
+		if (atom->isIRI()) {
+			data.setObjectIRI(atom->stringForm());
+		} else {
+			data.setStringValue(atom->stringForm());
+		}
+	} else if (objectTerm_->isString()) {
+    	data.setStringValue(std::static_pointer_cast<Atomic>(objectTerm_)->stringForm());
+	} else {
+		KB_WARN("Literal has a non-atomic argument in '{}' which is not allowed.", *this);
+		return false;
+	}
+
+    if(graphTerm_) {
+		data.setGraph(readStringConstant(graphTerm_));
+	}
 
     // handle epistemic modality
     if(epistemicOperator_) {
-		data.epistemicOperator = epistemicOperator_;
+		data.setEpistemicOperator(epistemicOperator_.value());
     }
     if(agentTerm_) {
-        data.agent = readStringConstant(agentTerm_);
+        data.setAgent(readStringConstant(agentTerm_));
     }
     if(confidenceTerm_) {
-        data.confidence = readDoubleConstant(confidenceTerm_);
+        data.setConfidence(readDoubleConstant(confidenceTerm_));
     }
 
     // handle temporal modality
     if(temporalOperator_) {
-        data.temporalOperator = temporalOperator_;
+        data.setTemporalOperator(temporalOperator_.value());
     }
     if(beginTerm_) {
-        data.begin = readDoubleConstant(beginTerm_);
+        data.setBegin(readDoubleConstant(beginTerm_));
     }
     if(endTerm_) {
-        data.end = readDoubleConstant(endTerm_);
+        data.setEnd(readDoubleConstant(endTerm_));
     }
 
-    return data;
+    return true;
 }
 
 void RDFLiteralContainer::push_back(const RDFLiteralPtr &triple) {
 	statements_.emplace_back(triple);
-	data_.emplace_back(triple->toStatementData());
+	auto &data = data_.emplace_back();
+	data.ptr = new FramedTripleView();
+	data.owned = true;
+	if(!triple->toStatementData(*data.ptr)) {
+		data_.pop_back();
+	}
 }

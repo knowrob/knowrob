@@ -5,10 +5,10 @@
 #include <sstream>
 #include "knowrob/db/mongo/aggregation/triples.h"
 #include "knowrob/db/mongo/aggregation/terms.h"
-#include "knowrob/terms/Constant.h"
 #include "knowrob/semweb/ImportHierarchy.h"
 #include "knowrob/Logger.h"
 #include "knowrob/terms/ListTerm.h"
+#include "knowrob/terms/Numeric.h"
 
 #define MONGO_OPERATOR_LTE  "$lte"
 #define MONGO_OPERATOR_GTE  "$gte"
@@ -162,7 +162,7 @@ static void setTripleVariables(
 			std::make_pair("$next.p", lookupData.expr->propertyTerm()),
 			std::make_pair("$next.o", lookupData.expr->objectTerm())
 	}) {
-		if (it.second->type() != TermType::VARIABLE) continue;
+		if (it.second->termType() != TermType::VARIABLE) continue;
 		auto var = (Variable *) it.second.get();
 		// skip variables that were instantiated in previous steps
 		if (lookupData.knownGroundedVariables.count(var->name()) > 0) continue;
@@ -200,13 +200,13 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc,
 	auto gt = tripleExpression.graphTerm();
 	if (!gt) return;
 
-	if (gt->type() == TermType::STRING) {
-		auto graphString = (StringTerm *) gt.get();
-		if (graphString->value() == semweb::ImportHierarchy::ORIGIN_ANY || graphString->value() == "*") return;
+	if (gt->termType() == TermType::ATOMIC) {
+		auto graphString = (Atomic *) gt.get();
+		if (graphString->stringForm() == semweb::ImportHierarchy::ORIGIN_ANY || graphString->stringForm() == "*") return;
 
 		std::vector<TermPtr> childrenNames;
-		for (auto &child: importHierarchy->getImports(graphString->value())) {
-			childrenNames.push_back(std::make_shared<StringTerm>(child->name()));
+		for (auto &child: importHierarchy->getImports(graphString->stringForm())) {
+			childrenNames.push_back(Atom::Tabled(child->name()));
 		}
 		if (childrenNames.empty()) {
 			aggregation::appendTermQuery(selectorDoc, "graph", gt);
@@ -214,9 +214,13 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc,
 			childrenNames.push_back(gt);
 			aggregation::appendArrayQuery(selectorDoc, "graph", childrenNames, "$in");
 		}
-	} else if (gt->type() == TermType::LIST) {
-		auto listTerm = (ListTerm *) gt.get();
-		aggregation::appendArrayQuery(selectorDoc, "graph", listTerm->elements(), "$in");
+	} else if (gt->termType() == TermType::FUNCTION) {
+		auto fn = (Function*) gt.get();
+		if (*fn->functor() == *ListTerm::listFunctor()) {
+			aggregation::appendArrayQuery(selectorDoc, "graph", fn->arguments(), "$in");
+		} else {
+			KB_WARN("graph term {} has unexpected function type", *gt);
+		}
 	} else {
 		KB_WARN("graph term {} has unexpected type", *gt);
 	}
@@ -224,7 +228,7 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc,
 
 void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const RDFLiteral &tripleExpression) {
 	static const bool allowConfidenceNullValues = true;
-	static auto zero = std::make_shared<Integer32Term>(0);
+	static auto zero = std::make_shared<Integer>(0);
 	auto ct = tripleExpression.confidenceTerm();
 	auto at = tripleExpression.agentTerm();
 	auto op = tripleExpression.epistemicOperator();
@@ -241,7 +245,7 @@ void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const RDFLiteral 
 	}
 
 	if (at) {
-		if (at->type() == TermType::STRING) {
+		if (at->termType() == TermType::ATOMIC) {
 			aggregation::appendTermQuery(
 					selectorDoc,
 					"agent",
@@ -261,7 +265,7 @@ void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const RDFLiteral 
 	}
 
 	if (ct) {
-		if (ct->type() == TermType::DOUBLE) {
+		if (ct->termType() == TermType::ATOMIC) {
 			// note: null value of confidence is seen as larger than the requested threshold
 			aggregation::appendTermQuery(
 					selectorDoc,
@@ -277,8 +281,8 @@ void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const RDFLiteral 
 
 void aggregation::appendTimeSelector(bson_t *selectorDoc, const RDFLiteral &tripleExpression) {
 	static const bool allowNullValues = true;
-	static auto b_occasional = std::make_shared<Integer32Term>(static_cast<int32_t>(true));
-	static auto b_always = std::make_shared<Integer32Term>(static_cast<int32_t>(false));
+	static auto b_occasional = std::make_shared<Integer>(static_cast<int32_t>(true));
+	static auto b_always = std::make_shared<Integer>(static_cast<int32_t>(false));
 	auto bt = tripleExpression.beginTerm();
 	auto et = tripleExpression.endTerm();
 	auto op = tripleExpression.temporalOperator();
@@ -303,7 +307,7 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const RDFLiteral &trip
 			allowNullValues);
 
 	if (bt) {
-		if (bt->type() == TermType::DOUBLE) {
+		if (bt->termType() == TermType::ATOMIC) {
 			aggregation::appendTermQuery(
 					selectorDoc,
 					"scope.time.since",
@@ -315,7 +319,7 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const RDFLiteral &trip
 		}
 	}
 	if (et) {
-		if (et->type() == TermType::DOUBLE) {
+		if (et->termType() == TermType::ATOMIC) {
 			aggregation::appendTermQuery(
 					selectorDoc,
 					"scope.time.until",
@@ -382,7 +386,7 @@ static inline void lookupTriple_nontransitive_(
 				lookupData.expr->propertyTerm(),
 				lookupData.expr->objectTerm()
 		}) {
-			if (exprTerm->type() != TermType::VARIABLE) continue;
+			if (exprTerm->termType() != TermType::VARIABLE) continue;
 			auto var = (Variable *) exprTerm.get();
 			// skip if this variable cannot have a runtime grounding
 			if (lookupData.knownGroundedVariables.count(var->name()) > 0) {
@@ -434,7 +438,7 @@ static inline void lookupTriple_nontransitive_(
 						std::make_pair(b_isTaxonomicProperty ? "$p" : "$p*", lookupData.expr->propertyTerm()),
 						std::make_pair(b_isTaxonomicProperty ? "$o*" : "$o", lookupData.expr->objectTerm())
 				}) {
-					if (it.second->type() != TermType::VARIABLE) continue;
+					if (it.second->termType() != TermType::VARIABLE) continue;
 					auto var = (Variable *) it.second.get();
 					// skip if this variable cannot have a runtime grounding
 					if (!lookupData.mayHasMoreGroundings &&
@@ -538,16 +542,13 @@ static inline void lookupTriple_transitive_(
 	bson_t restrictSearchDoc;
 	auto lookupStage = pipeline.appendStageBegin("$graphLookup");
 	BSON_APPEND_UTF8(lookupStage, "from", collection.data());
-	if (startTerm->type() == TermType::STRING) {
-		auto startString = (StringTerm *) startTerm.get();
-		BSON_APPEND_UTF8(lookupStage, "startWith", startString->value().c_str());
-	} else if (startTerm->type() == TermType::VARIABLE) {
+	if (startTerm->termType() == TermType::ATOMIC) {
+		auto startString = (Atomic *) startTerm.get();
+		BSON_APPEND_UTF8(lookupStage, "startWith", startString->stringForm().data());
+	} else if (startTerm->termType() == TermType::VARIABLE) {
 		auto startVariable = (Variable *) startTerm.get();
 		auto startValue = std::string("$") + getVariableKey(startVariable->name()) + ".val";
 		BSON_APPEND_UTF8(lookupStage, "startWith", startValue.c_str());
-	} else if (startTerm->type() == TermType::LIST) {
-		// TODO: support array values as start for graph lookup queries
-		KB_WARN("Ignoring array {} for graph lookup, not supported yet.", *startTerm);
 	} else {
 		KB_WARN("Ignoring term {} with invalid type for graph lookup.", *startTerm);
 	}
@@ -625,7 +626,7 @@ static inline void lookupTriple_transitive_(
 
 	// graph lookup uses "s" or "o" as start for recursive lookup but ignores the other.
 	// thus a matching must be performed for the results.
-	if (endTerm->type() != TermType::VARIABLE) {
+	if (endTerm->termType() != TermType::VARIABLE) {
 		// FIXME: must add another match case for endTerm being a runtime grounded variable.
 		bson_t matchEndVal;
 		auto matchEnd = pipeline.appendStageBegin("$match");
@@ -660,9 +661,9 @@ void aggregation::lookupTriple(
 	// lookup defined properties, there are some conditions in lookup on property
 	// semantics.
 	semweb::PropertyPtr definedProperty;
-	if (lookupData.expr->propertyTerm()->type() == TermType::STRING) {
-		auto propertyTerm = (StringTerm *) lookupData.expr->propertyTerm().get();
-		definedProperty = vocabulary->getDefinedProperty(propertyTerm->value());
+	if (lookupData.expr->propertyTerm()->termType() == TermType::ATOMIC) {
+		auto propertyTerm = (Atomic *) lookupData.expr->propertyTerm().get();
+		definedProperty = vocabulary->getDefinedProperty(propertyTerm->stringForm());
 	}
 
 	bool b_isTransitiveProperty = (definedProperty && definedProperty->hasFlag(
@@ -692,7 +693,7 @@ void aggregation::lookupTriplePaths(
 		// remember variables in tripleExpression, they have a grounding in next step
 		for (auto &exprTerm: {
 				expr->subjectTerm(), expr->propertyTerm(), expr->objectTerm()}) {
-			if (exprTerm->type() == TermType::VARIABLE)
+			if (exprTerm->termType() == TermType::VARIABLE)
 				varsSoFar.insert(((Variable *) exprTerm.get())->name());
 		}
 

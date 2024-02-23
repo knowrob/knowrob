@@ -8,13 +8,19 @@
 #include "knowrob/db/OntologyParser.h"
 #include "knowrob/semweb/xsd.h"
 #include "knowrob/formulas/Bottom.h"
+#include "knowrob/terms/IRIAtom.h"
+#include "knowrob/terms/Numeric.h"
+#include "knowrob/terms/String.h"
+#include "knowrob/terms/Blank.h"
 
 using namespace knowrob;
 
 #define KNOWROB_RDF_NEW_URI(val) \
-    librdf_new_node_from_uri_string(world_, (const unsigned char*)val)
+    librdf_new_node_from_uri_string(world_, (const unsigned char*)val.data())
+#define KNOWROB_RDF_NEW_BLANK(val) \
+    librdf_new_node_from_blank_identifier(world_, (const unsigned char*)val.data())
 #define KNOWROB_RDF_NEW_LITERAL(val, xsdType) \
-    librdf_new_node_from_typed_literal(world_, (const unsigned char*)val, nullptr, xsdType)
+    librdf_new_node_from_typed_literal(world_, (const unsigned char*)val.data(), nullptr, xsdType())
 
 static inline const char *getStorageTypeString(RedlandStorageType storageType) {
 	switch (storageType) {
@@ -135,10 +141,9 @@ bool RedlandModel::initializeBackend() {
 	}
 
 	// initialize URIs
-	uri_xsdBoolean_.set(world_, xsd::IRI_boolean);
-	uri_xsdInteger_.set(world_, xsd::IRI_integer);
-	uri_xsdDouble_.set(world_, xsd::IRI_double);
-	uri_xsdString_.set(world_, xsd::IRI_string);
+	for (int i = 0; i != static_cast<int>(XSDType::LAST); i++) {
+		xsdURIs_[i].set(world_, xsdTypeToIRI((XSDType) i));
+	}
 
 	return true;
 }
@@ -199,7 +204,7 @@ static inline TermPtr termFromNode(librdf_node *node) {
 		case LIBRDF_NODE_TYPE_RESOURCE: {
 			auto uri = librdf_node_get_uri(node);
 			if (uri) {
-				return std::make_shared<StringTerm>((const char *) librdf_uri_as_string(uri));
+				return std::make_shared<IRIAtom>((const char *) librdf_uri_as_string(uri));
 			}
 			break;
 		}
@@ -211,21 +216,21 @@ static inline TermPtr termFromNode(librdf_node *node) {
 				auto u_uri_str = librdf_uri_to_string(datatype_uri);
 				std::string_view uri_str((const char *) u_uri_str);
 				if (xsd::isDoubleType(uri_str)) {
-					knowrobTerm = std::make_shared<DoubleTerm>(std::stod(literal_value));
+					knowrobTerm = std::make_shared<Double>(std::stod(literal_value));
 				} else if (xsd::isIntegerType(uri_str)) {
-					knowrobTerm = std::make_shared<Integer32Term>(std::stoll(literal_value));
+					knowrobTerm = std::make_shared<Integer>(std::stoll(literal_value));
 				} else if (xsd::isBooleanType(uri_str)) {
-					knowrobTerm = std::make_shared<Integer32Term>(std::string_view(literal_value) == "true");
+					knowrobTerm = std::make_shared<Integer>(std::string_view(literal_value) == "true");
 				}
 				free(u_uri_str);
 			}
 			if (!knowrobTerm) {
-				knowrobTerm = std::make_shared<StringTerm>(literal_value);
+				knowrobTerm = std::make_shared<StringView>(literal_value);
 			}
 			return knowrobTerm;
 		}
 		case LIBRDF_NODE_TYPE_BLANK:
-			return std::make_shared<StringTerm>(
+			return std::make_shared<Blank>(
 					(const char *) librdf_node_get_blank_identifier(node));
 		default:
 			break;
@@ -312,7 +317,7 @@ bool RedlandModel::foreach(const semweb::MutableTripleHandler &callback) const {
 	return true;
 }
 
-bool RedlandModel::insertOne(const StatementData &knowrobTriple) {
+bool RedlandModel::insertOne(const FramedTriple &knowrobTriple) {
 	auto raptorTriple = librdf_new_statement(world_);
 	// map the knowrob triple into a raptor triple
 	knowrobToRaptor(knowrobTriple, raptorTriple);
@@ -329,14 +334,14 @@ bool RedlandModel::insertAll(const semweb::TripleContainerPtr &triples) {
 	auto raptorTriple = librdf_new_statement(world_);
 	for (auto &knowrobTriple: *triples) {
 		// map the knowrob triple into a raptor triple
-		knowrobToRaptor(knowrobTriple, raptorTriple);
-		librdf_model_context_add_statement(model_, getContextNode(knowrobTriple), raptorTriple);
+		knowrobToRaptor(*knowrobTriple, raptorTriple);
+		librdf_model_context_add_statement(model_, getContextNode(*knowrobTriple), raptorTriple);
 	}
 	librdf_free_statement(raptorTriple);
 	return true;
 }
 
-bool RedlandModel::removeOne(const StatementData &knowrobTriple) {
+bool RedlandModel::removeOne(const FramedTriple &knowrobTriple) {
 	auto raptorTriple = librdf_new_statement(world_);
 	// map the knowrob triple into a raptor triple
 	knowrobToRaptor(knowrobTriple, raptorTriple);
@@ -349,7 +354,7 @@ bool RedlandModel::removeAll(const semweb::TripleContainerPtr &triples) {
 	auto raptorTriple = librdf_new_statement(world_);
 	for (auto &knowrobTriple: *triples) {
 		// map the knowrob triple into a raptor triple
-		knowrobToRaptor(knowrobTriple, raptorTriple);
+		knowrobToRaptor(*knowrobTriple, raptorTriple);
 		librdf_model_remove_statement(model_, raptorTriple);
 	}
 	librdf_free_statement(raptorTriple);
@@ -398,33 +403,35 @@ librdf_node *RedlandModel::getContextNode(std::string_view origin) {
 	return contextNode;
 }
 
-librdf_node *RedlandModel::getContextNode(const StatementData &triple) {
+librdf_node *RedlandModel::getContextNode(const FramedTriple &triple) {
 	return getContextNode(
-			triple.graph ? triple.graph :
+			triple.graph() ? triple.graph().value() :
 			origin_.has_value() ? origin_.value() :
 			semweb::ImportHierarchy::ORIGIN_USER);
 }
 
-void RedlandModel::knowrobToRaptor(const StatementData &triple, raptor_statement *raptorTriple) {
-	auto subject = KNOWROB_RDF_NEW_URI(triple.subject);
-	auto predicate = KNOWROB_RDF_NEW_URI(triple.predicate);
-	raptor_term *object = nullptr;
-	switch (triple.objectType) {
-		case RDF_RESOURCE:
-			object = KNOWROB_RDF_NEW_URI(triple.object);
-			break;
-		case RDF_STRING_LITERAL:
-			object = KNOWROB_RDF_NEW_LITERAL(triple.object, uri_xsdString_());
-			break;
-		case RDF_DOUBLE_LITERAL:
-			object = KNOWROB_RDF_NEW_LITERAL(triple.object, uri_xsdDouble_());
-			break;
-		case RDF_INT64_LITERAL:
-			object = KNOWROB_RDF_NEW_LITERAL(triple.object, uri_xsdInteger_());
-			break;
-		case RDF_BOOLEAN_LITERAL:
-			object = KNOWROB_RDF_NEW_LITERAL(triple.object, uri_xsdBoolean_());
-			break;
+RedlandURI& RedlandModel::xsdURI(XSDType xsdType) {
+	return xsdURIs_[static_cast<int>(xsdType)];
+}
+
+void RedlandModel::knowrobToRaptor(const FramedTriple &triple, raptor_statement *raptorTriple) {
+	raptor_term *subject, *predicate, *object;
+	predicate = KNOWROB_RDF_NEW_URI(triple.predicate());
+	if (triple.isSubjectBlank()) {
+		subject = KNOWROB_RDF_NEW_BLANK(triple.subject());
+	} else {
+		subject = KNOWROB_RDF_NEW_URI(triple.subject());
+	}
+	if (triple.isObjectBlank()) {
+		object = KNOWROB_RDF_NEW_BLANK(triple.valueAsString());
+	} else if(triple.isObjectIRI()) {
+		object = KNOWROB_RDF_NEW_URI(triple.valueAsString());
+	} else {
+	KB_WARN("XXXX REDLAND FOO");
+	KB_WARN("XXXX REDLAND FOO");
+	KB_WARN("XXXX REDLAND FOO");
+		// FIXME: using valueAsString here is not OK!!!
+		object = KNOWROB_RDF_NEW_LITERAL(triple.valueAsString(), xsdURI(triple.xsdType().value()));
 	}
 	librdf_statement_set_subject(raptorTriple, subject);
 	librdf_statement_set_predicate(raptorTriple, predicate);

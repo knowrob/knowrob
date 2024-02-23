@@ -16,15 +16,15 @@ using namespace knowrob::modality;
 #define KB_TEST_SETTINGS_FILE "tests/settings/kb-test.json"
 
 std::shared_ptr<knowrob::KnowledgeBase> KnowledgeBaseTest::kb_;
-std::shared_ptr<knowrob::StringTerm> KnowledgeBaseTest::Fred_;
-std::shared_ptr<knowrob::StringTerm> KnowledgeBaseTest::Ernest_;
-std::shared_ptr<knowrob::StringTerm> KnowledgeBaseTest::Lea_;
-std::shared_ptr<knowrob::StringTerm> KnowledgeBaseTest::Rex_;
-std::shared_ptr<knowrob::StringTerm> KnowledgeBaseTest::hasSibling_;
-std::shared_ptr<knowrob::StringTerm> KnowledgeBaseTest::hasNumber_;
-std::shared_ptr<knowrob::StringTerm> KnowledgeBaseTest::hasAncestor_;
-std::shared_ptr<knowrob::StringTerm> KnowledgeBaseTest::p_;
-std::shared_ptr<knowrob::StringTerm> KnowledgeBaseTest::q_;
+std::shared_ptr<knowrob::IRIAtom> KnowledgeBaseTest::Fred_;
+std::shared_ptr<knowrob::IRIAtom> KnowledgeBaseTest::Ernest_;
+std::shared_ptr<knowrob::IRIAtom> KnowledgeBaseTest::Lea_;
+std::shared_ptr<knowrob::IRIAtom> KnowledgeBaseTest::Rex_;
+std::shared_ptr<knowrob::IRIAtom> KnowledgeBaseTest::hasSibling_;
+std::shared_ptr<knowrob::IRIAtom> KnowledgeBaseTest::hasNumber_;
+std::shared_ptr<knowrob::IRIAtom> KnowledgeBaseTest::hasAncestor_;
+std::shared_ptr<knowrob::IRIAtom> KnowledgeBaseTest::p_;
+std::shared_ptr<knowrob::IRIAtom> KnowledgeBaseTest::q_;
 std::shared_ptr<knowrob::Variable> KnowledgeBaseTest::varX_;
 std::shared_ptr<knowrob::Variable> KnowledgeBaseTest::varY_;
 std::shared_ptr<knowrob::Variable> KnowledgeBaseTest::varZ_;
@@ -61,27 +61,27 @@ public:
 
 		bool succeed = true;
 		if(literal->propertyTerm()->isGround()) {
-			succeed = (*literal->propertyTerm() == StringTerm(p_));
+			succeed = (*literal->propertyTerm() == IRIAtom(p_));
 		}
 		if(literal->subjectTerm()->isGround()) {
-			succeed = succeed && (*literal->subjectTerm() == StringTerm(s_));
+			succeed = succeed && (*literal->subjectTerm() == IRIAtom(s_));
 		}
 		if(literal->objectTerm()->isGround()) {
-			succeed = succeed && (*literal->objectTerm() == StringTerm(o_));
+			succeed = succeed && (*literal->objectTerm() == IRIAtom(o_));
 		}
 
 		if(succeed) {
 			if(!literal->propertyTerm()->isGround()) {
-				auto v = *literal->propertyTerm()->getVariables().begin();
-				answer->substitution()->set(*v, std::make_shared<StringTerm>(p_));
+				auto v = *literal->propertyTerm()->variables().begin();
+				answer->substitution()->set(*v, IRIAtom::Tabled(p_));
 			}
 			if(!literal->subjectTerm()->isGround()) {
-				auto v = *literal->subjectTerm()->getVariables().begin();
-				answer->substitution()->set(*v, std::make_shared<StringTerm>(s_));
+				auto v = *literal->subjectTerm()->variables().begin();
+				answer->substitution()->set(*v, IRIAtom::Tabled(s_));
 			}
 			if(!literal->objectTerm()->isGround()) {
-				auto v = *literal->objectTerm()->getVariables().begin();
-				answer->substitution()->set(*v, std::make_shared<StringTerm>(o_));
+				auto v = *literal->objectTerm()->variables().begin();
+				answer->substitution()->set(*v, IRIAtom::Tabled(o_));
 			}
 			outputChannel->push(answer);
 		}
@@ -95,22 +95,22 @@ void KnowledgeBaseTest::SetUpTestSuite() {
 	// initialize a KB, setup database backend for testing, insert tmp data on which queries can be evaluated
 	kb_ = std::make_shared<KnowledgeBase>(KB_TEST_SETTINGS_FILE);
 
-	Fred_   = std::make_shared<StringTerm>(QueryParser::parseRawAtom("swrl_test:Fred"));
-	Ernest_ = std::make_shared<StringTerm>(QueryParser::parseRawAtom("swrl_test:Ernest"));
-	Lea_    = std::make_shared<StringTerm>(QueryParser::parseRawAtom("swrl_test:Lea"));
-	Rex_    = std::make_shared<StringTerm>(QueryParser::parseRawAtom("swrl_test:Rex"));
-	hasSibling_  = std::make_shared<StringTerm>(QueryParser::parseRawAtom("swrl_test:hasSibling"));
-	hasAncestor_  = std::make_shared<StringTerm>(QueryParser::parseRawAtom("swrl_test:hasAncestor"));
-	hasNumber_  = std::make_shared<StringTerm>(QueryParser::parseRawAtom("swrl_test:hasNumber"));
-	p_  = std::make_shared<StringTerm>(QueryParser::parseRawAtom("p"));
-	q_  = std::make_shared<StringTerm>(QueryParser::parseRawAtom("q"));
+	Fred_   = IRIAtom::Tabled(QueryParser::parseRawAtom("swrl_test:Fred"));
+	Ernest_ = IRIAtom::Tabled(QueryParser::parseRawAtom("swrl_test:Ernest"));
+	Lea_    = IRIAtom::Tabled(QueryParser::parseRawAtom("swrl_test:Lea"));
+	Rex_    = IRIAtom::Tabled(QueryParser::parseRawAtom("swrl_test:Rex"));
+	hasSibling_  = IRIAtom::Tabled(QueryParser::parseRawAtom("swrl_test:hasSibling"));
+	hasAncestor_  = IRIAtom::Tabled(QueryParser::parseRawAtom("swrl_test:hasAncestor"));
+	hasNumber_  = IRIAtom::Tabled(QueryParser::parseRawAtom("swrl_test:hasNumber"));
+	p_  = IRIAtom::Tabled(QueryParser::parseRawAtom("p"));
+	q_  = IRIAtom::Tabled(QueryParser::parseRawAtom("q"));
 	varX_ = std::make_shared<Variable>("X");
 	varY_ = std::make_shared<Variable>("Y");
 	varZ_ = std::make_shared<Variable>("Z");
 	varNum_ = std::make_shared<Variable>("Num");
 
 	kb_->reasonerManager()->addReasoner(
-		"r1", std::make_shared<TestReasoner>("p", Ernest_->value(), "x"));
+		"r1", std::make_shared<TestReasoner>("p", Ernest_->stringForm(), "x"));
 	kb_->reasonerManager()->addReasoner(
 		"r2", std::make_shared<TestReasoner>("q", "x", "y"));
 }
@@ -204,7 +204,7 @@ TEST_F(KnowledgeBaseTest, conjunctive_EDB) {
 	EXPECT_ONLY_SOLUTION(
 		(*hasSibling_)(Fred_, varX_) & (*hasNumber_)(varX_, varNum_),
 		Substitution({
-			{*varNum_, std::make_shared<StringTerm>("123456")},
+			{*varNum_, std::make_shared<String>("123456")},
 			{*varX_, Ernest_}
 		}))
 }
@@ -251,11 +251,11 @@ TEST_F(KnowledgeBaseTest, negatedComplex_EDB) {
 TEST_F(KnowledgeBaseTest, atomic_IDB) {
 	EXPECT_ONLY_SOLUTION(
 		(*p_)(Ernest_, varX_),
-		Substitution({{*varX_, std::make_shared<StringTerm>("x")}}))
+		Substitution({{*varX_, IRIAtom::Tabled("x")}}))
 	EXPECT_ONLY_SOLUTION(
-		(*q_)(std::make_shared<StringTerm>("x"), varX_),
-		Substitution({{*varX_, std::make_shared<StringTerm>("y")}}))
-	EXPECT_NO_SOLUTION((*p_)(std::make_shared<StringTerm>("x"), varX_));
+		(*q_)(IRIAtom::Tabled("x"), varX_),
+		Substitution({{*varX_, IRIAtom::Tabled("y")}}))
+	EXPECT_NO_SOLUTION((*p_)(IRIAtom::Tabled("x"), varX_));
 }
 
 TEST_F(KnowledgeBaseTest, mixed_EDB_IDB) {
@@ -263,7 +263,7 @@ TEST_F(KnowledgeBaseTest, mixed_EDB_IDB) {
 		(*hasSibling_)(Fred_, varX_) & (*p_)(varX_, varY_),
 		Substitution({
 			{*varX_, Ernest_},
-			{*varY_, std::make_shared<StringTerm>("x")}
+			{*varY_, IRIAtom::Tabled("x")}
 		}))
 }
 
@@ -272,8 +272,8 @@ TEST_F(KnowledgeBaseTest, IDB_interaction) {
 		(*p_)(varX_, varY_) & (*q_)(varY_, varZ_),
 		Substitution({
 			{*varX_, Ernest_},
-			{*varY_, std::make_shared<StringTerm>("x")},
-			{*varZ_, std::make_shared<StringTerm>("y")}
+			{*varY_, IRIAtom::Tabled("x")},
+			{*varZ_, IRIAtom::Tabled("y")}
 		}))
 }
 

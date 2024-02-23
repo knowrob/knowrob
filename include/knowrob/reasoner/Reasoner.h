@@ -21,11 +21,14 @@
 #include "knowrob/semweb/Vocabulary.h"
 #include "knowrob/semweb/ImportHierarchy.h"
 #include "knowrob/db/DataBackend.h"
+#include "knowrob/terms/Atom.h"
 
 namespace knowrob {
 	// forward declarations
 	class KnowledgeBase;
 	class ReasonerManager;
+
+	using InferredTripleContainer = std::shared_ptr<std::vector<std::shared_ptr<FramedTriple>>>;
 
 	/**
 	 * A reasoner is a component that can infer new knowledge.
@@ -46,12 +49,12 @@ namespace knowrob {
 		/**
 		 * @return name of the reasoner name.
 		 */
-		const std::string &reasonerName() const { return t_reasonerName_->value(); }
+		auto reasonerName() const { return t_reasonerName_->stringForm(); }
 
 		/**
 		 * @return a term representing the reasoner name.
 		 */
-		std::shared_ptr<StringTerm> reasonerNameTerm() const { return t_reasonerName_; }
+		auto& reasonerNameTerm() const { return t_reasonerName_; }
 
 		/**
 		 * @return the reasoner manager associated with this reasoner.
@@ -134,17 +137,11 @@ namespace knowrob {
 		virtual TokenBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) = 0;
 
 		/**
-		 * Create a triple that can be used to insert or remove data from the reasoner's data backend.
-		 * @return a triple.
-		 */
-		StatementData createTriple() const;
-
-		/**
 		 * Create a vector of triples that can be used to insert or remove data from the reasoner's data backend.
 		 * @param count the number of triples to create.
 		 * @return a vector of triples.
 		 */
-		std::vector<StatementData> createTriples(uint32_t count) const;
+		InferredTripleContainer createTriples(uint32_t count) const;
 
 		/**
 		 * Set the inferred triples of this reasoner.
@@ -153,28 +150,31 @@ namespace knowrob {
 		 * to the KB that newly appear.
 		 * @param triples a vector of inferred triples.
 		 */
-		void setInferredTriples(const std::vector<StatementData> &triples);
+		void setInferredTriples(const InferredTripleContainer &triples);
 
 		/**
 		 * Add additional triples to the inferred set of this reasoner,
 		 * and adding the inferred triples to the KB.
 		 * @param triples a vector of inferred triples.
 		 */
-		void addInferredTriples(const std::vector<StatementData> &triples) const;
+		void addInferredTriples(const InferredTripleContainer &triples) const;
 
 		/**
 		 * Remove triples from the inferred set of this reasoner,
 		 * and remove the inferred triples from the KB.
 		 * @param triples a vector of inferred triples.
 		 */
-		void removeInferredTriples(const std::vector<StatementData> &triples) const;
-
-	protected:
-		void initTriple(StatementData *triple) const;
+		void removeInferredTriples(const InferredTripleContainer &triples) const;
 
 	private:
-		std::shared_ptr<StringTerm> t_reasonerName_;
-		std::set<StatementData> inferredTriples_;
+		AtomPtr t_reasonerName_;
+
+		struct InferredComparator {
+			bool operator()(const std::shared_ptr<FramedTriple> &v0,
+			                const std::shared_ptr<FramedTriple> &v1) const;
+		};
+		using InferredeSet = std::set<std::shared_ptr<FramedTriple>, InferredComparator>;
+		InferredeSet inferredTriples_;
 
 		friend class ReasonerManager;
 		ReasonerManager *reasonerManager_;

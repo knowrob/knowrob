@@ -7,7 +7,7 @@
  */
 
 #include "knowrob/formulas/PredicateDescription.h"
-#include "knowrob/terms/Constant.h"
+#include "knowrob/terms/Atomic.h"
 
 using namespace knowrob;
 
@@ -15,18 +15,17 @@ PredicateDescription::PredicateDescription(
 		const std::shared_ptr<PredicateIndicator> &indicator,
 		PredicateType type,
 		MaterializationStrategy materializationStrategy)
-: indicator_(indicator),
-  type_(type),
-  materializationStrategy_(materializationStrategy)
-{
+		: indicator_(indicator),
+		  type_(type),
+		  materializationStrategy_(materializationStrategy) {
 }
 
 namespace knowrob {
 	PredicateType predicateTypeFromTerm(const TermPtr &term) {
-		auto &type_string = ((StringTerm*)term.get())->value();
-		if(type_string == "relation") return PredicateType::IDB_RELATION;
-		else if(type_string == "idb_relation") return PredicateType::IDB_RELATION;
-		else if(type_string == "edb_relation") return PredicateType::EDB_RELATION;
-		else                              return PredicateType::BUILT_IN;
+		auto type_string = ((Atomic *) term.get())->stringForm();
+		if (type_string == "relation") return PredicateType::IDB_RELATION;
+		else if (type_string == "idb_relation") return PredicateType::IDB_RELATION;
+		else if (type_string == "edb_relation") return PredicateType::EDB_RELATION;
+		else return PredicateType::BUILT_IN;
 	}
 }

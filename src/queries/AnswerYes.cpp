@@ -114,7 +114,7 @@ size_t AnswerYes::hash() const {
 
 std::ostream &AnswerYes::write(std::ostream &os) const {
 	if(reasonerTerm_) {
-		os << "[" << reasonerTerm_->value() << "] ";
+		os << "[" << *reasonerTerm_ << "] ";
 	}
 	if(isUncertain()) {
 		os << "probably ";
@@ -125,14 +125,14 @@ std::ostream &AnswerYes::write(std::ostream &os) const {
 		for(auto &x : positiveGroundings_) {
 			os << '\t' << *x.graphSelector() << ' ' << *x.predicate();
 			if(x.reasonerTerm() && x.reasonerTerm() != reasonerTerm_) {
-				os << ' ' << '[' << x.reasonerTerm()->value() << "]";
+				os << ' ' << '[' << *x.reasonerTerm() << "]";
 			}
 			os << '\n';
 		}
 		for(auto &x : negativeGroundings_) {
 			os << '\t' << *x.graphSelector() << '~' << *x.predicate();
 			if(x.reasonerTerm() && x.reasonerTerm() != reasonerTerm_) {
-				os << ' ' << '[' << x.reasonerTerm()->value() << "]";
+				os << ' ' << '[' << *x.reasonerTerm() << "]";
 			}
 			os << '\n';
 		}
