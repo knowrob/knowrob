@@ -119,21 +119,26 @@ namespace knowrob {
 		 */
 		virtual size_t hash() const = 0;
 
+	protected:
+		static const VariableSet noVariables_;
+
 		/**
 		 * Write the term into an ostream.
 		 */
 		virtual void write(std::ostream &os) const = 0;
 
-	protected:
-		static const VariableSet noVariables_;
-
-		// TODO: make write() protected. but streaming operator needs to be friend and
-		//       this does not seem to work:
-		//friend std::ostream& operator<<(std::ostream& os, const knowrob::Term& t);
+		friend struct TermWriter;
 	};
 
 	// alias declaration
 	using TermPtr = std::shared_ptr<Term>;
+
+	/**
+	 * Writes a term into an ostream.
+	 */
+	struct TermWriter {
+		TermWriter(const Term &term, std::ostream &os) { term.write(os); }
+	};
 }
 
 namespace std {

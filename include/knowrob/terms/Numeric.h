@@ -163,13 +163,13 @@ namespace knowrob {
 		// override XSDAtomic
 		XSDType xsdType() const final { return T2; }
 
-		// override Term
-		void write(std::ostream &os) const override { os << numericForm(); }
-
 	private:
 		// Note: both are mutable because they are initialized in a lazy fashion
 		mutable std::optional<std::string> stringForm_;
 		mutable std::optional<T1> numericForm_;
+
+		// override Term
+		void write(std::ostream &os) const override { os << std::fixed << numericForm(); }
 	};
 
 	/**

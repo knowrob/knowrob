@@ -31,7 +31,7 @@ bool ListTerm::isNIL() const {
 void ListTerm::write(std::ostream &os) const {
 	os << '[';
 	for (uint32_t i = 0; i < arguments_.size(); i++) {
-		arguments_[i]->write(os);
+		os << *arguments_[i];
 		if (i + 1 < arguments_.size()) {
 			os << ',' << ' ';
 		}

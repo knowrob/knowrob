@@ -56,14 +56,14 @@ namespace knowrob {
 		// override Atomic
 		std::string_view stringForm() const final { return stringForm_; }
 
-		// override Term
-		void write(std::ostream &os) const override;
-
 	protected:
 		using AtomTable = std::map<std::string, std::optional<std::weak_ptr<Atom>>, std::less<>>;
 		static AtomTable table_;
 
 		std::string_view stringForm_;
+
+		// override Term
+		void write(std::ostream &os) const override;
 	};
 
 	using AtomPtr = std::shared_ptr<Atom>;

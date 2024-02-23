@@ -50,9 +50,6 @@ namespace knowrob {
 		const VariableSet &variables() const override { return variables_; }
 
 		// Override Term
-		void write(std::ostream &os) const override;
-
-		// Override Term
 		size_t hash() const override { return std::hash<std::string>{}(name_); }
 
 	protected:
@@ -60,6 +57,9 @@ namespace knowrob {
 		//        or maybe simply use a tabled atom?
 		const std::string name_;
 		const VariableSet variables_;
+
+		// Override Term
+		void write(std::ostream &os) const override;
 	};
 }
 

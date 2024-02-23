@@ -51,11 +51,11 @@ size_t Function::hash() const {
 }
 
 void Function::write(std::ostream &os) const {
-	functor_->write(os);
+	os << *functor_;
 	if (!arguments_.empty()) {
 		os << '(';
 		for (uint32_t i = 0; i < arguments_.size(); i++) {
-			arguments_[i]->write(os);
+			os << *arguments_[i];
 			if (i + 1 < arguments_.size()) {
 				os << ',' << ' ';
 			}

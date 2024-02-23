@@ -54,9 +54,6 @@ namespace knowrob {
 		 */
 		static std::shared_ptr<Atomic> makeTripleValue(const FramedTriple &triple);
 
-		// override Term
-		void write(std::ostream &os) const override { os << stringForm(); }
-
 		// Override Term
 		size_t hash() const override;
 
@@ -68,6 +65,10 @@ namespace knowrob {
 
 		// Override Term
 		const VariableSet &variables() const final { return Term::noVariables_; }
+
+	protected:
+		// override Term
+		void write(std::ostream &os) const override { os << stringForm(); }
 	};
 } // knowrob
 

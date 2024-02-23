@@ -61,7 +61,7 @@ bool VariableComparator::operator()(const Variable *const &v0, const Variable *c
 
 namespace std {
 	ostream &operator<<(ostream &os, const knowrob::Term &t) { //NOLINT
-		t.write(os);
+		knowrob::TermWriter(t,os);
 		return os;
 	}
 }

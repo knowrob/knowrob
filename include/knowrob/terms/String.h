@@ -41,11 +41,11 @@ namespace knowrob {
 		// override Atomic
 		std::string_view stringForm() const override { return str_; }
 
-		// override Term
-		void write(std::ostream &os) const override { os << '"' << str_ << '"'; }
-
 	protected:
 		StrType str_;
+
+		// override Term
+		void write(std::ostream &os) const override { os << '"' << str_ << '"'; }
 	};
 
 	/**

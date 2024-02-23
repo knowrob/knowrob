@@ -63,15 +63,15 @@ namespace knowrob {
 		// Override Term
 		size_t hash() const override;
 
-		// Override Term
-		void write(std::ostream &os) const override;
-
 	protected:
 		const std::shared_ptr<Atom> functor_;
 		const std::vector<TermPtr> arguments_;
 		const VariableSet variables_;
 
 		VariableSet getVariables1() const;
+
+		// Override Term
+		void write(std::ostream &os) const override;
 	};
 
 	using FunctionPtr = std::shared_ptr<Function>;
