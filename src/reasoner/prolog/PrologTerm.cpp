@@ -190,9 +190,6 @@ static inline bool putTypedLiteral(term_t pl_arg, const std::string &value, std:
 #endif
 
 bool PrologTerm::putTriple(std::string_view functor, const FramedTriple &triple) {
-	static const auto a_true = "true";
-	static const auto a_false = "false";
-
 	term_t pl_arg = PL_new_term_refs(4);
 	if (!PL_put_atom_chars(pl_arg, triple.subject().data()) ||
 		!PL_put_atom_chars(pl_arg + 1, triple.predicate().data())) {
@@ -205,37 +202,11 @@ bool PrologTerm::putTriple(std::string_view functor, const FramedTriple &triple)
 	} else if (triple.xsdType()) {
 		auto xsdType = xsdTypeToIRI(triple.xsdType().value());
 		switch (triple.xsdType().value()) {
-			case XSDType::DOUBLE:
-				o_put = putTypedLiteral(pl_arg + 2, (std::ostringstream()<<std::fixed<<(triple.valueAsDouble())).str(), xsdType);
-				break;
-			case XSDType::FLOAT:
-				o_put = putTypedLiteral(pl_arg + 2, (std::ostringstream()<<std::fixed<<(triple.valueAsFloat())).str(), xsdType);
-				break;
-			case XSDType::NON_NEGATIVE_INTEGER:
-			case XSDType::INTEGER:
-				o_put = putTypedLiteral(pl_arg + 2, std::to_string(triple.valueAsInt()), xsdType);
-				break;
-			case XSDType::LONG:
-				o_put = putTypedLiteral(pl_arg + 2, std::to_string(triple.valueAsLong()), xsdType);
-				break;
-			case XSDType::SHORT:
-				o_put = putTypedLiteral(pl_arg + 2, std::to_string(triple.valueAsShort()), xsdType);
-				break;
-			case XSDType::UNSIGNED_LONG:
-				o_put = putTypedLiteral(pl_arg + 2, std::to_string(triple.valueAsUnsignedLong()), xsdType);
-				break;
-			case XSDType::UNSIGNED_INT:
-				o_put = putTypedLiteral(pl_arg + 2, std::to_string(triple.valueAsUnsignedInt()), xsdType);
-				break;
-			case XSDType::UNSIGNED_SHORT:
-				o_put = putTypedLiteral(pl_arg + 2, std::to_string(triple.valueAsUnsignedShort()), xsdType);
-				break;
-			case XSDType::BOOLEAN:
-				o_put = putTypedLiteral(pl_arg + 2, triple.valueAsBoolean() ? a_true : a_false, xsdType);
-				break;
 			case XSDType::STRING:
-			case XSDType::LAST:
 				o_put = putTypedLiteral(pl_arg + 2, triple.valueAsString().data(), xsdType);
+				break;
+			default:
+				o_put = putTypedLiteral(pl_arg + 2, triple.createStringValue(), xsdType);
 				break;
 		}
 	}

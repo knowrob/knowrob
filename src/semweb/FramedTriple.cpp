@@ -59,6 +59,45 @@ void FramedTriple::setXSDValue(std::string_view v, XSDType type) {
 	}
 }
 
+std::string FramedTriple::createStringValue() const {
+	static const auto a_true = "true";
+	static const auto a_false = "false";
+
+	if (isObjectIRI() || isObjectBlank()) {
+		return std::string(valueAsString());
+	}
+
+	if (xsdType()) {
+		switch(xsdType().value()) {
+			case XSDType::DOUBLE:
+				return (std::ostringstream() << std::fixed << valueAsDouble()).str();
+			case XSDType::FLOAT:
+				return (std::ostringstream() << std::fixed << valueAsFloat()).str();
+			case XSDType::NON_NEGATIVE_INTEGER:
+			case XSDType::INTEGER:
+				return std::to_string(valueAsInt());
+			case XSDType::LONG:
+				return std::to_string(valueAsLong());
+			case XSDType::SHORT:
+				return std::to_string(valueAsShort());
+			case XSDType::UNSIGNED_LONG:
+				return std::to_string(valueAsUnsignedLong());
+			case XSDType::UNSIGNED_INT:
+				return std::to_string(valueAsUnsignedInt());
+			case XSDType::UNSIGNED_SHORT:
+				return std::to_string(valueAsUnsignedShort());
+			case XSDType::BOOLEAN:
+				return valueAsBoolean() ? a_true : a_false;
+			case XSDType::STRING:
+				return std::string(valueAsString());
+			case XSDType::LAST:
+				break;
+		}
+	}
+
+	return "null";
+}
+
 static inline bool c_str_equal(const char *a, const char *b) {
 	if (!a) {
 		return (!b);

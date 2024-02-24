@@ -56,6 +56,12 @@ namespace knowrob {
 		void setXSDValue(std::string_view v, XSDType type);
 
 		/**
+		 * Construct string form of the object of the triple.
+		 * @return the string form of the object.
+		 */
+		std::string createStringValue() const;
+
+		/**
 		 * @return the subject of the triple.
 		 */
 		virtual std::string_view subject() const = 0;

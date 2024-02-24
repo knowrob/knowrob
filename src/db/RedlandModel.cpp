@@ -20,7 +20,7 @@ using namespace knowrob;
 #define KNOWROB_RDF_NEW_BLANK(val) \
     librdf_new_node_from_blank_identifier(world_, (const unsigned char*)val.data())
 #define KNOWROB_RDF_NEW_LITERAL(val, xsdType) \
-    librdf_new_node_from_typed_literal(world_, (const unsigned char*)val.data(), nullptr, xsdType())
+    librdf_new_node_from_typed_literal(world_, (const unsigned char*)val, nullptr, xsdType())
 
 static inline const char *getStorageTypeString(RedlandStorageType storageType) {
 	switch (storageType) {
@@ -426,12 +426,17 @@ void RedlandModel::knowrobToRaptor(const FramedTriple &triple, raptor_statement 
 		object = KNOWROB_RDF_NEW_BLANK(triple.valueAsString());
 	} else if(triple.isObjectIRI()) {
 		object = KNOWROB_RDF_NEW_URI(triple.valueAsString());
+	} else if(triple.xsdType()) {
+		switch (triple.xsdType().value()) {
+			case XSDType::STRING:
+				object = KNOWROB_RDF_NEW_LITERAL(triple.valueAsString().data(), xsdURI(triple.xsdType().value()));
+				break;
+			default:
+				object = KNOWROB_RDF_NEW_LITERAL(triple.createStringValue().c_str(), xsdURI(triple.xsdType().value()));
+				break;
+		}
 	} else {
-	KB_WARN("XXXX REDLAND FOO");
-	KB_WARN("XXXX REDLAND FOO");
-	KB_WARN("XXXX REDLAND FOO");
-		// FIXME: using valueAsString here is not OK!!!
-		object = KNOWROB_RDF_NEW_LITERAL(triple.valueAsString(), xsdURI(triple.xsdType().value()));
+		object = KNOWROB_RDF_NEW_LITERAL(triple.createStringValue().c_str(), xsdURI(XSDType::STRING));
 	}
 	librdf_statement_set_subject(raptorTriple, subject);
 	librdf_statement_set_predicate(raptorTriple, predicate);
