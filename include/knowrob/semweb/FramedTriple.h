@@ -493,6 +493,8 @@ namespace knowrob {
 		FramedTriple &operator*() const { return *ptr; }
 
 		FramedTriple *operator->() const { return ptr; }
+
+		FramedTriple &get() const { return *ptr; }
 	};
 }
 

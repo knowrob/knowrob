@@ -46,7 +46,7 @@ BOOST_PYTHON_MODULE (knowrob) {
 	using namespace boost::python;
 	typedef std::vector<TermPtr> TermList;
 	typedef std::vector<FormulaPtr> FormulaList;
-	typedef std::vector<FramedTriple*> StatementList;
+	typedef std::vector<std::shared_ptr<FramedTriple>> TripleList;
 
 	// convert std::string_view to python::str and vice versa.
 	python::to_python_converter<std::string_view, string_view_to_python_str>();
@@ -322,11 +322,17 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 	class_<FramedTriple, std::shared_ptr<FramedTripleWrap>, boost::noncopyable>
 	        ("FramedTriple", no_init)
 	        .def("__eq__", &FramedTriple::operator==)
+			.def("isObjectIRI", &FramedTriple::isObjectIRI)
+			.def("isObjectBlank", &FramedTriple::isObjectBlank)
+			.def("isSubjectBlank", &FramedTriple::isSubjectBlank)
+			.def("isXSDLiteral", &FramedTriple::isXSDLiteral)
 			.def("setSubject", python::pure_virtual(&FramedTriple::setSubject))
 			.def("setPredicate", python::pure_virtual(&FramedTriple::setPredicate))
 			.def("setSubjectBlank", python::pure_virtual(&FramedTriple::setSubjectBlank))
 			.def("setObjectIRI", python::pure_virtual(&FramedTriple::setObjectIRI))
 			.def("setObjectBlank", python::pure_virtual(&FramedTriple::setObjectBlank))
+			.def("valueAsString", python::pure_virtual(&FramedTriple::valueAsString))
+			.def("createStringValue", &FramedTriple::createStringValue)
 			.def("setXSDValue", &FramedTriple::setXSDValue)
 			.def("xsdTypeIRI", &FramedTriple::xsdTypeIRI)
 			.def("setGraph", python::pure_virtual(&FramedTriple::setGraph))
@@ -353,13 +359,15 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			("FramedTripleView", init<>())
 			.def(init<std::string_view,std::string_view,std::string_view>());
 
-	//custom_vector_from_seq<FramedTriple*>();
-	//class_<StatementList>("StatementList").def(vector_indexing_suite<StatementList, true>());
+	custom_vector_from_seq<std::shared_ptr<FramedTriple>>();
+	class_<TripleList>("TripleList").def(vector_indexing_suite<TripleList, true>());
 
 	// abstract container which is used in the DataBackend class
 	class_<semweb::TripleContainer, std::shared_ptr<semweb::TripleContainer>, boost::noncopyable>
 	        ("TripleContainer", no_init)
 			.def("__iter__", range(&semweb::TripleContainer::begin, &semweb::TripleContainer::end));
+	class_<FramedTriplePtr>("FramedTriplePtr", init<>())
+	        .def("get", &FramedTriplePtr::get, return_value_policy<reference_existing_object>());
 
 	/////////////////////////////////////////////////////
 	// mappings for literals

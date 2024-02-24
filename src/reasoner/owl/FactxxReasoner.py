@@ -52,18 +52,6 @@ class FactxxReasoner(ReasonerWithBackend):
 	def is_consistent(self) -> bool:
 		return self.factxx().is_consistent()
 
-	def is_instance_of(self, individual, concept) -> bool:
-		reasoner = self.factxx()
-		individual_v = reasoner.individual(individual)
-		concept_v = reasoner.concept(concept)
-		return self.factxx().instance_of(individual_v, concept_v)
-
-	def get_role_fillers(self, individual: str, role: str) -> List[str]:
-		reasoner = self.factxx()
-		individual_v = reasoner.individual(individual)
-		role_v = reasoner.object_role(role)
-		return reasoner.get_role_fillers(individual, role_v)
-
 	def parse(self):
 		self.is_parse_needed = False
 		self.crs.parse()
@@ -86,18 +74,12 @@ class FactxxReasoner(ReasonerWithBackend):
 			self.bnode_map[iri] = BNode(iri)
 		return self.bnode_map[iri]
 
-	def resource_to_python(self, iri: str):
-		if iri.startswith("_"):
-			return self.get_blank_node(iri)
-		elif iri.startswith("genid"):
-			# FIXME: where are these genid's coming from?
-			return self.get_blank_node(iri)
-		else:
-			return URIRef(iri)
-
 	def triple_to_python(self, triple: FramedTriple) -> Tuple[Union[BNode,URIRef], URIRef, Union[URIRef,Literal_rdflib,BNode]]:
-		s_uri = self.resource_to_python(triple.subject)
-		p_uri = URIRef(triple.predicate)
+		p_uri = URIRef(triple.predicate())
+		if triple.isObjectIRI():
+			s_uri = URIRef(triple.subject())
+		else:
+			s_uri = self.get_blank_node(triple.subject())
 		if triple.isObjectIRI():
 			o_uri = URIRef(triple.valueAsString())
 		elif triple.isObjectBlank():
@@ -105,7 +87,7 @@ class FactxxReasoner(ReasonerWithBackend):
 		elif triple.xsdType is XSDType.STRING:
 			o_uri = Literal_rdflib(triple.valueAsString())
 		else:
-			o_uri = Literal_rdflib(triple.createStringValue(), datatype=triple.xsdTypeString())
+			o_uri = Literal_rdflib(triple.createStringValue(), datatype=triple.xsdTypeIRI())
 		return s_uri, p_uri, o_uri
 
 	@staticmethod
@@ -207,7 +189,7 @@ class FactxxReasoner(ReasonerWithBackend):
 		# self.edb().addN(FactxxReasoner.triples_to_python(triples))
 		all_true = True
 		for triple in triples:
-			all_true = self.insertOne(triple) and all_true
+			all_true = self.insertOne(triple.get()) and all_true
 		self.is_update_needed = True
 		self.is_parse_needed = True
 		return all_true
@@ -226,7 +208,7 @@ class FactxxReasoner(ReasonerWithBackend):
 
 		all_true = True
 		for triple in triples:
-			all_true = self.removeOne(triple) and all_true
+			all_true = self.removeOne(triple.get()) and all_true
 		self.is_update_needed = True
 		self.is_parse_needed = True
 		return all_true

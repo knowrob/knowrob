@@ -70,6 +70,9 @@ struct FramedTripleWrap : public FramedTriple, boost::python::wrapper<FramedTrip
 
 	std::optional<std::string_view> agent() const override
 	{ return knowrob::py::call_method<std::optional<std::string_view>>(self, "agent"); }
+
+	std::string_view valueAsString() const override
+	{ return knowrob::py::call_method<std::string_view>(self, "valueAsString"); }
 private:
 	PyObject *self;
 };
