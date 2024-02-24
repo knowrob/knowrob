@@ -1,31 +1,32 @@
-//
-// Created by daniel on 07.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include "knowrob/semweb/owl.h"
 
 namespace knowrob::semweb {
     bool isClassIRI(std::string_view iri)
-    { return iri == owl::Class; }
+    { return iri == owl::Class->stringForm(); }
 
     bool isInverseOfIRI(std::string_view iri)
-    { return iri == owl::inverseOf; }
+    { return iri == owl::inverseOf->stringForm(); }
 
     bool isObjectPropertyIRI(std::string_view iri)
-    { return iri == owl::ObjectProperty; }
+    { return iri == owl::ObjectProperty->stringForm(); }
 
     bool isDatatypePropertyIRI(std::string_view iri)
-    { return iri == owl::DatatypeProperty; }
+    { return iri == owl::DatatypeProperty->stringForm(); }
 
     bool isAnnotationPropertyIRI(std::string_view iri)
-    { return iri == owl::AnnotationProperty; }
+    { return iri == owl::AnnotationProperty->stringForm(); }
 
     bool isTransitivePropertyIRI(std::string_view iri)
-    { return iri == owl::TransitiveProperty; }
+    { return iri == owl::TransitiveProperty->stringForm(); }
 
     bool isSymmetricPropertyIRI(std::string_view iri)
-    { return iri == owl::SymmetricProperty; }
+    { return iri == owl::SymmetricProperty->stringForm(); }
 
     bool isReflexivePropertyIRI(std::string_view iri)
-    { return iri == owl::ReflexiveProperty; }
+    { return iri == owl::ReflexiveProperty->stringForm(); }
 } // knowrob::semweb

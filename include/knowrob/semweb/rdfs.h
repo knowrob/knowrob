@@ -1,23 +1,25 @@
-//
-// Created by daniel on 03.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_SEMWEB_RDFS_H
 #define KNOWROB_SEMWEB_RDFS_H
 
 #include "string"
+#include "knowrob/terms/IRIAtom.h"
 
 namespace knowrob::semweb {
     namespace rdfs {
-        constexpr std::string_view prefix            = "http://www.w3.org/2000/01/rdf-schema#";
-        constexpr std::string_view subClassOf        = "http://www.w3.org/2000/01/rdf-schema#subClassOf";
-        constexpr std::string_view subPropertyOf     = "http://www.w3.org/2000/01/rdf-schema#subPropertyOf";
-        constexpr std::string_view comment           = "http://www.w3.org/2000/01/rdf-schema#comment";
-        constexpr std::string_view seeAlso           = "http://www.w3.org/2000/01/rdf-schema#seeAlso";
-        constexpr std::string_view label             = "http://www.w3.org/2000/01/rdf-schema#label";
-        constexpr std::string_view range             = "http://www.w3.org/2000/01/rdf-schema#range";
-        constexpr std::string_view domain            = "http://www.w3.org/2000/01/rdf-schema#domain";
-        constexpr std::string_view Class             = "http://www.w3.org/2000/01/rdf-schema#Class";
+        constexpr std::string_view prefix  = "http://www.w3.org/2000/01/rdf-schema#";
+        const IRIAtomPtr subClassOf        = IRIAtom::Tabled("http://www.w3.org/2000/01/rdf-schema#subClassOf");
+        const IRIAtomPtr subPropertyOf     = IRIAtom::Tabled("http://www.w3.org/2000/01/rdf-schema#subPropertyOf");
+        const IRIAtomPtr comment           = IRIAtom::Tabled("http://www.w3.org/2000/01/rdf-schema#comment");
+        const IRIAtomPtr seeAlso           = IRIAtom::Tabled("http://www.w3.org/2000/01/rdf-schema#seeAlso");
+        const IRIAtomPtr label             = IRIAtom::Tabled("http://www.w3.org/2000/01/rdf-schema#label");
+        const IRIAtomPtr range             = IRIAtom::Tabled("http://www.w3.org/2000/01/rdf-schema#range");
+        const IRIAtomPtr domain            = IRIAtom::Tabled("http://www.w3.org/2000/01/rdf-schema#domain");
+        const IRIAtomPtr Class             = IRIAtom::Tabled("http://www.w3.org/2000/01/rdf-schema#Class");
     }
 
     /**

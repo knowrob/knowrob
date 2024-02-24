@@ -170,7 +170,7 @@ void OntologyParser::add(raptor_statement *statement, const semweb::TripleHandle
 	}
 	applyFrame(triple);
 	// remember imports
-	if (triple && semweb::owl::imports == triple->predicate()) {
+	if (triple && semweb::owl::imports->stringForm() == triple->predicate()) {
 		imports_.emplace_back(triple->valueAsString());
 	}
 	// flush if batch is full

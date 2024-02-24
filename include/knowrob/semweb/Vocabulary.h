@@ -100,6 +100,13 @@ namespace knowrob::semweb {
 		PropertyPtr defineProperty(const std::string_view &iri);
 
 		/**
+		 * Define a new property if it has not been defined before.
+		 * @param iri a IRI
+		 * @return the property defined for the IRI
+		 */
+		PropertyPtr defineProperty(const IRIAtomPtr &iri);
+
+		/**
 		 * Adds subproperty-of relation between two properties,
 		 * and defines them if they are not yet defined.
 		 * @param subProperty a IRI
@@ -119,6 +126,12 @@ namespace knowrob::semweb {
 		 * @param flag a property flag
 		 */
 		void setPropertyFlag(const std::string_view &iri, PropertyFlag flag);
+
+		/**
+		 * @param iri a property IRI
+		 * @param flag a property flag
+		 */
+		void setPropertyFlag(const IRIAtomPtr &iri, PropertyFlag flag);
 
 		/**
 		 * @param iri a IRI

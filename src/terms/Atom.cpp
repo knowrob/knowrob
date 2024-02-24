@@ -7,7 +7,10 @@
 
 using namespace knowrob;
 
-Atom::AtomTable Atom::table_;
+Atom::AtomTable& Atom::table() {
+	static Atom::AtomTable theTable;
+	return theTable;
+}
 
 Atom::Atom(std::string_view stringForm)
 		: Atomic(), stringForm_(stringForm) {
@@ -30,16 +33,16 @@ void Atom::write(std::ostream &os) const {
 }
 
 std::shared_ptr<knowrob::Atom> Atom::Tabled(std::string_view name) {
-	auto it = table_.find(name);
-	if (it != table_.end()) {
+	auto it = table().find(name);
+	if (it != table().end()) {
 		if (auto atomPtr = it->second.value().lock()) {
 			// Atom still exists, return it
 			return atomPtr;
 		}
-		table_.erase(it);
+		table().erase(it);
 	}
 	// Atom does not exist or was destroyed, create a new one
-	auto inserted = table_.emplace(name, std::nullopt);
+	auto inserted = table().emplace(name, std::nullopt);
 	auto &jt = inserted.first;
 	auto atom = std::make_shared<knowrob::Atom>(jt->first);
 	jt->second = atom;

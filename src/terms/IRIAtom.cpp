@@ -13,17 +13,17 @@ PredicatePtr IRIAtom::operator()(const TermPtr &s, const TermPtr &o) const {
 }
 
 std::shared_ptr<knowrob::IRIAtom> IRIAtom::Tabled(std::string_view name) {
-	auto it = Atom::table_.find(name);
-	if (it != table_.end()) {
+	auto it = Atom::table().find(name);
+	if (it != table().end()) {
 		if (auto atomPtr = it->second.value().lock()) {
 			if (atomPtr->isIRI()) {
 				return std::static_pointer_cast<IRIAtom>(atomPtr);
 			}
 		}
-		Atom::table_.erase(it);
+		Atom::table().erase(it);
 	}
 	// Atom does not exist or was destroyed, create a new one
-	auto inserted = table_.emplace(name, std::nullopt);
+	auto inserted = table().emplace(name, std::nullopt);
 	auto &jt = inserted.first;
 	auto atom = std::make_shared<knowrob::IRIAtom>(jt->first);
 	jt->second = atom;

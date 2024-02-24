@@ -1,6 +1,7 @@
-//
-// Created by daniel on 03.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include <set>
 #include "knowrob/semweb/xsd.h"
@@ -26,43 +27,43 @@ namespace knowrob::xsd {
         { return get().dateTypes_.count(iri)>0; }
 
         static bool isBooleanType(std::string_view &iri)
-        { return iri == IRI_boolean; }
+        { return iri == IRI_boolean->stringForm(); }
 
     protected:
         XSD() {
-            stringTypes_.insert(IRI_anyURI);
-            stringTypes_.insert(IRI_string);
-            stringTypes_.insert(IRI_token);
-            stringTypes_.insert(IRI_normalizedString);
-            stringTypes_.insert(IRI_language);
+            stringTypes_.insert(IRI_anyURI->stringForm());
+            stringTypes_.insert(IRI_string->stringForm());
+            stringTypes_.insert(IRI_token->stringForm());
+            stringTypes_.insert(IRI_normalizedString->stringForm());
+            stringTypes_.insert(IRI_language->stringForm());
 
-            integerTypes_.insert(IRI_byte);
-            integerTypes_.insert(IRI_int);
-            integerTypes_.insert(IRI_integer);
-            integerTypes_.insert(IRI_long);
-            integerTypes_.insert(IRI_negativeInteger);
-            integerTypes_.insert(IRI_nonNegativeInteger);
-            integerTypes_.insert(IRI_nonPositiveInteger);
-            integerTypes_.insert(IRI_positiveInteger);
-            integerTypes_.insert(IRI_short);
-            integerTypes_.insert(IRI_unsignedLong);
-            integerTypes_.insert(IRI_unsignedInt);
-            integerTypes_.insert(IRI_unsignedShort);
-            integerTypes_.insert(IRI_unsignedByte);
+            integerTypes_.insert(IRI_byte->stringForm());
+            integerTypes_.insert(IRI_int->stringForm());
+            integerTypes_.insert(IRI_integer->stringForm());
+            integerTypes_.insert(IRI_long->stringForm());
+            integerTypes_.insert(IRI_negativeInteger->stringForm());
+            integerTypes_.insert(IRI_nonNegativeInteger->stringForm());
+            integerTypes_.insert(IRI_nonPositiveInteger->stringForm());
+            integerTypes_.insert(IRI_positiveInteger->stringForm());
+            integerTypes_.insert(IRI_short->stringForm());
+            integerTypes_.insert(IRI_unsignedLong->stringForm());
+            integerTypes_.insert(IRI_unsignedInt->stringForm());
+            integerTypes_.insert(IRI_unsignedShort->stringForm());
+            integerTypes_.insert(IRI_unsignedByte->stringForm());
 
-            doubleTypes_.insert(IRI_decimal);
-            doubleTypes_.insert(IRI_double);
-            doubleTypes_.insert(IRI_float);
+            doubleTypes_.insert(IRI_decimal->stringForm());
+            doubleTypes_.insert(IRI_double->stringForm());
+            doubleTypes_.insert(IRI_float->stringForm());
 
-            dateTypes_.insert(IRI_date);
-            dateTypes_.insert(IRI_dateTime);
-            dateTypes_.insert(IRI_duration);
-            dateTypes_.insert(IRI_gDay);
-            dateTypes_.insert(IRI_gMonth);
-            dateTypes_.insert(IRI_gMonthDay);
-            dateTypes_.insert(IRI_gYear);
-            dateTypes_.insert(IRI_gYearMonth);
-            dateTypes_.insert(IRI_time);
+            dateTypes_.insert(IRI_date->stringForm());
+            dateTypes_.insert(IRI_dateTime->stringForm());
+            dateTypes_.insert(IRI_duration->stringForm());
+            dateTypes_.insert(IRI_gDay->stringForm());
+            dateTypes_.insert(IRI_gMonth->stringForm());
+            dateTypes_.insert(IRI_gMonthDay->stringForm());
+            dateTypes_.insert(IRI_gYear->stringForm());
+            dateTypes_.insert(IRI_gYearMonth->stringForm());
+            dateTypes_.insert(IRI_time->stringForm());
         }
         std::set<std::string_view> stringTypes_;
         std::set<std::string_view> integerTypes_;

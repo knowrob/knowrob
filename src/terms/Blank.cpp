@@ -9,17 +9,17 @@
 using namespace knowrob;
 
 std::shared_ptr<knowrob::Blank> Blank::Tabled(std::string_view name) {
-	auto it = Atom::table_.find(name);
-	if (it != table_.end()) {
+	auto it = Atom::table().find(name);
+	if (it != table().end()) {
 		if (auto atomPtr = it->second.value().lock()) {
 			if (atomPtr->isBlank()) {
 				return std::static_pointer_cast<Blank>(atomPtr);
 			}
 		}
-		Atom::table_.erase(it);
+		Atom::table().erase(it);
 	}
 	// Atom does not exist or was destroyed, create a new one
-	auto inserted = table_.emplace(name, std::nullopt);
+	auto inserted = table().emplace(name, std::nullopt);
 	auto &jt = inserted.first;
 	auto atom = std::make_shared<knowrob::Blank>(jt->first);
 	jt->second = atom;

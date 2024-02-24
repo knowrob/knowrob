@@ -1,27 +1,29 @@
-//
-// Created by daniel on 03.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_SEMWEB_OWL_H
 #define KNOWROB_SEMWEB_OWL_H
 
 #include "string"
+#include "knowrob/terms/IRIAtom.h"
 
 namespace knowrob::semweb {
     namespace owl {
-        constexpr std::string_view prefix                = "http://www.w3.org/2002/07/owl#";
-        constexpr std::string_view imports               = "http://www.w3.org/2002/07/owl#imports";
-        constexpr std::string_view versionInfo           = "http://www.w3.org/2002/07/owl#versionInfo";
-        constexpr std::string_view inverseOf             = "http://www.w3.org/2002/07/owl#inverseOf";
-        constexpr std::string_view Class                 = "http://www.w3.org/2002/07/owl#Class";
-        constexpr std::string_view Restriction           = "http://www.w3.org/2002/07/owl#Restriction";
-        constexpr std::string_view ObjectProperty        = "http://www.w3.org/2002/07/owl#ObjectProperty";
-        constexpr std::string_view DatatypeProperty      = "http://www.w3.org/2002/07/owl#DatatypeProperty";
-        constexpr std::string_view AnnotationProperty    = "http://www.w3.org/2002/07/owl#AnnotationProperty";
-        constexpr std::string_view TransitiveProperty    = "http://www.w3.org/2002/07/owl#TransitiveProperty";
-        constexpr std::string_view SymmetricProperty     = "http://www.w3.org/2002/07/owl#SymmetricProperty";
-        constexpr std::string_view ReflexiveProperty     = "http://www.w3.org/2002/07/owl#ReflexiveProperty";
-        constexpr std::string_view NamedIndividual       = "http://www.w3.org/2002/07/owl#NamedIndividual";
+        constexpr std::string_view prefix    = "http://www.w3.org/2002/07/owl#";
+        const IRIAtomPtr imports             = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#imports");
+        const IRIAtomPtr versionInfo         = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#versionInfo");
+        const IRIAtomPtr inverseOf           = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#inverseOf");
+        const IRIAtomPtr Class               = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#Class");
+        const IRIAtomPtr Restriction         = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#Restriction");
+        const IRIAtomPtr ObjectProperty      = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#ObjectProperty");
+        const IRIAtomPtr DatatypeProperty    = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#DatatypeProperty");
+        const IRIAtomPtr AnnotationProperty  = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#AnnotationProperty");
+        const IRIAtomPtr TransitiveProperty  = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#TransitiveProperty");
+        const IRIAtomPtr SymmetricProperty   = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#SymmetricProperty");
+        const IRIAtomPtr ReflexiveProperty   = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#ReflexiveProperty");
+        const IRIAtomPtr NamedIndividual     = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#NamedIndividual");
     }
 
     /**

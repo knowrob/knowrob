@@ -203,7 +203,7 @@ void MongoKnowledgeGraph::initialize() {
 		// iterate over all rdf::type assertions
 		TripleCursor cursor(tripleCollection_);
 		cursor.filter(Document(BCON_NEW(
-									   "p", BCON_UTF8(rdf::type.data()))).bson());
+									   "p", BCON_UTF8(rdf::type->stringForm().data()))).bson());
 		while (cursor.nextTriple(tripleData))
 			vocabulary_->addResourceType(tripleData.subject(), tripleData.valueAsString());
 	}
@@ -211,7 +211,7 @@ void MongoKnowledgeGraph::initialize() {
 		// iterate over all rdfs::subClassOf assertions
 		TripleCursor cursor(tripleCollection_);
 		cursor.filter(Document(BCON_NEW(
-									   "p", BCON_UTF8(rdfs::subClassOf.data()))).bson());
+									   "p", BCON_UTF8(rdfs::subClassOf->stringForm().data()))).bson());
 		while (cursor.nextTriple(tripleData))
 			vocabulary_->addSubClassOf(tripleData.subject(), tripleData.valueAsString());
 	}
@@ -219,7 +219,7 @@ void MongoKnowledgeGraph::initialize() {
 		// iterate over all rdfs::subPropertyOf assertions
 		TripleCursor cursor(tripleCollection_);
 		cursor.filter(Document(BCON_NEW(
-									   "p", BCON_UTF8(rdfs::subPropertyOf.data()))).bson());
+									   "p", BCON_UTF8(rdfs::subPropertyOf->stringForm().data()))).bson());
 		while (cursor.nextTriple(tripleData))
 			vocabulary_->addSubPropertyOf(tripleData.subject(), tripleData.valueAsString());
 	}
@@ -227,7 +227,7 @@ void MongoKnowledgeGraph::initialize() {
 		// iterate over all owl::inverseOf assertions
 		TripleCursor cursor(tripleCollection_);
 		cursor.filter(Document(BCON_NEW(
-									   "p", BCON_UTF8(owl::inverseOf.data()))).bson());
+									   "p", BCON_UTF8(owl::inverseOf->stringForm().data()))).bson());
 		while (cursor.nextTriple(tripleData))
 			vocabulary_->setInverseOf(tripleData.subject(), tripleData.valueAsString());
 	}
@@ -623,7 +623,7 @@ void MongoKnowledgeGraph::updateHierarchy(
 		aggregation::Pipeline pipeline(&pipelineArray);
 		aggregation::updateHierarchyO(pipeline,
 									  tripleCollection_->name(),
-									  rdfs::subClassOf,
+									  rdfs::subClassOf->stringForm(),
 									  assertion.first,
 									  assertion.second);
 		bson_append_array_end(&pipelineDoc, &pipelineArray);
@@ -645,7 +645,7 @@ void MongoKnowledgeGraph::updateHierarchy(
 		aggregation::Pipeline pipeline(&pipelineArray);
 		aggregation::updateHierarchyO(pipeline,
 									  tripleCollection_->name(),
-									  rdfs::subPropertyOf,
+									  rdfs::subPropertyOf->stringForm(),
 									  assertion.first,
 									  assertion.second);
 		bson_append_array_end(&pipelineDoc, &pipelineArray);
@@ -665,7 +665,7 @@ void MongoKnowledgeGraph::updateHierarchy(
 		aggregation::Pipeline pipeline(&pipelineArray);
 		aggregation::updateHierarchyP(pipeline,
 									  tripleCollection_->name(),
-									  rdfs::subPropertyOf,
+									  rdfs::subPropertyOf->stringForm(),
 									  newProperty);
 		bson_append_array_end(&pipelineDoc, &pipelineArray);
 
@@ -826,10 +826,10 @@ bson_t *MongoKnowledgeGraph::createTripleDocument(const FramedTriple &tripleData
 bson_t *newRelationCounter(const char *collection) {
 	return BCON_NEW("pipeline", "[",
 					"{", "$match", "{",
-					"p", BCON_UTF8(rdf::type.data()),
+					"p", BCON_UTF8(rdf::type->stringForm().data()),
 					"$expr", "{", "$in", "[", "$o", "[",
-					BCON_UTF8(owl::ObjectProperty.data()),
-					BCON_UTF8(owl::DatatypeProperty.data()),
+					BCON_UTF8(owl::ObjectProperty->stringForm().data()),
+					BCON_UTF8(owl::DatatypeProperty->stringForm().data()),
 					"]", "]", "}",
 					"}", "}",
 					"{", "$group", "{",
@@ -862,9 +862,9 @@ bson_t *newClassCounter(const char *collection) {
 	// TODO: skip classes that start with "_" character as these are blank nodes
 	return BCON_NEW("pipeline", "[",
 					"{", "$match", "{",
-					"p", BCON_UTF8(rdf::type.data()),
+					"p", BCON_UTF8(rdf::type->stringForm().data()),
 					"$expr", "{", "$in", "[", "$o", "[",
-					BCON_UTF8(owl::Class.data()),
+					BCON_UTF8(owl::Class->stringForm().data()),
 					"]", "]", "}",
 					"}", "}",
 					"{", "$group", "{",
@@ -986,7 +986,7 @@ TEST_F(MongoKnowledgeGraphTest, LoadSOMAandDUL) {
 TEST_F(MongoKnowledgeGraphTest, QueryTriple) {
 	FramedTripleCopy triple(
 			swrl_test_"Adult",
-			rdfs::subClassOf.data(),
+			rdfs::subClassOf->stringForm().data(),
 			swrl_test_"TestThing");
 	EXPECT_EQ(lookup(triple).size(), 1);
 }
@@ -1003,7 +1003,7 @@ TEST_F(MongoKnowledgeGraphTest, QueryNegatedTriple) {
 TEST_F(MongoKnowledgeGraphTest, DeleteSubclassOf) {
 	FramedTripleCopy triple(
 			swrl_test_"Adult",
-			rdfs::subClassOf.data(),
+			rdfs::subClassOf->stringForm().data(),
 			swrl_test_"TestThing");
 	EXPECT_NO_THROW(kg_->removeOne(triple));
 	EXPECT_EQ(lookup(triple).size(), 0);
@@ -1012,11 +1012,11 @@ TEST_F(MongoKnowledgeGraphTest, DeleteSubclassOf) {
 TEST_F(MongoKnowledgeGraphTest, AssertSubclassOf) {
 	FramedTripleCopy existing(
 			swrl_test_"Adult",
-			rdfs::subClassOf.data(),
+			rdfs::subClassOf->stringForm().data(),
 			swrl_test_"TestThing");
 	FramedTripleCopy not_existing(
 			swrl_test_"Adult",
-			rdfs::subClassOf.data(),
+			rdfs::subClassOf->stringForm().data(),
 			swrl_test_"Car");
 	EXPECT_NO_THROW(kg_->insertOne(existing));
 	EXPECT_EQ(lookup(existing).size(), 1);

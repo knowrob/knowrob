@@ -1,60 +1,63 @@
-//
-// Created by daniel on 03.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_XSD_H
 #define KNOWROB_XSD_H
 
 #include <string>
+#include "knowrob/terms/IRIAtom.h"
 
 namespace knowrob::xsd {
-    const std::string IRI_anyURI = "http://www.w3.org/2001/XMLSchema#anyURI";
-    const std::string IRI_string = "http://www.w3.org/2001/XMLSchema#string";
-    const std::string IRI_token = "http://www.w3.org/2001/XMLSchema#token";
-    const std::string IRI_normalizedString = "http://www.w3.org/2001/XMLSchema#normalizedString";
-    const std::string IRI_language = "http://www.w3.org/2001/XMLSchema#language";
+	constexpr std::string_view prefix = "http://www.w3.org/2001/XMLSchema#";
 
-    const std::string IRI_int = "http://www.w3.org/2001/XMLSchema#int";
-    const std::string IRI_integer = "http://www.w3.org/2001/XMLSchema#integer";
-    const std::string IRI_positiveInteger = "http://www.w3.org/2001/XMLSchema#positiveInteger";
-    const std::string IRI_negativeInteger = "http://www.w3.org/2001/XMLSchema#negativeInteger";
-    const std::string IRI_nonNegativeInteger = "http://www.w3.org/2001/XMLSchema#nonNegativeInteger";
-    const std::string IRI_nonPositiveInteger = "http://www.w3.org/2001/XMLSchema#nonPositiveInteger";
-    const std::string IRI_unsignedInt = "http://www.w3.org/2001/XMLSchema#unsignedInt";
-    const std::string IRI_long = "http://www.w3.org/2001/XMLSchema#long";
-    const std::string IRI_unsignedLong = "http://www.w3.org/2001/XMLSchema#unsignedLong";
-    const std::string IRI_short = "http://www.w3.org/2001/XMLSchema#short";
-    const std::string IRI_unsignedShort = "http://www.w3.org/2001/XMLSchema#unsignedShort";
-    const std::string IRI_byte = "http://www.w3.org/2001/XMLSchema#byte";
-    const std::string IRI_unsignedByte = "http://www.w3.org/2001/XMLSchema#unsignedByte";
+	const IRIAtomPtr IRI_anyURI = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#anyURI");
+	const IRIAtomPtr IRI_string = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#string");
+	const IRIAtomPtr IRI_token = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#token");
+	const IRIAtomPtr IRI_normalizedString = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#normalizedString");
+	const IRIAtomPtr IRI_language = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#language");
 
-    const std::string IRI_decimal = "http://www.w3.org/2001/XMLSchema#decimal";
-    const std::string IRI_double = "http://www.w3.org/2001/XMLSchema#double";
-    const std::string IRI_float = "http://www.w3.org/2001/XMLSchema#float";
+	const IRIAtomPtr IRI_int = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#int");
+	const IRIAtomPtr IRI_integer = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#integer");
+	const IRIAtomPtr IRI_positiveInteger = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#positiveInteger");
+	const IRIAtomPtr IRI_negativeInteger = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#negativeInteger");
+	const IRIAtomPtr IRI_nonNegativeInteger = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#nonNegativeInteger");
+	const IRIAtomPtr IRI_nonPositiveInteger = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#nonPositiveInteger");
+	const IRIAtomPtr IRI_unsignedInt = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#unsignedInt");
+	const IRIAtomPtr IRI_long = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#long");
+	const IRIAtomPtr IRI_unsignedLong = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#unsignedLong");
+	const IRIAtomPtr IRI_short = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#short");
+	const IRIAtomPtr IRI_unsignedShort = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#unsignedShort");
+	const IRIAtomPtr IRI_byte = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#byte");
+	const IRIAtomPtr IRI_unsignedByte = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#unsignedByte");
+	const IRIAtomPtr IRI_boolean = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#boolean");
 
-    const std::string IRI_date = "http://www.w3.org/2001/XMLSchema#date";
-    const std::string IRI_dateTime = "http://www.w3.org/2001/XMLSchema#dateTime";
-    const std::string IRI_duration = "http://www.w3.org/2001/XMLSchema#duration";
-    const std::string IRI_gDay = "http://www.w3.org/2001/XMLSchema#gDay";
-    const std::string IRI_gMonth = "http://www.w3.org/2001/XMLSchema#gMonth";
-    const std::string IRI_gMonthDay = "http://www.w3.org/2001/XMLSchema#gMonthDay";
-    const std::string IRI_gYear = "http://www.w3.org/2001/XMLSchema#gYear";
-    const std::string IRI_gYearMonth = "http://www.w3.org/2001/XMLSchema#gYearMonth";
-    const std::string IRI_time = "http://www.w3.org/2001/XMLSchema#time";
+	const IRIAtomPtr IRI_decimal = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#decimal");
+	const IRIAtomPtr IRI_double = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#double");
+	const IRIAtomPtr IRI_float = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#float");
 
-    const std::string IRI_boolean = "http://www.w3.org/2001/XMLSchema#boolean";
+	const IRIAtomPtr IRI_date = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#date");
+	const IRIAtomPtr IRI_dateTime = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#dateTime");
+	const IRIAtomPtr IRI_duration = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#duration");
+	const IRIAtomPtr IRI_gDay = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#gDay");
+	const IRIAtomPtr IRI_gMonth = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#gMonth");
+	const IRIAtomPtr IRI_gMonthDay = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#gMonthDay");
+	const IRIAtomPtr IRI_gYear = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#gYear");
+	const IRIAtomPtr IRI_gYearMonth = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#gYearMonth");
+	const IRIAtomPtr IRI_time = IRIAtom::Tabled("http://www.w3.org/2001/XMLSchema#time");
 
-    bool isNumericType(std::string_view iri);
+	bool isNumericType(std::string_view iri);
 
-    bool isDoubleType(std::string_view iri);
+	bool isDoubleType(std::string_view iri);
 
-    bool isIntegerType(std::string_view iri);
+	bool isIntegerType(std::string_view iri);
 
-    bool isStringType(std::string_view iri);
+	bool isStringType(std::string_view iri);
 
-    bool isBooleanType(std::string_view iri);
+	bool isBooleanType(std::string_view iri);
 
-    bool isDateType(std::string_view iri);
+	bool isDateType(std::string_view iri);
 
 } // knowrob::xsd
 

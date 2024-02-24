@@ -8,6 +8,7 @@
 
 #include <string>
 #include "knowrob/terms/Atom.h"
+#include "knowrob/terms/IRIAtom.h"
 
 namespace knowrob::semweb {
 	/**
@@ -16,6 +17,8 @@ namespace knowrob::semweb {
 	class Resource {
 	public:
 		explicit Resource(std::string_view iri);
+
+		explicit Resource(const IRIAtomPtr &iri) : iri_(iri) {}
 
 		/**
 		 * @return the IRI string of this resource

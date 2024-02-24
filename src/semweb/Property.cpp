@@ -1,6 +1,7 @@
-//
-// Created by daniel on 07.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include <queue>
 #include <set>
@@ -9,6 +10,9 @@
 using namespace knowrob::semweb;
 
 Property::Property(std::string_view iri)
+: Resource(iri), flags_(0) {}
+
+Property::Property(const IRIAtomPtr &iri)
 : Resource(iri), flags_(0) {}
 
 void Property::addDirectParent(const std::shared_ptr<Property> &directParent)

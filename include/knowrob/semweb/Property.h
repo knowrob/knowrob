@@ -1,6 +1,7 @@
-//
-// Created by daniel on 07.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_SEMWEB_PROPERTY_H
 #define KNOWROB_SEMWEB_PROPERTY_H
@@ -9,6 +10,7 @@
 #include <list>
 #include <functional>
 #include "Resource.h"
+#include "knowrob/terms/IRIAtom.h"
 
 namespace knowrob::semweb {
     /**
@@ -35,6 +37,8 @@ namespace knowrob::semweb {
     class Property : public Resource {
     public:
         explicit Property(std::string_view iri);
+
+        explicit Property(const IRIAtomPtr &iri);
 
         /**
          * @param directParent a direct super property.

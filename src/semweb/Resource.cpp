@@ -19,8 +19,8 @@ Resource::Resource(std::string_view iri) {
 			iri_ = IRIAtom::Tabled(iri);
 			break;
 		case RDFNodeType::LITERAL:
-			KB_WARN("Resource created with literal value: {}. Treating as IRI.", iri);
-			iri_ = Blank::Tabled(iri);
+			KB_WARN("Resource created with guessed literal type: {}. Treating as IRI.", iri);
+			iri_ = IRIAtom::Tabled(iri);
 			break;
 	}
 }

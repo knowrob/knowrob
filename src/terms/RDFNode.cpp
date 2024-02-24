@@ -13,6 +13,7 @@ namespace knowrob {
 		if (str[0] == '<') return RDFNodeType::IRI;
 		if (boost::algorithm::starts_with(str, "http://") ||
 		    boost::algorithm::starts_with(str, "https://")) return RDFNodeType::IRI;
+		if (boost::algorithm::starts_with(str, "genid")) return RDFNodeType::BLANK;
 		return RDFNodeType::LITERAL;
 	}
 }

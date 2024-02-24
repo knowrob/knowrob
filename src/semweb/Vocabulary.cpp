@@ -1,6 +1,7 @@
-//
-// Created by daniel on 07.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include "knowrob/Logger.h"
 #include "knowrob/semweb/Vocabulary.h"
@@ -111,7 +112,22 @@ PropertyPtr Vocabulary::defineProperty(const std::string_view &iri) {
 	}
 }
 
+PropertyPtr Vocabulary::defineProperty(const IRIAtomPtr &iri) {
+	auto it = definedProperties_.find(iri->stringForm());
+	if (it == definedProperties_.end()) {
+		auto newProperty = std::make_shared<Property>(iri);
+		definedProperties_[newProperty->iri()] = newProperty;
+		return newProperty;
+	} else {
+		return it->second;
+	}
+}
+
 void Vocabulary::setPropertyFlag(const std::string_view &iri, PropertyFlag flag) {
+	defineProperty(iri)->setFlag(flag);
+}
+
+void Vocabulary::setPropertyFlag(const IRIAtomPtr &iri, PropertyFlag flag) {
 	defineProperty(iri)->setFlag(flag);
 }
 

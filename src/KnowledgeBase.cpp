@@ -949,14 +949,14 @@ void KnowledgeBase::updateVocabularyInsert(const FramedTriple &tripleData) {
 		//       an interface to the vocabulary that excludes owl/rdfs/rdf terms
 		//  --> rather check for subclass of relationship to owl:Thing
 		if (vocabulary_->isDefinedClass(tripleData.valueAsString()) &&
-			semweb::owl::Class != tripleData.valueAsString() &&
-			semweb::owl::Restriction != tripleData.valueAsString() &&
-			semweb::owl::NamedIndividual != tripleData.valueAsString() &&
-			semweb::owl::AnnotationProperty != tripleData.valueAsString() &&
-			semweb::owl::ObjectProperty != tripleData.valueAsString() &&
-			semweb::owl::DatatypeProperty != tripleData.valueAsString() &&
-			semweb::rdfs::Class != tripleData.valueAsString() &&
-			semweb::rdf::Property != tripleData.valueAsString()) {
+			semweb::owl::Class->stringForm() != tripleData.valueAsString() &&
+			semweb::owl::Restriction->stringForm() != tripleData.valueAsString() &&
+			semweb::owl::NamedIndividual->stringForm() != tripleData.valueAsString() &&
+			semweb::owl::AnnotationProperty->stringForm() != tripleData.valueAsString() &&
+			semweb::owl::ObjectProperty->stringForm() != tripleData.valueAsString() &&
+			semweb::owl::DatatypeProperty->stringForm() != tripleData.valueAsString() &&
+			semweb::rdfs::Class->stringForm() != tripleData.valueAsString() &&
+			semweb::rdf::Property->stringForm() != tripleData.valueAsString()) {
 			vocabulary_->increaseFrequency(tripleData.valueAsString());
 		}
 	} else if (semweb::isInverseOfIRI(tripleData.predicate())) {
@@ -964,7 +964,7 @@ void KnowledgeBase::updateVocabularyInsert(const FramedTriple &tripleData) {
 		auto q = vocabulary_->defineProperty(tripleData.valueAsString());
 		p->setInverse(q);
 		q->setInverse(p);
-	} else if (semweb::owl::imports == tripleData.predicate()) {
+	} else if (semweb::owl::imports->stringForm() == tripleData.predicate()) {
 		auto resolvedImport = URI::resolve(tripleData.valueAsString());
 		auto importedGraph = DataSource::getNameFromURI(resolvedImport);
 		if (tripleData.graph()) {

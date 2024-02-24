@@ -47,6 +47,8 @@ namespace knowrob {
 		bool isIRI() const override { return true; }
 	};
 
+	using IRIAtomPtr = std::shared_ptr<IRIAtom>;
+
 } // knowrob
 
 
