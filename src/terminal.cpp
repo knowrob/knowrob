@@ -295,7 +295,7 @@ public:
 
 	bool assertStatements(const std::vector<FormulaPtr> &args) {
 		std::vector<FramedTriplePtr> data(args.size());
-		std::vector<RDFLiteralPtr> buf(args.size());
+		std::vector<FramedTriplePatternPtr> buf(args.size());
 		uint32_t dataIndex = 0;
 
 		for (auto &phi: args) {
@@ -310,9 +310,7 @@ public:
 				switch (psi->type()) {
 					case knowrob::FormulaType::PREDICATE:
 						buf[dataIndex] = std::make_shared<FramedTriplePattern>(
-								std::static_pointer_cast<Predicate>(psi),
-								false,
-								*DefaultGraphSelector());
+								std::static_pointer_cast<Predicate>(psi), false);
 						data[dataIndex].ptr = new FramedTripleCopy();
 						data[dataIndex].owned = true;
 						buf[dataIndex]->toStatementData(*data[dataIndex].ptr);

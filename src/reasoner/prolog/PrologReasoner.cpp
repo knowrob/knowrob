@@ -218,7 +218,7 @@ void PrologReasoner::stopPrologReasoner() {
 	// TODO: stop and join all worker threads
 }
 
-TokenBufferPtr PrologReasoner::submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) {
+TokenBufferPtr PrologReasoner::submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) {
 	// context term options:
 	static const auto query_scope_f = "query_scope";
 	static const auto solution_scope_f = "solution_scope";
@@ -265,7 +265,7 @@ TokenBufferPtr PrologReasoner::submitQuery(const RDFLiteralPtr &literal, const Q
 	return answerBuffer;
 }
 
-AnswerYesPtr PrologReasoner::yes(const RDFLiteralPtr &literal,
+AnswerYesPtr PrologReasoner::yes(const FramedTriplePatternPtr &literal,
 								 const PrologTerm &rdfGoal,
 								 const PrologTerm &answerFrameTerm) {
 	KB_DEBUG("Prolog has a next solution.");
@@ -303,7 +303,7 @@ AnswerYesPtr PrologReasoner::yes(const RDFLiteralPtr &literal,
 	return yes;
 }
 
-AnswerNoPtr PrologReasoner::no(const RDFLiteralPtr &rdfLiteral) {
+AnswerNoPtr PrologReasoner::no(const FramedTriplePatternPtr &rdfLiteral) {
 	KB_DEBUG("Prolog has no solution.");
 	// if no solution was found, indicate that via a NegativeAnswer.
 	auto negativeAnswer = std::make_shared<AnswerNo>();

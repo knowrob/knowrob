@@ -18,7 +18,7 @@ namespace knowrob {
 		 * @from the statements to match in the input graph.
 		 * @to the statements to replace in the input graph.
 		 */
-		GraphTransformationRule(const std::vector<RDFLiteralPtr> &from, const std::vector<RDFLiteralPtr> &to)
+		GraphTransformationRule(const std::vector<FramedTriplePatternPtr> &from, const std::vector<FramedTriplePatternPtr> &to)
 				: from_(from), to_(to) {}
 
 		/**
@@ -29,16 +29,16 @@ namespace knowrob {
 		/**
 		 * @return the statements to match in the input graph.
 		 */
-		const std::vector<RDFLiteralPtr> &from() const { return from_; }
+		const std::vector<FramedTriplePatternPtr> &from() const { return from_; }
 
 		/**
 		 * @return the statements to replace in the input graph.
 		 */
-		const std::vector<RDFLiteralPtr> &to() const { return to_; }
+		const std::vector<FramedTriplePatternPtr> &to() const { return to_; }
 
 	protected:
-		std::vector<RDFLiteralPtr> from_;
-		std::vector<RDFLiteralPtr> to_;
+		std::vector<FramedTriplePatternPtr> from_;
+		std::vector<FramedTriplePatternPtr> to_;
 	};
 
 } // knowrob

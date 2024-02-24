@@ -59,7 +59,7 @@ namespace knowrob {
 		 * @param query an expression used to match triples in the backend.
 		 * @return the number of deleted triples.
 		 */
-		virtual bool removeAllMatching(const FramedTriplePattern &query) = 0;
+		virtual bool removeAllMatching(const FramedTriplePatternPtr &query) = 0;
 	};
 
 	/**

@@ -9,14 +9,14 @@
 
 using namespace knowrob;
 
-ConjunctiveQuery::ConjunctiveQuery(const std::vector<RDFLiteralPtr> &literals, const QueryContextPtr &ctx)
+ConjunctiveQuery::ConjunctiveQuery(const std::vector<FramedTriplePatternPtr> &literals, const QueryContextPtr &ctx)
 : Query(ctx),
   literals_(literals)
 {
     init();
 }
 
-ConjunctiveQuery::ConjunctiveQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx)
+ConjunctiveQuery::ConjunctiveQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx)
 : Query(ctx),
   literals_({literal})
 {

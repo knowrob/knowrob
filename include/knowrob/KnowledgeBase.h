@@ -69,10 +69,10 @@ namespace knowrob {
 		bool loadDataSource(const DataSourcePtr &source);
 
 
-		QueryableBackendPtr getBackendForQuery(const RDFLiteralPtr &query, const QueryContextPtr &ctx) const;
+		QueryableBackendPtr getBackendForQuery(const FramedTriplePatternPtr &query, const QueryContextPtr &ctx) const;
 
 		QueryableBackendPtr
-		getBackendForQuery(const std::vector<RDFLiteralPtr> &query, const QueryContextPtr &ctx) const;
+		getBackendForQuery(const std::vector<FramedTriplePatternPtr> &query, const QueryContextPtr &ctx) const;
 
 		/**
 		 * @return the vocabulary of this knowledge base, i.e. all known properties and classes
@@ -141,7 +141,7 @@ namespace knowrob {
 		bool removeAllWithOrigin(std::string_view origin) override;
 
 		// override IDataBackend
-		bool removeAllMatching(const FramedTriplePattern &query) override;
+		bool removeAllMatching(const FramedTriplePatternPtr &query) override;
 
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
@@ -170,7 +170,7 @@ namespace knowrob {
 			explicit EDBComparator(semweb::VocabularyPtr vocabulary)
 					: vocabulary_(std::move(vocabulary)) {}
 
-			bool operator()(const RDFLiteralPtr &a, const RDFLiteralPtr &b) const;
+			bool operator()(const FramedTriplePatternPtr &a, const FramedTriplePatternPtr &b) const;
 
 			semweb::VocabularyPtr vocabulary_;
 		};

@@ -54,7 +54,7 @@ public:
 		}
 	}
 
-	TokenBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) override {
+	TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) override {
 		auto answerBuffer = std::make_shared<TokenBuffer>();
 		auto outputChannel = TokenStream::Channel::create(answerBuffer);
 		auto answer = std::make_shared<AnswerYes>();

@@ -55,13 +55,13 @@ void GraphRestructuring::doTransformation(GraphTransformationRule &rule) {
 	model_->query(rule.getSPARQLQuery(), [&](const SubstitutionPtr &bindings) {
 		// apply the substitution mapping to the pattern term
 		for (auto &p: rule.to()) {
-			auto x = std::make_shared<FramedTriplePattern>(*p, *bindings);
+			auto x = applyBindings(p, *bindings);
 			x->setGraphName(origin_);
 			transformed->push_back(x);
 		}
 		// apply the substitution mapping to the query term
 		for (auto &p: rule.from()) {
-			originals->push_back(std::make_shared<FramedTriplePattern>(*p, *bindings));
+			originals->push_back(applyBindings(p, *bindings));
 		}
 	});
 	// update the model

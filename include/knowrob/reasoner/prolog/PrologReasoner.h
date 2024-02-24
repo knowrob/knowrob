@@ -89,7 +89,7 @@ namespace knowrob {
 		void stop() override;
 
 		// Override Reasoner
-		TokenBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) override;
+		TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) override;
 
 	protected:
 		static bool isKnowRobInitialized_;
@@ -106,9 +106,9 @@ namespace knowrob {
 			return consult(dataFile->uri());
 		};
 
-		AnswerYesPtr yes(const RDFLiteralPtr &literal, const PrologTerm &rdfGoal, const PrologTerm &frameTerm);
+		AnswerYesPtr yes(const FramedTriplePatternPtr &literal, const PrologTerm &rdfGoal, const PrologTerm &frameTerm);
 
-		AnswerNoPtr no(const RDFLiteralPtr &literal);
+		AnswerNoPtr no(const FramedTriplePatternPtr &literal);
 
 		static bool putQueryFrame(PrologTerm &frameTerm, const GraphSelector &frame);
 

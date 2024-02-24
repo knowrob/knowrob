@@ -201,7 +201,7 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc,
 	if (!gt) return;
 
 	if (gt->termType() == TermType::ATOMIC) {
-		auto graphString = (Atomic *) gt.get();
+		auto graphString = gt.grounded();
 		if (graphString->stringForm() == semweb::ImportHierarchy::ORIGIN_ANY || graphString->stringForm() == "*") return;
 
 		std::vector<TermPtr> childrenNames;
@@ -209,19 +209,23 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc,
 			childrenNames.push_back(Atom::Tabled(child->name()));
 		}
 		if (childrenNames.empty()) {
-			aggregation::appendTermQuery(selectorDoc, "graph", gt);
+			aggregation::appendTermQuery(selectorDoc, "graph", graphString);
 		} else {
-			childrenNames.push_back(gt);
+			childrenNames.push_back(graphString);
 			aggregation::appendArrayQuery(selectorDoc, "graph", childrenNames, "$in");
 		}
-	} else if (gt->termType() == TermType::FUNCTION) {
+	}
+	/*
+	else if (gt->termType() == TermType::FUNCTION) {
 		auto fn = (Function*) gt.get();
 		if (*fn->functor() == *ListTerm::listFunctor()) {
 			aggregation::appendArrayQuery(selectorDoc, "graph", fn->arguments(), "$in");
 		} else {
 			KB_WARN("graph term {} has unexpected function type", *gt);
 		}
-	} else {
+	}
+	 */
+	else {
 		KB_WARN("graph term {} has unexpected type", *gt);
 	}
 }
@@ -249,11 +253,11 @@ void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const FramedTripl
 			aggregation::appendTermQuery(
 					selectorDoc,
 					"agent",
-					at,
+					*at,
 					nullptr,
 					false);
 		} else {
-			KB_WARN("agent term {} has unexpected type", at);
+			KB_WARN("agent term {} has unexpected type", *at);
 		}
 	} else {
 		// make sure agent field is undefined: { agent: { $exists: false } }
@@ -270,7 +274,7 @@ void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const FramedTripl
 			aggregation::appendTermQuery(
 					selectorDoc,
 					"confidence",
-					ct,
+					*ct,
 					MONGO_OPERATOR_GTE,
 					true);
 		} else {
@@ -311,7 +315,7 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedTriplePatt
 			aggregation::appendTermQuery(
 					selectorDoc,
 					"scope.time.since",
-					bt,
+					*bt,
 					MONGO_OPERATOR_LTE,
 					allowNullValues);
 		} else {
@@ -323,7 +327,7 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedTriplePatt
 			aggregation::appendTermQuery(
 					selectorDoc,
 					"scope.time.until",
-					et,
+					*et,
 					MONGO_OPERATOR_GTE,
 					allowNullValues);
 		} else {
@@ -661,8 +665,8 @@ void aggregation::lookupTriple(
 	// lookup defined properties, there are some conditions in lookup on property
 	// semantics.
 	semweb::PropertyPtr definedProperty;
-	if (lookupData.expr->propertyTerm()->termType() == TermType::ATOMIC) {
-		auto propertyTerm = (Atomic *) lookupData.expr->propertyTerm().get();
+	if (lookupData.expr->propertyTerm() && lookupData.expr->propertyTerm()->termType() == TermType::ATOMIC) {
+		auto propertyTerm = std::static_pointer_cast<Atomic>(lookupData.expr->propertyTerm());
 		definedProperty = vocabulary->getDefinedProperty(propertyTerm->stringForm());
 	}
 
@@ -679,7 +683,7 @@ void aggregation::lookupTriplePaths(
 		const std::string_view &collection,
 		const std::shared_ptr<semweb::Vocabulary> &vocabulary,
 		const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy,
-		const std::vector<RDFLiteralPtr> &tripleExpressions) {
+		const std::vector<FramedTriplePatternPtr> &tripleExpressions) {
 	std::set<std::string_view> varsSoFar;
 
 	// FIXME: need to handle negative literals here
@@ -691,8 +695,7 @@ void aggregation::lookupTriplePaths(
 		lookupData.mayHasMoreGroundings = false;
 		lookupData.knownGroundedVariables = varsSoFar;
 		// remember variables in tripleExpression, they have a grounding in next step
-		for (auto &exprTerm: {
-				expr->subjectTerm(), expr->propertyTerm(), expr->objectTerm()}) {
+		for (auto &exprTerm: {expr->subjectTerm(), expr->propertyTerm(), expr->objectTerm()}) {
 			if (exprTerm->termType() == TermType::VARIABLE)
 				varsSoFar.insert(((Variable *) exprTerm.get())->name());
 		}

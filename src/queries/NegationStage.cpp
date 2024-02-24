@@ -35,7 +35,7 @@ void NegationStage::pushToBroadcast(const TokenPtr &tok) {
 
 LiteralNegationStage::LiteralNegationStage(KnowledgeBase *kb,
 										   const QueryContextPtr &ctx,
-										   const std::vector<RDFLiteralPtr> &negatedLiterals)
+										   const std::vector<FramedTriplePatternPtr> &negatedLiterals)
 		: NegationStage(kb, ctx),
 		  negatedLiterals_(negatedLiterals) {}
 
@@ -49,15 +49,16 @@ bool LiteralNegationStage::succeeds(const AnswerYesPtr &answer) {
 	auto kg = kb_->getBackendForQuery(negatedLiterals_, ctx_);
 
 	for (auto &lit: negatedLiterals_) {
-		auto lit1 = std::make_shared<FramedTriplePattern>(*lit, *answer->substitution());
-		// for now evaluate positive variant of the literal.
-		// NOTE: for open-world semantics this cannot be done. open-world reasoner
-		//       would need to receive negative literal instead.
-		lit1->setIsNegated(false);
+		auto lit1 = applyBindings(lit, *answer->substitution());
 
 		// create an instance of the literal based on given substitution
 		auto instance = std::make_shared<FramedTriplePattern>(
-				lit1->predicate(), lit1->isNegated(), ctx_->selector_);
+				lit1->predicate(), lit1->isNegated());
+		instance->setTripleFrame(ctx_->selector_);
+		// for now evaluate positive variant of the literal.
+		// NOTE: for open-world semantics this cannot be done. open-world reasoner
+		//       would need to receive negative literal instead.
+		instance->setIsNegated(false);
 
 		// check if the EDB contains positive lit, if so negation cannot be true
 		results.push_back(kg->submitQuery(

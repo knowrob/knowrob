@@ -12,7 +12,7 @@
 namespace knowrob {
 	class QueryStageLiteral : public QueryStage {
 	public:
-		QueryStageLiteral(RDFLiteralPtr literal, const QueryContextPtr &ctx);
+		QueryStageLiteral(FramedTriplePatternPtr literal, const QueryContextPtr &ctx);
 
 	protected:
 		/**
@@ -20,10 +20,10 @@ namespace knowrob {
 		 * @param literal a literal.
 		 * @return an answer buffer.
 		 */
-		virtual TokenBufferPtr submitQuery(const RDFLiteralPtr &literal) = 0;
+		virtual TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal) = 0;
 
 	protected:
-		const RDFLiteralPtr literal_;
+		const FramedTriplePatternPtr literal_;
 
 		// override QueryStage
 		TokenBufferPtr submitQuery(const Substitution &substitution) override;

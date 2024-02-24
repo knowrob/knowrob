@@ -17,13 +17,13 @@ namespace knowrob {
 	class EDBStage : public QueryStageLiteral {
 	public:
 		EDBStage(QueryableBackendPtr edb,
-				 const RDFLiteralPtr &literal,
+				 const FramedTriplePatternPtr &literal,
 				 const QueryContextPtr &ctx);
 
 	protected:
 		QueryableBackendPtr edb_;
 
-		TokenBufferPtr submitQuery(const RDFLiteralPtr &literal) override;
+		TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal) override;
 	};
 
 } // knowrob

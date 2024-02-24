@@ -20,13 +20,13 @@ namespace knowrob {
 		 * @param literals an ordered sequence of literals.
 		 * @param ctx the query context.
 		 */
-		ConjunctiveQuery(const std::vector<RDFLiteralPtr> &literals, const QueryContextPtr &ctx);
+		ConjunctiveQuery(const std::vector<FramedTriplePatternPtr> &literals, const QueryContextPtr &ctx);
 
 		/**
 		 * @param literal a single literal.
 		 * @param ctx the query context.
 		 */
-		ConjunctiveQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx);
+		ConjunctiveQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx);
 
 		/**
 		 * @return the literals of the query.
@@ -43,7 +43,7 @@ namespace knowrob {
 		QueryType type() const override { return QueryType::CONJUNCTIVE; }
 
 	protected:
-		std::vector<RDFLiteralPtr> literals_;
+		std::vector<FramedTriplePatternPtr> literals_;
 		FormulaPtr formula_;
 
 		void init();

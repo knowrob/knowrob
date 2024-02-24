@@ -333,7 +333,6 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 	// mappings for literals
 	/////////////////////////////////////////////////////
 	class_<FirstOrderLiteral, std::shared_ptr<FirstOrderLiteral>>("FirstOrderLiteral", init<const PredicatePtr &, bool>())
-			.def(init<const FirstOrderLiteral &, const Substitution &>())
 			.def("predicate", &FirstOrderLiteral::predicate, CONST_REF_RETURN)
 			.def("isNegated", &FirstOrderLiteral::isNegated)
 			.def("functor", &FirstOrderLiteral::functor, CONST_REF_RETURN)
@@ -343,7 +342,6 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 	class_<FramedTriplePattern, std::shared_ptr<FramedTriplePattern>, bases<FirstOrderLiteral>>
 			("FramedTriplePattern", init<const FramedTriple &, bool>())
 			.def(init<const FramedTriple &>())
-			.def(init<const FramedTriplePattern &, const Substitution &>())
 			.def("subjectTerm", &FramedTriplePattern::subjectTerm)
 			.def("propertyTerm", &FramedTriplePattern::propertyTerm)
 			.def("objectTerm", &FramedTriplePattern::objectTerm)

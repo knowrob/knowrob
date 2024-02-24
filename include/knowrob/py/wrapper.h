@@ -93,8 +93,8 @@ struct TermWrap : public Term, boost::python::wrapper<Term> {
 	size_t hash() const override
 	{ return knowrob::py::call_method<size_t>(self, "hash"); }
 
-	const VariableSet& variables() const override
-	{ return knowrob::py::call_method<VariableSet&>(self, "variables"); }
+	const std::set<std::string_view>& variables() const override
+	{ return knowrob::py::call_method<std::set<std::string_view>&>(self, "variables"); }
 private:
 	PyObject *self;
 };
@@ -198,7 +198,7 @@ struct DataBackendWrap : public DataBackend, boost::python::wrapper<DataBackend>
 	bool removeAllWithOrigin(std::string_view origin) override
 	{ return knowrob::py::call_method<bool>(self, "removeAllWithOrigin", origin.data()); }
 
-	bool removeAllMatching(const FramedTriplePattern &query) override
+	bool removeAllMatching(const RDFLiteralPtr &query) override
 	{ return knowrob::py::call_method<int>(self, "removeAllMatching", query); }
 
 private:
@@ -261,7 +261,7 @@ struct ReasonerWithBackendWrap :
 	bool removeAllWithOrigin(std::string_view origin) override
 	{ return knowrob::py::call_method<bool>(self, "removeAllWithOrigin", origin.data()); }
 
-	bool removeAllMatching(const FramedTriplePattern &query) override
+	bool removeAllMatching(const RDFLiteralPtr &query) override
 	{ return knowrob::py::call_method<int>(self, "removeAllMatching", query); }
 
 	PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override

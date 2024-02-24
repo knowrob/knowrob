@@ -425,13 +425,13 @@ bool MongoKnowledgeGraph::removeAllWithOrigin(std::string_view graphName) {
 	return dropOrigin(graphName);
 }
 
-bool MongoKnowledgeGraph::removeAllMatching(const FramedTriplePattern &query) {
+bool MongoKnowledgeGraph::removeAllMatching(const FramedTriplePatternPtr &query) {
 	static const bool doMatchMany = true;
-	bool b_isTaxonomicProperty = isTaxonomicProperty(query.propertyTerm());
+	bool b_isTaxonomicProperty = isTaxonomicProperty(query->propertyTerm());
 	if (doMatchMany) {
-		tripleCollection_->removeAll(Document(getSelector(query, b_isTaxonomicProperty)));
+		tripleCollection_->removeAll(Document(getSelector(*query, b_isTaxonomicProperty)));
 	} else {
-		tripleCollection_->removeOne(Document(getSelector(query, b_isTaxonomicProperty)));
+		tripleCollection_->removeOne(Document(getSelector(*query, b_isTaxonomicProperty)));
 	}
 	// TODO: does mongo return number of documents removed?
 	return true;
@@ -463,7 +463,7 @@ mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const FramedTriple &tripleDat
 }
 
 mongo::AnswerCursorPtr
-MongoKnowledgeGraph::lookup(const std::vector<RDFLiteralPtr> &tripleExpressions, uint32_t limit) {
+MongoKnowledgeGraph::lookup(const std::vector<FramedTriplePatternPtr> &tripleExpressions, uint32_t limit) {
 	bson_t pipelineDoc = BSON_INITIALIZER;
 	bson_t pipelineArray;
 	BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
@@ -932,8 +932,7 @@ protected:
 
 	static FramedTriplePattern parse(const std::string &str) {
 		auto p = QueryParser::parsePredicate(str);
-		return {p->arguments()[0], p->arguments()[1], p->arguments()[2],
-				false, *DefaultGraphSelector()};
+		return {p->arguments()[0], p->arguments()[1], p->arguments()[2], false};
 	}
 
 	bool loadOntology(std::string_view path) {
@@ -994,8 +993,7 @@ TEST_F(MongoKnowledgeGraphTest, QueryTriple) {
 
 TEST_F(MongoKnowledgeGraphTest, QueryNegatedTriple) {
 	auto negated = std::make_shared<FramedTriplePattern>(
-			QueryParser::parsePredicate("p(x,y)"),
-			true, *DefaultGraphSelector());
+			QueryParser::parsePredicate("p(x,y)"), true);
 	EXPECT_EQ(lookup(*negated).size(), 1);
 	FramedTripleCopy statement("x", "p", "y");
 	EXPECT_NO_THROW(kg_->insertOne(statement));

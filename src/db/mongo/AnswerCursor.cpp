@@ -127,7 +127,7 @@ std::shared_ptr<GraphSelector> AnswerCursor::readAnswerFrame(const std::shared_p
 
 bool AnswerCursor::nextAnswer(
 		const std::shared_ptr<AnswerYes> &answer,
-		const std::vector<RDFLiteralPtr> &literals) {
+		const std::vector<FramedTriplePatternPtr> &literals) {
 	if (!next(&resultDocument_)) return false;
 	if (!bson_iter_init(&resultIter_, resultDocument_)) return false;
 

@@ -24,7 +24,7 @@ namespace knowrob {
 		/**
 		 * @param triplePatterns the patterns to match.
 		 */
-		explicit SPARQLQuery(const std::vector<RDFLiteralPtr> &triplePatterns);
+		explicit SPARQLQuery(const std::vector<FramedTriplePatternPtr> &triplePatterns);
 
 		/**
 		 * @return the query string.

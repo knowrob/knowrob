@@ -11,9 +11,11 @@ FirstOrderLiteral::FirstOrderLiteral(const PredicatePtr &predicate, bool isNegat
 		: predicate_(predicate),
 		  isNegated_(isNegative) {}
 
+/*
 FirstOrderLiteral::FirstOrderLiteral(const FirstOrderLiteral &other, const Substitution &sub)
 		: predicate_(std::static_pointer_cast<Predicate>(applyBindings(other.predicate_, sub))),
 		  isNegated_(other.isNegated_) {}
+*/
 
 std::ostream &FirstOrderLiteral::write(std::ostream &os) const {
 	if (isNegated()) {

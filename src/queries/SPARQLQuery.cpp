@@ -18,7 +18,7 @@ SPARQLQuery::SPARQLQuery(const FramedTriplePattern &triplePattern) {
 	queryString_ = os.str();
 }
 
-SPARQLQuery::SPARQLQuery(const std::vector<RDFLiteralPtr> &triplePatterns) {
+SPARQLQuery::SPARQLQuery(const std::vector<FramedTriplePatternPtr> &triplePatterns) {
 	std::stringstream os;
 	selectBegin(os);
 	for (const auto &triplePattern: triplePatterns) {

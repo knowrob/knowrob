@@ -25,7 +25,7 @@ namespace knowrob::mongo {
 		 * @param answer the answer
 		 * @return true on success, false indicates that the cursor is empty
 		 */
-		bool nextAnswer(const std::shared_ptr<AnswerYes> &answer, const std::vector<RDFLiteralPtr> &literals);
+		bool nextAnswer(const std::shared_ptr<AnswerYes> &answer, const std::vector<FramedTriplePatternPtr> &literals);
 
 	protected:
 		const bson_t *resultDocument_;

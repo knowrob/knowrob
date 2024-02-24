@@ -258,7 +258,7 @@ bool KnowledgeBase::isMaterializedInEDB(std::string_view property) const {
 	return vocabulary_->frequency(property) > 0;
 }
 
-QueryableBackendPtr KnowledgeBase::getBackendForQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) const {
+QueryableBackendPtr KnowledgeBase::getBackendForQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) const {
 	auto &queryable = backendManager_->queryable();
 	if (queryable.empty()) {
 		throw KnowledgeBaseError("no queryable backends available.");
@@ -267,7 +267,7 @@ QueryableBackendPtr KnowledgeBase::getBackendForQuery(const RDFLiteralPtr &liter
 }
 
 QueryableBackendPtr
-KnowledgeBase::getBackendForQuery(const std::vector<RDFLiteralPtr> &query, const QueryContextPtr &ctx) const {
+KnowledgeBase::getBackendForQuery(const std::vector<FramedTriplePatternPtr> &query, const QueryContextPtr &ctx) const {
 	// TODO: pick backend depending on query context and queried literals
 	auto &queryable = backendManager_->queryable();
 	if (queryable.empty()) {
@@ -429,7 +429,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 	// split input literals into positive and negative literals.
 	// negative literals are evaluated in parallel after all positive literals.
 	// --------------------------------------
-	std::vector<RDFLiteralPtr> positiveLiterals, negativeLiterals;
+	std::vector<FramedTriplePatternPtr> positiveLiterals, negativeLiterals;
 	for (auto &l: allLiterals) {
 		if (l->isNegated()) negativeLiterals.push_back(l);
 		else positiveLiterals.push_back(l);
@@ -439,7 +439,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 	// split positive literals into edb-only and computable.
 	// also associate list of reasoner to computable literals.
 	// --------------------------------------
-	std::vector<RDFLiteralPtr> edbOnlyLiterals;
+	std::vector<FramedTriplePatternPtr> edbOnlyLiterals;
 	std::vector<RDFComputablePtr> computableLiterals;
 	for (auto &l: positiveLiterals) {
 		std::vector<std::shared_ptr<Reasoner>> l_reasoner;
@@ -561,7 +561,8 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 
 TokenBufferPtr KnowledgeBase::submitQuery(const FirstOrderLiteralPtr &literal, const QueryContextPtr &ctx) {
 	auto rdfLiteral = std::make_shared<FramedTriplePattern>(
-			literal->predicate(), literal->isNegated(), ctx->selector_);
+			literal->predicate(), literal->isNegated());
+	rdfLiteral->setTripleFrame(ctx->selector_);
 	return submitQuery(std::make_shared<ConjunctiveQuery>(
 			ConjunctiveQuery({rdfLiteral}, ctx)));
 }
@@ -579,16 +580,18 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 		// each node in a path is either a predicate, a negated predicate,
 		// a modal formula, or the negation of a modal formula.
 
-		std::vector<RDFLiteralPtr> posLiterals, negLiterals;
+		std::vector<FramedTriplePatternPtr> posLiterals, negLiterals;
 		std::vector<std::shared_ptr<ModalFormula>> posModals, negModals;
 
 		for (auto &node: path.nodes()) {
 			switch (node->type()) {
-				case FormulaType::PREDICATE:
-					posLiterals.push_back(std::make_shared<FramedTriplePattern>(
-							std::static_pointer_cast<Predicate>(node),
-							false, ctx->selector_));
+				case FormulaType::PREDICATE: {
+					auto pat = std::make_shared<FramedTriplePattern>(
+							std::static_pointer_cast<Predicate>(node), false);
+					pat->setTripleFrame(ctx->selector_);
+					posLiterals.push_back(pat);
 					break;
+				}
 
 				case FormulaType::MODAL:
 					posModals.push_back(std::static_pointer_cast<ModalFormula>(node));
@@ -598,11 +601,13 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 					auto negation = (Negation *) node.get();
 					auto negated = negation->negatedFormula();
 					switch (negated->type()) {
-						case FormulaType::PREDICATE:
-							negLiterals.push_back(std::make_shared<FramedTriplePattern>(
-									std::static_pointer_cast<Predicate>(negated),
-									true, ctx->selector_));
+						case FormulaType::PREDICATE: {
+							auto pat = std::make_shared<FramedTriplePattern>(
+									std::static_pointer_cast<Predicate>(negated), true);
+							pat->setTripleFrame(ctx->selector_);
+							negLiterals.push_back(pat);
 							break;
+						}
 						case FormulaType::MODAL:
 							negModals.push_back(std::static_pointer_cast<ModalFormula>(negated));
 							break;
@@ -918,7 +923,7 @@ bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
 	return true;
 }
 
-bool KnowledgeBase::removeAllMatching(const FramedTriplePattern &query) {
+bool KnowledgeBase::removeAllMatching(const FramedTriplePatternPtr &query) {
 	bool all_succeed = true;
 	for (auto &kg: backendManager_->backendPool()) {
 		all_succeed = kg.second->backend()->removeAllMatching(query) && all_succeed;
@@ -1191,7 +1196,7 @@ bool KnowledgeBase::DependencyNodeComparator::operator()(const DependencyNodePtr
 	return a < b;
 }
 
-bool KnowledgeBase::EDBComparator::operator()(const RDFLiteralPtr &a, const RDFLiteralPtr &b) const {
+bool KnowledgeBase::EDBComparator::operator()(const FramedTriplePatternPtr &a, const FramedTriplePatternPtr &b) const {
 	// - prefer evaluation of literals with fewer variables
 	auto numVars_a = a->numVariables();
 	auto numVars_b = b->numVariables();

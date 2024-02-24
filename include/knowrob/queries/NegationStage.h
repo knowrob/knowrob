@@ -33,10 +33,10 @@ namespace knowrob {
 	public:
 		LiteralNegationStage(KnowledgeBase *kb,
 							 const QueryContextPtr &ctx,
-							 const std::vector<RDFLiteralPtr> &negatedLiterals);
+							 const std::vector<FramedTriplePatternPtr> &negatedLiterals);
 
 	protected:
-		const std::vector<RDFLiteralPtr> negatedLiterals_;
+		const std::vector<FramedTriplePatternPtr> negatedLiterals_;
 
 		bool succeeds(const AnswerYesPtr &answer) override;
 	};

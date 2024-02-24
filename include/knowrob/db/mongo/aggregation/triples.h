@@ -60,7 +60,7 @@ namespace knowrob::mongo::aggregation {
 			const std::string_view &collection,
 			const std::shared_ptr<semweb::Vocabulary> &vocabulary,
 			const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy,
-			const std::vector<RDFLiteralPtr> &tripleExpressions);
+			const std::vector<FramedTriplePatternPtr> &tripleExpressions);
 }
 
 #endif //KNOWROB_MONGO_AGGREGATION_TRIPLES_H

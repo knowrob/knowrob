@@ -380,10 +380,10 @@ bool RedlandModel::removeAllWithOrigin(std::string_view origin) {
 	return true;
 }
 
-bool RedlandModel::removeAllMatching(const FramedTriplePattern &lit) {
+bool RedlandModel::removeAllMatching(const FramedTriplePatternPtr &lit) {
 	auto instances = std::make_shared<RDFLiteralContainer>();
-	query(SPARQLQuery(lit), [&](const SubstitutionPtr &bindings) {
-		instances->push_back(std::make_shared<FramedTriplePattern>(lit, *bindings));
+	query(SPARQLQuery(*lit), [&](const SubstitutionPtr &bindings) {
+		instances->push_back(applyBindings(lit, *bindings));
 	});
 	removeAll(instances);
 	return true;

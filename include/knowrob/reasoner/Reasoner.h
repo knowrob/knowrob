@@ -134,7 +134,7 @@ namespace knowrob {
 		 * @param ctx a query context.
 		 * @return a buffer that can be used to retrieve the results of the query.
 		 */
-		virtual TokenBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) = 0;
+		virtual TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) = 0;
 
 		/**
 		 * Create a vector of triples that can be used to insert or remove data from the reasoner's data backend.

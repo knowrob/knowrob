@@ -19,13 +19,6 @@ namespace knowrob {
 		FirstOrderLiteral(const PredicatePtr &predicate, bool isNegative);
 
 		/**
-		 * Substitution constructor.
-		 * @other a literal.
-		 * @sub a mapping from terms to variables.
-		 */
-		FirstOrderLiteral(const FirstOrderLiteral &other, const Substitution &sub);
-
-		/**
 		 * @return the predicate of this literal.
 		 */
 		const auto &predicate() const { return predicate_; }

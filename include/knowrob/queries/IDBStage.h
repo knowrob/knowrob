@@ -17,14 +17,14 @@ namespace knowrob {
 	class IDBStage : public QueryStageLiteral {
 	public:
 		IDBStage(const std::shared_ptr<Reasoner> &reasoner,
-				 const RDFLiteralPtr &literal,
+				 const FramedTriplePatternPtr &literal,
 				 const QueryContextPtr &ctx);
 
 	protected:
 		std::shared_ptr<Reasoner> reasoner_;
 		std::shared_ptr<ThreadPool> threadPool_;
 
-		TokenBufferPtr submitQuery(const RDFLiteralPtr &literal) override;
+		TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal) override;
 	};
 
 } // knowrob
