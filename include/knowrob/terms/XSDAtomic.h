@@ -13,20 +13,6 @@
 
 namespace knowrob {
 	/**
-	 * Get the XSD type from the IRI
-	 * @param iri the IRI of the XSD type
-	 * @return the XSD type
-	 */
-	XSDType xsdTypeFromIRI(std::string_view iri);
-
-	/**
-	 * Get the IRI of the XSD type
-	 * @param type the XSD type
-	 * @return the IRI of the XSD type
-	 */
-	std::string_view xsdTypeToIRI(XSDType type);
-
-	/**
 	 * An atomic RDF node with an XSD datatype
 	 */
 	class XSDAtomic : public RDFNode, public Atomic {

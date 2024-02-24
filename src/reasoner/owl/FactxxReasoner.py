@@ -95,22 +95,21 @@ class FactxxReasoner(ReasonerWithBackend):
 		else:
 			return URIRef(iri)
 
-	def triple_to_python(self, triple: StatementData) -> Tuple[Union[BNode,URIRef], URIRef, Union[URIRef,Literal_rdflib,BNode]]:
+	def triple_to_python(self, triple: FramedTriple) -> Tuple[Union[BNode,URIRef], URIRef, Union[URIRef,Literal_rdflib,BNode]]:
 		s_uri = self.resource_to_python(triple.subject)
 		p_uri = URIRef(triple.predicate)
-		if triple.objectType == RDFType.RESOURCE:
-			return s_uri, p_uri, self.resource_to_python(triple.object)
-		elif triple.objectType == RDFType.INT64_LITERAL:
-			return s_uri, p_uri, Literal_rdflib(triple.objectInteger)
-		elif triple.objectType == RDFType.DOUBLE_LITERAL:
-			return s_uri, p_uri, Literal_rdflib(triple.objectDouble)
-		elif triple.objectType == RDFType.BOOLEAN_LITERAL:
-			return s_uri, p_uri, Literal_rdflib(triple.objectInteger == 1)
+		if triple.isObjectIRI():
+			o_uri = URIRef(triple.valueAsString())
+		elif triple.isObjectBlank():
+			o_uri = self.get_blank_node(triple.valueAsString())
+		elif triple.xsdType is XSDType.STRING:
+			o_uri = Literal_rdflib(triple.valueAsString())
 		else:
-			return s_uri, p_uri, Literal_rdflib(triple.object)
+			o_uri = Literal_rdflib(triple.createStringValue(), datatype=triple.xsdTypeString())
+		return s_uri, p_uri, o_uri
 
 	@staticmethod
-	def triple_from_python(kb_triple: StatementData, row: ResultRow):
+	def triple_from_python(kb_triple: FramedTriple, row: ResultRow):
 		# FIXME: there is something wrong here with memory. the row is fine, and assigning
 		#        seems to work, as always when printing kb_triple directly after the assignment, it is fine.
 		#        but when printing it after the function call or at the end, some of the fields seems to have
@@ -118,36 +117,17 @@ class FactxxReasoner(ReasonerWithBackend):
 		#        It does not seem to the row, as the row is fine when printing it at the end of the function.
 		#        So my best guess is that boost::python is doing something unexpected mapping Python strings to
 		#        char* used in kb_triple. Maybe it would help to switch to std::string_view in the C++ code.
+		# TODO: avoid use of str() and use the correct types directly, then we could try triple views.
 		kb_triple.subject = str(row[0])
 		kb_triple.predicate = str(row[1])
 
 		if type(row[2]) is Literal_rdflib:
 			literal: Literal_rdflib = row[2]
-			datatype = literal.datatype
-			kb_triple.object = str(row[2])
-			if datatype == XSD.string:
-				kb_triple.objectType = RDFType.STRING_LITERAL
-			elif datatype == XSD.integer or datatype == XSD.long:
-				kb_triple.objectInteger = int(row[2])
-				kb_triple.objectType = RDFType.INT64_LITERAL
-			elif datatype == XSD.boolean:
-				kb_triple.objectInteger = int(row[2])
-				kb_triple.objectType = RDFType.BOOLEAN_LITERAL
-			elif datatype == XSD.float or datatype == XSD.float:
-				kb_triple.objectDouble = float(row[2])
-				kb_triple.objectType = RDFType.DOUBLE_LITERAL
-			else:
-				logWarn("unknown datatype in inferred triple: " + str(datatype))
+			kb_triple.setXSDValue(str(literal), str(literal.datatype))
 		elif type(row[2]) is URIRef:
-			kb_triple.object = str(row[2])
-			kb_triple.objectType = RDFType.RESOURCE
+			kb_triple.setObjectIRI(str(row[2]))
 		elif type(row[2]) is BNode:
-			bnode_name = str(row[2])
-			if bnode_name.startswith("_"):
-				kb_triple.object = bnode_name
-			else:
-				kb_triple.object = "_" + bnode_name
-			kb_triple.objectType = RDFType.RESOURCE
+			kb_triple.setObjectBlank(str(row[2]))
 
 	def update_triples(self):
 		# retrieve all inferred triples
@@ -215,7 +195,7 @@ class FactxxReasoner(ReasonerWithBackend):
 	def stop(self):
 		pass
 
-	def insertOne(self, triple: StatementData) -> bool:
+	def insertOne(self, triple: FramedTriple) -> bool:
 		py_triple = self.triple_to_python(triple)
 		self.edb().add(py_triple)
 		self.is_update_needed = True
@@ -232,7 +212,7 @@ class FactxxReasoner(ReasonerWithBackend):
 		self.is_parse_needed = True
 		return all_true
 
-	def removeOne(self, triple: StatementData) -> bool:
+	def removeOne(self, triple: FramedTriple) -> bool:
 		self.edb().remove(self.triple_to_python(triple))
 		self.is_update_needed = True
 		self.is_parse_needed = True
@@ -255,7 +235,7 @@ class FactxxReasoner(ReasonerWithBackend):
 		logWarn("removeAllWithOrigin not implemented for FactxxReasoner")
 		return False
 
-	def removeAllMatching(self, query: RDFLiteral, do_match_many: bool) -> int:
+	def removeAllMatching(self, query: FramedTriplePattern, do_match_many: bool) -> int:
 		# NOTE: currently only the initial loading of OWL files is supported
 		logWarn("removeMatching not implemented for FactxxReasoner")
 		return 0
@@ -264,7 +244,7 @@ class FactxxReasoner(ReasonerWithBackend):
 		# NOTE: inferred triples are added to the knowledge base, so no need to respond to queries
 		return None
 
-	def submitQuery(self, query: RDFLiteral, ctx: QueryContext) -> TokenBuffer:
+	def submitQuery(self, query: FramedTriplePattern, ctx: QueryContext) -> TokenBuffer:
 		# NOTE: inferred triples are added to the knowledge base, so no need to respond to queries
 		logWarn("submitQuery not implemented for FactxxReasoner")
 		return None

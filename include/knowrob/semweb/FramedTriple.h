@@ -49,6 +49,11 @@ namespace knowrob {
 		auto xsdType() const { return xsdType_; }
 
 		/**
+		 * @return the IRI of the XSD type of the object of the triple.
+		 */
+		auto xsdTypeIRI() const { return xsdTypeToIRI(xsdType_ ? *xsdType_ : XSDType::STRING); }
+
+		/**
 		 * Assign a XSD value to the object of the triple.
 		 * @param v the string form of a XSD value.
 		 * @param type the XSD type of the value.

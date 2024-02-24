@@ -38,6 +38,20 @@ namespace knowrob {
 		NON_NEGATIVE_INTEGER,
 		LAST // keep last
 	};
+
+	/**
+	 * Get the XSD type from the IRI
+	 * @param iri the IRI of the XSD type
+	 * @return the XSD type
+	 */
+	XSDType xsdTypeFromIRI(std::string_view iri);
+
+	/**
+	 * Get the IRI of the XSD type
+	 * @param type the XSD type
+	 * @return the IRI of the XSD type
+	 */
+	std::string_view xsdTypeToIRI(XSDType type);
 } // knowrob
 
 #endif //KNOWROB_XSD_TYPE_H

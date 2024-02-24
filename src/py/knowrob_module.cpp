@@ -328,6 +328,7 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.def("setObjectIRI", python::pure_virtual(&FramedTriple::setObjectIRI))
 			.def("setObjectBlank", python::pure_virtual(&FramedTriple::setObjectBlank))
 			.def("setXSDValue", &FramedTriple::setXSDValue)
+			.def("xsdTypeIRI", &FramedTriple::xsdTypeIRI)
 			.def("setGraph", python::pure_virtual(&FramedTriple::setGraph))
 			.def("setAgent", python::pure_virtual(&FramedTriple::setAgent))
 			.def("setTemporalOperator", &FramedTriple::setTemporalOperator)
