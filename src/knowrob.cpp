@@ -31,6 +31,21 @@ namespace knowrob {
 		seed ^= v + GOLDEN_RATIO_HASH + (seed << 6) + (seed >> 2);
 	}
 
+	void InitPythonPath() {
+	    std::stringstream pythonPath;
+	    auto oldPath = std::getenv("PYTHONPATH");
+	    if (oldPath) {
+	        pythonPath << oldPath << ":";
+	    }
+	    pythonPath <<
+			(std::filesystem::path(KNOWROB_INSTALL_PREFIX) / "knowrob").string() << ":"
+			<< KNOWROB_SOURCE_DIR << ":"
+			<< KNOWROB_BUILD_DIR;
+		auto pythonPathStr = pythonPath.str();
+		KB_DEBUG("[KnowRob] using python path: {}", pythonPathStr);
+		setenv("PYTHONPATH", pythonPathStr.c_str(), 1);
+	}
+
 	void InitKnowledgeBase(int argc, char **argv) {
 		// remember the program name.
 		// it is assumed here that argv stays valid during program execution.
@@ -41,13 +56,15 @@ namespace knowrob {
 		// configure the logger
 		Logger::initialize();
 		// Allow Python to load modules KnowRob-related directories.
-		// TODO: rather add sub-paths? the structure with "src" does not fit well with python.
-		setenv("PYTHONPATH", KNOWROB_INSTALL_PREFIX, 1);
-		setenv("PYTHONPATH", KNOWROB_SOURCE_DIR, 1);
-		setenv("PYTHONPATH", KNOWROB_BUILD_DIR, 1);
+		InitPythonPath();
 		// start a Python interpreter
 		// NOTE: Py_Finalize() should not be called when using boost python according to docs.
 		Py_Initialize();
+		KB_INFO("[KnowRob] static initialization done.");
+		KB_DEBUG("[KnowRob] executable: {}", getNameOfExecutable());
+		KB_DEBUG("[KnowRob] source directory: {}", KNOWROB_SOURCE_DIR);
+		KB_DEBUG("[KnowRob] install prefix: {}", KNOWROB_INSTALL_PREFIX);
+		KB_DEBUG("[KnowRob] build directory: {}", KNOWROB_BUILD_DIR);
 	}
 
 	// TODO: add a finalize function that makes sure worker threads are stopped, and joined.

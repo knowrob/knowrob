@@ -416,7 +416,8 @@ endif()
 add_executable(all_gtests
 		tests/gtests.cpp
 		src/neems/test.cpp
-		tests/KnowledgeBaseTest.cpp)
+		tests/KnowledgeBaseTest.cpp
+		tests/py/test-module.cpp)
 target_link_libraries(all_gtests
 		-Wl,--whole-archive,--no-as-needed
 		knowrob

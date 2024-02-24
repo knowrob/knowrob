@@ -48,6 +48,13 @@ BOOST_PYTHON_MODULE (knowrob) {
 	typedef std::vector<FormulaPtr> FormulaList;
 	typedef std::vector<FramedTriple*> StatementList;
 
+	// convert std::string_view to python::str and vice versa.
+	python::to_python_converter<std::string_view, string_view_to_python_str>();
+	python::converter::registry::push_back(
+		&python_str_to_string_view::convertible,
+		&python_str_to_string_view::construct,
+		python::type_id<std::string_view>());
+
 	/////////////////////////////////////////////////////
 	// logging
 	/////////////////////////////////////////////////////
@@ -73,6 +80,17 @@ BOOST_PYTHON_MODULE (knowrob) {
 	        .value("BLANK", RDFNodeType::BLANK)
 			.value("IRI", RDFNodeType::IRI)
 			.value("LITERAL", RDFNodeType::LITERAL);
+	enum_<XSDType>("XSDType")
+			.value("STRING", XSDType::STRING)
+			.value("BOOLEAN", XSDType::BOOLEAN)
+			.value("DOUBLE", XSDType::DOUBLE)
+			.value("FLOAT", XSDType::FLOAT)
+			.value("INTEGER", XSDType::INTEGER)
+			.value("LONG", XSDType::LONG)
+			.value("SHORT", XSDType::SHORT)
+			.value("UNSIGNED_LONG", XSDType::UNSIGNED_LONG)
+			.value("UNSIGNED_INT", XSDType::UNSIGNED_INT)
+			.value("UNSIGNED_SHORT", XSDType::UNSIGNED_SHORT);
 
 	class_<RDFNode, std::shared_ptr<RDFNodeWrap>, boost::noncopyable>("RDFNode", no_init)
 			.def("rdfNodeType", python::pure_virtual(&RDFNode::rdfNodeType));
@@ -84,6 +102,13 @@ BOOST_PYTHON_MODULE (knowrob) {
 			.value("FUNCTION", TermType::FUNCTION)
 			.value("ATOMIC", TermType::ATOMIC)
 			.value("VARIABLE", TermType::VARIABLE);
+	enum_<AtomicType>("AtomicType")
+			.value("ATOM", AtomicType::ATOM)
+			.value("STRING", AtomicType::STRING)
+			.value("NUMERIC", AtomicType::NUMERIC);
+	enum_<AtomType>("AtomType")
+			.value("IRI", AtomType::IRI)
+			.value("REGULAR", AtomType::REGULAR);
 
 	class_<Term, std::shared_ptr<TermWrap>, boost::noncopyable>
 	        ("Term", python::no_init)
@@ -320,6 +345,12 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 			.def("begin", &FramedTriple::begin)
 			.def("end", &FramedTriple::end)
 			.def("confidence", &FramedTriple::confidence);
+	class_<FramedTripleCopy, std::shared_ptr<FramedTripleCopy>, bases<FramedTriple>>
+			("FramedTriple", init<>())
+			.def(init<std::string_view,std::string_view,std::string_view>());
+	class_<FramedTripleView, std::shared_ptr<FramedTripleView>, bases<FramedTriple>>
+			("FramedTripleView", init<>())
+			.def(init<std::string_view,std::string_view,std::string_view>());
 
 	//custom_vector_from_seq<FramedTriple*>();
 	//class_<StatementList>("StatementList").def(vector_indexing_suite<StatementList, true>());
@@ -468,8 +499,11 @@ class_<EpistemicModality, std::shared_ptr<EpistemicModality>, bases<Modality>>
 	/////////////////////////////////////////////////////
 	// mappings for optionals used in the structs above
 	/////////////////////////////////////////////////////
+	// Note: At the moment each optional must be listed individually in the module declaration.
+	//       It would be nice if this could be avoided...
 	python_optional<TemporalOperator>();
 	python_optional<EpistemicOperator>();
+	python_optional<XSDType>();
 	python_optional<std::string_view>();
 	python_optional<double>();
 	python_optional<AgentPtr>();

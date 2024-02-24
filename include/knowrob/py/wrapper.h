@@ -8,6 +8,10 @@
 #include "knowrob/formulas/CompoundFormula.h"
 #include "knowrob/reasoner/ReasonerError.h"
 #include "knowrob/py/utils.h"
+#include "knowrob/semweb/FramedTriple.h"
+#include "knowrob/db/DataBackend.h"
+#include "knowrob/terms/Numeric.h"
+#include "knowrob/reasoner/Reasoner.h"
 
 using namespace knowrob;
 namespace python = boost::python;
