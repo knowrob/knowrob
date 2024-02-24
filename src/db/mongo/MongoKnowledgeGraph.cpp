@@ -748,14 +748,14 @@ bson_t *MongoKnowledgeGraph::createTripleDocument(const FramedTriple &tripleData
 				vocabulary_->getDefinedProperty(objectIRI)->forallParents(
 						[parentsPtr, counterPtr](const auto &parent) {
 							auto counterKey = std::to_string((*counterPtr)++);
-							BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().c_str());
+							BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().data());
 						});
 			} else if (vocabulary_->isDefinedClass(objectIRI)) {
 				// read parents array
 				vocabulary_->getDefinedClass(objectIRI)->forallParents(
 						[parentsPtr, counterPtr](const auto &parent) {
 							auto counterKey = std::to_string((*counterPtr)++);
-							BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().c_str());
+							BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().data());
 						});
 			} else {
 				BSON_APPEND_UTF8(&parentsArray, "0", objectIRI.data());
@@ -776,7 +776,7 @@ bson_t *MongoKnowledgeGraph::createTripleDocument(const FramedTriple &tripleData
 		vocabulary_->defineProperty(tripleData.predicate())->forallParents(
 				[parentsPtr, counterPtr](const auto &parent) {
 					auto counterKey = std::to_string((*counterPtr)++);
-					BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().c_str());
+					BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().data());
 				});
 		bson_append_array_end(tripleDoc, &parentsArray);
 	}

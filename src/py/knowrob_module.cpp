@@ -61,7 +61,7 @@ BOOST_PYTHON_MODULE (knowrob) {
 	// mappings for the Agent class
 	/////////////////////////////////////////////////////
 	class_<Agent, std::shared_ptr<Agent>>("Agent", no_init)
-			.def("iri", &Agent::iri, CONST_REF_RETURN)
+			.def("iri", &Agent::iri)
 			.def("getEgo", &Agent::getEgo)
 			.def("get", &Agent::get);
 

@@ -198,7 +198,7 @@ struct DataBackendWrap : public DataBackend, boost::python::wrapper<DataBackend>
 	bool removeAllWithOrigin(std::string_view origin) override
 	{ return knowrob::py::call_method<bool>(self, "removeAllWithOrigin", origin.data()); }
 
-	bool removeAllMatching(const RDFLiteralPtr &query) override
+	bool removeAllMatching(const FramedTriplePatternPtr &query) override
 	{ return knowrob::py::call_method<int>(self, "removeAllMatching", query); }
 
 private:
@@ -219,7 +219,7 @@ struct ReasonerWrap : public Reasoner, boost::python::wrapper<Reasoner>
 	PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override
 	{ return knowrob::py::call_method<PredicateDescriptionPtr>(self, "getDescription", indicator); }
 
-	TokenBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) override
+	TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) override
 	{ return knowrob::py::call_method<TokenBufferPtr>(self, "submitQuery", literal, ctx); }
 
 	void start() override { knowrob::py::call_method<void>(self, "start"); }
@@ -261,13 +261,13 @@ struct ReasonerWithBackendWrap :
 	bool removeAllWithOrigin(std::string_view origin) override
 	{ return knowrob::py::call_method<bool>(self, "removeAllWithOrigin", origin.data()); }
 
-	bool removeAllMatching(const RDFLiteralPtr &query) override
+	bool removeAllMatching(const FramedTriplePatternPtr &query) override
 	{ return knowrob::py::call_method<int>(self, "removeAllMatching", query); }
 
 	PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override
 	{ return knowrob::py::call_method<PredicateDescriptionPtr>(self, "getDescription", indicator); }
 
-	TokenBufferPtr submitQuery(const RDFLiteralPtr &literal, const QueryContextPtr &ctx) override
+	TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) override
 	{ return knowrob::py::call_method<TokenBufferPtr>(self, "submitQuery", literal, ctx); }
 
 	void start() override { knowrob::py::call_method<void>(self, "start"); }

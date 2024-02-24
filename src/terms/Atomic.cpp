@@ -8,7 +8,7 @@
 #include "knowrob/terms/Numeric.h"
 #include "knowrob/terms/String.h"
 #include "knowrob/terms/IRIAtom.h"
-#include "knowrob/terms/Blank.h"
+#include "knowrob/semweb/FramedTriple.h"
 
 using namespace knowrob;
 

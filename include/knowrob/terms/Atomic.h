@@ -8,7 +8,6 @@
 
 #include "Term.h"
 #include "XSDType.h"
-#include "knowrob/semweb/FramedTriple.h"
 
 namespace knowrob {
 	/**
@@ -22,6 +21,9 @@ namespace knowrob {
 		/** a string */
 		STRING
 	};
+
+	// forward declaration
+	class FramedTriple;
 
 	/**
 	 * An atomic term is a term that is not a compound term.

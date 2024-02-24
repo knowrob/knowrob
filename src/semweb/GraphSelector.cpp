@@ -66,7 +66,7 @@ size_t GraphSelector::hash() const {
 		hashCombine(val, 0);
 	}
 	if (agent.has_value()) {
-		hashCombine(val, std::hash<std::string>{}(agent.value()->iri()));
+		hashCombine(val, std::hash<std::string_view>{}(agent.value()->iri()));
 	} else {
 		hashCombine(val, 0);
 	}

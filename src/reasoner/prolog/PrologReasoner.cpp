@@ -362,8 +362,8 @@ bool PrologReasoner::putQueryFrame(PrologTerm &frameTerm, const GraphSelector &f
 	if (frame.agent.has_value()) {
 		static const auto agent_a = PL_new_atom("agent");
 		scopeKeys[++keyIndex] = agent_a;
-		auto &agent_iri = frame.agent.value()->iri();
-		if (!PL_put_atom_chars(scopeValues + keyIndex, agent_iri.c_str())) return false;
+		auto agent_iri = frame.agent.value()->iri();
+		if (!PL_put_atom_chars(scopeValues + keyIndex, agent_iri.data())) return false;
 	}
 
 	// since: $name
