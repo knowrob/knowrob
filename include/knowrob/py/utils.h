@@ -20,6 +20,10 @@ namespace knowrob::py {
 		}
 	}
 
+	/**
+	 * A template function to create a new type in Python.
+	 * @tparam T The C++ type to map into Python.
+	 */
 	template <typename T> void createType();
 }
 

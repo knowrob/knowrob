@@ -1,6 +1,7 @@
-//
-// Created by daniel on 25.01.24.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include <iostream>
 #include <functional>
@@ -32,45 +33,15 @@
 #include "knowrob/knowrob.h"
 
 using namespace knowrob;
-namespace python = boost::python;
 
-BOOST_PYTHON_MODULE (knowrob) {
-	using namespace boost::python;
-	typedef std::vector<TermPtr> TermList;
-	typedef std::vector<FormulaPtr> FormulaList;
-	typedef std::vector<std::shared_ptr<FramedTriple>> TripleList;
-
-	// convert std::string_view to python::str and vice versa.
-	python::to_python_converter<std::string_view, string_view_to_python_str>();
-	python::converter::registry::push_back(
-			&python_str_to_string_view::convertible,
-			&python_str_to_string_view::construct,
-			python::type_id<std::string_view>());
-
-	/**
-    boost::python::scope().attr("__doc__") = "knowrob module";
-    boost::python::object submodule1(boost::python::handle<>(boost::python::borrowed(PyImport_AddModule("knowrob.submodule1"))));
-    boost::python::scope().attr("submodule1") = submodule1;
-    boost::python::scope submodule1_scope = submodule1;
-    initialize_knowrob_submodule1();
-
-    boost::python::object submodule2(boost::python::handle<>(boost::python::borrowed(PyImport_AddModule("knowrob.submodule2"))));
-    boost::python::scope().attr("submodule2") = submodule2;
-    boost::python::scope submodule2_scope = submodule2;
-    initialize_knowrob_submodule2();
-	 */
-
-	/////////////////////////////////////////////////////
-	// some common types
-	/////////////////////////////////////////////////////
+static inline void register_common_types() {
 	py::createType<Logger>();
 	py::createType<Agent>();
 	py::createType<Modality>();
 	py::createType<ModalOperator>();
+}
 
-	/////////////////////////////////////////////////////
-	// Term and related classes
-	/////////////////////////////////////////////////////
+static inline void register_term_types() {
 	py::createType<RDFNode>();
 	py::createType<Term>();
 	py::createType<Variable>();
@@ -84,14 +55,13 @@ BOOST_PYTHON_MODULE (knowrob) {
 	py::createType<String>();
 	py::createType<Numeric>();
 	py::createType<Substitution>();
-
 	// allow conversion between std::vector and python::list for Term objects.
+	typedef std::vector<TermPtr> TermList;
 	custom_vector_from_seq<TermPtr>();
-	class_<TermList>("TermList").def(vector_indexing_suite<TermList, true>());
+	boost::python::class_<TermList>("TermList").def(boost::python::vector_indexing_suite<TermList, true>());
+}
 
-	/////////////////////////////////////////////////////
-	// Formula and related classes
-	/////////////////////////////////////////////////////
+static inline void register_formula_types() {
 	py::createType<Formula>();
 	py::createType<CompoundFormula>();
 	py::createType<Negation>();
@@ -102,47 +72,66 @@ BOOST_PYTHON_MODULE (knowrob) {
 	py::createType<Bottom>();
 	py::createType<Top>();
 	py::createType<ModalFormula>();
-
 	py::createType<FirstOrderLiteral>();
 	py::createType<PredicateIndicator>();
 	py::createType<PredicateDescription>();
-
 	// allow conversion between std::vector and python::list for Formula objects.
+	typedef std::vector<FormulaPtr> FormulaList;
 	custom_vector_from_seq<FormulaPtr>();
-	class_<FormulaList>("FormulaList").def(vector_indexing_suite<FormulaList, true>());
+	boost::python::class_<FormulaList>("FormulaList").def(boost::python::vector_indexing_suite<FormulaList, true>());
+}
 
-	/////////////////////////////////////////////////////
-	// FramedTriple and related classes
-	/////////////////////////////////////////////////////
+static inline void register_triple_types() {
 	py::createType<FramedTriple>();
 	py::createType<FramedTriplePattern>();
 	py::createType<GraphSelector>();
 	py::createType<semweb::TripleContainer>();
-
 	// allow conversion between std::vector and python::list for FramedTriple objects.
+	typedef std::vector<std::shared_ptr<FramedTriple>> TripleList;
 	custom_vector_from_seq<std::shared_ptr<FramedTriple>>();
-	class_<TripleList>("TripleList").def(vector_indexing_suite<TripleList, true>());
+	boost::python::class_<TripleList>("TripleList").def(boost::python::vector_indexing_suite<TripleList, true>());
+}
 
-	/////////////////////////////////////////////////////
-	// mappings for the AnswerStream class and related classes
-	/////////////////////////////////////////////////////
+static inline void register_query_types() {
 	py::createType<TokenStream>();
 	py::createType<TokenQueue>();
 	py::createType<TokenBroadcaster>();
 	py::createType<TokenBuffer>();
 	py::createType<QueryContext>();
+}
 
-	/////////////////////////////////////////////////////
-	// mappings for the data source and backend classes
-	/////////////////////////////////////////////////////
+static inline void register_db_types() {
 	py::createType<DataSource>();
 	py::createType<DataSourceHandler>();
 	py::createType<DataBackend>();
+}
+
+static inline void register_reasoner_types() {
+	py::createType<Reasoner>();
+}
+
+BOOST_PYTHON_MODULE (knowrob) {
+	using namespace boost::python;
+
+	// convert std::string_view to python::str and vice versa.
+	register_string_view_converter();
+
+    //boost::python::scope().attr("__doc__") = "knowrob module";
+	//boost::python::object submodule1(boost::python::handle<>(boost::python::borrowed(PyImport_AddModule("knowrob.submodule1"))));
+    //boost::python::scope().attr("submodule1") = submodule1;
+    //boost::python::scope submodule1_scope = submodule1;
+    //initialize_knowrob_submodule1();
 
 	/////////////////////////////////////////////////////
-	// mappings for the Reasoner class and it sub-classes
+	// mappings for KnowRob types
 	/////////////////////////////////////////////////////
-	py::createType<Reasoner>();
+	register_common_types();
+	register_term_types();
+	register_formula_types();
+	register_triple_types();
+	register_query_types();
+	register_db_types();
+	register_reasoner_types();
 
 	/////////////////////////////////////////////////////
 	// mappings for optionals used in the structs above
