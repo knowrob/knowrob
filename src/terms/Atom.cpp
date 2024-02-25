@@ -4,10 +4,11 @@
  */
 
 #include "knowrob/terms/Atom.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
-Atom::AtomTable& Atom::table() {
+Atom::AtomTable &Atom::table() {
 	static Atom::AtomTable theTable;
 	return theTable;
 }
@@ -51,4 +52,18 @@ std::shared_ptr<knowrob::Atom> Atom::Tabled(std::string_view name) {
 		throw std::runtime_error("Failed to lock Atom");
 	}
 	return locked;
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<Atom>() {
+		using namespace boost::python;
+		enum_<AtomType>("AtomType")
+				.value("IRI", AtomType::IRI)
+				.value("REGULAR", AtomType::REGULAR);
+		class_<Atom, std::shared_ptr<Atom>, bases<Atomic>>("Atom", no_init)
+				.def("Tabled", &Atom::Tabled)
+				.def("atomType", &Atom::atomType)
+				.def("isSameAtom", &Atom::isSameAtom);
+	}
 }

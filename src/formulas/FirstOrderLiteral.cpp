@@ -4,6 +4,7 @@
  */
 
 #include "knowrob/formulas/FirstOrderLiteral.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -24,6 +25,20 @@ std::ostream &FirstOrderLiteral::write(std::ostream &os) const {
 		os << *predicate_;
 	}
 	return os;
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<FirstOrderLiteral>() {
+		using namespace boost::python;
+		class_<FirstOrderLiteral, std::shared_ptr<FirstOrderLiteral>>
+				("FirstOrderLiteral", init<const PredicatePtr &, bool>())
+				.def("predicate", &FirstOrderLiteral::predicate, return_value_policy<copy_const_reference>())
+				.def("isNegated", &FirstOrderLiteral::isNegated)
+				.def("functor", &FirstOrderLiteral::functor, return_value_policy<copy_const_reference>())
+				.def("arity", &FirstOrderLiteral::arity)
+				.def("numVariables", &FirstOrderLiteral::numVariables);
+	}
 }
 
 namespace std {

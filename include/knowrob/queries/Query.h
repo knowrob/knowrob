@@ -48,7 +48,7 @@ namespace knowrob {
 		/**
 		 * @return the flags associated to this query.
 		 */
-		int flags() const { return ctx_->queryFlags_; }
+		int flags() const { return ctx_->queryFlags; }
 
 		/**
 		 * @return the query context.

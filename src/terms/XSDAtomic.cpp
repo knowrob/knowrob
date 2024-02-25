@@ -7,6 +7,8 @@
 #include "knowrob/terms/XSDAtomic.h"
 #include "knowrob/semweb/xsd.h"
 #include "knowrob/Logger.h"
+#include <boost/python.hpp>
+#include "knowrob/py/utils.h"
 
 namespace knowrob {
 	XSDType xsdTypeFromIRI(std::string_view iri) {
@@ -53,5 +55,37 @@ namespace knowrob {
 
 	std::string_view XSDAtomic::xsdTypeIRI() const {
 		return xsdTypeToIRI(xsdType());
+	}
+}
+
+namespace knowrob::py {
+	// this struct is needed because XSDAtomic has pure virtual methods
+	struct XSDAtomicWrap : public XSDAtomic, boost::python::wrapper<XSDAtomic> {
+		explicit XSDAtomicWrap(PyObject *p) : self(p), XSDAtomic() {}
+
+		XSDType xsdType() const override { return call_method<XSDType>(self, "xsdType"); }
+
+	private:
+		PyObject *self;
+	};
+
+	template<>
+	void createType<XSDAtomic>() {
+		using namespace boost::python;
+		enum_<XSDType>("XSDType")
+				.value("STRING", XSDType::STRING)
+				.value("BOOLEAN", XSDType::BOOLEAN)
+				.value("DOUBLE", XSDType::DOUBLE)
+				.value("FLOAT", XSDType::FLOAT)
+				.value("INTEGER", XSDType::INTEGER)
+				.value("LONG", XSDType::LONG)
+				.value("SHORT", XSDType::SHORT)
+				.value("UNSIGNED_LONG", XSDType::UNSIGNED_LONG)
+				.value("UNSIGNED_INT", XSDType::UNSIGNED_INT)
+				.value("UNSIGNED_SHORT", XSDType::UNSIGNED_SHORT);
+		class_<XSDAtomic, std::shared_ptr<XSDAtomicWrap>, bases<Atomic, RDFNode>, boost::noncopyable>
+				("XSDAtomic", no_init)
+				.def("xsdTypeIRI", &XSDAtomic::xsdTypeIRI)
+				.def("xsdType", pure_virtual(&XSDAtomic::xsdType));
 	}
 }

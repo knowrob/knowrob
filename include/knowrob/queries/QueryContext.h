@@ -1,6 +1,7 @@
-//
-// Created by daniel on 17.01.24.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_QUERY_CONTEXT_H
 #define KNOWROB_QUERY_CONTEXT_H
@@ -11,25 +12,31 @@
 #include "knowrob/semweb/GraphSelector.h"
 
 namespace knowrob {
-	class QueryContext {
-	public:
+	/**
+	 * The context in which a query is evaluated.
+	 */
+	struct QueryContext {
 		explicit QueryContext(int queryFlags)
-		: queryFlags_(queryFlags), modalIteration_(ModalIteration::emptyIteration())
-		{}
+				: queryFlags(queryFlags), modalIteration(ModalIteration::emptyIteration()) {}
 
 		QueryContext(const QueryContext &other, const ModalOperatorPtr &modalOperator)
-		: queryFlags_(other.queryFlags_), modalIteration_(other.modalIteration_ + modalOperator)
-		{
+				: queryFlags(other.queryFlags), modalIteration(other.modalIteration + modalOperator) {
 		}
-
-		int queryFlags_;
-
-		ModalIteration modalIteration_;
-
-		GraphSelector selector_;
+		/**
+		 * The query flags bitmask with values from QueryFlags.
+		 */
+		int queryFlags;
+		/**
+		 * The modal iteration in which the query is evaluated.
+		 */
+		ModalIteration modalIteration;
+		/**
+		 * The frame of triples in this context.
+		 */
+		GraphSelector selector;
 	};
 
-    using QueryContextPtr = std::shared_ptr<const QueryContext>;
+	using QueryContextPtr = std::shared_ptr<const QueryContext>;
 };
 
-#endif //KNOWROB_EVALUATION_CONTEXT_H
+#endif //KNOWROB_QUERY_CONTEXT_H

@@ -54,7 +54,7 @@ bool LiteralNegationStage::succeeds(const AnswerYesPtr &answer) {
 		// create an instance of the literal based on given substitution
 		auto instance = std::make_shared<FramedTriplePattern>(
 				lit1->predicate(), lit1->isNegated());
-		instance->setTripleFrame(ctx_->selector_);
+		instance->setTripleFrame(ctx_->selector);
 		// for now evaluate positive variant of the literal.
 		// NOTE: for open-world semantics this cannot be done. open-world reasoner
 		//       would need to receive negative literal instead.

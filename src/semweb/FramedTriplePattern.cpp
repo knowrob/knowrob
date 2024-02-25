@@ -12,6 +12,7 @@
 #include "knowrob/terms/Atom.h"
 #include "knowrob/terms/IRIAtom.h"
 #include "knowrob/terms/Blank.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -49,7 +50,7 @@ FramedTriplePattern::FramedTriplePattern(const PredicatePtr &pred, bool isNegate
 }
 
 FramedTriplePattern::FramedTriplePattern(const TermPtr &s, const TermPtr &p, const TermPtr &o, bool isNegated)
-		: FirstOrderLiteral(getRDFPredicate(s,p,o), isNegated),
+		: FirstOrderLiteral(getRDFPredicate(s, p, o), isNegated),
 		  subjectTerm_(s),
 		  propertyTerm_(p),
 		  objectTerm_(o),
@@ -241,10 +242,10 @@ namespace knowrob {
 		auto end = pat->endTerm() ? applyBindings(*pat->endTerm(), bindings) : nullptr;
 		if (end && end != *pat->endTerm()) hasChanges = true;
 
-		if(!hasChanges) return pat;
+		if (!hasChanges) return pat;
 
 		auto patInstance = std::make_shared<FramedTriplePattern>(
-			subject, property, object, pat->isNegated());
+				subject, property, object, pat->isNegated());
 		patInstance->setObjectOperator(pat->objectOperator());
 		if (graph) patInstance->setGraphTerm(groundable<Atom>::cast(graph));
 		if (agent) patInstance->setAgentTerm(groundable<Atom>::cast(agent));
@@ -252,5 +253,28 @@ namespace knowrob {
 		if (begin) patInstance->setBeginTerm(groundable<Double>::cast(begin));
 		if (end) patInstance->setEndTerm(groundable<Double>::cast(end));
 		return patInstance;
+	}
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<FramedTriplePattern>() {
+		using namespace boost::python;
+		class_<FramedTriplePattern, std::shared_ptr<FramedTriplePattern>, bases<FirstOrderLiteral>>
+				("FramedTriplePattern", init<const FramedTriple &, bool>())
+				.def(init<const FramedTriple &>())
+				.def("subjectTerm", &FramedTriplePattern::subjectTerm)
+				.def("propertyTerm", &FramedTriplePattern::propertyTerm)
+				.def("objectTerm", &FramedTriplePattern::objectTerm)
+				.def("graphTerm", &FramedTriplePattern::graphTerm)
+				.def("agentTerm", &FramedTriplePattern::agentTerm)
+				.def("beginTerm", &FramedTriplePattern::beginTerm)
+				.def("endTerm", &FramedTriplePattern::endTerm)
+				.def("confidenceTerm", &FramedTriplePattern::confidenceTerm)
+				.def("objectOperator", &FramedTriplePattern::objectOperator)
+				.def("temporalOperator", &FramedTriplePattern::temporalOperator)
+				.def("epistemicOperator", &FramedTriplePattern::epistemicOperator)
+				.def("setGraphName", &FramedTriplePattern::setGraphName)
+				.def("toStatementData", &FramedTriplePattern::toStatementData);
 	}
 }

@@ -13,6 +13,7 @@
 #include "knowrob/formulas/Conjunction.h"
 #include "knowrob/formulas/Disjunction.h"
 #include "knowrob/terms/Function.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -47,7 +48,7 @@ void Substitution::operator+=(const Substitution &other) {
 }
 
 void Substitution::set(const std::shared_ptr<Variable> &var, const TermPtr &term) {
-	mapping_.insert({var->name(), {var,term}});
+	mapping_.insert({var->name(), {var, term}});
 }
 
 bool Substitution::contains(std::string_view varName) const {
@@ -237,5 +238,21 @@ namespace std {
 			os << pair.first << ':' << ' ' << (*pair.second.second);
 		}
 		return os << '}';
+	}
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<Substitution>() {
+		using namespace boost::python;
+		class_<Substitution, std::shared_ptr<Substitution>>("Substitution", init<>())
+				.def(init<std::map<std::shared_ptr<Variable>, TermPtr>>())
+				.def("__eq__", &Substitution::operator==)
+				.def("__iter__", range(&Substitution::begin, &Substitution::end))
+				.def("empty", &Substitution::empty)
+				.def("set", &Substitution::set)
+				.def("get", &Substitution::get, return_value_policy<copy_const_reference>())
+				.def("contains", &Substitution::contains)
+				.def("hash", &Substitution::hash);
 	}
 }

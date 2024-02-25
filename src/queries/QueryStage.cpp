@@ -73,7 +73,7 @@ void QueryStage::pushTransformed(const TokenPtr &transformedTok,
 				// directly push any positive response
 				pushToBroadcast(transformedTok);
 				// close the stage if only one solution is requested
-				if ((ctx_->queryFlags_ & (int) QueryFlag::QUERY_FLAG_ONE_SOLUTION) ==
+				if ((ctx_->queryFlags & (int) QueryFlag::QUERY_FLAG_ONE_SOLUTION) ==
 					(int) QueryFlag::QUERY_FLAG_ONE_SOLUTION) {
 					pushToBroadcast(EndOfEvaluation::get());
 					close();

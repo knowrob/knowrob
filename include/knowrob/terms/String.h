@@ -20,13 +20,17 @@ namespace knowrob {
 		 * @param other another string
 		 * @return true if both strings are equal
 		 */
-		bool isSameString(const StringBase &other) const { return stringForm() == other.stringForm(); }
+		bool isSameString(const StringBase &other) const;
 
 		// override Atomic
 		AtomicType atomicType() const final { return AtomicType::STRING; }
 
 		// override XSDAtomic
 		XSDType xsdType() const final { return XSDType::STRING; }
+
+	protected:
+		// override Term
+		void write(std::ostream &os) const override;
 	};
 
 	/**

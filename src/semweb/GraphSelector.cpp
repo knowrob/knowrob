@@ -1,10 +1,12 @@
-//
-// Created by daniel on 31.01.24.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include "iomanip"
 #include "knowrob/semweb/GraphSelector.h"
 #include "knowrob/knowrob.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -90,26 +92,23 @@ std::ostream &GraphSelector::write(std::ostream &os) const {
 	os << std::setprecision(1);
 
 	bool hasEpistemicOperator = false;
-	if(confidence.has_value()) {
+	if (confidence.has_value()) {
 		hasEpistemicOperator = true;
-		if(confidence.value() > 0.999) {
+		if (confidence.value() > 0.999) {
 			os << 'K';
-		}
-		else if(epistemicOperator.value() == EpistemicOperator::KNOWLEDGE) {
+		} else if (epistemicOperator.value() == EpistemicOperator::KNOWLEDGE) {
 			os << "B[" << confidence.value() << "]";
 		}
-	}
-	else if(epistemicOperator.has_value()) {
+	} else if (epistemicOperator.has_value()) {
 		hasEpistemicOperator = true;
-		if(epistemicOperator.value() == EpistemicOperator::BELIEF) {
+		if (epistemicOperator.value() == EpistemicOperator::BELIEF) {
 			os << 'B';
-		}
-		else if(epistemicOperator.value() == EpistemicOperator::KNOWLEDGE) {
+		} else if (epistemicOperator.value() == EpistemicOperator::KNOWLEDGE) {
 			os << 'K';
 		}
 	}
-	if(agent.has_value() && !agent.value()->isEgoAgent()) {
-		if(!hasEpistemicOperator) {
+	if (agent.has_value() && !agent.value()->isEgoAgent()) {
+		if (!hasEpistemicOperator) {
 			hasEpistemicOperator = true;
 			os << 'K';
 		}
@@ -117,26 +116,25 @@ std::ostream &GraphSelector::write(std::ostream &os) const {
 	}
 
 	bool hasTemporalOperator = false;
-	if(temporalOperator.has_value()) {
+	if (temporalOperator.has_value()) {
 		hasTemporalOperator = true;
-		if(temporalOperator.value() == TemporalOperator::SOMETIMES) {
+		if (temporalOperator.value() == TemporalOperator::SOMETIMES) {
 			os << 'P';
-		}
-		else if(temporalOperator.value() == TemporalOperator::ALWAYS) {
+		} else if (temporalOperator.value() == TemporalOperator::ALWAYS) {
 			os << 'H';
 		}
 	}
-	if(begin.has_value() || end.has_value()) {
-		if(!hasTemporalOperator) {
+	if (begin.has_value() || end.has_value()) {
+		if (!hasTemporalOperator) {
 			hasTemporalOperator = true;
 			os << 'H';
 		}
 		os << '[';
-		if(begin.has_value()) {
+		if (begin.has_value()) {
 			os << begin.value();
 		}
 		os << '-';
-		if(end.has_value()) {
+		if (end.has_value()) {
 			os << end.value();
 		}
 		os << ']';
@@ -147,4 +145,25 @@ std::ostream &GraphSelector::write(std::ostream &os) const {
 
 std::ostream &std::operator<<(std::ostream &os, const knowrob::GraphSelector &gs) {
 	return gs.write(os);
+}
+
+// optional member must be added with add_property
+#define BOOST_PYTHON_ADD_OPTIONAL(X, Y) add_property(X, \
+    make_getter(Y, return_value_policy<return_by_value>()), \
+    make_setter(Y, return_value_policy<return_by_value>()))
+
+namespace knowrob::py {
+	template<>
+	void createType<GraphSelector>() {
+		using namespace boost::python;
+		class_<GraphSelector, std::shared_ptr<GraphSelector>>
+				("GraphSelector", init<>())
+				.def_readwrite("graph", &GraphSelector::graph)
+				.BOOST_PYTHON_ADD_OPTIONAL("agent", &GraphSelector::agent)
+				.BOOST_PYTHON_ADD_OPTIONAL("temporalOperator", &GraphSelector::temporalOperator)
+				.BOOST_PYTHON_ADD_OPTIONAL("epistemicOperator", &GraphSelector::epistemicOperator)
+				.BOOST_PYTHON_ADD_OPTIONAL("begin", &GraphSelector::begin)
+				.BOOST_PYTHON_ADD_OPTIONAL("end", &GraphSelector::end)
+				.BOOST_PYTHON_ADD_OPTIONAL("confidence", &GraphSelector::confidence);
+	}
 }

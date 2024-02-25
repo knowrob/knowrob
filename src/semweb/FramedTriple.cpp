@@ -1,23 +1,26 @@
 #include "knowrob/semweb/FramedTriple.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
-template<typename T> T xsdConv(std::string_view str) {
+template<typename T>
+T xsdConv(std::string_view str) {
 	T result;
 	std::istringstream(str.data()) >> result;
 	return result;
 }
 
-template<typename T> T xsdConvFixed(std::string_view str) {
+template<typename T>
+T xsdConvFixed(std::string_view str) {
 	T result;
 	std::istringstream(str.data()) >> std::fixed >> result;
 	return result;
 }
 
 bool xsdConvBool(std::string_view str) {
-    bool result;
-    std::istringstream(str.data()) >> std::boolalpha >> result;
-    return result;
+	bool result;
+	std::istringstream(str.data()) >> std::boolalpha >> result;
+	return result;
 }
 
 void FramedTriple::setXSDValue(std::string_view v, XSDType type) {
@@ -68,7 +71,7 @@ std::string FramedTriple::createStringValue() const {
 	}
 
 	if (xsdType()) {
-		switch(xsdType().value()) {
+		switch (xsdType().value()) {
 			case XSDType::DOUBLE:
 				return (std::ostringstream() << std::fixed << valueAsDouble()).str();
 			case XSDType::FLOAT:
@@ -125,7 +128,7 @@ bool FramedTriple::operator<(const FramedTriple &other) const {
 		return xsdType() < other.xsdType();
 	}
 	if (xsdType()) {
-		switch(xsdType().value()) {
+		switch (xsdType().value()) {
 			case XSDType::STRING:
 				if (valueAsString() != other.valueAsString()) {
 					return valueAsString() < other.valueAsString();
@@ -191,7 +194,7 @@ bool FramedTriple::operator<(const FramedTriple &other) const {
 				KB_ERROR("Invalid XSD type");
 				break;
 		}
-	} else if(valueAsString() != other.valueAsString()) {
+	} else if (valueAsString() != other.valueAsString()) {
 		return valueAsString() < other.valueAsString();
 	}
 	if (temporalOperator() != other.temporalOperator()) {
@@ -224,7 +227,7 @@ bool FramedTriple::operator==(const FramedTriple &other) const {
 	if (confidence() != other.confidence()) return false;
 	if (xsdType() != other.xsdType()) return false;
 	if (xsdType()) {
-		switch(xsdType().value()) {
+		switch (xsdType().value()) {
 			case XSDType::STRING:
 				if (valueAsString() != other.valueAsString()) return false;
 				break;
@@ -264,4 +267,88 @@ bool FramedTriple::operator==(const FramedTriple &other) const {
 		return false;
 	}
 	return true;
+}
+
+namespace knowrob::py {
+	// this struct is needed because FramedTriple has pure virtual methods
+	struct FramedTripleWrap : public FramedTriple, boost::python::wrapper<FramedTriple> {
+		explicit FramedTripleWrap(PyObject *p) : self(p), FramedTriple() {}
+
+		void setSubject(std::string_view subject) override { call_method<void>(self, "setSubject", subject); }
+
+		void setPredicate(std::string_view predicate) override { call_method<void>(self, "setPredicate", predicate); }
+
+		void setObjectIRI(std::string_view object) override { call_method<void>(self, "setObjectIRI", object); }
+
+		void setSubjectBlank(std::string_view str) override { call_method<void>(self, "setSubjectBlank", str); }
+
+		void setObjectBlank(std::string_view str) override { call_method<void>(self, "setObjectBlank", str); }
+
+		std::string_view subject() const override { return call_method<std::string_view>(self, "subject"); }
+
+		std::string_view predicate() const override { return call_method<std::string_view>(self, "predicate"); }
+
+		void setGraph(std::string_view graph) override { call_method<void>(self, "setGraph", graph); }
+
+		void setAgent(std::string_view agent) override { call_method<void>(self, "setAgent", agent); }
+
+		std::optional<std::string_view> graph() const override {
+			return call_method<std::optional<std::string_view>>(self, "graph");
+		}
+
+		std::optional<std::string_view> agent() const override {
+			return call_method<std::optional<std::string_view>>(self, "agent");
+		}
+
+		std::string_view valueAsString() const override { return call_method<std::string_view>(self, "valueAsString"); }
+
+	private:
+		PyObject *self;
+	};
+
+	template<>
+	void createType<FramedTriple>() {
+		using namespace boost::python;
+		class_<FramedTriple, std::shared_ptr<FramedTripleWrap>, boost::noncopyable>
+				("FramedTriple", no_init)
+				.def("__eq__", &FramedTriple::operator==)
+				.def("isObjectIRI", &FramedTriple::isObjectIRI)
+				.def("isObjectBlank", &FramedTriple::isObjectBlank)
+				.def("isSubjectBlank", &FramedTriple::isSubjectBlank)
+				.def("isXSDLiteral", &FramedTriple::isXSDLiteral)
+				.def("setSubject", pure_virtual(&FramedTriple::setSubject))
+				.def("setPredicate", pure_virtual(&FramedTriple::setPredicate))
+				.def("setSubjectBlank", pure_virtual(&FramedTriple::setSubjectBlank))
+				.def("setObjectIRI", pure_virtual(&FramedTriple::setObjectIRI))
+				.def("setObjectBlank", pure_virtual(&FramedTriple::setObjectBlank))
+				.def("valueAsString", pure_virtual(&FramedTriple::valueAsString))
+				.def("createStringValue", &FramedTriple::createStringValue)
+				.def("setXSDValue", &FramedTriple::setXSDValue)
+				.def("xsdTypeIRI", &FramedTriple::xsdTypeIRI)
+				.def("setGraph", pure_virtual(&FramedTriple::setGraph))
+				.def("setAgent", pure_virtual(&FramedTriple::setAgent))
+				.def("setTemporalOperator", &FramedTriple::setTemporalOperator)
+				.def("setEpistemicOperator", &FramedTriple::setEpistemicOperator)
+				.def("setBegin", &FramedTriple::setBegin)
+				.def("setEnd", &FramedTriple::setEnd)
+				.def("setConfidence", &FramedTriple::setConfidence)
+				.def("xsdType", &FramedTriple::xsdType)
+				.def("subject", pure_virtual(&FramedTriple::subject))
+				.def("predicate", pure_virtual(&FramedTriple::predicate))
+				.def("graph", pure_virtual(&FramedTriple::graph))
+				.def("agent", pure_virtual(&FramedTriple::agent))
+				.def("temporalOperator", &FramedTriple::temporalOperator)
+				.def("epistemicOperator", &FramedTriple::epistemicOperator)
+				.def("begin", &FramedTriple::begin)
+				.def("end", &FramedTriple::end)
+				.def("confidence", &FramedTriple::confidence);
+		class_<FramedTripleCopy, std::shared_ptr<FramedTripleCopy>, bases<FramedTriple>>
+				("FramedTriple", init<>())
+				.def(init<std::string_view, std::string_view, std::string_view>());
+		class_<FramedTripleView, std::shared_ptr<FramedTripleView>, bases<FramedTriple>>
+				("FramedTripleView", init<>())
+				.def(init<std::string_view, std::string_view, std::string_view>());
+		class_<FramedTriplePtr>("FramedTriplePtr", init<>())
+				.def("get", &FramedTriplePtr::get, return_value_policy<reference_existing_object>());
+	}
 }

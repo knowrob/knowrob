@@ -8,6 +8,7 @@
 #include "knowrob/reasoner/Reasoner.h"
 #include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/reasoner/ReasonerError.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -135,5 +136,119 @@ PredicateDescriptionPtr Reasoner::getLiteralDescription(const FramedTriplePatter
 		return getDescription(std::make_shared<PredicateIndicator>(p->stringForm().data(), 2));
 	} else {
 		return {};
+	}
+}
+
+namespace knowrob::py {
+	// this struct is needed because Reasoner has pure virtual methods
+	struct ReasonerWrap : public Reasoner, boost::python::wrapper<Reasoner> {
+		explicit ReasonerWrap(PyObject *p) : self(p), Reasoner() {}
+
+		void setDataBackend(const DataBackendPtr &backend) override {
+			call_method<void>(self, "setDataBackend", backend);
+		}
+
+		bool loadConfig(const ReasonerConfig &config) override {
+			return call_method<bool>(self, "loadConfig", config);
+		}
+
+		PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override {
+			return call_method<PredicateDescriptionPtr>(self, "getDescription", indicator);
+		}
+
+		TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) override {
+			return call_method<TokenBufferPtr>(self, "submitQuery", literal, ctx);
+		}
+
+		void start() override { call_method<void>(self, "start"); }
+
+		void stop() override { call_method<void>(self, "stop"); }
+
+	private:
+		PyObject *self;
+	};
+
+	struct ReasonerWithBackendWrap :
+			public ReasonerWithBackend,
+			boost::python::wrapper<ReasonerWithBackend> {
+		explicit ReasonerWithBackendWrap(PyObject *p)
+				: self(p), ReasonerWithBackend() {}
+
+		// TODO: below duplicates code of ReasonerWrap and DataBackendWrap.
+		//    I could not find a way to make it work with multiple inheritance.
+		//    It seems boost::python::extract<T> can only retrieve one type of an object,
+		//    so a workaround is needed.
+
+		bool loadConfig(const ReasonerConfig &config) override {
+			return knowrob::py::call_method<bool>(self, "loadConfig", config);
+		}
+
+		bool initializeBackend(const ReasonerConfig &config) override {
+			return knowrob::py::call_method<bool>(self, "initializeBackend", config);
+		}
+
+		bool insertOne(const FramedTriple &triple) override {
+			return knowrob::py::call_method<bool>(self, "insertOne", &triple);
+		}
+
+		bool insertAll(const semweb::TripleContainerPtr &triples) override {
+			return knowrob::py::call_method<bool>(self, "insertAll", triples);
+		}
+
+		bool removeOne(const FramedTriple &triple) override {
+			return knowrob::py::call_method<bool>(self, "removeOne", &triple);
+		}
+
+		bool removeAll(const semweb::TripleContainerPtr &triples) override {
+			return knowrob::py::call_method<bool>(self, "removeAll", triples);
+		}
+
+		bool removeAllWithOrigin(std::string_view origin) override {
+			return knowrob::py::call_method<bool>(self, "removeAllWithOrigin", origin.data());
+		}
+
+		bool removeAllMatching(const FramedTriplePatternPtr &query) override {
+			return knowrob::py::call_method<int>(self, "removeAllMatching", query);
+		}
+
+		PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override {
+			return knowrob::py::call_method<PredicateDescriptionPtr>(self, "getDescription", indicator);
+		}
+
+		TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) override {
+			return knowrob::py::call_method<TokenBufferPtr>(self, "submitQuery", literal, ctx);
+		}
+
+		void start() override { knowrob::py::call_method<void>(self, "start"); }
+
+		void stop() override { knowrob::py::call_method<void>(self, "stop"); }
+
+	private:
+		PyObject *self;
+	};
+
+	template<>
+	void createType<Reasoner>() {
+		using namespace boost::python;
+		class_<ReasonerConfig, std::shared_ptr<ReasonerConfig>>("ReasonerConfiguration", init<>())
+				.def("__iter__", range(&ReasonerConfig::begin, &ReasonerConfig::end))
+				.def("get", &ReasonerConfig::get)
+				.def("dataSources", &ReasonerConfig::dataSources, return_value_policy<copy_const_reference>());
+		class_<Reasoner, std::shared_ptr<ReasonerWrap>, bases<DataSourceHandler>, boost::noncopyable>
+				("Reasoner", init<>())
+				.def("createTriples", &ReasonerWrap::createTriples)
+				.def("pushWork", +[](Reasoner &x, object &fn) { x.pushWork(fn); })
+				.def("setInferredTriples", &ReasonerWrap::setInferredTriples)
+				.def("addInferredTriples", &ReasonerWrap::addInferredTriples)
+				.def("removeInferredTriples", &ReasonerWrap::removeInferredTriples)
+						// methods that must be implemented by reasoner plugins
+				.def("loadConfig", &ReasonerWrap::loadConfig)
+				.def("setDataBackend", &ReasonerWrap::setDataBackend)
+				.def("getDescription", &ReasonerWrap::getDescription)
+				.def("start", &ReasonerWrap::start)
+				.def("stop", &ReasonerWrap::stop)
+				.def("submitQuery", &ReasonerWrap::submitQuery);
+		class_<ReasonerWithBackend, std::shared_ptr<ReasonerWithBackendWrap>, bases<Reasoner, DataBackend>, boost::noncopyable>
+				("ReasonerWithBackend", init<>());
 	}
 }

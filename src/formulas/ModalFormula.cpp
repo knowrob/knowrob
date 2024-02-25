@@ -1,6 +1,7 @@
-//
-// Created by daniel on 12.03.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include <utility>
 
@@ -8,6 +9,7 @@
 #include "knowrob/modalities/BeliefModality.h"
 #include "knowrob/modalities/KnowledgeModality.h"
 #include "knowrob/modalities/PastModality.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -56,3 +58,16 @@ namespace knowrob::modality {
 		return std::make_shared<ModalFormula>(PastModality::H(), phi);
 	}
 } // knowrob::modality
+
+namespace knowrob::py {
+	template<>
+	void createType<ModalFormula>() {
+		using namespace boost::python;
+		class_<ModalFormula, std::shared_ptr<ModalFormula>, bases<CompoundFormula>>
+				("ModalFormula", init<const ModalOperatorPtr &, const FormulaPtr &>())
+				.def("modalOperator", &ModalFormula::modalOperator, return_value_policy<copy_const_reference>())
+				.def("modalFormula", &ModalFormula::modalFormula, return_value_policy<copy_const_reference>())
+				.def("isModalPossibility", &ModalFormula::isModalPossibility)
+				.def("isModalNecessity", &ModalFormula::isModalNecessity);
+	}
+}

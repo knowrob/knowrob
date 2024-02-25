@@ -8,6 +8,7 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <gtest/gtest.h>
+#include "knowrob/py/utils.h"
 
 #include "knowrob/db/DataSource.h"
 
@@ -80,12 +81,26 @@ bool DataSource::isVersionString(const std::string &versionString) {
 	return (first == last && r);
 }
 
+namespace knowrob::py {
+	template<>
+	void createType<DataSource>() {
+		using namespace boost::python;
+		class_<DataSource, std::shared_ptr<DataSource>>
+				("DataSource", no_init)
+				.def("format", &DataSource::format, return_value_policy<copy_const_reference>())
+				.def("uri", &DataSource::uri, return_value_policy<copy_const_reference>())
+				.def("path", &DataSource::path, return_value_policy<copy_const_reference>())
+				.def("version", &DataSource::version)
+				.def("name", &DataSource::name);
+	}
+}
+
 
 // fixture class for testing
 class DataSourceTest : public ::testing::Test {
 protected:
-    void SetUp() override {}
-    // void TearDown() override {}
+	void SetUp() override {}
+	// void TearDown() override {}
 };
 
 TEST_F(DataSourceTest, IsGraphVersionString) {

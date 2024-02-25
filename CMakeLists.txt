@@ -301,7 +301,13 @@ add_library(knowrob SHARED
         src/terms/IRIAtom.cpp
         src/terms/Blank.cpp
         src/terms/RDFNode.cpp
-        src/semweb/Resource.cpp)
+        src/semweb/Resource.cpp
+        src/terms/Numeric.cpp
+        src/terms/String.cpp
+        src/db/DataBackend.cpp
+        src/queries/QueryContext.cpp
+        src/modalities/Modality.cpp
+        src/semweb/TripleContainer.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}
@@ -418,6 +424,7 @@ add_executable(all_gtests
 		src/neems/test.cpp
 		tests/KnowledgeBaseTest.cpp
 		tests/py/test-module.cpp)
+add_dependencies(all_gtests knowrob_py)
 target_link_libraries(all_gtests
 		-Wl,--whole-archive,--no-as-needed
 		knowrob

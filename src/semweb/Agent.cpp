@@ -1,8 +1,10 @@
-//
-// Created by daniel on 23.01.24.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include "knowrob/semweb/Agent.h"
+#include "knowrob/py/utils.h"
 
 #define AGENT_EGO_IDENTIFIER "self"
 
@@ -11,12 +13,11 @@ using namespace knowrob;
 std::map<std::string_view, std::shared_ptr<Agent>> Agent::agentMap_ = std::map<std::string_view, std::shared_ptr<Agent>>();
 
 Agent::Agent(const std::string_view &iri)
-: semweb::Resource(iri) {}
+		: semweb::Resource(iri) {}
 
-std::shared_ptr<Agent> Agent::getEgo()
-{
+std::shared_ptr<Agent> Agent::getEgo() {
 	static std::shared_ptr<Agent> ego;
-	if(ego == nullptr) {
+	if (ego == nullptr) {
 		ego = std::make_shared<Agent>(AGENT_EGO_IDENTIFIER);
 		agentMap_[AGENT_EGO_IDENTIFIER] = ego;
 		// TODO: also handle a proper agent IRI here. but currently there is no mechanism to tell the KB
@@ -26,15 +27,24 @@ std::shared_ptr<Agent> Agent::getEgo()
 	return ego;
 }
 
-std::shared_ptr<Agent> Agent::get(const std::string_view &iri)
-{
+std::shared_ptr<Agent> Agent::get(const std::string_view &iri) {
 	auto it = agentMap_.find(iri);
-	if(it == agentMap_.end()) {
+	if (it == agentMap_.end()) {
 		auto agent = std::make_shared<Agent>(iri);
 		agentMap_[iri] = agent;
 		return agent;
-	}
-	else {
+	} else {
 		return it->second;
+	}
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<Agent>() {
+		using namespace boost::python;
+		class_<Agent, std::shared_ptr<Agent>>("Agent", no_init)
+				.def("iri", &Agent::iri)
+				.def("getEgo", &Agent::getEgo)
+				.def("get", &Agent::get);
 	}
 }

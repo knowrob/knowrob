@@ -1,13 +1,11 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
 
 #include <gtest/gtest.h>
 #include "knowrob/formulas/Bottom.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -26,6 +24,16 @@ void Bottom::write(std::ostream &os) const {
 
 bool Bottom::isEqual(const Formula &other) const {
 	return true; // isEqual is only called if other also has type "Bottom"
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<Bottom>() {
+		using namespace boost::python;
+		class_<Bottom, std::shared_ptr<Bottom>, bases<Predicate>>
+				("Bottom", no_init)
+				.def("get", &Bottom::get, return_value_policy<copy_const_reference>());
+	}
 }
 
 TEST(bottom_term, isGround) {

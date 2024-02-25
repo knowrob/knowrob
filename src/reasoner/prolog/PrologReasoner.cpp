@@ -230,7 +230,7 @@ TokenBufferPtr PrologReasoner::submitQuery(const FramedTriplePatternPtr &literal
 	auto runner = std::make_shared<ThreadPool::LambdaRunner>(
 			[&](const ThreadPool::LambdaRunner::StopChecker &hasStopRequest) {
 				PrologTerm queryFrame, answerFrame;
-				putQueryFrame(queryFrame, ctx->selector_);
+				putQueryFrame(queryFrame, ctx->selector);
 
 				PrologTerm rdfGoal(*literal);
 				// :- ContextTerm = [query_scope(...), solution_scope(Variable)]
@@ -249,7 +249,7 @@ TokenBufferPtr PrologReasoner::submitQuery(const FramedTriplePatternPtr &literal
 				while (!hasStopRequest() && queryGoal.nextSolution(qid)) {
 					outputChannel->push(yes(literal, rdfGoal, answerFrame));
 					hasSolution = true;
-					if (ctx->queryFlags_ & QUERY_FLAG_ONE_SOLUTION) break;
+					if (ctx->queryFlags & QUERY_FLAG_ONE_SOLUTION) break;
 				}
 				PL_close_query(qid);
 				if (!hasSolution) outputChannel->push(no(literal));

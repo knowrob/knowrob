@@ -405,7 +405,7 @@ void KnowledgeBase::createComputationPipeline(
 		// The filter is applied here to remove redundancies early on directly after IDB and EDB
 		// results are combined.
 		// --------------------------------------
-		if (ctx->queryFlags_ & QUERY_FLAG_UNIQUE_SOLUTIONS) {
+		if (ctx->queryFlags & QUERY_FLAG_UNIQUE_SOLUTIONS) {
 			auto filterStage = std::make_shared<RedundantAnswerFilter>();
 			stepOutput >> filterStage;
 			lastOut = filterStage;
@@ -562,7 +562,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 TokenBufferPtr KnowledgeBase::submitQuery(const FirstOrderLiteralPtr &literal, const QueryContextPtr &ctx) {
 	auto rdfLiteral = std::make_shared<FramedTriplePattern>(
 			literal->predicate(), literal->isNegated());
-	rdfLiteral->setTripleFrame(ctx->selector_);
+	rdfLiteral->setTripleFrame(ctx->selector);
 	return submitQuery(std::make_shared<ConjunctiveQuery>(
 			ConjunctiveQuery({rdfLiteral}, ctx)));
 }
@@ -588,7 +588,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 				case FormulaType::PREDICATE: {
 					auto pat = std::make_shared<FramedTriplePattern>(
 							std::static_pointer_cast<Predicate>(node), false);
-					pat->setTripleFrame(ctx->selector_);
+					pat->setTripleFrame(ctx->selector);
 					posLiterals.push_back(pat);
 					break;
 				}
@@ -604,7 +604,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 						case FormulaType::PREDICATE: {
 							auto pat = std::make_shared<FramedTriplePattern>(
 									std::static_pointer_cast<Predicate>(negated), true);
-							pat->setTripleFrame(ctx->selector_);
+							pat->setTripleFrame(ctx->selector);
 							negLiterals.push_back(pat);
 							break;
 						}

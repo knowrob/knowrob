@@ -1,12 +1,10 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
 
 #include <knowrob/formulas/Disjunction.h>
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -76,5 +74,14 @@ namespace knowrob {
 		} else {
 			return std::make_shared<Disjunction>(std::vector<FormulaPtr>({phi, psi}));
 		}
+	}
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<Disjunction>() {
+		using namespace boost::python;
+		class_<Disjunction, std::shared_ptr<Disjunction>, bases<CompoundFormula>>
+				("Disjunction", init<const std::vector<FormulaPtr> &>());
 	}
 }

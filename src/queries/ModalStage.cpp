@@ -33,7 +33,7 @@ ModalStage::ModalStage(
 			// that runs the knowledge base and its information about the other agents.
 			auto *em = (EpistemicModality *) &modalOperator->modality();
 
-			if (ctx->selector_.agent.has_value() && ctx->selector_.agent.value() != Agent::getEgo()) {
+			if (ctx->selector.agent.has_value() && ctx->selector.agent.value() != Agent::getEgo()) {
 				// For now higher-level epistemic states are not allowed in queries,
 				// e.g. `B_a1(B_a2(x))` where `a1` is not the agent that runs the knowledge base is an example
 				// of such a higher-order query which is not allowed.
@@ -42,24 +42,24 @@ ModalStage::ModalStage(
 								 *modalFormula_);
 			}
 
-			modalContext->selector_.epistemicOperator = modalOperator->isModalNecessity() ?
-														EpistemicOperator::KNOWLEDGE :
-														EpistemicOperator::BELIEF;
+			modalContext->selector.epistemicOperator = modalOperator->isModalNecessity() ?
+													   EpistemicOperator::KNOWLEDGE :
+													   EpistemicOperator::BELIEF;
 			// TODO: handle confidence parameter of modality operator
-			modalContext->selector_.confidence = std::nullopt;
+			modalContext->selector.confidence = std::nullopt;
 			if (em->agent().has_value()) {
-				modalContext->selector_.agent = em->agent();
+				modalContext->selector.agent = em->agent();
 			} else {
-				modalContext->selector_.agent = std::nullopt;
+				modalContext->selector.agent = std::nullopt;
 			}
 		}
 
 		case ModalityType::Temporal_Past: {
 			auto *pm = (PastModality *) &modalOperator->modality();
 
-			modalContext->selector_.temporalOperator = modalOperator->isModalNecessity() ?
-													   TemporalOperator::ALWAYS :
-													   TemporalOperator::SOMETIMES;
+			modalContext->selector.temporalOperator = modalOperator->isModalNecessity() ?
+													  TemporalOperator::ALWAYS :
+													  TemporalOperator::SOMETIMES;
 
 			// TODO: any special treatment for time interval in nested context?
 			//		e.g. P(x & P(y)) could only be restricted in evaluation below not here.
@@ -67,13 +67,13 @@ ModalStage::ModalStage(
 			if (ti.has_value()) {
 				auto &since = ti->since();
 				auto &until = ti->until();
-				if (since.has_value()) modalContext->selector_.begin = since.value().value();
-				else modalContext->selector_.begin = std::nullopt;
-				if (until.has_value()) modalContext->selector_.end = until.value().value();
-				else modalContext->selector_.end = std::nullopt;
+				if (since.has_value()) modalContext->selector.begin = since.value().value();
+				else modalContext->selector.begin = std::nullopt;
+				if (until.has_value()) modalContext->selector.end = until.value().value();
+				else modalContext->selector.end = std::nullopt;
 			} else {
-				modalContext->selector_.begin = std::nullopt;
-				modalContext->selector_.end = std::nullopt;
+				modalContext->selector.begin = std::nullopt;
+				modalContext->selector.end = std::nullopt;
 			}
 		}
 	}

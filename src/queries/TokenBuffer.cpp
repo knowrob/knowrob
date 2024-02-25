@@ -1,10 +1,12 @@
-//
-// Created by daniel on 31.03.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include "knowrob/queries/TokenBuffer.h"
 #include "knowrob/queries/TokenQueue.h"
 #include "knowrob/Logger.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -34,5 +36,16 @@ void TokenBuffer::push(const TokenPtr &tok) {
 		buffer_.push_back(tok);
 	} else {
 		TokenBroadcaster::push(tok);
+	}
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<TokenBuffer>() {
+		using namespace boost::python;
+		class_<TokenBuffer, std::shared_ptr<TokenBuffer>, bases<TokenBroadcaster>, boost::noncopyable>
+				("TokenBuffer", init<>())
+				.def("stopBuffering", &TokenBuffer::stopBuffering)
+				.def("createQueue", &TokenBuffer::createQueue);
 	}
 }

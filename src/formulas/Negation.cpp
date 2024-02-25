@@ -1,11 +1,13 @@
-//
-// Created by daniel on 21.03.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include "knowrob/formulas/Negation.h"
 #include "knowrob/formulas/Predicate.h"
 #include "knowrob/formulas/Top.h"
 #include "knowrob/formulas/Bottom.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -29,5 +31,15 @@ namespace knowrob {
 		} else {
 			return std::make_shared<Negation>(phi);
 		}
+	}
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<Negation>() {
+		using namespace boost::python;
+		class_<Negation, std::shared_ptr<Negation>, bases<CompoundFormula>>
+				("Negation", init<const FormulaPtr &>())
+				.def("negatedFormula", &Negation::negatedFormula, return_value_policy<copy_const_reference>());
 	}
 }

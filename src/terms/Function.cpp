@@ -4,9 +4,9 @@
  */
 
 #include <utility>
-
 #include "knowrob/terms/Function.h"
 #include "knowrob/knowrob.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -61,5 +61,17 @@ void Function::write(std::ostream &os) const {
 			}
 		}
 		os << ')';
+	}
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<Function>() {
+		using namespace boost::python;
+		class_<Function, std::shared_ptr<Function>, bases<Term>>
+				("Function", init<std::string_view, const std::vector<TermPtr> &>())
+				.def(init<const AtomPtr &, const std::vector<TermPtr> &>())
+				.def("functor", &Function::functor, return_value_policy<copy_const_reference>())
+				.def("arguments", &Function::arguments, return_value_policy<copy_const_reference>());
 	}
 }

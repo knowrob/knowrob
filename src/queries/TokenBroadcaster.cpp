@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -11,6 +8,7 @@
 #include "knowrob/queries/TokenQueue.h"
 #include "knowrob/Logger.h"
 #include "knowrob/queries/AnswerYes.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -51,6 +49,16 @@ namespace knowrob {
 	}
 }
 
+namespace knowrob::py {
+	template<>
+	void createType<TokenBroadcaster>() {
+		using namespace boost::python;
+		class_<TokenBroadcaster, std::shared_ptr<TokenBroadcaster>, bases<TokenStream>, boost::noncopyable>
+				("TokenBroadcaster", init<>())
+				.def("addSubscriber", &TokenBroadcaster::addSubscriber)
+				.def("removeSubscriber", &TokenBroadcaster::removeSubscriber);
+	}
+}
 
 // fixture class for testing
 class AnswerBroadcasterTest : public ::testing::Test {

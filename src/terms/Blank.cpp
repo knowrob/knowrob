@@ -5,6 +5,7 @@
 
 #include <optional>
 #include "knowrob/terms/Blank.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -28,4 +29,13 @@ std::shared_ptr<knowrob::Blank> Blank::Tabled(std::string_view name) {
 		throw std::runtime_error("Failed to lock Blank");
 	}
 	return std::static_pointer_cast<Blank>(locked);
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<Blank>() {
+		using namespace boost::python;
+		class_<Blank, std::shared_ptr<Blank>, bases<Atom, RDFNode>>
+				("Blank", init<std::string_view>());
+	}
 }

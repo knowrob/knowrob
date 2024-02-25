@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 #include "knowrob/terms/ListTerm.h"
 #include "knowrob/terms/String.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -37,6 +38,18 @@ void ListTerm::write(std::ostream &os) const {
 		}
 	}
 	os << ']';
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<ListTerm>() {
+		using namespace boost::python;
+		class_<ListTerm, std::shared_ptr<ListTerm>, bases<Function>>
+				("ListTerm", init<const std::vector<TermPtr> &>())
+				.def("__iter__", range(&ListTerm::begin, &ListTerm::end))
+				.def("isNIL", &ListTerm::isNIL)
+				.def("elements", &ListTerm::elements, return_value_policy<copy_const_reference>());
+	}
 }
 
 /******************************************/

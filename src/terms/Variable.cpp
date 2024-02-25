@@ -6,6 +6,7 @@
 #include <utility>
 #include <gtest/gtest.h>
 #include "knowrob/terms/Variable.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -25,4 +26,15 @@ bool Variable::operator<(const Variable &other) const {
 
 void Variable::write(std::ostream &os) const {
 	os << name_;
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<Variable>() {
+		using namespace boost::python;
+		class_<Variable, std::shared_ptr<Variable>, bases<Term>>
+				("Variable", init<std::string>())
+				.def(self < self)
+				.def("name", &Variable::name);
+	}
 }

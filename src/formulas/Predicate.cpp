@@ -5,6 +5,7 @@
 
 #include "knowrob/formulas/Predicate.h"
 #include "knowrob/terms/Function.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -84,6 +85,18 @@ FunctionPtr Predicate::toFunction(const std::shared_ptr<Predicate> &predicate) {
 
 std::shared_ptr<Predicate> Predicate::fromFunction(const FunctionPtr &fn) {
 	return std::make_shared<Predicate>(fn->functor(), fn->arguments());
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<Predicate>() {
+		using namespace boost::python;
+		class_<Predicate, std::shared_ptr<Predicate>, bases<Formula>>
+				("Predicate", init<std::string_view, const std::vector<TermPtr> &>())
+				.def(init<const AtomPtr &, const std::vector<TermPtr> &>())
+				.def("arguments", &Predicate::arguments, return_value_policy<copy_const_reference>())
+				.def("functor", &Predicate::functor, return_value_policy<copy_const_reference>());
+	}
 }
 
 namespace std {

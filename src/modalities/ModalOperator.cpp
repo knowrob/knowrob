@@ -1,10 +1,12 @@
-//
-// Created by daniel on 22.03.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include "knowrob/modalities/ModalOperator.h"
 #include "knowrob/modalities/Modality.h"
 #include "knowrob/Logger.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -116,5 +118,30 @@ void ModalIteration::operator+=(const ModalOperatorPtr &next) //NOLINT
 		} else {
 			modalitySequence_.push_back(next);
 		}
+	}
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<ModalOperator>() {
+		using namespace boost::python;
+		enum_<ModalOperatorType>("ModalOperatorType")
+				.value("NECESSITY", ModalOperatorType::NECESSITY)
+				.value("POSSIBILITY", ModalOperatorType::POSSIBILITY);
+		class_<ModalOperator, std::shared_ptr<ModalOperator>>
+				("ModalOperator", init<const std::shared_ptr<Modality> &, ModalOperatorType>())
+				.def("modality", &ModalOperator::modality, return_value_policy<copy_const_reference>())
+				.def("isModalNecessity", &ModalOperator::isModalNecessity)
+				.def("isModalPossibility", &ModalOperator::isModalPossibility)
+				.def("operatorType", &ModalOperator::operatorType)
+				.def("isTransitive", &ModalOperator::isTransitive)
+				.def("isEuclidean", &ModalOperator::isEuclidean)
+				.def("symbol", &ModalOperator::symbol);
+		class_<ModalIteration, std::shared_ptr<ModalIteration>>
+				("ModalIteration", init<>())
+				.def("__eq__", &ModalIteration::operator==)
+				.def("__iter__", range(&ModalIteration::begin, &ModalIteration::end))
+				.def("numOperators", &ModalIteration::numOperators)
+				.def("emptyIteration", &ModalIteration::emptyIteration, return_value_policy<copy_const_reference>());
 	}
 }

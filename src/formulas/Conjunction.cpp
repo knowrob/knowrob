@@ -1,13 +1,11 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
 
 #include <iostream>
 #include <knowrob/formulas/Conjunction.h>
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -54,5 +52,14 @@ namespace knowrob {
 		} else {
 			return std::make_shared<Conjunction>(std::vector<FormulaPtr>({phi, psi}));
 		}
+	}
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<Conjunction>() {
+		using namespace boost::python;
+		class_<Conjunction, std::shared_ptr<Conjunction>, bases<CompoundFormula>>
+				("Conjunction", init<const std::vector<FormulaPtr> &>());
 	}
 }

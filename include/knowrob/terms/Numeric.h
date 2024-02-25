@@ -73,7 +73,7 @@ namespace knowrob {
 		/**
 		 * @return true if the numeric is a floating number
 		 */
-		bool isFloatingNumber() const { return xsdType() == XSDType::FLOAT || xsdType() == XSDType::DOUBLE; }
+		bool isFloatingNumber() const;
 
 		// override Atomic
 		AtomicType atomicType() const final { return AtomicType::NUMERIC; }

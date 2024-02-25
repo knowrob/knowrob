@@ -1,13 +1,11 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
 
 #include "knowrob/formulas/PredicateDescription.h"
 #include "knowrob/terms/Atomic.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -27,5 +25,20 @@ namespace knowrob {
 		else if (type_string == "idb_relation") return PredicateType::IDB_RELATION;
 		else if (type_string == "edb_relation") return PredicateType::EDB_RELATION;
 		else return PredicateType::BUILT_IN;
+	}
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<PredicateDescription>() {
+		using namespace boost::python;
+		class_<PredicateDescription, std::shared_ptr<PredicateDescription>>
+				("PredicateDescription", init<
+						const std::shared_ptr<PredicateIndicator> &,
+						PredicateType,
+						MaterializationStrategy>())
+				.def("indicator", &PredicateDescription::indicator, return_value_policy<copy_const_reference>())
+				.def("type", &PredicateDescription::type)
+				.def("materializationStrategy", &PredicateDescription::materializationStrategy);
 	}
 }
