@@ -9,6 +9,8 @@
 // KnowRob
 #include <knowrob/Logger.h>
 #include <knowrob/ThreadPool.h>
+#include <boost/python/errors.hpp>
+#include "knowrob/py/PythonError.h"
 
 using namespace knowrob;
 
@@ -167,12 +169,23 @@ void ThreadPool::Runner::runInternal() {
 	try {
 		run();
 	}
+	catch (const boost::python::error_already_set&) {
+		PythonError py_error;
+		if (exceptionHandler_) {
+			exceptionHandler_(py_error);
+		} else {
+			KB_WARN("Worker error in Python code: {}.", py_error.what());
+		}
+	}
 	catch (const std::exception &e) {
 		if (exceptionHandler_) {
 			exceptionHandler_(e);
 		} else {
 			KB_WARN("Worker error: {}.", e.what());
 		}
+	}
+	catch (...) {
+		KB_WARN("Unknown worker error.");
 	}
 	// toggle flag
 	isTerminated_ = true;

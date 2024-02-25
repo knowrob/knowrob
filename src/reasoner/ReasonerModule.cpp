@@ -28,12 +28,9 @@ std::string ReasonerModule::resolveModulePath(std::string_view modulePath)
 
 bool ReasonerModule::isLoaded()
 {
-	try {
+	py::call<bool>([&]{
 		return pyReasonerType_ && !pyReasonerType_.is_none();
-	}
-	catch(const python::error_already_set&){
-		knowrob::py::handlePythonError();
-	}
+	});
 	return false;
 }
 
@@ -56,7 +53,7 @@ bool ReasonerModule::loadModule()
 
 	try {
 		// make sure that the module directory is only added once
-		if(moduleDirectories_.count(moduleDir)==0) {
+		if (moduleDirectories_.count(moduleDir) == 0) {
 			moduleDirectories_.insert(moduleDir);
 			// >>> sys.path.append(moduleDir)
 			auto py_sys = python::import("sys");
@@ -71,16 +68,15 @@ bool ReasonerModule::loadModule()
 			return false;
 		}
 		pyReasonerType_ = pyModule_.attr(reasonerType_.c_str());
-	}
-	catch(const python::error_already_set&){
-		knowrob::py::handlePythonError();
+	} catch (const boost::python::error_already_set&) {
+		throw PythonError();
 	}
 	return isLoaded();
 }
 
 std::shared_ptr<Reasoner> ReasonerModule::createReasoner(const std::string &reasonerID)
 {
-	try{
+	try {
 		// create a reasoner object
 		// TODO: for some reason it does not fly below if the Python reasoner has
 		//   both Reasoner and DataBackend as base classes. Hence, the introduction of ReasonerWithBackend
@@ -96,9 +92,8 @@ std::shared_ptr<Reasoner> ReasonerModule::createReasoner(const std::string &reas
 		} else {
 			KB_ERROR("Failed to extract typed reasoner from module '{}'", modulePath_.c_str());
 		}
-	}
-	catch(const python::error_already_set&){
-		knowrob::py::handlePythonError();
+	} catch (const boost::python::error_already_set&) {
+		throw PythonError();
 	}
 	KB_ERROR("Failed to create reasoner from module '{}'", modulePath_.c_str());
 	return {};

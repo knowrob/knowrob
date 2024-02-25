@@ -7,16 +7,27 @@
 #define KNOWROB_PY_UTILS_H
 
 #include <boost/python.hpp>
+#include "PythonError.h"
 
 namespace knowrob::py {
-	void handlePythonError();
-
 	// call a method of a python object
 	template<typename R, typename... Args> R call_method(PyObject *self, const char *method, Args... args) {
 		try {
 			return boost::python::call_method<R>(self, method, boost::python::object(args)...);
-		} catch (const boost::python::error_already_set&) {
-			knowrob::py::handlePythonError();
+		} catch(const boost::python::error_already_set&) {
+			throw PythonError();
+		}
+	}
+
+	/**
+	 * Call a function and translate boost::python::error_already_set exceptions into PythonError.
+	 * @param goal the function to call.
+	 */
+	template<typename R> R call(const std::function<R()>& goal) {
+		try {
+			return goal();
+		} catch(const boost::python::error_already_set&) {
+			throw PythonError();
 		}
 	}
 

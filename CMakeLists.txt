@@ -307,7 +307,9 @@ add_library(knowrob SHARED
         src/db/DataBackend.cpp
         src/queries/QueryContext.cpp
         src/modalities/Modality.cpp
-        src/semweb/TripleContainer.cpp)
+        src/semweb/TripleContainer.cpp
+        src/KnowRobError.cpp
+        src/py/PythonError.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

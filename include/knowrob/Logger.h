@@ -114,6 +114,13 @@ namespace knowrob {
 		 */
 		static void setSinkPattern(SinkType sinkType, const std::string &pattern);
 
+		/**
+		 * @param name the name of a component.
+		 * @param type the type of action that failed.
+		 * @return a formatted error message.
+		 */
+		static std::string formatGenericFailure(const std::string &name, const std::string &type);
+
 	protected:
 		// hide implementation details
 		struct impl;
@@ -126,5 +133,20 @@ namespace knowrob {
 		static Logger& get();
 	};
 }
+
+/**
+ * Catch any exception that `goal` may throw and log it as an error.
+ */
+#define KB_LOGGED_TRY_CATCH(name, type, goal) do { \
+	try { goal } \
+	catch (const boost::python::error_already_set&) \
+	{ LOG_KNOWROB_ERROR(PythonError(), Logger::formatGenericFailure(name,type)); } \
+	catch (KnowRobError &e) \
+	{ LOG_KNOWROB_ERROR(e, Logger::formatGenericFailure(name,type)); } \
+	catch (std::exception &e) \
+	{ KB_ERROR("{}: {}", Logger::formatGenericFailure(name,type), e.what()); } \
+	catch (...) \
+	{ KB_ERROR("{}: unknown failure.", Logger::formatGenericFailure(name,type)); }  \
+} while(0)
 
 #endif //KNOWROB_LOGGING_H_

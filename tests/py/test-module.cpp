@@ -1,9 +1,12 @@
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include <gtest/gtest.h>
 #include <boost/python/import.hpp>
 #include <knowrob/terms/Atom.h>
 #include <boost/python/extract.hpp>
-#include <boost/python/tuple.hpp>
 #include "knowrob/Logger.h"
 #include "knowrob/py/utils.h"
 #include "knowrob/terms/String.h"
@@ -21,115 +24,52 @@ protected:
 	// Per-test-suite set-up.
 	static void SetUpTestSuite() {
 		try {
-			// make sure the knowrob module is loaded, without it conversion of types won't work.
-			knowrob_module = python::import("knowrob");
-			test_module = python::import("tests.py.test_boost_python");
-		} catch (const python::error_already_set&) {
-			knowrob::py::handlePythonError();
+			py::call<void>([&] {
+				// make sure the knowrob module is loaded, without it conversion of types won't work.
+				knowrob_module = python::import("knowrob");
+				test_module = python::import("tests.py.test_boost_python");
+			});
+		} catch (const std::exception& e) {
+			KB_ERROR("Failed to set up test suite. {}", e.what());
 		}
 	}
 
-	static python::object call(std::string_view method_name, const python::object& args...) {
+	static python::object do_call(std::string_view file, uint32_t line, std::string_view method_name, const std::function<python::object(python::object&)> &gn) {
 		EXPECT_FALSE(test_module.is_none());
-		if (test_module.is_none()) { return python::tuple(); }
+		if (test_module.is_none()) { return {}; }
 
 		python::object fn = test_module.attr(method_name.data());
 		EXPECT_FALSE(fn.is_none());
-		if (fn.is_none()) { return python::tuple(); }
+		if (fn.is_none()) { return {}; }
 
 		try {
-			return fn(args);
-		} catch (const boost::python::error_already_set&) {
-			handle_exception(method_name);
+			return py::call<python::object>([&] { return gn(fn); });
+		} catch (const PythonError &err) {
+			GTEST_MESSAGE_AT_(file.data(), line, method_name.data(), testing::TestPartResult::kNonFatalFailure) << err.what();
 		}
-		return python::tuple();
+		return {};
 	}
 
-	static python::object call(std::string_view method_name) {
-		EXPECT_FALSE(test_module.is_none());
-		if (test_module.is_none()) { return python::tuple(); }
-
-		python::object fn = test_module.attr(method_name.data());
-		EXPECT_FALSE(fn.is_none());
-		if (fn.is_none()) { return python::tuple(); }
-
-		try {
-			return fn();
-		} catch (const boost::python::error_already_set&) {
-			handle_exception(method_name);
-		}
-		return python::tuple();
+	static python::object call(std::string_view file, uint32_t line, std::string_view method_name, const python::object& args...) {
+		return do_call(
+			file, line, method_name,
+			[&](python::object &fn) { return fn(args); });
 	}
 
-	static void handle_exception(std::string_view method_name) {
-			PyObject *ptype, *pvalue, *ptraceback;
-			PyErr_Fetch(&ptype, &pvalue, &ptraceback);
-			PyErr_NormalizeException(&ptype, &pvalue, &ptraceback);
-			python::handle<> hType(ptype);
-			python::object extype(hType);
-			python::handle<> hTraceback(ptraceback);
-			python::object traceback(hTraceback);
-
-			long line_number = -1;
-			if (traceback) {
-				auto e_line_number = python::extract<long>(traceback.attr("tb_lineno"));
-				if (e_line_number.check()) {
-					line_number = e_line_number;
-				}
-			}
-			if (line_number == -1) {
-				KB_WARN("Failed to extract line number from Python exception");
-				line_number = 0;
-			}
-
-			std::string file_path;
-			if (traceback) {
-				auto e_file_path = python::extract<std::string>(traceback.
-						attr("tb_frame").
-						attr("f_code").
-						attr("co_filename"));
-				if(e_file_path.check()) file_path = e_file_path;
-			}
-			if (file_path.empty()) {
-				KB_WARN("Failed to extract file path from Python exception");
-				file_path = ".";
-			}
-
-			std::string error_message;
-			if (pvalue) {
-				auto e_error_message = python::extract<std::string>(pvalue);
-				if(e_error_message.check()) {
-					// try to extract directly encoded message first
-					error_message = e_error_message;
-				} else {
-					// try to extract message from handle, e.g. AssertionError
-					boost::python::handle<> phandle(pvalue);
-					python::object py_obj(phandle);
-					python::object py_obj_args = py_obj.attr("args");
-					if (len(py_obj_args) > 0) {
-						auto e_message = python::extract<std::string>(
-									py_obj_args.attr("__getitem__")(0));
-						if(e_message.check()) error_message = e_message;
-					}
-				}
-			}
-			if (error_message.empty()) {
-				error_message = "Unknown error";
-			}
-
-			GTEST_MESSAGE_AT_(file_path.c_str(),
-			                  line_number,
-			                  method_name.data(),
-			                  testing::TestPartResult::kNonFatalFailure) <<
-			                  error_message.c_str();
+	static python::object call(std::string_view file, uint32_t line, std::string_view method_name) {
+		return do_call(
+			file, line, method_name,
+			[&](python::object &fn) { return fn(); });
 	}
 };
 
 python::object BoostPythonTests::test_module;
 python::object BoostPythonTests::knowrob_module;
 
-#define EXPECT_CONVERTIBLE_TO_PY(x) \
-	EXPECT_NO_THROW(EXPECT_FALSE(boost::python::object(x).is_none()))
+#define EXPECT_CONVERTIBLE_TO_PY(x) EXPECT_NO_THROW( EXPECT_FALSE( \
+	py::call<bool>([&]{ return boost::python::object(x).is_none(); })))
+#define BOOST_TEST_CALL0(method_name, ...) call(__FILE__, __LINE__, method_name, __VA_ARGS__)
+#define BOOST_TEST_CALL1(method_name) call(__FILE__, __LINE__, method_name)
 
 TEST_F(BoostPythonTests, atom_to_python) {
 	// test that we can create a term in C++ and pass it to Python.
@@ -138,12 +78,12 @@ TEST_F(BoostPythonTests, atom_to_python) {
 	EXPECT_CONVERTIBLE_TO_PY(atom);
 	EXPECT_CONVERTIBLE_TO_PY(*atom);
 	// pass atom into Python code and inspect it there
-	EXPECT_NO_THROW(call("atom_to_python", python::object(atom)));
-	EXPECT_NO_THROW(call("atom_to_python", python::object(*atom)));
+	EXPECT_NO_THROW(BOOST_TEST_CALL0("atom_to_python", python::object(atom)));
+	EXPECT_NO_THROW(BOOST_TEST_CALL0("atom_to_python", python::object(*atom)));
 }
 
 TEST_F(BoostPythonTests, string_copy_from_python) {
-	python::object s = call("string_copy_from_python");
+	python::object s = BOOST_TEST_CALL1("string_copy_from_python");
 	EXPECT_FALSE(boost::python::object(s).is_none());
 	auto extracted = boost::python::extract<String>(s);
 	EXPECT_TRUE(extracted.check());
@@ -161,7 +101,7 @@ TEST_F(BoostPythonTests, modify_triple_in_python) {
 	auto triple = std::make_shared<FramedTripleCopy>(
 			"hello", "knows", "world");
 	// pass triple into Python code and modify it there
-	EXPECT_NO_THROW(call("modify_triple_in_python", python::object(triple)));
+	EXPECT_NO_THROW(BOOST_TEST_CALL0("modify_triple_in_python", python::object(triple)));
 	EXPECT_EQ(triple->subject(), "olleh");
 	EXPECT_EQ(triple->predicate(), "swonk");
 }
@@ -170,12 +110,12 @@ TEST_F(BoostPythonTests, optionals) {
 	std::optional<std::string_view> opt_str_view;
 	std::optional<XSDType> opt_xsd_type;
 	std::optional<double> opt_double;
-	EXPECT_NO_THROW(call("optional_is_none", python::object(opt_str_view)));
-	EXPECT_NO_THROW(call("optional_is_none", python::object(opt_xsd_type)));
-	EXPECT_NO_THROW(call("optional_is_none", python::object(opt_double)));
+	EXPECT_NO_THROW(BOOST_TEST_CALL0("optional_is_none", python::object(opt_str_view)));
+	EXPECT_NO_THROW(BOOST_TEST_CALL0("optional_is_none", python::object(opt_xsd_type)));
+	EXPECT_NO_THROW(BOOST_TEST_CALL0("optional_is_none", python::object(opt_double)));
 	opt_xsd_type = XSDType::STRING;
-	EXPECT_NO_THROW(call("optional_is_not_none", python::object(opt_xsd_type)));
-	EXPECT_NO_THROW(call("set_xsd_optional", python::object(opt_xsd_type)));
+	EXPECT_NO_THROW(BOOST_TEST_CALL0("optional_is_not_none", python::object(opt_xsd_type)));
+	EXPECT_NO_THROW(BOOST_TEST_CALL0("set_xsd_optional", python::object(opt_xsd_type)));
 	// value is copied, so the original value should not change
 	EXPECT_EQ(opt_xsd_type, XSDType::STRING);
 }

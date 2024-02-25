@@ -6,12 +6,13 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+#include <boost/python.hpp>
 #include <knowrob/knowrob.h>
 #include <knowrob/Logger.h>
-#include <Python.h>
 #include <filesystem>
 #include <iostream>
 #include <locale>
+#include "knowrob/py/PythonError.h"
 
 namespace knowrob {
 	// stores the name of the executable as provided in argv[0]

@@ -140,6 +140,7 @@ void QueryStage::push(const TokenPtr &tok) {
 			if (!selfRef) return;
 
 			// submit a query
+			// TODO: catch exceptions, also the python one
 			auto graphQueryStream = submitQuery(*positiveAnswer->substitution());
 
 			// combine graph query answer with partialResult.

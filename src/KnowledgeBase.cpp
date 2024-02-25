@@ -36,6 +36,8 @@
 #include "knowrob/db/DataTransaction.h"
 #include "knowrob/semweb/OntologyLanguage.h"
 #include "knowrob/db/OntologyParser.h"
+#include "knowrob/KnowRobError.h"
+#include "knowrob/py/PythonError.h"
 
 #define KB_DEFAULT_TRIPLE_BATCH_SIZE 1000
 
@@ -105,18 +107,20 @@ const std::map<std::string, std::shared_ptr<DefinedReasoner>, std::less<>> &Know
 
 void KnowledgeBase::startReasoner() {
 	for (auto &pair: reasonerManager_->reasonerPool()) {
-		try {
+		// TODO: it would be better to remove reasoner and backends if they throw an exception.
+		//       but doing this for e.g. query evaluation is more difficult where exception occur in a worker thread
+		//       as part of a complex query evaluation pipeline.
+		KB_LOGGED_TRY_CATCH(pair.first, "start", {
 			pair.second->reasoner()->start();
-		}
-		catch (std::exception &e) {
-			KB_ERROR("failed to start reasoner '{}': {}", pair.first, e.what());
-		}
+		});
 	}
 }
 
 void KnowledgeBase::stopReasoner() {
 	for (auto &pair: reasonerManager_->reasonerPool()) {
-		pair.second->reasoner()->stop();
+		KB_LOGGED_TRY_CATCH(pair.first, "stop", {
+			pair.second->reasoner()->stop();
+		});
 	}
 }
 
@@ -140,12 +144,9 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 	auto backendList = config.get_child_optional("data-backends");
 	if (backendList) {
 		for (const auto &pair: backendList.value()) {
-			try {
+			KB_LOGGED_TRY_CATCH(pair.first, "load", {
 				backendManager_->loadBackend(pair.second);
-			}
-			catch (std::exception &e) {
-				KB_ERROR("failed to load a knowledgeGraph: {}", e.what());
-			}
+			});
 		}
 	} else {
 		KB_ERROR("configuration has no 'backends' key.");
@@ -159,17 +160,14 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 	auto reasonerList = config.get_child_optional("reasoner");
 	if (reasonerList) {
 		for (const auto &pair: reasonerList.value()) {
-			try {
+			KB_LOGGED_TRY_CATCH(pair.first, "load", {
 				auto definedReasoner = reasonerManager_->loadReasoner(pair.second);
 				// if reasoner implements DataBackend class, add it to the backend manager
 				auto reasonerBackend = std::dynamic_pointer_cast<DataBackend>(definedReasoner->reasoner());
 				if (reasonerBackend) {
 					backendManager_->addBackend(definedReasoner->name(), reasonerBackend);
 				}
-			}
-			catch (std::exception &e) {
-				KB_ERROR("failed to load a reasoner: {}", e.what());
-			}
+			});
 		}
 	} else {
 		KB_ERROR("configuration has no 'reasoner' key.");
