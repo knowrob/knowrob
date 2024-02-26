@@ -1,9 +1,9 @@
 name: CI
 on:
   push:
-    branches: [ master ]
+    branches: [ dev ]
   pull_request:
-    branches: [ master ]
+    branches: [ dev ]
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -11,11 +11,11 @@ jobs:
     - uses: actions/checkout@v3
       with:
         path: 'ros_ws/src/knowrob' 
-    - name: Checkout rosprolog
-      uses: actions/checkout@v2
-      with:
-        path: 'ros_ws/src/rosprolog'
-        repository: knowrob/rosprolog
+    #- name: Checkout rosprolog
+    #  uses: actions/checkout@v2
+    #  with:
+    #    path: 'ros_ws/src/rosprolog'
+    #    repository: knowrob/rosprolog
     - name: Checkout iai_common_msgs
       uses: actions/checkout@v2
       with:
