@@ -72,10 +72,16 @@ std::string FramedTriple::createStringValue() const {
 
 	if (xsdType()) {
 		switch (xsdType().value()) {
-			case XSDType::DOUBLE:
-				return (std::ostringstream() << std::fixed << valueAsDouble()).str();
-			case XSDType::FLOAT:
-				return (std::ostringstream() << std::fixed << valueAsFloat()).str();
+			case XSDType::DOUBLE: {
+				std::ostringstream os;
+				os << std::fixed << valueAsDouble();
+				return os.str();
+			}
+			case XSDType::FLOAT: {
+				std::ostringstream os;
+				os << std::fixed << valueAsFloat();
+				return os.str();
+			}
 			case XSDType::NON_NEGATIVE_INTEGER:
 			case XSDType::INTEGER:
 				return std::to_string(valueAsInt());
