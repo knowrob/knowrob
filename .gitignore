@@ -42,3 +42,4 @@ owl/external/
 .vscode/
 /CMakeCache.txt
 /cmake_install.cmake
+/doc/
