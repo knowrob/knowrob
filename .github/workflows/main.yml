@@ -60,7 +60,7 @@ jobs:
       if: ${{ github.event_name == 'push' }}
       shell: bash
       run: |
-        sudo apt-get install doxygen
+        sudo apt-get install doxygen graphviz
         cd $GITHUB_WORKSPACE/ros_ws/src/knowrob
         doxygen doxygen.conf
     #- name: Run pldoc
