@@ -11,31 +11,26 @@ using namespace knowrob;
 namespace python = boost::python;
 
 ReasonerModule::ReasonerModule(std::string_view modulePath, std::string_view reasonerType)
-: modulePath_(resolveModulePath(modulePath)),
-  reasonerType_(reasonerType)
-{
+		: modulePath_(resolveModulePath(modulePath)),
+		  reasonerType_(reasonerType) {
 }
 
 ReasonerModule::~ReasonerModule()
 = default;
 
-std::string ReasonerModule::resolveModulePath(std::string_view modulePath)
-{
+std::string ReasonerModule::resolveModulePath(std::string_view modulePath) {
 	// TODO: also support modulePath that use "." as delimiter as this is the
 	//  common way to address python modules. only std::filesystem::path is used at the moment.
 	return URI::resolve(modulePath);
 }
 
-bool ReasonerModule::isLoaded()
-{
-	py::call<bool>([&]{
+bool ReasonerModule::isLoaded() {
+	return py::call<bool>([&] {
 		return pyReasonerType_ && !pyReasonerType_.is_none();
 	});
-	return false;
 }
 
-bool ReasonerModule::loadModule()
-{
+bool ReasonerModule::loadModule() {
 	// try to make sure that the module can be imported.
 	// the modules can be addressed either via an absolute path,
 	// or via a relative path in the KnowRob project.
@@ -68,14 +63,13 @@ bool ReasonerModule::loadModule()
 			return false;
 		}
 		pyReasonerType_ = pyModule_.attr(reasonerType_.c_str());
-	} catch (const boost::python::error_already_set&) {
+	} catch (const boost::python::error_already_set &) {
 		throw PythonError();
 	}
 	return isLoaded();
 }
 
-std::shared_ptr<Reasoner> ReasonerModule::createReasoner(const std::string &reasonerID)
-{
+std::shared_ptr<Reasoner> ReasonerModule::createReasoner(const std::string &reasonerID) {
 	try {
 		// create a reasoner object
 		// TODO: for some reason it does not fly below if the Python reasoner has
@@ -92,7 +86,7 @@ std::shared_ptr<Reasoner> ReasonerModule::createReasoner(const std::string &reas
 		} else {
 			KB_ERROR("Failed to extract typed reasoner from module '{}'", modulePath_.c_str());
 		}
-	} catch (const boost::python::error_already_set&) {
+	} catch (const boost::python::error_already_set &) {
 		throw PythonError();
 	}
 	KB_ERROR("Failed to create reasoner from module '{}'", modulePath_.c_str());
