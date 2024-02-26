@@ -502,7 +502,9 @@ static inline void testNumber(const TermPtr &t, const double &expected) {
 			auto *a = (Atomic*) t.get();
 			EXPECT_EQ(a->atomicType(), AtomicType::NUMERIC);
 		}
-		EXPECT_EQ(readString(*t), (std::ostringstream() << expected).str());
+		std::ostringstream oss;
+		oss << expected;
+		EXPECT_EQ(readString(*t), oss.str());
     }
 }
 
