@@ -172,7 +172,7 @@ std::shared_ptr<ReasonerModule> ReasonerManager::loadReasonerModule(const std::s
 	} else if (it->second->isLoaded()) {
 		return it->second;
 	}
-	KB_WARN("Failed to open reasoner library at path '{}'.", path);
+	KB_WARN("Failed to open reasoner module at path '{}'.", path);
 	return {};
 }
 
