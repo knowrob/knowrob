@@ -3,6 +3,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include "knowrob/Logger.h"
 #include "knowrob/KnowledgeBase.h"
 #include "knowrob/reasoner/Reasoner.h"
@@ -66,7 +67,7 @@ void Reasoner::pushWork(const std::function<void(void)> &fn) {
 InferredTripleContainer Reasoner::createTriples(uint32_t count) const {
 	auto triples = std::make_shared<std::vector<std::shared_ptr<FramedTriple>>>(count);
 	for (uint32_t i = 0; i < count; i++) {
-		(*triples)[i] = std::make_shared<FramedTripleView>();
+		(*triples)[i] = std::make_shared<FramedTripleCopy>();
 		(*triples)[i]->setGraph(reasonerName());
 	}
 	return triples;
@@ -250,5 +251,11 @@ namespace knowrob::py {
 				.def("submitQuery", &ReasonerWrap::submitQuery);
 		class_<ReasonerWithBackend, std::shared_ptr<ReasonerWithBackendWrap>, bases<Reasoner, DataBackend>, boost::noncopyable>
 				("ReasonerWithBackend", init<>());
+
+		using InferredTriples = std::vector<std::shared_ptr<FramedTriple>>;
+		boost::python::register_ptr_to_python<std::shared_ptr<FramedTriple>>();
+		class_<InferredTriples, std::shared_ptr<InferredTriples>, boost::noncopyable>
+				("InferredTriples", no_init)
+				.def("__iter__", range(&InferredTriples::cbegin, &InferredTriples::cend));
 	}
 }

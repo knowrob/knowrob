@@ -67,6 +67,21 @@ class FactxxReasoner(ReasonerWithBackend):
 		if type(row[2]) is BNode:
 			# require object to be a URI or Literal
 			return False
+		# TODO: there are a lot of useless assertions in the inferred triples.
+		#       actually all RDFS inferences could be ignored here in general.
+		#       best to query the knowrob vocabulary if type/subclass relation is known already.
+		#       for now we skip some particular frequent cases:
+		# - `_ rdfs:subClassOf [owl:Thing,owl:NamedIndividual]`
+		# - `_ rdf:type [owl:Thing,owl:NamedIndividual,rdf:Property]`
+		uri_sub_class_of = URIRef('http://www.w3.org/2000/01/rdf-schema#subClassOf')
+		uri_type = URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#type')
+		uri_thing = URIRef('http://www.w3.org/2002/07/owl#Thing')
+		uri_named_individual = URIRef('http://www.w3.org/2002/07/owl#NamedIndividual')
+		uri_property = URIRef('http://www.w3.org/1999/02/22-rdf-syntax-ns#Property')
+		if row[1] == uri_sub_class_of and row[2] in [uri_thing, uri_named_individual]:
+			return False
+		if row[1] == uri_type and row[2] in [uri_thing, uri_named_individual, uri_property]:
+			return False
 		return True
 
 	def get_blank_node(self, iri: str):
@@ -76,7 +91,7 @@ class FactxxReasoner(ReasonerWithBackend):
 
 	def triple_to_python(self, triple: FramedTriple) -> Tuple[Union[BNode,URIRef], URIRef, Union[URIRef,Literal_rdflib,BNode]]:
 		p_uri = URIRef(triple.predicate())
-		if triple.isObjectIRI():
+		if triple.isSubjectIRI():
 			s_uri = URIRef(triple.subject())
 		else:
 			s_uri = self.get_blank_node(triple.subject())
@@ -92,14 +107,6 @@ class FactxxReasoner(ReasonerWithBackend):
 
 	@staticmethod
 	def triple_from_python(kb_triple: FramedTriple, row: ResultRow):
-		# FIXME: there is something wrong here with memory. the row is fine, and assigning
-		#        seems to work, as always when printing kb_triple directly after the assignment, it is fine.
-		#        but when printing it after the function call or at the end, some of the fields seems to have
-		#        wrong values. e.g. often triples (NamedIndividual, NamedIndividual, NamedIndividual) appear.
-		#        It does not seem to the row, as the row is fine when printing it at the end of the function.
-		#        So my best guess is that boost::python is doing something unexpected mapping Python strings to
-		#        char* used in kb_triple. Maybe it would help to switch to std::string_view in the C++ code.
-		# TODO: avoid use of str() and use the correct types directly, then we could try triple views.
 		kb_triple.subject = str(row[0])
 		kb_triple.predicate = str(row[1])
 
@@ -142,13 +149,6 @@ class FactxxReasoner(ReasonerWithBackend):
 		reasoner = self.factxx()
 
 		if self.is_parse_needed:
-			# FIXME: for some reason, the parse method is not working as expected.
-			#        an assertion fails in the parser of pyfactxx, it seems it cannot retrieve the
-			#        owl:onProperty property of an owl:Restriction. Not sure why this happens.
-			#        with load_owl it worked fine though, at least for the SOMA ontology alone
-			#        not sure if in this case DUL and the other files were loaded as well.
-			# FIXME: also the exception is not caught in C++ and terminates the program.
-			#        probably related to special handling for failed assertions in the parser.
 			try:
 				self.parse()
 			except Exception as e:

@@ -313,6 +313,7 @@ namespace knowrob::py {
 				("FramedTriple", no_init)
 				.def("__eq__", &FramedTriple::operator==)
 				.def("isObjectIRI", &FramedTriple::isObjectIRI)
+				.def("isSubjectIRI", &FramedTriple::isSubjectIRI)
 				.def("isObjectBlank", &FramedTriple::isObjectBlank)
 				.def("isSubjectBlank", &FramedTriple::isSubjectBlank)
 				.def("isXSDLiteral", &FramedTriple::isXSDLiteral)
