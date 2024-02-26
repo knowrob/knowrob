@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.5.0)
 set (CMAKE_CXX_FLAGS "-Wswitch -std=c++0x -O2 -pthread ${CMAKE_CXX_FLAGS} -Wno-undef")
 set (CMAKE_CXX_STANDARD 17)
-cmake_policy(SET CMP0148 OLD)
+if(POLICY CMP0148) 
+	cmake_policy(SET CMP0148 OLD) 
+endif()
 
 project(knowrob)
 
