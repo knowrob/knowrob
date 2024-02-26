@@ -35,7 +35,9 @@ jobs:
       run: |
         sudo add-apt-repository ppa:swi-prolog/stable
         sudo apt-get update -y -qq
-        sudo apt-get install swi-prolog libspdlog-dev
+        sudo apt-get install swi-prolog libspdlog-dev \
+            libboost-python-dev libboost-serialization-dev libboost-program-options-dev \
+            libraptor2-dev librdf0-dev
         cd ros_ws
         catkin_make_isolated
     - name: Run unit tests
