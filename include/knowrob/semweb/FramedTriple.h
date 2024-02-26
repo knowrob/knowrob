@@ -44,6 +44,11 @@ namespace knowrob {
 		bool isObjectIRI() const { return !isXSDLiteral() && !isBlank(valueAsString()); }
 
 		/**
+		 * @return true if the subject of the triple is a IRI.
+		 */
+		bool isSubjectIRI() const { return !isSubjectBlank(); }
+
+		/**
 		 * @return the object type of the triple.
 		 */
 		auto xsdType() const { return xsdType_; }
