@@ -143,7 +143,9 @@ namespace knowrob {
 		// override Atomic
 		std::string_view stringForm() const override {
 			if (!stringForm_) {
-				stringForm_ = (std::ostringstream() << std::fixed << *numericForm_).str();
+				std::ostringstream oss;
+				oss << std::fixed <<  *numericForm_;
+				stringForm_ = oss.str();
 			}
 			return *stringForm_;
 		}
