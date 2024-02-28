@@ -24,6 +24,20 @@ namespace knowrob::mongo {
          * @return the managed bson document
          */
         bson_t* bson() const { return bson_; }
+
+        void print_canonical() {
+        	size_t len;
+			auto str = bson_as_canonical_extended_json (bson_, &len);
+			printf ("%s\n", str);
+			bson_free (str);
+        }
+
+        void print_relaxed() {
+        	size_t len;
+			auto str = bson_as_relaxed_extended_json (bson_, &len);
+			printf ("%s\n", str);
+			bson_free (str);
+        }
     protected:
         bson_t *bson_;
     };

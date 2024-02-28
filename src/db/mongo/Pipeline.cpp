@@ -3,8 +3,12 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 #include "string"
 #include "knowrob/db/mongo/Pipeline.h"
+#include "knowrob/Logger.h"
+#include "knowrob/URI.h"
 
 using namespace knowrob::mongo::aggregation;
 
@@ -139,4 +143,40 @@ void Pipeline::addToArray(const std::string_view &key, const std::string_view &a
 	}
 	bson_append_document_end(setStage1, &concatOperator);
 	appendStageEnd(setStage1);
+}
+
+void replaceAll(std::string &str, const std::string &from, const std::string &to) {
+	size_t startPos = 0;
+	while ((startPos = str.find(from, startPos)) != std::string::npos) {
+		str.replace(startPos, from.length(), to);
+		startPos += to.length(); // Handles case where 'to' is a substring of 'from'
+	}
+}
+
+bson_t* Pipeline::loadFromJSON(std::string_view filename, const std::map<std::string, std::string> &parameters) {
+	auto resolved = URI::resolve(filename);
+	// Load JSON file
+	boost::property_tree::ptree pt;
+	boost::property_tree::read_json(resolved, pt);
+
+	// Convert JSON to string
+	std::stringstream ss;
+	boost::property_tree::write_json(ss, pt);
+
+	// Replace placeholders with actual values
+	std::string pipeline = ss.str();
+	for (const auto &param: parameters) {
+		replaceAll(pipeline, "${" + param.first + "}", param.second);
+	}
+
+	// Convert JSON to BSON
+	bson_error_t error;
+	bson_t *bson = bson_new_from_json((const uint8_t *) pipeline.c_str(), pipeline.size(), &error);
+
+	if (!bson) {
+		KB_ERROR("Error loading pipeline: {}", error.message);
+		return nullptr;
+	}
+
+	return bson;
 }

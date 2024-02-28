@@ -7,6 +7,7 @@
 
 #include <mongoc.h>
 #include <list>
+#include <map>
 #include <string_view>
 #include "bson-helper.h"
 
@@ -98,6 +99,14 @@ namespace knowrob::mongo::aggregation {
          * @param elementKey field of an additional element
          */
         void addToArray(const std::string_view &key, const std::string_view &arrayKey, const std::string_view &elementKey);
+
+        /**
+		 * Load a pipeline from a JSON file.
+		 * @param filename the file name
+		 * @param parameters a map of parameters
+		 * @return a pipeline
+		 */
+        static bson_t* loadFromJSON(std::string_view filename, const std::map<std::string, std::string> &parameters);
 
     protected:
         bson_t *arrayDocument_;

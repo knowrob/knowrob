@@ -1,0 +1,16 @@
+{ "pipeline" : [
+	{ "$match" : {
+		"p" : "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+		"$expr" : { "$in" : [ "$o", [ "http://www.w3.org/2002/07/owl#Class" ] ] }
+	} },
+	{ "$group" : { "_id" : null, "s" : { "$addToSet" : "$s" } } },
+	{ "$unwind" : "$s" },
+	{ "$lookup" : {
+		"from" : "${COLLECTION}",
+		"as" : "x",
+		"let" : { "outer" : "$s" },
+		"pipeline" : [ { "$match" : { "$expr" : { "$eq" : [ "$o", "$$outer" ] } } } ]
+	} },
+	{ "$project" : { "class" : "$s", "count" : { "$size" : "$x" } } },
+	{ "$match" : { "$expr" : { "$gt" : [ "$count", { "$numberInt" : "0" } ] } } }
+] }

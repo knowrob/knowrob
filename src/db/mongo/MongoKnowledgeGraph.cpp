@@ -39,16 +39,14 @@
 #define MONGO_KG_DEFAULT_DB "knowrob"
 #define MONGO_KG_DEFAULT_COLLECTION "triples"
 
+#define PIPELINE_RELATION_COUNTER "db/mongo/aggregation/relation-counter.json"
+#define PIPELINE_CLASS_COUNTER "db/mongo/aggregation/class-counter.json"
+
 using namespace knowrob;
 using namespace knowrob::mongo;
 using namespace knowrob::semweb;
 
 KNOWROB_BUILTIN_BACKEND("MongoDB", MongoKnowledgeGraph)
-
-// AGGREGATION PIPELINES
-bson_t *newRelationCounter(const char *collection);
-
-bson_t *newClassCounter(const char *collection);
 
 const std::string MongoKnowledgeGraph::DB_URI_DEFAULT = "mongodb://localhost:27017";
 const std::string MongoKnowledgeGraph::DB_NAME_KNOWROB = "knowrob";
@@ -234,7 +232,10 @@ void MongoKnowledgeGraph::initialize() {
 	{
 		const bson_t *result;
 		Cursor cursor(tripleCollection_);
-		Document document(newRelationCounter(tripleCollection_->name().c_str()));
+		Document document(aggregation::Pipeline::loadFromJSON(
+			PIPELINE_RELATION_COUNTER, {
+				{"COLLECTION", tripleCollection_->name()}
+			}));
 		cursor.aggregate(document.bson());
 		while (cursor.next(&result)) {
 			bson_iter_t iter;
@@ -249,7 +250,10 @@ void MongoKnowledgeGraph::initialize() {
 	{
 		const bson_t *result;
 		Cursor cursor(tripleCollection_);
-		Document document(newClassCounter(tripleCollection_->name().c_str()));
+		Document document(aggregation::Pipeline::loadFromJSON(
+			PIPELINE_CLASS_COUNTER, {
+				{"COLLECTION", tripleCollection_->name()}
+			}));
 		cursor.aggregate(document.bson());
 		while (cursor.next(&result)) {
 			bson_iter_t iter;
@@ -258,7 +262,8 @@ void MongoKnowledgeGraph::initialize() {
 			auto cls = bson_iter_utf8(&iter, nullptr);
 			if (!bson_iter_find(&iter, "count")) break;
 			auto count = bson_iter_as_int64(&iter);
-			vocabulary_->setFrequency(cls, count);
+			//vocabulary_->setFrequency(cls, count);
+			KB_WARN("classXX: {} count: {}", cls, count);
 		}
 	}
 
@@ -816,76 +821,4 @@ bson_t *MongoKnowledgeGraph::createTripleDocument(const FramedTriple &tripleData
 	}
 
 	return tripleDoc;
-}
-
-// AGGREGATION PIPELINES
-
-bson_t *newRelationCounter(const char *collection) {
-	return BCON_NEW("pipeline", "[",
-					"{", "$match", "{",
-					"p", BCON_UTF8(rdf::type->stringForm().data()),
-					"$expr", "{", "$in", "[", "$o", "[",
-					BCON_UTF8(owl::ObjectProperty->stringForm().data()),
-					BCON_UTF8(owl::DatatypeProperty->stringForm().data()),
-					"]", "]", "}",
-					"}", "}",
-					"{", "$group", "{",
-					"_id", BCON_NULL,
-					"s", "{", "$addToSet", "$s", "}",
-					"}", "}",
-					"{", "$unwind", "$s", "}",
-					"{", "$lookup", "{",
-					"from", BCON_UTF8(collection),
-					"as", BCON_UTF8("x"),
-					"let", "{", "outer", BCON_UTF8("$s"), "}",
-					"pipeline", "[",
-					"{", "$match", "{",
-					"$expr", "{", "$eq", "[", BCON_UTF8("$p"), BCON_UTF8("$$outer"), "]", "}",
-					"}", "}",
-					"]",
-					"}", "}",
-					"{", "$project", "{",
-					"property", BCON_UTF8("$s"),
-					"count", "{", "$size", BCON_UTF8("$x"), "}",
-					"}", "}",
-					"{", "$match", "{",
-					"$expr", "{", "$gt", "[", "$count", BCON_INT32(0), "]", "}",
-					"}", "}",
-					"]"
-	);
-}
-
-bson_t *newClassCounter(const char *collection) {
-	// TODO: skip classes that start with "_" character as these are blank nodes
-	return BCON_NEW("pipeline", "[",
-					"{", "$match", "{",
-					"p", BCON_UTF8(rdf::type->stringForm().data()),
-					"$expr", "{", "$in", "[", "$o", "[",
-					BCON_UTF8(owl::Class->stringForm().data()),
-					"]", "]", "}",
-					"}", "}",
-					"{", "$group", "{",
-					"_id", BCON_NULL,
-					"s", "{", "$addToSet", "$s", "}",
-					"}", "}",
-					"{", "$unwind", "$s", "}",
-					"{", "$lookup", "{",
-					"from", BCON_UTF8(collection),
-					"as", BCON_UTF8("x"),
-					"let", "{", "outer", BCON_UTF8("$s"), "}",
-					"pipeline", "[",
-					"{", "$match", "{",
-					"$expr", "{", "$eq", "[", BCON_UTF8("$o"), BCON_UTF8("$$outer"), "]", "}",
-					"}", "}",
-					"]",
-					"}", "}",
-					"{", "$project", "{",
-					"class", BCON_UTF8("$s"),
-					"count", "{", "$size", BCON_UTF8("$x"), "}",
-					"}", "}",
-					"{", "$match", "{",
-					"$expr", "{", "$gt", "[", "$count", BCON_INT32(0), "]", "}",
-					"}", "}",
-					"]"
-	);
 }
