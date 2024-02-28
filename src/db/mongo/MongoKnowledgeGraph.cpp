@@ -262,8 +262,7 @@ void MongoKnowledgeGraph::initialize() {
 			auto cls = bson_iter_utf8(&iter, nullptr);
 			if (!bson_iter_find(&iter, "count")) break;
 			auto count = bson_iter_as_int64(&iter);
-			//vocabulary_->setFrequency(cls, count);
-			KB_WARN("classXX: {} count: {}", cls, count);
+			vocabulary_->setFrequency(cls, count);
 		}
 	}
 
