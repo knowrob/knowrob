@@ -1,6 +1,7 @@
-//
-// Created by daniel on 03.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include <sstream>
 #include "knowrob/db/mongo/aggregation/triples.h"
@@ -202,7 +203,8 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc,
 
 	if (gt->termType() == TermType::ATOMIC) {
 		auto graphString = gt.grounded();
-		if (graphString->stringForm() == semweb::ImportHierarchy::ORIGIN_ANY || graphString->stringForm() == "*") return;
+		if (graphString->stringForm() == semweb::ImportHierarchy::ORIGIN_ANY || graphString->stringForm() == "*")
+			return;
 
 		std::vector<TermPtr> childrenNames;
 		for (auto &child: importHierarchy->getImports(graphString->stringForm())) {
@@ -215,16 +217,16 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc,
 			aggregation::appendArrayQuery(selectorDoc, "graph", childrenNames, "$in");
 		}
 	}
-	/*
-	else if (gt->termType() == TermType::FUNCTION) {
-		auto fn = (Function*) gt.get();
-		if (*fn->functor() == *ListTerm::listFunctor()) {
-			aggregation::appendArrayQuery(selectorDoc, "graph", fn->arguments(), "$in");
-		} else {
-			KB_WARN("graph term {} has unexpected function type", *gt);
+		/*
+		else if (gt->termType() == TermType::FUNCTION) {
+			auto fn = (Function*) gt.get();
+			if (*fn->functor() == *ListTerm::listFunctor()) {
+				aggregation::appendArrayQuery(selectorDoc, "graph", fn->arguments(), "$in");
+			} else {
+				KB_WARN("graph term {} has unexpected function type", *gt);
+			}
 		}
-	}
-	 */
+		 */
 	else {
 		KB_WARN("graph term {} has unexpected type", *gt);
 	}

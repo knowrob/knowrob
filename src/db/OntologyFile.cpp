@@ -5,7 +5,6 @@
 
 #include <filesystem>
 #include "knowrob/db/OntologyFile.h"
-#include "knowrob/db/OntologyParser.h"
 
 using namespace knowrob;
 

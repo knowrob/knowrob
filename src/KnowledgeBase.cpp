@@ -4,10 +4,8 @@
  */
 
 #include <thread>
-#include <utility>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
-#include <utility>
 
 #include <knowrob/Logger.h>
 #include <knowrob/KnowledgeBase.h>
@@ -1059,7 +1057,6 @@ void KnowledgeBase::finishLoad(const std::shared_ptr<OntologySource> &source, st
 	}
 
 	// add direct import
-	// TODO: why not build the import hierarchy recursively?
 	if (source->parentOrigin().has_value()) {
 		importHierarchy_->addDirectImport(source->parentOrigin().value(), origin);
 	} else {

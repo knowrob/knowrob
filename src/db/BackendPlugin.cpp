@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -15,39 +12,33 @@ BackendPlugin::BackendPlugin(std::string dllPath)
 		: handle_(nullptr),
 		  create_(nullptr),
 		  get_name_(nullptr),
-		  dllPath_(std::move(dllPath))
-{
+		  dllPath_(std::move(dllPath)) {
 }
 
-BackendPlugin::~BackendPlugin()
-{
-	if(handle_) {
+BackendPlugin::~BackendPlugin() {
+	if (handle_) {
 		dlclose(handle_);
 		handle_ = nullptr;
 	}
 }
 
-bool BackendPlugin::isLoaded()
-{
+bool BackendPlugin::isLoaded() {
 	return (create_ != nullptr && get_name_ != nullptr);
 }
 
-bool BackendPlugin::loadDLL()
-{
+bool BackendPlugin::loadDLL() {
 	handle_ = dlopen(dllPath_.c_str(), RTLD_LAZY);
-	if(handle_ != nullptr) {
+	if (handle_ != nullptr) {
 		create_ = (std::shared_ptr<DataBackend> (*)())
 				dlsym(handle_, "knowrob_createBackend");
-		get_name_ = (char* (*)())
+		get_name_ = (char *(*)())
 				dlsym(handle_, "knowrob_getPluginName");
 		return isLoaded();
-	}
-	else {
+	} else {
 		return false;
 	}
 }
 
-std::shared_ptr<DefinedBackend> BackendPlugin::createBackend(const std::string &reasonerID)
-{
+std::shared_ptr<DefinedBackend> BackendPlugin::createBackend(const std::string &reasonerID) {
 	return std::make_shared<DefinedBackend>(reasonerID, create_());
 }

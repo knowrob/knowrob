@@ -4,10 +4,8 @@
  */
 
 #include <filesystem>
-#include <utility>
 #include "knowrob/db/OntologyParser.h"
 #include "knowrob/KnowledgeBaseError.h"
-#include "knowrob/semweb/xsd.h"
 #include "knowrob/semweb/owl.h"
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/semweb/ImportHierarchy.h"

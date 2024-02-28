@@ -1,7 +1,7 @@
-//
-// Created by daniel on 08.04.23.
-//
-
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include "knowrob/db/mongo/aggregation/terms.h"
 #include "knowrob/terms/ListTerm.h"
@@ -12,41 +12,39 @@ using namespace knowrob;
 using namespace knowrob::mongo;
 
 void aggregation::appendTermQuery( //NOLINT
-        bson_t *doc,
-        const char *key,
-        const TermPtr &term,
-        const char *queryOperator,
-        bool matchNullValues)
-{
-    bson_t queryOperatorDoc;
-    bson_t orArray, orCase1, orCase2;
-    bson_t *valueDocument;
-    const char *valueKey;
+		bson_t *doc,
+		const char *key,
+		const TermPtr &term,
+		const char *queryOperator,
+		bool matchNullValues) {
+	bson_t queryOperatorDoc;
+	bson_t orArray, orCase1, orCase2;
+	bson_t *valueDocument;
+	const char *valueKey;
 
-    if(matchNullValues) {
-        // allow to pass through if key is undefined. e.g. important for time scope etc.
-        // e.g. {$or: [ { b: null }, { b: {$gt: 10.0} } ]}
-        BSON_APPEND_ARRAY_BEGIN(doc, "$or", &orArray);
+	if (matchNullValues) {
+		// allow to pass through if key is undefined. e.g. important for time scope etc.
+		// e.g. {$or: [ { b: null }, { b: {$gt: 10.0} } ]}
+		BSON_APPEND_ARRAY_BEGIN(doc, "$or", &orArray);
 
-        BSON_APPEND_DOCUMENT_BEGIN(&orArray, "0", &orCase1);
-        BSON_APPEND_NULL(&orCase1, key);
-        bson_append_document_end(&orArray, &orCase1);
+		BSON_APPEND_DOCUMENT_BEGIN(&orArray, "0", &orCase1);
+		BSON_APPEND_NULL(&orCase1, key);
+		bson_append_document_end(&orArray, &orCase1);
 
-        BSON_APPEND_DOCUMENT_BEGIN(&orArray, "1", &orCase2);
-    }
+		BSON_APPEND_DOCUMENT_BEGIN(&orArray, "1", &orCase2);
+	}
 
-    if(queryOperator) {
-        BSON_APPEND_DOCUMENT_BEGIN(matchNullValues ? &orCase2 : doc, key, &queryOperatorDoc);
-        valueDocument = &queryOperatorDoc;
-        valueKey = queryOperator;
-    }
-    else {
-        valueDocument = (matchNullValues ? &orCase2 : doc);
-        valueKey = key;
-    }
+	if (queryOperator) {
+		BSON_APPEND_DOCUMENT_BEGIN(matchNullValues ? &orCase2 : doc, key, &queryOperatorDoc);
+		valueDocument = &queryOperatorDoc;
+		valueKey = queryOperator;
+	} else {
+		valueDocument = (matchNullValues ? &orCase2 : doc);
+		valueKey = key;
+	}
 
-    if (term->termType() == TermType::ATOMIC) {
-    	auto atomic = std::static_pointer_cast<Atomic>(term);
+	if (term->termType() == TermType::ATOMIC) {
+		auto atomic = std::static_pointer_cast<Atomic>(term);
 		switch (atomic->atomicType()) {
 			case AtomicType::STRING:
 			case AtomicType::ATOM:
@@ -82,39 +80,38 @@ void aggregation::appendTermQuery( //NOLINT
 				break;
 			}
 		}
-    } else if (term->termType() == TermType::FUNCTION) {
+	} else if (term->termType() == TermType::FUNCTION) {
 
-            appendArrayQuery(valueDocument, valueKey,
-                             ((ListTerm*)term.get())->elements());
+		appendArrayQuery(valueDocument, valueKey,
+						 ((ListTerm *) term.get())->elements());
 	}
 
-    if(queryOperator) {
-        bson_append_document_end(matchNullValues ? &orCase2 : doc, &queryOperatorDoc);
-    }
-    if(matchNullValues) {
-        bson_append_document_end(&orArray, &orCase2);
-        bson_append_array_end(doc, &orArray);
-    }
+	if (queryOperator) {
+		bson_append_document_end(matchNullValues ? &orCase2 : doc, &queryOperatorDoc);
+	}
+	if (matchNullValues) {
+		bson_append_document_end(&orArray, &orCase2);
+		bson_append_array_end(doc, &orArray);
+	}
 }
 
 void aggregation::appendArrayQuery( // NOLINT
-        bson_t *doc,
-        const char *key,
-        const std::vector<TermPtr> &terms,
-        const char *arrayOperator)
-{
-    bson_t orOperator, orArray;
-    char arrIndexStr[16];
-    const char *arrIndexKey;
-    uint32_t arrIndex = 0;
+		bson_t *doc,
+		const char *key,
+		const std::vector<TermPtr> &terms,
+		const char *arrayOperator) {
+	bson_t orOperator, orArray;
+	char arrIndexStr[16];
+	const char *arrIndexKey;
+	uint32_t arrIndex = 0;
 
-    BSON_APPEND_DOCUMENT_BEGIN(doc, key, &orOperator);
-    BSON_APPEND_ARRAY_BEGIN(&orOperator, arrayOperator, &orArray);
-    for(auto &term : terms) {
-        bson_uint32_to_string(arrIndex++,
-            &arrIndexKey, arrIndexStr, sizeof arrIndexStr);
-        appendTermQuery(&orArray, arrIndexKey, term);
-    }
-    bson_append_array_end(&orOperator, &orArray);
-    bson_append_document_end(doc, &orOperator);
+	BSON_APPEND_DOCUMENT_BEGIN(doc, key, &orOperator);
+	BSON_APPEND_ARRAY_BEGIN(&orOperator, arrayOperator, &orArray);
+	for (auto &term: terms) {
+		bson_uint32_to_string(arrIndex++,
+							  &arrIndexKey, arrIndexStr, sizeof arrIndexStr);
+		appendTermQuery(&orArray, arrIndexKey, term);
+	}
+	bson_append_array_end(&orOperator, &orArray);
+	bson_append_document_end(doc, &orOperator);
 }

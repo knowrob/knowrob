@@ -1,6 +1,7 @@
-//
-// Created by daniel on 08.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include <boost/algorithm/string/predicate.hpp>
 #include "knowrob/Logger.h"
@@ -35,7 +36,7 @@ void AnswerCursor::setSubstitution(const std::shared_ptr<AnswerYes> &answer) {
 				auto utf8 = bson_iter_utf8(&valIter_, nullptr);
 				// note: currently mongo KG does not store the type of the literal,
 				// so we cannot trivially distinguish between IRI and literal and need to guess here.
-				switch(rdfNodeTypeGuess(utf8)) {
+				switch (rdfNodeTypeGuess(utf8)) {
 					case RDFNodeType::BLANK:
 						answer->set(var, std::make_shared<Blank>(utf8));
 						break;

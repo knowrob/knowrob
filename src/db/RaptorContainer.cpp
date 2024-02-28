@@ -4,7 +4,6 @@
  */
 
 #include "knowrob/db/RaptorContainer.h"
-#include "knowrob/semweb/xsd.h"
 #include "knowrob/terms/XSDAtomic.h"
 
 using namespace knowrob;
