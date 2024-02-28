@@ -651,7 +651,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 		for (auto &posModal: posModals) {
 			// FIXME: use of this pointer below. only ok if destructor makes sure to destroy all pipelines.
 			//        maybe a better way would be having another class generating pipelines with the ability
-			//        to create reference pointer on a KnowledgeBase
+			//        to create reference pointer on a KnowledgeBase, or use a weak ptr here
 			auto modalStage = std::make_shared<ModalStage>(this, posModal, ctx);
 			modalStage->selfWeakRef_ = modalStage;
 			lastStage >> modalStage;
@@ -707,6 +707,11 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 	auto out = std::make_shared<AnswerBuffer_WithReference>(pipeline);
 	finalStage >> out;
 	outStream->stopBuffering();
+
+	// TODO: how could we catch exceptions that occur in the pipeline?
+	//       It would be good is the token queue which is processed in the main thread
+	//       can re-throw any exception that occurred in the pipeline.
+
 	return out;
 }
 
@@ -942,19 +947,18 @@ void KnowledgeBase::updateVocabularyInsert(const FramedTriple &tripleData) {
 	} else if (semweb::isTypeIRI(tripleData.predicate())) {
 		vocabulary_->addResourceType(tripleData.subject(), tripleData.valueAsString());
 		// increase frequency in vocabulary
-		//vocabulary_->increaseFrequency(tripleData.subject);
-		// TODO: string comparison below is not efficient, could put all classes in a map here, or add
-		//       an interface to the vocabulary that excludes owl/rdfs/rdf terms
-		//  --> rather check for subclass of relationship to owl:Thing
+		static std::set<std::string_view> skippedTypes = {
+				semweb::owl::Class->stringForm(),
+				semweb::owl::Restriction->stringForm(),
+				semweb::owl::NamedIndividual->stringForm(),
+				semweb::owl::AnnotationProperty->stringForm(),
+				semweb::owl::ObjectProperty->stringForm(),
+				semweb::owl::DatatypeProperty->stringForm(),
+				semweb::rdfs::Class->stringForm(),
+				semweb::rdf::Property->stringForm()
+		};
 		if (vocabulary_->isDefinedClass(tripleData.valueAsString()) &&
-			semweb::owl::Class->stringForm() != tripleData.valueAsString() &&
-			semweb::owl::Restriction->stringForm() != tripleData.valueAsString() &&
-			semweb::owl::NamedIndividual->stringForm() != tripleData.valueAsString() &&
-			semweb::owl::AnnotationProperty->stringForm() != tripleData.valueAsString() &&
-			semweb::owl::ObjectProperty->stringForm() != tripleData.valueAsString() &&
-			semweb::owl::DatatypeProperty->stringForm() != tripleData.valueAsString() &&
-			semweb::rdfs::Class->stringForm() != tripleData.valueAsString() &&
-			semweb::rdf::Property->stringForm() != tripleData.valueAsString()) {
+			!skippedTypes.count(tripleData.valueAsString())) {
 			vocabulary_->increaseFrequency(tripleData.valueAsString());
 		}
 	} else if (semweb::isInverseOfIRI(tripleData.predicate())) {
