@@ -69,6 +69,13 @@ namespace knowrob::semweb {
 		void addSubClassOf(const std::string_view &subClass, const std::string_view &superClass);
 
 		/**
+		 * @param subClass a IRI
+		 * @param superClass a IRI
+		 * @return true if subClass is a subclass of superClass
+		 */
+		bool isSubClassOf(const std::string_view &subClass, const std::string_view &superClass);
+
+		/**
 		 * @param iri a IRI
 		 * @return true if IRI is a defined property
 		 */

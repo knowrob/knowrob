@@ -69,6 +69,9 @@ void Vocabulary::addSubClassOf(const std::string_view &subClass, const std::stri
 	defineClass(subClass)->addDirectParent(defineClass(superClass));
 }
 
+bool Vocabulary::isSubClassOf(const std::string_view &subClass, const std::string_view &superClass) {
+	return defineClass(subClass)->isSubClassOf(defineClass(superClass));
+}
 
 bool Vocabulary::isDefinedProperty(const std::string_view &iri) {
 	return definedProperties_.count(iri) > 0;
@@ -166,7 +169,7 @@ bool Vocabulary::isTaxonomicProperty(const std::string_view &iri) {
 // FIXME: the frequency of parent/child properties and classes should be managed too!
 
 void Vocabulary::setFrequency(const std::string_view &iri, uint32_t frequency) {
-	if(frequency==0) {
+	if (frequency == 0) {
 		frequency_.erase(iri);
 	} else {
 		auto p_it = definedProperties_.find(iri);
@@ -194,7 +197,7 @@ void Vocabulary::increaseFrequency(const std::string_view &iri) {
 
 uint32_t Vocabulary::frequency(const std::string_view &iri) const {
 	auto it = frequency_.find(iri);
-	if(it == frequency_.end()) return 0;
+	if (it == frequency_.end()) return 0;
 	else return it->second;
 }
 
