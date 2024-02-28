@@ -17,14 +17,14 @@ namespace knowrob::mongo {
 	public:
 		explicit TripleCursor(const std::shared_ptr<Collection> &collection);
 
-		bool nextTriple(FramedTripleView &tripleData, const bson_oid_t **tripleOID);
+		bool nextTriple(FramedTriple &tripleData, const bson_oid_t **tripleOID);
 
 		/**
 		 * Get the next triple from this cursor if any.
 		 * @param tripleData a triple data structure
 		 * @return true on success
 		 */
-		bool nextTriple(FramedTripleView &tripleData);
+		bool nextTriple(FramedTriple &tripleData);
 
 		/**
 		 * @return the last document fetched by this cursor, or null if no document was fetched before.

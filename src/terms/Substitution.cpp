@@ -66,6 +66,17 @@ const TermPtr &Substitution::get(std::string_view varName) const {
 	}
 }
 
+const std::shared_ptr<Atomic> Substitution::getAtomic(std::string_view varName) const {
+	static const std::shared_ptr<Atomic> null_term;
+
+	auto term = get(varName);
+	if(term && term->termType() == TermType::ATOMIC) {
+		return std::static_pointer_cast<Atomic>(term);
+	} else {
+		return null_term;
+	}
+}
+
 size_t Substitution::hash() const {
 	auto seed = static_cast<size_t>(0);
 

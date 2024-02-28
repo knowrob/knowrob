@@ -14,6 +14,7 @@
 #include "Term.h"
 #include "Variable.h"
 #include "knowrob/formulas/Formula.h"
+#include "Atomic.h"
 
 namespace knowrob {
 	/**
@@ -85,6 +86,16 @@ namespace knowrob {
 		 * @return a term reference.
 		 */
 		const TermPtr &get(std::string_view varName) const;
+
+		/**
+		 * Map the name of a variable to a term.
+		 * A null pointer reference is returned if the given variable
+		 * is not included in the mapping.
+		 *
+		 * @var a variable.
+		 * @return a term reference.
+		 */
+		const std::shared_ptr<Atomic> getAtomic(std::string_view varName) const;
 
 		/**
 		 * Returns true if the given var is mapped to a term by this substitution.

@@ -170,7 +170,7 @@ namespace knowrob::semweb {
 		 * @param iri a IRI
 		 * @param frequency a frequency
 		 */
-		void setFrequency(const std::string_view &iri, uint32_t frequency);
+		void setFrequency(const std::string_view &iri, uint64_t frequency);
 
 		/**
 		 * Increase the frequency of a resource by one reflecting that it appears
@@ -185,12 +185,12 @@ namespace knowrob::semweb {
 		 * @param iri a IRI
 		 * @return the frequency
 		 */
-		uint32_t frequency(const std::string_view &iri) const;
+		uint64_t frequency(const std::string_view &iri) const;
 
 	protected:
 		std::map<std::string_view, ClassPtr, std::less<>> definedClasses_;
 		std::map<std::string_view, PropertyPtr, std::less<>> definedProperties_;
-		std::map<std::string_view, uint32_t> frequency_;
+		std::map<std::string_view, uint64_t> frequency_;
 	};
 
 	using VocabularyPtr = std::shared_ptr<Vocabulary>;

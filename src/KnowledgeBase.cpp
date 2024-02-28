@@ -56,24 +56,6 @@ namespace knowrob {
 KnowledgeBase::KnowledgeBase()
 		: isInitialized_(false),
 		  tripleBatchSize_(KB_DEFAULT_TRIPLE_BATCH_SIZE) {
-	construct();
-}
-
-KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config) : KnowledgeBase() {
-	initFromConfig(config);
-}
-
-KnowledgeBase::KnowledgeBase(const std::string_view &configFile) : KnowledgeBase() {
-	boost::property_tree::ptree config;
-	boost::property_tree::read_json(URI::resolve(configFile), config);
-	initFromConfig(config);
-}
-
-KnowledgeBase::~KnowledgeBase() {
-	stopReasoner();
-}
-
-void KnowledgeBase::construct() {
 	vocabulary_ = std::make_shared<semweb::Vocabulary>();
 	importHierarchy_ = std::make_unique<semweb::ImportHierarchy>();
 	// use "system" as default origin until initialization completed
@@ -82,47 +64,104 @@ void KnowledgeBase::construct() {
 	reasonerManager_ = std::make_unique<ReasonerManager>(this, backendManager_);
 }
 
+KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config) : KnowledgeBase() {
+	configure(config);
+	init();
+}
+
+KnowledgeBase::KnowledgeBase(const std::string_view &configFile) : KnowledgeBase() {
+	boost::property_tree::ptree config;
+	boost::property_tree::read_json(URI::resolve(configFile), config);
+	configure(config);
+	init();
+}
+
+KnowledgeBase::~KnowledgeBase() {
+	stopReasoner();
+}
+
 void KnowledgeBase::init() {
-	// load common ontologies
-	for (auto &ontoPath: {"owl/rdf-schema.xml", "owl/owl.rdf"}) {
-		loadDataSource(std::make_shared<OntologyFile>(URI(ontoPath), "rdf-xml"));
-	}
 	isInitialized_ = true;
-	// switch to "user" as default origin
 	importHierarchy_->setDefaultGraph(importHierarchy_->ORIGIN_USER);
+	initBackends();
+	synchronizeBackends();
+	initVocabulary();
 	startReasoner();
 }
 
-void KnowledgeBase::initFromConfig(const boost::property_tree::ptree &config) {
-	loadConfiguration(config);
-	//init();
-	startReasoner();
+void KnowledgeBase::initBackends() {
+	for (auto &pair: backendManager_->backendPool()) {
+		auto definedBackend = pair.second;
+		definedBackend->backend()->setVocabulary(vocabulary_);
+		definedBackend->backend()->setImportHierarchy(importHierarchy_);
+	}
 }
 
-const std::map<std::string, std::shared_ptr<DefinedReasoner>, std::less<>> &KnowledgeBase::reasonerPool() const {
-	return reasonerManager_->reasonerPool();
+void KnowledgeBase::synchronizeBackends() {
+	// TODO: support initial synch of persistent with non-persistent data backends.
+	//       e.g. mongo KG could be filled with facts initially, these should be mirrored into
+	//       other backends.
+	//       at least make sure no persistent backend has an outdated version of an ontology
 }
 
-void KnowledgeBase::startReasoner() {
-	for (auto &pair: reasonerManager_->reasonerPool()) {
-		// TODO: it would be better to remove reasoner and backends if they throw an exception.
-		//       but doing this for e.g. query evaluation is more difficult where exception occur in a worker thread
-		//       as part of a complex query evaluation pipeline.
-		KB_LOGGED_TRY_CATCH(pair.first, "start", {
-			pair.second->reasoner()->start();
+void KnowledgeBase::initVocabulary() {
+	auto v_s = std::make_shared<Variable>("?s");
+	auto v_o = std::make_shared<Variable>("?o");
+
+	for (auto &it: backendManager_->persistent()) {
+		auto backend = it.second;
+
+		// initialize the import hierarchy
+		for (auto &origin : backend->getOrigins()) {
+			importHierarchy_->addDirectImport(importHierarchy_->ORIGIN_SYSTEM, origin);
+		}
+
+		// iterate over all rdf:type assertions and add them to the vocabulary
+		backend->match(FramedTriplePattern(v_s, semweb::rdf::type, v_o),
+					   [this](const FramedTriple &triple) {
+						   vocabulary_->addResourceType(triple.subject(), triple.valueAsString());
+					   });
+		// iterate over all rdfs::subClassOf assertions and add them to the vocabulary
+		backend->match(FramedTriplePattern(v_s, semweb::rdfs::subClassOf, v_o),
+					   [this](const FramedTriple &triple) {
+						   vocabulary_->addSubClassOf(triple.subject(), triple.valueAsString());
+					   });
+		// iterate over all rdfs::subPropertyOf assertions and add them to the vocabulary
+		backend->match(FramedTriplePattern(v_s, semweb::rdfs::subPropertyOf, v_o),
+					   [this](const FramedTriple &triple) {
+						   vocabulary_->addSubPropertyOf(triple.subject(), triple.valueAsString());
+					   });
+		// iterate over all owl::inverseOf assertions and add them to the vocabulary
+		backend->match(FramedTriplePattern(v_s, semweb::owl::inverseOf, v_o),
+					   [this](const FramedTriple &triple) {
+						   vocabulary_->setInverseOf(triple.subject(), triple.valueAsString());
+					   });
+
+		// query number of assertions of each property/class.
+		// this is useful information for optimizing the query planner.
+		backend->count([this](std::string_view resource, uint64_t count) {
+			vocabulary_->setFrequency(resource, count);
 		});
 	}
 }
 
-void KnowledgeBase::stopReasoner() {
-	for (auto &pair: reasonerManager_->reasonerPool()) {
-		KB_LOGGED_TRY_CATCH(pair.first, "stop", {
-			pair.second->reasoner()->stop();
-		});
-	}
+void KnowledgeBase::configure(const boost::property_tree::ptree &config) {
+	configurePrefixes(config);
+	// initialize data backends from configuration
+	configureBackends(config);
+	// load reasoners from configuration
+	configureReasoner(config);
+	// share vocabulary and import hierarchy with backends
+	initBackends();
+	// load common ontologies
+	loadCommon();
+	// load the "global" data sources.
+	// these are data sources that are loaded into all backends, however
+	// the backends may decide to ignore some of the data sources.
+	configureDataSources(config);
 }
 
-void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config) {
+void KnowledgeBase::configurePrefixes(const boost::property_tree::ptree &config) {
 	auto semwebTree = config.get_child_optional("semantic-web");
 	if (semwebTree) {
 		// load RDF URI aliases
@@ -137,8 +176,9 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 			}
 		}
 	}
+}
 
-	// initialize data backends from configuration
+void KnowledgeBase::configureBackends(const boost::property_tree::ptree &config) {
 	auto backendList = config.get_child_optional("data-backends");
 	if (backendList) {
 		for (const auto &pair: backendList.value()) {
@@ -149,12 +189,9 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 	} else {
 		KB_ERROR("configuration has no 'backends' key.");
 	}
+}
 
-	// TODO: support initial synch of persistent with non-persistent data backends.
-	//       e.g. mongo KG could be filled with facts initially, these should be mirrored into
-	//       other backends.
-
-	// load reasoners from configuration
+void KnowledgeBase::configureReasoner(const boost::property_tree::ptree &config) {
 	auto reasonerList = config.get_child_optional("reasoner");
 	if (reasonerList) {
 		for (const auto &pair: reasonerList.value()) {
@@ -170,22 +207,9 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 	} else {
 		KB_ERROR("configuration has no 'reasoner' key.");
 	}
+}
 
-	// share vocabulary and import hierarchy with backends
-	for (auto &pair: backendManager_->backendPool()) {
-		auto definedBackend = pair.second;
-		definedBackend->backend()->setVocabulary(vocabulary_);
-		definedBackend->backend()->setImportHierarchy(importHierarchy_);
-	}
-
-	// load common ontologies
-	for (auto &ontoPath: {"owl/rdf-schema.xml", "owl/owl.rdf"}) {
-		loadDataSource(std::make_shared<OntologyFile>(URI(ontoPath), "rdf-xml"));
-	}
-
-	// load the "global" data sources.
-	// these are data sources that are loaded into all backends, however
-	// the backends may decide to ignore some of the data sources.
+void KnowledgeBase::configureDataSources(const boost::property_tree::ptree &config) {
 	auto dataSourcesList = config.get_child_optional("data-sources");
 	if (dataSourcesList) {
 		for (const auto &pair: dataSourcesList.value()) {
@@ -208,6 +232,31 @@ void KnowledgeBase::loadConfiguration(const boost::property_tree::ptree &config)
 				KB_ERROR("failed to load a data source: {}", dataSource->uri());
 			}
 		}
+	}
+}
+
+void KnowledgeBase::loadCommon() {
+	for (auto &ontoPath: {"owl/rdf-schema.xml", "owl/owl.rdf"}) {
+		loadDataSource(std::make_shared<OntologyFile>(URI(ontoPath), "rdf-xml"));
+	}
+}
+
+void KnowledgeBase::startReasoner() {
+	for (auto &pair: reasonerManager_->reasonerPool()) {
+		// TODO: it would be better to remove reasoner and backends if they throw an exception.
+		//       but doing this for e.g. query evaluation is more difficult where exception occur in a worker thread
+		//       as part of a complex query evaluation pipeline.
+		KB_LOGGED_TRY_CATCH(pair.first, "start", {
+			pair.second->reasoner()->start();
+		});
+	}
+}
+
+void KnowledgeBase::stopReasoner() {
+	for (auto &pair: reasonerManager_->reasonerPool()) {
+		KB_LOGGED_TRY_CATCH(pair.first, "stop", {
+			pair.second->reasoner()->stop();
+		});
 	}
 }
 
@@ -254,7 +303,8 @@ bool KnowledgeBase::isMaterializedInEDB(std::string_view property) const {
 	return vocabulary_->frequency(property) > 0;
 }
 
-QueryableBackendPtr KnowledgeBase::getBackendForQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) const {
+QueryableBackendPtr
+KnowledgeBase::getBackendForQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) const {
 	auto &queryable = backendManager_->queryable();
 	if (queryable.empty()) {
 		throw KnowledgeBaseError("no queryable backends available.");
@@ -363,7 +413,7 @@ void KnowledgeBase::createComputationPipeline(
 		bool isEDBStageNeeded = true;
 		if (lit->propertyTerm() && lit->propertyTerm()->termType() == TermType::ATOMIC) {
 			isEDBStageNeeded = isMaterializedInEDB(
-				std::static_pointer_cast<Atomic>(lit->propertyTerm())->stringForm());
+					std::static_pointer_cast<Atomic>(lit->propertyTerm())->stringForm());
 		}
 		if (isEDBStageNeeded) {
 			auto edb = getBackendForQuery(lit, ctx);
@@ -746,7 +796,7 @@ static inline std::shared_ptr<T> createTransaction(
 
 static inline std::shared_ptr<ThreadPool::Runner> pushPerTripleWork(
 		const semweb::TripleContainerPtr &triples,
-		const std::function<void(const FramedTriplePtr&)> &fn) {
+		const std::function<void(const FramedTriplePtr &)> &fn) {
 	auto perTripleWorker =
 			std::make_shared<ThreadPool::LambdaRunner>([fn, triples](const ThreadPool::LambdaRunner::StopChecker &) {
 				std::for_each(triples->begin(), triples->end(), fn);
@@ -1046,7 +1096,8 @@ KnowledgeBase::prepareLoad(std::string_view origin, std::string_view newVersion)
 	return backendsToLoad;
 }
 
-void KnowledgeBase::finishLoad(const std::shared_ptr<OntologySource> &source, std::string_view origin, std::string_view newVersion) {
+void KnowledgeBase::finishLoad(const std::shared_ptr<OntologySource> &source, std::string_view origin,
+							   std::string_view newVersion) {
 	// update the version triple
 	for (auto &it: backendManager_->backendPool()) {
 		it.second->setVersionOfOrigin(origin, newVersion);

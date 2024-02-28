@@ -92,6 +92,7 @@ namespace knowrob {
 	 * A set that removes duplicate answers.
 	 */
 	using AnswerSet = std::set<AnswerPtr, AnswerComparator>;
+	using AnswerHandler = std::function<void(const AnswerPtr &)>;
 }
 
 #endif //KNOWROB_ANSWER_H_

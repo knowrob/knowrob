@@ -54,10 +54,9 @@ namespace knowrob {
 
 		~KnowledgeBase();
 
-		/**
-		 * @return the set of reasoner of this KB.
-		 */
-		const std::map<std::string, std::shared_ptr<DefinedReasoner>, std::less<>> &reasonerPool() const;
+		void init();
+
+		void loadCommon();
 
 		/**
 		 * Load a data source into the knowledge base.
@@ -118,8 +117,6 @@ namespace knowrob {
 		auto &reasonerManager() const { return reasonerManager_; }
 
 		auto &backendManager() const { return backendManager_; }
-
-		void init();
 
 		// override IDataBackend
 		bool insertOne(const FramedTriple &triple) override;
@@ -184,11 +181,21 @@ namespace knowrob {
 			semweb::VocabularyPtr vocabulary_;
 		};
 
-		void construct();
+		void configure(const boost::property_tree::ptree &config);
 
-		void initFromConfig(const boost::property_tree::ptree &config);
+		static void configurePrefixes(const boost::property_tree::ptree &config);
 
-		void loadConfiguration(const boost::property_tree::ptree &config);
+		void configureDataSources(const boost::property_tree::ptree &config);
+
+		void configureBackends(const boost::property_tree::ptree &config);
+
+		void configureReasoner(const boost::property_tree::ptree &config);
+
+		void initVocabulary();
+
+		void initBackends();
+
+		void synchronizeBackends();
 
 		static DataSourcePtr createDataSource(const boost::property_tree::ptree &subtree);
 

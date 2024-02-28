@@ -10,7 +10,6 @@
 #include "boost/property_tree/ptree.hpp"
 #include "knowrob/db/DataBackend.h"
 #include "knowrob/db/QueryableBackend.h"
-#include "knowrob/db/PersistentBackend.h"
 #include "knowrob/db/mongo/Collection.h"
 #include "knowrob/queries/TokenBuffer.h"
 #include "knowrob/formulas/FirstOrderLiteral.h"
@@ -21,9 +20,7 @@ namespace knowrob {
 	/**
 	 * A knowledge graph implemented with MongoDB.
 	 */
-	class MongoKnowledgeGraph : public DataBackend,
-								public QueryableBackend,
-								public PersistentBackend {
+	class MongoKnowledgeGraph : public QueryableBackend {
 	public:
 		static const std::string DB_URI_DEFAULT;
 		static const std::string DB_NAME_KNOWROB;
@@ -46,17 +43,17 @@ namespace knowrob {
 		/**
 		 * @return the name of the database.
 		 */
-		const std::string &dbName() const;
+		const std::string &dbName() const { return tripleCollection_->dbName(); }
 
 		/**
 		 * @return the URI string used to connect to the database.
 		 */
-		const std::string &dbURI() const;
+		const std::string &dbURI() const { return tripleCollection_->dbURI(); }
 
 		/**
 		 * @return true if only read operations are allowed.
 		 */
-		bool isReadOnly() const;
+		bool isReadOnly() const { return isReadOnly_; }
 
 		/**
 		 * (re)create search indices.
@@ -99,35 +96,47 @@ namespace knowrob {
 		 */
 		TokenBufferPtr watchQuery(const ConjunctiveQueryPtr &literal);
 
-		// Override KnowledgeGraph
+		// Override DataBackend
 		bool initializeBackend(const ReasonerConfig &config) override;
 
-		// Override IDataBackend
+		// Override DataBackend
 		bool insertOne(const FramedTriple &triple) override;
 
-		// Override IDataBackend
+		// Override DataBackend
 		bool insertAll(const semweb::TripleContainerPtr &triples) override;
 
-		// Override IDataBackend
+		// Override DataBackend
 		bool removeOne(const FramedTriple &triple) override;
 
-		// Override IDataBackend
+		// Override DataBackend
 		bool removeAll(const semweb::TripleContainerPtr &triples) override;
 
-		// Override IDataBackend
+		// Override DataBackend
 		bool removeAllWithOrigin(std::string_view origin) override;
 
-		// Override IDataBackend
+		// Override DataBackend
 		bool removeAllMatching(const FramedTriplePatternPtr &query) override;
 
-		// Override PersistentBackend
-		std::optional<std::string> getVersionOfOrigin(std::string_view origin) override;
-
-		// Override PersistentBackend
-		void setVersionOfOrigin(std::string_view origin, std::string_view version) override;
+		// Override QueryableBackend
+		bool isPersistent() const override { return true; }
 
 		// Override QueryableBackend
-		void evaluateQuery(const ConjunctiveQueryPtr &query, const TokenBufferPtr &resultStream) override;
+		bool contains(const FramedTriple &triple) override;
+
+		// Override QueryableBackend
+		void foreach(const semweb::TripleVisitor &visitor) const override;
+
+		// Override QueryableBackend
+		void batch(const semweb::TripleHandler &callback) const override;
+
+		// Override QueryableBackend
+		void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
+
+		// Override QueryableBackend
+		void query(const ConjunctiveQueryPtr &query, const AnswerHandler &callback) override;
+
+		// Override QueryableBackend
+		void count(const ResourceCounter &callback) const override;
 
 	protected:
 		using StringPair = std::pair<std::string_view, std::string_view>;
@@ -135,6 +144,8 @@ namespace knowrob {
 		std::shared_ptr<mongo::Collection> tripleCollection_;
 		std::shared_ptr<mongo::Collection> oneCollection_;
 		bool isReadOnly_;
+
+		std::optional<uint32_t> batchSize_;
 
 		void initialize();
 

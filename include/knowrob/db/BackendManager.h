@@ -17,7 +17,6 @@
 #include "BackendPlugin.h"
 #include "DefinedBackend.h"
 #include "QueryableBackend.h"
-#include "PersistentBackend.h"
 
 namespace knowrob {
 	/**
@@ -120,7 +119,7 @@ namespace knowrob {
 		// pool of all backend instances created via this manager
 		// maps backend ID to backend instance.
 		std::map<std::string, std::shared_ptr<DefinedBackend>, std::less<>> backendPool_;
-		std::map<std::string, PersistentBackendPtr> persistent_;
+		std::map<std::string, QueryableBackendPtr> persistent_;
 		std::map<std::string, QueryableBackendPtr> queryable_;
 		// maps plugin names to factories used to create backend instances
 		std::map<std::string, std::shared_ptr<BackendPlugin>> loadedPlugins_;

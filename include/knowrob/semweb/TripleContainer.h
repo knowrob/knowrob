@@ -45,6 +45,7 @@ namespace knowrob::semweb {
 
 	using TripleContainerPtr = std::shared_ptr<TripleContainer>;
 	using TripleHandler = std::function<void(const semweb::TripleContainerPtr&)>;
+	using TripleVisitor = std::function<void(const FramedTriple&)>;
 
 	using MutableTripleContainerPtr = std::shared_ptr<MutableTripleContainer>;
 	using MutableTripleHandler = std::function<void(const semweb::MutableTripleContainerPtr&)>;

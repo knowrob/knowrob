@@ -23,7 +23,6 @@
 #include "knowrob/queries/AnswerNo.h"
 
 #define MONGO_KG_ONE_COLLECTION "one"
-#define MONGO_KG_VERSION_KEY "tripledbVersionString"
 
 #define MONGO_KG_SETTING_HOST "host"
 #define MONGO_KG_SETTING_PORT "port"
@@ -46,6 +45,9 @@ using namespace knowrob;
 using namespace knowrob::mongo;
 using namespace knowrob::semweb;
 
+/**
+ * Register the backend with the BackendManager
+ */
 KNOWROB_BUILTIN_BACKEND("MongoDB", MongoKnowledgeGraph)
 
 const std::string MongoKnowledgeGraph::DB_URI_DEFAULT = "mongodb://localhost:27017";
@@ -55,9 +57,7 @@ const std::string MongoKnowledgeGraph::COLL_NAME_TRIPLES = "triples";
 const std::string MongoKnowledgeGraph::COLL_NAME_TESTS = "triples_test";
 
 MongoKnowledgeGraph::MongoKnowledgeGraph()
-		: DataBackend(),
-		  QueryableBackend(),
-		  PersistentBackend(),
+		: QueryableBackend(),
 		  isReadOnly_(false) {
 }
 
@@ -105,18 +105,6 @@ bool MongoKnowledgeGraph::initializeBackend(const ReasonerConfig &config) {
 	}
 
 	return true;
-}
-
-const std::string &MongoKnowledgeGraph::dbName() const {
-	return tripleCollection_->dbName();
-}
-
-const std::string &MongoKnowledgeGraph::dbURI() const {
-	return tripleCollection_->dbURI();
-}
-
-bool MongoKnowledgeGraph::isReadOnly() const {
-	return isReadOnly_;
 }
 
 std::shared_ptr<Collection> MongoKnowledgeGraph::connect(
@@ -191,85 +179,6 @@ void MongoKnowledgeGraph::initialize() {
 		bson_append_document_end(oneDoc.bson(), &scopeDoc);
 		oneCollection_->storeOne(oneDoc);
 	}
-
-	// initialize vocabulary
-	FramedTripleView tripleData;
-	{
-		// iterate over all rdf::type assertions
-		TripleCursor cursor(tripleCollection_);
-		cursor.filter(Document(BCON_NEW(
-									   "p", BCON_UTF8(rdf::type->stringForm().data()))).bson());
-		while (cursor.nextTriple(tripleData))
-			vocabulary_->addResourceType(tripleData.subject(), tripleData.valueAsString());
-	}
-	{
-		// iterate over all rdfs::subClassOf assertions
-		TripleCursor cursor(tripleCollection_);
-		cursor.filter(Document(BCON_NEW(
-									   "p", BCON_UTF8(rdfs::subClassOf->stringForm().data()))).bson());
-		while (cursor.nextTriple(tripleData))
-			vocabulary_->addSubClassOf(tripleData.subject(), tripleData.valueAsString());
-	}
-	{
-		// iterate over all rdfs::subPropertyOf assertions
-		TripleCursor cursor(tripleCollection_);
-		cursor.filter(Document(BCON_NEW(
-									   "p", BCON_UTF8(rdfs::subPropertyOf->stringForm().data()))).bson());
-		while (cursor.nextTriple(tripleData))
-			vocabulary_->addSubPropertyOf(tripleData.subject(), tripleData.valueAsString());
-	}
-	{
-		// iterate over all owl::inverseOf assertions
-		TripleCursor cursor(tripleCollection_);
-		cursor.filter(Document(BCON_NEW(
-									   "p", BCON_UTF8(owl::inverseOf->stringForm().data()))).bson());
-		while (cursor.nextTriple(tripleData))
-			vocabulary_->setInverseOf(tripleData.subject(), tripleData.valueAsString());
-	}
-
-	// query number of assertions of each property.
-	// this is useful information for optimizing the query planner.
-	{
-		const bson_t *result;
-		Cursor cursor(tripleCollection_);
-		Document document(aggregation::Pipeline::loadFromJSON(
-			PIPELINE_RELATION_COUNTER, {
-				{"COLLECTION", tripleCollection_->name()}
-			}));
-		cursor.aggregate(document.bson());
-		while (cursor.next(&result)) {
-			bson_iter_t iter;
-			if (!bson_iter_init(&iter, result)) break;
-			if (!bson_iter_find(&iter, "property")) break;
-			auto property = bson_iter_utf8(&iter, nullptr);
-			if (!bson_iter_find(&iter, "count")) break;
-			auto count = bson_iter_as_int64(&iter);
-			vocabulary_->setFrequency(property, count);
-		}
-	}
-	{
-		const bson_t *result;
-		Cursor cursor(tripleCollection_);
-		Document document(aggregation::Pipeline::loadFromJSON(
-			PIPELINE_CLASS_COUNTER, {
-				{"COLLECTION", tripleCollection_->name()}
-			}));
-		cursor.aggregate(document.bson());
-		while (cursor.next(&result)) {
-			bson_iter_t iter;
-			if (!bson_iter_init(&iter, result)) break;
-			if (!bson_iter_find(&iter, "class")) break;
-			auto cls = bson_iter_utf8(&iter, nullptr);
-			if (!bson_iter_find(&iter, "count")) break;
-			auto count = bson_iter_as_int64(&iter);
-			vocabulary_->setFrequency(cls, count);
-		}
-	}
-
-	// initialize the import hierarchy
-	for (auto &persistedOrigin: tripleCollection_->distinctValues("graph")) {
-		importHierarchy_->addDirectImport(importHierarchy_->ORIGIN_SYSTEM, persistedOrigin);
-	}
 }
 
 void MongoKnowledgeGraph::createSearchIndices() {
@@ -311,33 +220,6 @@ bool MongoKnowledgeGraph::dropSessionOrigins() {
 	return dropOrigin(semweb::ImportHierarchy::ORIGIN_USER) &&
 		   dropOrigin(semweb::ImportHierarchy::ORIGIN_REASONER) &&
 		   dropOrigin(semweb::ImportHierarchy::ORIGIN_SESSION);
-}
-
-void MongoKnowledgeGraph::setVersionOfOrigin(std::string_view origin, std::string_view version) {
-	KB_INFO("[mongodb] set version for origin \"{}\" to \"{}\".", origin, version);
-	tripleCollection_->storeOne(Document(BCON_NEW(
-												 "s", BCON_UTF8(origin.data()),
-												 "p", BCON_UTF8(MONGO_KG_VERSION_KEY),
-												 "o", BCON_UTF8(version.data()),
-												 "graph", BCON_UTF8(origin.data()))));
-}
-
-std::optional<std::string> MongoKnowledgeGraph::getVersionOfOrigin(std::string_view origin) {
-	auto document = Document(BCON_NEW(
-									 "p", BCON_UTF8(MONGO_KG_VERSION_KEY),
-									 "graph", BCON_UTF8(origin.data())));
-	const bson_t *result;
-	Cursor cursor(tripleCollection_);
-	cursor.limit(1);
-	cursor.filter(document.bson());
-	if (cursor.next(&result)) {
-		bson_iter_t iter;
-		if (bson_iter_init(&iter, result) && bson_iter_find(&iter, "o")) {
-			return std::string(bson_iter_utf8(&iter, nullptr));
-		}
-	}
-	// no version is loaded yet
-	return {};
 }
 
 bson_t *MongoKnowledgeGraph::getSelector(
@@ -484,56 +366,118 @@ MongoKnowledgeGraph::lookup(const std::vector<FramedTriplePatternPtr> &tripleExp
 	return cursor;
 }
 
-void MongoKnowledgeGraph::evaluateQuery(const ConjunctiveQueryPtr &query, const TokenBufferPtr &resultStream) {
-	static const auto edbTerm = Atom::Tabled("EDB");
-
-	auto channel = TokenStream::Channel::create(resultStream);
-
-	try {
-		uint32_t limit = (query->flags() & QUERY_FLAG_ONE_SOLUTION) ? 1 : 0;
-		auto cursor = lookup(query->literals(), limit);
-
-		// NOTE: for some reason below causes a cursor error. looks like a bug in libmongoc to me!
-		//       anyways, we add instead a $limit stage in the aggregation pipeline.
-		//if(query->flags() & QUERY_FLAG_ONE_SOLUTION) { cursor->limit(1); }
-
-		bool hasPositiveAnswer = false;
-		while (true) {
-			auto next = std::make_shared<AnswerYes>();
-			next->setReasonerTerm(edbTerm);
-
-			if (cursor->nextAnswer(next, query->literals())) {
-				channel->push(next);
-				hasPositiveAnswer = true;
-			} else {
-				if (!hasPositiveAnswer) {
-					// send one negative answer if no positive answer was found
-					auto negativeAnswer = std::make_shared<AnswerNo>();
-					negativeAnswer->setReasonerTerm(edbTerm);
-					// the answer is uncertain as we only were not able to obtain a positive answer
-					// which does not mean that there is no positive answer.
-					negativeAnswer->setIsUncertain(true);
-					// add ungrounded literals to negative answer.
-					// but at the moment the information is lost at which literal the query failed.
-					// TODO: would be great if we could report the failing literal.
-					//       but seems hard to provide this information in the current framework.
-					//       it could be queried here, but that seems a bit costly.
-					// well at least we know if it is a single literal.
-					if (query->literals().size() == 1) {
-						negativeAnswer->addUngrounded(query->literals().front()->predicate(),
-													  query->literals().front()->isNegated());
-					}
-					channel->push(negativeAnswer);
-				}
-				channel->push(EndOfEvaluation::get());
-				break;
-			}
+void MongoKnowledgeGraph::count(const ResourceCounter &callback) const {
+	{
+		const bson_t *result;
+		Cursor cursor(tripleCollection_);
+		Document document(aggregation::Pipeline::loadFromJSON(
+				PIPELINE_RELATION_COUNTER, {
+						{"COLLECTION", tripleCollection_->name()}
+				}));
+		cursor.aggregate(document.bson());
+		while (cursor.next(&result)) {
+			bson_iter_t iter;
+			if (!bson_iter_init(&iter, result)) break;
+			if (!bson_iter_find(&iter, "property")) break;
+			auto property = bson_iter_utf8(&iter, nullptr);
+			if (!bson_iter_find(&iter, "count")) break;
+			auto count = bson_iter_as_int64(&iter);
+			callback(property, count);
 		}
 	}
-	catch (const std::exception &e) {
-		// make sure EOS is pushed to the stream
-		channel->push(EndOfEvaluation::get());
-		throw;
+	{
+		const bson_t *result;
+		Cursor cursor(tripleCollection_);
+		Document document(aggregation::Pipeline::loadFromJSON(
+				PIPELINE_CLASS_COUNTER, {
+						{"COLLECTION", tripleCollection_->name()}
+				}));
+		cursor.aggregate(document.bson());
+		while (cursor.next(&result)) {
+			bson_iter_t iter;
+			if (!bson_iter_init(&iter, result)) break;
+			if (!bson_iter_find(&iter, "class")) break;
+			auto cls = bson_iter_utf8(&iter, nullptr);
+			if (!bson_iter_find(&iter, "count")) break;
+			auto count = bson_iter_as_int64(&iter);
+			callback(cls, count);
+		}
+	}
+}
+
+bool MongoKnowledgeGraph::contains(const FramedTriple &triple) {
+	bool hasTriple = false;
+	match(FramedTriplePattern(triple), [&hasTriple](const FramedTriple&) {
+		hasTriple = true;
+	});
+	return hasTriple;
+}
+
+void MongoKnowledgeGraph::foreach(const semweb::TripleVisitor &visitor) const {
+	TripleCursor cursor(tripleCollection_);
+	FramedTripleView tripleData;
+	while (cursor.nextTriple(tripleData)) {
+		visitor(tripleData);
+	}
+}
+
+void MongoKnowledgeGraph::match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) {
+	bool b_isTaxonomicProperty = isTaxonomicProperty(query.propertyTerm());
+	TripleCursor cursor(tripleCollection_);
+	FramedTripleView tripleData;
+	bson_t selectorDoc = BSON_INITIALIZER;
+	// filter triples by query
+	aggregation::appendTripleSelector(&selectorDoc,
+									  query,
+									  b_isTaxonomicProperty,
+									  importHierarchy_);
+	cursor.filter(&selectorDoc);
+	while (cursor.nextTriple(tripleData)) {
+		visitor(tripleData);
+	}
+}
+
+void MongoKnowledgeGraph::batch(const semweb::TripleHandler &callback) const {
+	auto batchSize = (batchSize_.has_value() ? batchSize_.value() : 1000);
+	TripleCursor cursor(tripleCollection_);
+	std::vector<FramedTriplePtr> batchData(batchSize);
+	uint32_t currentSize = 0;
+
+	while(true) {
+		if (!cursor.nextTriple(*batchData[currentSize].ptr)) {
+			break;
+		}
+		currentSize++;
+		if (currentSize == batchSize) {
+			auto batch = std::make_shared<ProxyTripleContainer>(&batchData);
+			callback(batch);
+			currentSize = 0;
+		}
+	}
+	if (currentSize != 0) {
+		batchData.resize(currentSize);
+		auto batch = std::make_shared<ProxyTripleContainer>(&batchData);
+		callback(batch);
+	}
+}
+
+void MongoKnowledgeGraph::query(const ConjunctiveQueryPtr &q, const AnswerHandler &callback) {
+	static const auto edbTerm = Atom::Tabled("EDB");
+	uint32_t limit = (q->flags() & QUERY_FLAG_ONE_SOLUTION) ? 1 : 0;
+	auto cursor = lookup(q->literals(), limit);
+	// NOTE: for some reason below causes a cursor error. looks like a bug in libmongoc to me!
+	//       anyways, we add instead a $limit stage in the aggregation pipeline.
+	//if(query->flags() & QUERY_FLAG_ONE_SOLUTION) { cursor->limit(1); }
+
+	while (true) {
+		auto next = std::make_shared<AnswerYes>();
+		next->setReasonerTerm(edbTerm);
+
+		if (cursor->nextAnswer(next, q->literals())) {
+			callback(next);
+		} else {
+			break;
+		}
 	}
 }
 

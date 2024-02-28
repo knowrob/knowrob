@@ -5,6 +5,7 @@
 
 #include "knowrob/db/RedlandModel.h"
 #include "knowrob/db/BackendError.h"
+#include "knowrob/db/BackendManager.h"
 #include "knowrob/db/OntologyParser.h"
 #include "knowrob/semweb/xsd.h"
 #include "knowrob/formulas/Bottom.h"
@@ -21,6 +22,11 @@ using namespace knowrob;
     librdf_new_node_from_blank_identifier(world_, (const unsigned char*)val.data())
 #define KNOWROB_RDF_NEW_LITERAL(val, xsdType) \
     librdf_new_node_from_typed_literal(world_, (const unsigned char*)val, nullptr, xsdType())
+
+/**
+ * Register the backend with the BackendManager
+ */
+KNOWROB_BUILTIN_BACKEND("Redland", RedlandModel)
 
 static inline const char *getStorageTypeString(RedlandStorageType storageType) {
 	switch (storageType) {

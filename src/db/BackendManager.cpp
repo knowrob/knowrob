@@ -149,10 +149,9 @@ void BackendManager::initBackend(const std::shared_ptr<DefinedBackend> &definedK
 		queryable_[definedKG->name()] = queryable;
 	}
 	// check if the backend is a PersistentBackend, if so store it in the persistent_ map
-	auto persistent = std::dynamic_pointer_cast<PersistentBackend>(definedKG->backend());
-	if (persistent) {
+	if (queryable && queryable->isPersistent()) {
 		KB_INFO("adding persistent backend with id '{}'.", definedKG->name());
-		persistent_[definedKG->name()] = persistent;
+		persistent_[definedKG->name()] = queryable;
 	}
 }
 

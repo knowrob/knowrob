@@ -16,13 +16,13 @@ TripleCursor::TripleCursor(const std::shared_ptr<Collection> &collection)
 		  tripleIter_() {
 }
 
-bool TripleCursor::nextTriple(FramedTripleView &tripleData) //NOLINT
+bool TripleCursor::nextTriple(FramedTriple &tripleData) //NOLINT
 {
 	const bson_oid_t *tripleOID = nullptr;
 	return nextTriple(tripleData, &tripleOID);
 }
 
-bool TripleCursor::nextTriple(FramedTripleView &tripleData, const bson_oid_t **tripleOID) //NOLINT
+bool TripleCursor::nextTriple(FramedTriple &tripleData, const bson_oid_t **tripleOID) //NOLINT
 {
 	if (next(&tripleDocument_) &&
 		bson_iter_init(&tripleIter_, tripleDocument_)) {
