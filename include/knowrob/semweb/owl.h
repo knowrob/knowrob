@@ -16,6 +16,7 @@ namespace knowrob::semweb {
         const IRIAtomPtr versionInfo         = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#versionInfo");
         const IRIAtomPtr inverseOf           = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#inverseOf");
         const IRIAtomPtr Class               = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#Class");
+        const IRIAtomPtr Thing               = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#Thing");
         const IRIAtomPtr Restriction         = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#Restriction");
         const IRIAtomPtr ObjectProperty      = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#ObjectProperty");
         const IRIAtomPtr DatatypeProperty    = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#DatatypeProperty");
