@@ -320,7 +320,7 @@ bool MongoKnowledgeGraph::removeAllMatching(const FramedTriplePatternPtr &query)
 	return true;
 }
 
-AnswerCursorPtr MongoKnowledgeGraph::lookup(const FramedTriplePattern &tripleExpression) {
+BindingsCursorPtr MongoKnowledgeGraph::lookup(const FramedTriplePattern &tripleExpression) {
 	bson_t pipelineDoc = BSON_INITIALIZER;
 	bson_t pipelineArray;
 
@@ -336,16 +336,16 @@ AnswerCursorPtr MongoKnowledgeGraph::lookup(const FramedTriplePattern &tripleExp
 	}
 	bson_append_array_end(&pipelineDoc, &pipelineArray);
 
-	auto cursor = std::make_shared<AnswerCursor>(oneCollection_);
+	auto cursor = std::make_shared<BindingsCursor>(oneCollection_);
 	cursor->aggregate(&pipelineDoc);
 	return cursor;
 }
 
-mongo::AnswerCursorPtr MongoKnowledgeGraph::lookup(const FramedTriple &tripleData) {
+mongo::BindingsCursorPtr MongoKnowledgeGraph::lookup(const FramedTriple &tripleData) {
 	return lookup(FramedTriplePattern(tripleData));
 }
 
-mongo::AnswerCursorPtr
+mongo::BindingsCursorPtr
 MongoKnowledgeGraph::lookup(const std::vector<FramedTriplePatternPtr> &tripleExpressions, uint32_t limit) {
 	bson_t pipelineDoc = BSON_INITIALIZER;
 	bson_t pipelineArray;
@@ -361,7 +361,7 @@ MongoKnowledgeGraph::lookup(const std::vector<FramedTriplePatternPtr> &tripleExp
 	}
 	bson_append_array_end(&pipelineDoc, &pipelineArray);
 
-	auto cursor = std::make_shared<AnswerCursor>(oneCollection_);
+	auto cursor = std::make_shared<BindingsCursor>(oneCollection_);
 	cursor->aggregate(&pipelineDoc);
 	return cursor;
 }
@@ -461,8 +461,7 @@ void MongoKnowledgeGraph::batch(const semweb::TripleHandler &callback) const {
 	}
 }
 
-void MongoKnowledgeGraph::query(const ConjunctiveQueryPtr &q, const AnswerHandler &callback) {
-	static const auto edbTerm = Atom::Tabled("EDB");
+void MongoKnowledgeGraph::query(const ConjunctiveQueryPtr &q, const FramedBindingsHandler &callback) {
 	uint32_t limit = (q->flags() & QUERY_FLAG_ONE_SOLUTION) ? 1 : 0;
 	auto cursor = lookup(q->literals(), limit);
 	// NOTE: for some reason below causes a cursor error. looks like a bug in libmongoc to me!
@@ -470,10 +469,8 @@ void MongoKnowledgeGraph::query(const ConjunctiveQueryPtr &q, const AnswerHandle
 	//if(query->flags() & QUERY_FLAG_ONE_SOLUTION) { cursor->limit(1); }
 
 	while (true) {
-		auto next = std::make_shared<AnswerYes>();
-		next->setReasonerTerm(edbTerm);
-
-		if (cursor->nextAnswer(next, q->literals())) {
+		auto next = std::make_shared<FramedBindings>();
+		if (cursor->nextBindings(next)) {
 			callback(next);
 		} else {
 			break;

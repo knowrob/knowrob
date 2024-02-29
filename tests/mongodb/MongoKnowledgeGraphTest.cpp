@@ -35,12 +35,12 @@ protected:
 
 	// void TearDown() override {}
 	template<class T>
-	std::list<std::shared_ptr<AnswerYes>> lookup(const T &data) {
+	std::list<FramedBindingsPtr> lookup(const T &data) {
 		auto cursor = kg_->lookup(data);
-		std::list<std::shared_ptr<AnswerYes>> out;
+		std::list<FramedBindingsPtr> out;
 		while (true) {
-			auto next = std::make_shared<AnswerYes>();
-			if (cursor->nextAnswer(next, {})) {
+			auto next = std::make_shared<FramedBindings>();
+			if (cursor->nextBindings(next)) {
 				out.push_back(next);
 			} else {
 				break;
@@ -161,7 +161,7 @@ TEST_F(MongoKnowledgeGraphTest, KnowledgeOfAgent) {
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
 	for (const auto &solution: lookup(statement)) {
-		EXPECT_TRUE(solution->isCertain());
+		EXPECT_TRUE(solution->frame()->isCertain());
 	}
 	// the statement is not known to be true for other agents
 	statement.setAgent("agent_b");
@@ -176,7 +176,7 @@ TEST_F(MongoKnowledgeGraphTest, Belief) {
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
 	for (const auto &solution: lookup(statement)) {
-		EXPECT_TRUE(solution->isUncertain());
+		EXPECT_TRUE(solution->frame()->isUncertain());
 	}
 	// statement is filtered if knowledge operator is selected
 	statement.setEpistemicOperator(EpistemicOperator::KNOWLEDGE);
@@ -192,7 +192,7 @@ TEST_F(MongoKnowledgeGraphTest, WithConfidence) {
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
 	for (const auto &solution: lookup(statement)) {
-		EXPECT_TRUE(solution->isUncertain());
+		EXPECT_TRUE(solution->frame()->isUncertain());
 	}
 	// confidence threshold of 0.0 does not filter the statement
 	statement.setConfidence(0.0);
@@ -211,7 +211,7 @@ TEST_F(MongoKnowledgeGraphTest, WithTimeInterval) {
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
 	for (const auto &solution: lookup(statement)) {
-		EXPECT_TRUE(solution->isCertain());
+		EXPECT_TRUE(solution->frame()->isCertain());
 		EXPECT_TRUE(solution->frame()->begin.has_value());
 		EXPECT_TRUE(solution->frame()->end.has_value());
 		if (solution->frame()->begin.has_value())

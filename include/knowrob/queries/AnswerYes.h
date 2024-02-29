@@ -23,6 +23,8 @@ namespace knowrob {
 		 */
 		AnswerYes();
 
+		AnswerYes(SubstitutionPtr substitution);
+
 		/**
 		 * Copy constructor.
 		 * @param other another answer.

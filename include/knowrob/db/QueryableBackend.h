@@ -8,6 +8,7 @@
 
 #include "knowrob/queries/ConjunctiveQuery.h"
 #include "knowrob/queries/TokenBuffer.h"
+#include "knowrob/queries/FramedBindings.h"
 #include "DataBackend.h"
 #include "knowrob/queries/Answer.h"
 
@@ -57,7 +58,7 @@ namespace knowrob {
 		 * @param query a graph query
 		 * @param callback a function that is called for each answer to the query.
 		 */
-		virtual void query(const ConjunctiveQueryPtr &query, const AnswerHandler &callback) = 0;
+		virtual void query(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback) = 0;
 
 		/**
 		 * @param callback a function that is called for each resource and its count.
@@ -100,6 +101,11 @@ namespace knowrob {
 		 * @param version a version string.
 		 */
 		void setVersionOfOrigin(std::string_view origin, std::string_view version);
+
+	protected:
+		static AnswerPtr no(const ConjunctiveQueryPtr &q);
+
+		static AnswerPtr yes(const ConjunctiveQueryPtr &q, const FramedBindingsPtr &bindings);
 	};
 
 	using QueryableBackendPtr = std::shared_ptr<QueryableBackend>;

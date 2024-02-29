@@ -13,8 +13,8 @@
 #include "knowrob/db/mongo/Collection.h"
 #include "knowrob/queries/TokenBuffer.h"
 #include "knowrob/formulas/FirstOrderLiteral.h"
-#include "knowrob/db/mongo/AnswerCursor.h"
 #include "knowrob/semweb/ImportHierarchy.h"
+#include "BindingsCursor.h"
 
 namespace knowrob {
 	/**
@@ -71,14 +71,14 @@ namespace knowrob {
 		 * @param tripleExpression a triple expression
 		 * @return a cursor over matching triples
 		 */
-		mongo::AnswerCursorPtr lookup(const FramedTriplePattern &tripleExpression);
+		mongo::BindingsCursorPtr lookup(const FramedTriplePattern &tripleExpression);
 
 		/**
 		 * Lookup up all matching triples.
 		 * @param tripleData an atomic proposition
 		 * @return a cursor over matching triples
 		 */
-		mongo::AnswerCursorPtr lookup(const FramedTriple &tripleData);
+		mongo::BindingsCursorPtr lookup(const FramedTriple &tripleData);
 
 		/**
 		 * Lookup up a path of matching triples.
@@ -87,7 +87,7 @@ namespace knowrob {
 		 * @param tripleExpressions a vector of triple expressions
 		 * @return a cursor over matching triples
 		 */
-		mongo::AnswerCursorPtr lookup(const std::vector<FramedTriplePatternPtr> &tripleExpressions, uint32_t limit = 0);
+		mongo::BindingsCursorPtr lookup(const std::vector<FramedTriplePatternPtr> &tripleExpressions, uint32_t limit = 0);
 
 		/**
 		 * Watch for instantiations of a literal in the knowledge graph.
@@ -133,7 +133,7 @@ namespace knowrob {
 		void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
 
 		// Override QueryableBackend
-		void query(const ConjunctiveQueryPtr &query, const AnswerHandler &callback) override;
+		void query(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback) override;
 
 		// Override QueryableBackend
 		void count(const ResourceCounter &callback) const override;

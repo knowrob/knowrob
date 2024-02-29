@@ -3,9 +3,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <boost/algorithm/string/predicate.hpp>
 #include "knowrob/Logger.h"
-#include "knowrob/db/mongo/AnswerCursor.h"
+#include "knowrob/db/mongo/BindingsCursor.h"
 #include "knowrob/terms/Numeric.h"
 #include "knowrob/terms/IRIAtom.h"
 #include "knowrob/terms/Blank.h"
@@ -13,7 +12,7 @@
 using namespace knowrob;
 using namespace knowrob::mongo;
 
-AnswerCursor::AnswerCursor(const std::shared_ptr<Collection> &collection)
+BindingsCursor::BindingsCursor(const std::shared_ptr<Collection> &collection)
 		: Cursor(collection),
 		  resultDocument_(nullptr),
 		  resultIter_(),
@@ -23,7 +22,7 @@ AnswerCursor::AnswerCursor(const std::shared_ptr<Collection> &collection)
 		  scopeIter_() {
 }
 
-void AnswerCursor::setSubstitution(const std::shared_ptr<AnswerYes> &answer) {
+void BindingsCursor::setSubstitution(const FramedBindingsPtr &bindings) {
 	while (bson_iter_next(&varIter_)) {
 		auto var = std::make_shared<Variable>(bson_iter_key(&varIter_));
 
@@ -38,28 +37,28 @@ void AnswerCursor::setSubstitution(const std::shared_ptr<AnswerYes> &answer) {
 				// so we cannot trivially distinguish between IRI and literal and need to guess here.
 				switch (rdfNodeTypeGuess(utf8)) {
 					case RDFNodeType::BLANK:
-						answer->set(var, std::make_shared<Blank>(utf8));
+						bindings->set(var, std::make_shared<Blank>(utf8));
 						break;
 					case RDFNodeType::IRI:
-						answer->set(var, std::make_shared<IRIAtom>(utf8));
+						bindings->set(var, std::make_shared<IRIAtom>(utf8));
 						break;
 					case RDFNodeType::LITERAL:
-						answer->set(var, std::make_shared<StringView>(utf8));
+						bindings->set(var, std::make_shared<StringView>(utf8));
 						break;
 				}
 				break;
 			}
 			case BSON_TYPE_INT32:
-				answer->set(var, std::make_shared<Integer>(bson_iter_int32(&valIter_)));
+				bindings->set(var, std::make_shared<Integer>(bson_iter_int32(&valIter_)));
 				break;
 			case BSON_TYPE_INT64:
-				answer->set(var, std::make_shared<Long>(bson_iter_int64(&valIter_)));
+				bindings->set(var, std::make_shared<Long>(bson_iter_int64(&valIter_)));
 				break;
 			case BSON_TYPE_BOOL:
-				answer->set(var, std::make_shared<Integer>(bson_iter_bool(&valIter_)));
+				bindings->set(var, std::make_shared<Integer>(bson_iter_bool(&valIter_)));
 				break;
 			case BSON_TYPE_DOUBLE:
-				answer->set(var, std::make_shared<Double>(bson_iter_double(&valIter_)));
+				bindings->set(var, std::make_shared<Double>(bson_iter_double(&valIter_)));
 				break;
 			default:
 				KB_WARN("unsupported type {} for predicate arguments.", bson_iter_type(&valIter_));
@@ -68,7 +67,7 @@ void AnswerCursor::setSubstitution(const std::shared_ptr<AnswerYes> &answer) {
 	}
 }
 
-std::shared_ptr<GraphSelector> AnswerCursor::readAnswerFrame(const std::shared_ptr<AnswerYes> &answer) {
+std::shared_ptr<GraphSelector> BindingsCursor::readAnswerFrame() {
 	std::shared_ptr<GraphSelector> frame;
 
 	while (bson_iter_next(&scopeIter_)) {
@@ -126,40 +125,22 @@ std::shared_ptr<GraphSelector> AnswerCursor::readAnswerFrame(const std::shared_p
 	}
 }
 
-bool AnswerCursor::nextAnswer(
-		const std::shared_ptr<AnswerYes> &answer,
-		const std::vector<FramedTriplePatternPtr> &literals) {
+bool BindingsCursor::nextBindings(const FramedBindingsPtr &bindings) {
 	if (!next(&resultDocument_)) return false;
 	if (!bson_iter_init(&resultIter_, resultDocument_)) return false;
 
-	std::shared_ptr<GraphSelector> frame_rw;
 	while (bson_iter_next(&resultIter_)) {
 		std::string_view resultKey(bson_iter_key(&resultIter_));
 		// read variables from "v_VARS". each sub-field is named according to the field of
 		// a variable.
 		if (resultKey == "v_VARS" && bson_iter_recurse(&resultIter_, &varIter_)) {
-			setSubstitution(answer);
+			setSubstitution(bindings);
 		} else if (resultKey == "v_scope" && bson_iter_recurse(&resultIter_, &scopeIter_)) {
-			frame_rw = readAnswerFrame(answer);
+			auto frame = readAnswerFrame();
+			if (frame) {
+				bindings->setFrame(frame);
+			}
 		}
-	}
-
-	GraphSelectorPtr frame_readonly;
-	if (frame_rw) {
-		frame_readonly = frame_rw;
-		answer->setFrame(frame_rw);
-	} else {
-		frame_readonly = DefaultGraphSelector();
-	}
-
-	// add predicate groundings to the answer
-	for (auto &rdfLiteral: literals) {
-		auto p = rdfLiteral->predicate();
-		auto p_instance = applyBindings(p, *answer->substitution());
-		answer->addGrounding(
-				std::static_pointer_cast<Predicate>(p_instance),
-				frame_readonly,
-				rdfLiteral->isNegated());
 	}
 
 	return true;

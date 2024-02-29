@@ -40,10 +40,36 @@ void SPARQLQuery::dot(std::ostream &os) {
 	os << ". ";
 }
 
+void SPARQLQuery::filter(std::ostream &os, std::string_view varName, const TermPtr &term, FramedTriplePattern::OperatorType operatorType) {
+	if (!term->isAtomic()) return;
+	auto atomic = std::static_pointer_cast<Atomic>(term);
+	os << "FILTER (?" << varName;
+	switch (operatorType) {
+		case FramedTriplePattern::OperatorType::LT:
+			os << " < ";
+			break;
+		case FramedTriplePattern::OperatorType::GT:
+			os << " > ";
+			break;
+		case FramedTriplePattern::OperatorType::LEQ:
+			os << " <= ";
+			break;
+		case FramedTriplePattern::OperatorType::GEQ:
+			os << " >= ";
+			break;
+		case FramedTriplePattern::EQ:
+			os << " = ";
+			break;
+	}
+	os << atomic->stringForm() << ") ";
+}
+
 void SPARQLQuery::where(std::ostream &os, const FramedTriplePattern &triplePattern) {
 	where(os, triplePattern.subjectTerm());
 	where(os, triplePattern.propertyTerm());
 	where(os, triplePattern.objectTerm());
+	// TODO: need to introduce a temporary variable to handle value expressions like `<(5)`.
+	//filter(os, triplePattern.objectTerm(), tempVar, triplePattern.objectOperator());
 	dot(os);
 }
 

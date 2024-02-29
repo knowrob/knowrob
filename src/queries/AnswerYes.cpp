@@ -3,6 +3,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+#include <utility>
+
 #include "iomanip"
 #include "knowrob/queries/AnswerYes.h"
 #include "knowrob/knowrob.h"
@@ -13,6 +15,12 @@ AnswerYes::AnswerYes()
 		: Answer(),
 		  frame_(std::make_shared<GraphSelector>()),
 		  substitution_(std::make_shared<Substitution>()) {
+}
+
+AnswerYes::AnswerYes(SubstitutionPtr substitution)
+		: Answer(),
+		  frame_(std::make_shared<GraphSelector>()),
+		  substitution_(std::move(substitution)) {
 }
 
 AnswerYes::AnswerYes(const AnswerYes &other)

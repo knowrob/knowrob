@@ -60,7 +60,7 @@ namespace knowrob {
 		void finalizeTransformation() override;
 
 		// override GraphTransformation
-		void pushInputTriples(const semweb::MutableTripleContainerPtr &triples) override;
+		void pushInputTriples(const semweb::TripleContainerPtr &triples) override;
 
 	protected:
 		GraphRenamingMap renaming_;

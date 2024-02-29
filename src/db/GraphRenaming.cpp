@@ -45,9 +45,14 @@ void GraphRenaming::finalizeTransformation() {
 	finalizeNext();
 }
 
-void GraphRenaming::pushInputTriples(const semweb::MutableTripleContainerPtr &triples) {
-	for (auto it = triples->beginMutable(); it != triples->endMutable(); ++it) {
-		rename(**it);
+void GraphRenaming::pushInputTriples(const semweb::TripleContainerPtr &triples) {
+	if (triples->isMutable()) {
+		auto mutableTriples = std::static_pointer_cast<semweb::MutableTripleContainer>(triples);
+		for (auto it = mutableTriples->beginMutable(); it != mutableTriples->endMutable(); ++it) {
+			rename(**it);
+		}
+	} else {
+		KB_WARN("Input triples are not mutable which is currently required for renaming.");
 	}
 	pushOutputTriples(triples);
 }

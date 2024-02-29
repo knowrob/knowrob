@@ -13,6 +13,7 @@
 #include "DataBackend.h"
 #include "knowrob/queries/SPARQLQuery.h"
 #include "RedlandURI.h"
+#include "QueryableBackend.h"
 
 namespace knowrob {
 	/**
@@ -42,7 +43,7 @@ namespace knowrob {
 	 * and can load and save triples in different formats, such as RDF/XML, Turtle, and N-Triples.
 	 * It can further interface with SPARQL endpoints.
 	 */
-	class RedlandModel : public DataBackend {
+	class RedlandModel : public QueryableBackend {
 	public:
 		static constexpr std::string_view QUERY_LANGUAGE_SPARQL = "sparql";
 
@@ -122,20 +123,15 @@ namespace knowrob {
 		 */
 		bool load(const URI &uri, semweb::TripleFormat tripleFormat);
 
+		bool sparql(std::string_view queryString, const FramedBindingsHandler &callback) const;
+
 		/**
 		 * Run a SPARQL query on the model.
 		 * @param query the query to run.
 		 * @param callback the callback to handle the results.
 		 * @return true if the query was successful.
 		 */
-		bool query(const SPARQLQuery &query, const SubstitutionHandler &callback) const;
-
-		/**
-		 * Iterate over all triples in the model.
-		 * @param callback the callback to handle the triples.
-		 * @return true if the iteration was successful.
-		 */
-		bool foreach(const semweb::MutableTripleHandler &callback) const;
+		bool query(const SPARQLQuery &query, const FramedBindingsHandler &callback) const;
 
 		// override DataBackend
 		bool insertOne(const FramedTriple &triple) override;
@@ -155,6 +151,27 @@ namespace knowrob {
 		// override DataBackend
 		bool removeAllMatching(const FramedTriplePatternPtr &query) override;
 
+		// Override QueryableBackend
+		bool isPersistent() const override;
+
+		// Override QueryableBackend
+		bool contains(const FramedTriple &triple) override;
+
+		// Override QueryableBackend
+		void foreach(const semweb::TripleVisitor &visitor) const override;
+
+		// Override QueryableBackend
+		void batch(const semweb::TripleHandler &callback) const override;
+
+		// Override QueryableBackend
+		void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
+
+		// Override QueryableBackend
+		void query(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback) override;
+
+		// Override QueryableBackend
+		void count(const ResourceCounter &callback) const override;
+
 	protected:
 		librdf_world *ownedWorld_;
 		librdf_world *world_;
@@ -172,6 +189,7 @@ namespace knowrob {
 		// if set when querying, ignore context nodes and use this origin
 		std::optional<std::string> origin_;
 		std::optional<std::string> host_;
+		std::optional<std::string> port_;
 		std::optional<std::string> database_;
 		std::optional<std::string> user_;
 		std::optional<std::string> password_;
@@ -183,9 +201,15 @@ namespace knowrob {
 
 		void knowrobToRaptor(const FramedTriple &triple, raptor_statement *raptorTriple);
 
+		void knowrobToRaptor(const FramedTriplePattern &pat, raptor_statement *raptorTriple);
+
+		raptor_term* knowrobToRaptor(const TermPtr &term);
+
 		librdf_node *getContextNode(std::string_view origin);
 
 		librdf_node *getContextNode(const FramedTriple &triple);
+
+		void batch(const semweb::TripleHandler &callback, uint32_t batchSize) const;
 
 	private:
 		void finalize();

@@ -49,6 +49,8 @@ namespace knowrob {
 		static void where(std::ostream &os, const FramedTriplePattern &triplePattern);
 
 		static void where(std::ostream &os, const TermPtr &term);
+
+		static void filter(std::ostream &os, std::string_view varName, const TermPtr &term, FramedTriplePattern::OperatorType operatorType);
 	};
 
 } // knowrob

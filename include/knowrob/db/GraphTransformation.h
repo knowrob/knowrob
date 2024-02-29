@@ -49,13 +49,13 @@ namespace knowrob {
 		 * Push output triples to the next transformation or handler.
 		 * @param triples the output triples
 		 */
-		void pushOutputTriples(const semweb::MutableTripleContainerPtr &triples);
+		void pushOutputTriples(const semweb::TripleContainerPtr &triples);
 
 		/**
 		 * Push input triples to the transformation.
 		 * @param triples the input triples
 		 */
-		virtual void pushInputTriples(const semweb::MutableTripleContainerPtr &triples) = 0;
+		virtual void pushInputTriples(const semweb::TripleContainerPtr &triples) = 0;
 
 		/**
 		 * Configure the transformation with the given options.

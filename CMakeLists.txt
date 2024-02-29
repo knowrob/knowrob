@@ -257,7 +257,7 @@ add_library(knowrob SHARED
         src/db/mongo/aggregation/graph.cpp
         src/db/mongo/Pipeline.cpp
         src/db/mongo/TripleCursor.cpp
-        src/db/mongo/AnswerCursor.cpp
+        src/db/mongo/BindingsCursor.cpp
         src/db/mongo/aggregation/terms.cpp
         src/db/mongo/aggregation/triples.cpp
         src/db/mongo/Connection.cpp

@@ -19,6 +19,8 @@ namespace knowrob::semweb {
 		auto empty() const { return asImmutableVector().begin() == asImmutableVector().end(); }
 
 		virtual const std::vector<FramedTriplePtr> &asImmutableVector() const = 0;
+
+		virtual bool isMutable() const { return false; }
 	};
 
 	class ProxyTripleContainer : public TripleContainer {
@@ -39,6 +41,8 @@ namespace knowrob::semweb {
 		auto endMutable() { return asMutableVector().end(); }
 
 		virtual std::vector<FramedTriplePtr> &asMutableVector() = 0;
+
+		bool isMutable() const final { return true; }
 	};
 
 	using ImmutableTripleContainer = TripleContainer;

@@ -64,6 +64,16 @@ namespace knowrob {
 		bool mergeWith(const GraphSelector &other);
 
 		/**
+		 * @return true if only certain triples are selected.
+		 */
+		bool isCertain() const { return !epistemicOperator || epistemicOperator.value() == EpistemicOperator::KNOWLEDGE; }
+
+		/**
+		 * @return true if also uncertain triples are selected.
+		 */
+		bool isUncertain() const { return !isCertain(); }
+
+		/**
 		 * Write this selector to a stream.
 		 * @param os the stream
 		 * @return the stream
