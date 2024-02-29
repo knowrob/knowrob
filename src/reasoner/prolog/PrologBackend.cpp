@@ -38,10 +38,6 @@ bool PrologBackend::removeAllWithOrigin(std::string_view origin) {
 	return PROLOG_ENGINE_EVAL(PrologTerm(rdf_retractall, PrologTerm(), PrologTerm(), PrologTerm(), origin));
 }
 
-bool PrologBackend::removeAllMatching(const FramedTriplePatternPtr &query) {
-	return PROLOG_ENGINE_EVAL(PrologTerm(rdf_retractall, *query));
-}
-
 bool PrologBackend::insertAll(const semweb::TripleContainerPtr &triples) {
 	// :- rdf_transaction(...).
 	return PROLOG_ENGINE_EVAL(transaction(rdf_assert, triples));

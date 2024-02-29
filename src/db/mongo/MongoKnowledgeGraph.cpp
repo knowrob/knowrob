@@ -308,18 +308,6 @@ bool MongoKnowledgeGraph::removeAllWithOrigin(std::string_view graphName) {
 	return dropOrigin(graphName);
 }
 
-bool MongoKnowledgeGraph::removeAllMatching(const FramedTriplePatternPtr &query) {
-	static const bool doMatchMany = true;
-	bool b_isTaxonomicProperty = isTaxonomicProperty(query->propertyTerm());
-	if (doMatchMany) {
-		tripleCollection_->removeAll(Document(getSelector(*query, b_isTaxonomicProperty)));
-	} else {
-		tripleCollection_->removeOne(Document(getSelector(*query, b_isTaxonomicProperty)));
-	}
-	// TODO: does mongo return number of documents removed?
-	return true;
-}
-
 BindingsCursorPtr MongoKnowledgeGraph::lookup(const FramedTriplePattern &tripleExpression) {
 	bson_t pipelineDoc = BSON_INITIALIZER;
 	bson_t pipelineArray;

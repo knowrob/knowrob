@@ -974,14 +974,6 @@ bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
 	return true;
 }
 
-bool KnowledgeBase::removeAllMatching(const FramedTriplePatternPtr &query) {
-	bool all_succeed = true;
-	for (auto &kg: backendManager_->backendPool()) {
-		all_succeed = kg.second->backend()->removeAllMatching(query) && all_succeed;
-	}
-	return all_succeed;
-}
-
 void KnowledgeBase::updateVocabularyInsert(const FramedTriple &tripleData) {
 	// keep track of imports, subclasses, and subproperties
 	if (semweb::isSubClassOfIRI(tripleData.predicate())) {

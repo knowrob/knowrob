@@ -217,11 +217,6 @@ class FactxxReasoner(ReasonerWithBackend):
 		logWarn("removeAllWithOrigin not implemented for FactxxReasoner")
 		return False
 
-	def removeAllMatching(self, query: FramedTriplePattern, do_match_many: bool) -> int:
-		# NOTE: currently only the initial loading of OWL files is supported
-		logWarn("removeMatching not implemented for FactxxReasoner")
-		return 0
-
 	def getDescription(self, indicator: PredicateIndicator) -> PredicateDescription:
 		# NOTE: inferred triples are added to the knowledge base, so no need to respond to queries
 		return None

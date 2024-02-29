@@ -31,10 +31,6 @@ namespace knowrob::py {
 			return call_method<bool>(self, "removeAllWithOrigin", origin.data());
 		}
 
-		bool removeAllMatching(const FramedTriplePatternPtr &query) override {
-			return call_method<int>(self, "removeAllMatching", query);
-		}
-
 	private:
 		PyObject *self;
 	};
@@ -50,7 +46,6 @@ namespace knowrob::py {
 				.def("insertAll", pure_virtual(&DataBackendWrap::insertAll))
 				.def("removeAll", pure_virtual(&DataBackendWrap::removeAll))
 				.def("removeOne", pure_virtual(&DataBackendWrap::removeOne))
-				.def("removeAllWithOrigin", pure_virtual(&DataBackendWrap::removeAllWithOrigin))
-				.def("removeAllMatching", pure_virtual(&DataBackendWrap::removeAllMatching));
+				.def("removeAllWithOrigin", pure_virtual(&DataBackendWrap::removeAllWithOrigin));
 	}
 }

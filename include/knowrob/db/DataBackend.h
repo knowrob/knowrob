@@ -53,13 +53,6 @@ namespace knowrob {
 		 * @param origin the origin of the statements to be deleted.
 		 */
 		virtual bool removeAllWithOrigin(std::string_view origin) = 0;
-
-		/**
-		 * Delete all matching statements from this backend.
-		 * @param query an expression used to match triples in the backend.
-		 * @return the number of deleted triples.
-		 */
-		virtual bool removeAllMatching(const FramedTriplePatternPtr &query) = 0;
 	};
 
 	/**

@@ -208,10 +208,6 @@ namespace knowrob::py {
 			return knowrob::py::call_method<bool>(self, "removeAllWithOrigin", origin.data());
 		}
 
-		bool removeAllMatching(const FramedTriplePatternPtr &query) override {
-			return knowrob::py::call_method<int>(self, "removeAllMatching", query);
-		}
-
 		PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override {
 			return knowrob::py::call_method<PredicateDescriptionPtr>(self, "getDescription", indicator);
 		}

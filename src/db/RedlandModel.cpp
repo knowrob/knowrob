@@ -353,15 +353,6 @@ bool RedlandModel::removeAllWithOrigin(std::string_view origin) {
 	return true;
 }
 
-bool RedlandModel::removeAllMatching(const FramedTriplePatternPtr &lit) {
-	auto instances = std::make_shared<RDFLiteralContainer>();
-	query(SPARQLQuery(*lit), [&](const SubstitutionPtr &bindings) {
-		instances->push_back(applyBindings(lit, *bindings));
-	});
-	removeAll(instances);
-	return true;
-}
-
 void RedlandModel::foreach(const semweb::TripleVisitor &visitor) const {
 	batch([&](const semweb::TripleContainerPtr &container){
 		visitor(*container->asImmutableVector()[0]);

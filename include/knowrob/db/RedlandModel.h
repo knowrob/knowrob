@@ -145,9 +145,6 @@ namespace knowrob {
 		// override DataBackend
 		bool removeAllWithOrigin(std::string_view origin) override;
 
-		// override DataBackend
-		bool removeAllMatching(const FramedTriplePatternPtr &query) override;
-
 		// Override QueryableBackend
 		bool isPersistent() const override;
 

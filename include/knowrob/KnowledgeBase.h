@@ -137,9 +137,6 @@ namespace knowrob {
 		// override IDataBackend
 		bool removeAllWithOrigin(std::string_view origin) override;
 
-		// override IDataBackend
-		bool removeAllMatching(const FramedTriplePatternPtr &query) override;
-
 	protected:
 		std::shared_ptr<ReasonerManager> reasonerManager_;
 		std::shared_ptr<BackendManager> backendManager_;
