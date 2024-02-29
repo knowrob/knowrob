@@ -32,9 +32,6 @@ namespace knowrob {
 		// This module provides storage via the SQLite relational database when available and supports SQLite V2 and V3.
 		SQLITE
 	};
-	// TODO: maybe need to introduce sub-types for RedlandStorageType's above.
-	//       e.g. only some would implement PersistentBackend, and
-	//       only few of the types support context nodes.
 
 	/**
 	 * Interface for a Redland model.

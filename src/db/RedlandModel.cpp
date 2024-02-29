@@ -293,6 +293,8 @@ bool RedlandModel::insertOne(const FramedTriple &knowrobTriple) {
 	// map the knowrob triple into a raptor triple
 	knowrobToRaptor(knowrobTriple, raptorTriple);
 	// add the triple together with a context node holding the origin literal
+	// FIXME: some storage types do not support contexts afaik. Does this mean we cannot use
+	//        librdf_model_context_* functions at all? If so, then this is a problem in quite a few functions below.
 	librdf_model_context_add_statement(model_, getContextNode(knowrobTriple), raptorTriple);
 	librdf_free_statement(raptorTriple);
 	return true;
