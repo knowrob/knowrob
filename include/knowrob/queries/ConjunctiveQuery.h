@@ -20,31 +20,27 @@ namespace knowrob {
 		 * @param literals an ordered sequence of literals.
 		 * @param ctx the query context.
 		 */
-		ConjunctiveQuery(const std::vector<FramedTriplePatternPtr> &literals, const QueryContextPtr &ctx);
+		explicit ConjunctiveQuery(const std::vector<FramedTriplePatternPtr> &literals, const QueryContextPtr &ctx = DefaultQueryContext());
 
 		/**
 		 * @param literal a single literal.
 		 * @param ctx the query context.
 		 */
-		ConjunctiveQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx);
+		explicit ConjunctiveQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx = DefaultQueryContext());
 
 		/**
 		 * @return the literals of the query.
 		 */
 		const auto &literals() const { return literals_; }
 
-		// Override Query
-		const FormulaPtr &formula() const override;
-
-		// Override Query
-		std::ostream &print(std::ostream &os) const override;
-
-		// Override Query
-		QueryType type() const override { return QueryType::CONJUNCTIVE; }
-
 	protected:
 		std::vector<FramedTriplePatternPtr> literals_;
 		FormulaPtr formula_;
+
+		// Override Query
+		void write(std::ostream &os) const override { os << *formula_; }
+
+		explicit ConjunctiveQuery(QueryContextPtr ctx = DefaultQueryContext()) : Query(ctx) {}
 
 		void init();
 	};

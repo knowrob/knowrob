@@ -87,12 +87,6 @@ namespace knowrob {
 		void setOrigin(std::string_view origin) { origin_ = origin; }
 
 		/**
-		 * The size of the container used when triples are processed in batches.
-		 * @param batchSize the batch size for the backend.
-		 */
-		void setBatchSize(uint32_t batchSize) { batchSize_ = batchSize; }
-
-		/**
 		 * @return the redland storage type of the model.
 		 */
 		auto storageType() const { return storageType_; }
@@ -120,6 +114,12 @@ namespace knowrob {
 		 */
 		bool load(const URI &uri, semweb::TripleFormat tripleFormat);
 
+		/**
+		 * Run a SPARQL query on the model.
+		 * @param queryString the query to run.
+		 * @param callback the callback to handle the results.
+		 * @return true if the query was successful.
+		 */
 		bool sparql(std::string_view queryString, const FramedBindingsHandler &callback) const;
 
 		/**
@@ -149,19 +149,19 @@ namespace knowrob {
 		bool isPersistent() const override;
 
 		// Override QueryableBackend
-		bool contains(const FramedTriple &triple) override;
+		bool containsDirect(const FramedTriple &triple) override;
 
 		// Override QueryableBackend
-		void foreach(const semweb::TripleVisitor &visitor) const override;
+		void foreachDirect(const semweb::TripleVisitor &visitor) const override;
 
 		// Override QueryableBackend
-		void batch(const semweb::TripleHandler &callback) const override;
+		void batchDirect(const semweb::TripleHandler &callback) const override;
 
 		// Override QueryableBackend
-		void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
+		void matchDirect(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
 
 		// Override QueryableBackend
-		void query(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback) override;
+		void queryDirect(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback) override;
 
 		// Override QueryableBackend
 		void count(const ResourceCounter &callback) const override;
@@ -175,7 +175,8 @@ namespace knowrob {
 		// the uris are created within the context of a librdf_world, so
 		// they cannot be defined statically.
 		RedlandURI xsdURIs_[static_cast<int>(XSDType::LAST)];
-		RedlandURI& xsdURI(XSDType xsdType);
+
+		RedlandURI &xsdURI(XSDType xsdType);
 
 		std::map<std::string, librdf_node *, std::less<>> contextNodes_;
 
@@ -187,7 +188,6 @@ namespace knowrob {
 		std::optional<std::string> database_;
 		std::optional<std::string> user_;
 		std::optional<std::string> password_;
-		std::optional<uint32_t> batchSize_;
 		RedlandStorageType storageType_;
 		std::string storageOptions_;
 
@@ -197,13 +197,13 @@ namespace knowrob {
 
 		void knowrobToRaptor(const FramedTriplePattern &pat, raptor_statement *raptorTriple);
 
-		raptor_term* knowrobToRaptor(const TermPtr &term);
+		raptor_term *knowrobToRaptor(const TermPtr &term);
 
 		librdf_node *getContextNode(std::string_view origin);
 
 		librdf_node *getContextNode(const FramedTriple &triple);
 
-		void batch(const semweb::TripleHandler &callback, uint32_t batchSize) const;
+		void batchDirect(const semweb::TripleHandler &callback, uint32_t batchSize) const;
 
 	private:
 		void finalize();

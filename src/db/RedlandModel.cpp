@@ -93,7 +93,7 @@ bool RedlandModel::isInitialized() const {
 
 bool RedlandModel::isPersistent() const {
 	return storageType_ != RedlandStorageType::MEMORY &&
-	       storageType_ != RedlandStorageType::HASHES;
+		   storageType_ != RedlandStorageType::HASHES;
 }
 
 #define REDLAND_REQUIRE_UNINITIALIZED(name, field, val) do {\
@@ -182,7 +182,7 @@ bool RedlandModel::initializeBackend(const ReasonerConfig &config) {
 	auto o_db = ptree->get_optional<std::string>(REDLAND_SETTING_DB);
 	auto o_origin = ptree->get_optional<std::string>(REDLAND_SETTING_ORIGIN);
 	auto o_storage = ptree->get_optional<std::string>(REDLAND_SETTING_STORAGE);
-	auto o_batchSize = ptree->get_optional<uint32_t >(REDLAND_SETTING_BATCH_SIZE);
+	auto o_batchSize = ptree->get_optional<uint32_t>(REDLAND_SETTING_BATCH_SIZE);
 
 	if (o_host) host_ = o_host.value();
 	if (o_port) port_ = o_port.value();
@@ -202,7 +202,7 @@ bool RedlandModel::initializeBackend(const ReasonerConfig &config) {
 		} else if (o_storage.value() == "sqlite") {
 			storageType_ = RedlandStorageType::SQLITE;
 		} else {
-			KB_WARN("Unknown storage type \"{}\".", o_storage.value());
+			KB_WARN("Unknown storage type \"{}\", falling back to memory.", o_storage.value());
 		}
 	}
 	// finally call initializeBackend()
@@ -353,18 +353,17 @@ bool RedlandModel::removeAllWithOrigin(std::string_view origin) {
 	return true;
 }
 
-void RedlandModel::foreach(const semweb::TripleVisitor &visitor) const {
-	batch([&](const semweb::TripleContainerPtr &container){
-		visitor(*container->asImmutableVector()[0]);
+void RedlandModel::foreachDirect(const semweb::TripleVisitor &visitor) const {
+	batchDirect([&](const semweb::TripleContainerPtr &container) {
+		visitor(*container->begin()->ptr);
 	}, 1);
 }
 
-void RedlandModel::batch(const semweb::TripleHandler &callback) const {
-	auto batchSize = (batchSize_.has_value() ? batchSize_.value() : 1000);
-	batch(callback, batchSize);
+void RedlandModel::batchDirect(const semweb::TripleHandler &callback) const {
+	batchDirect(callback, batchSize_);
 }
 
-void RedlandModel::batch(const semweb::TripleHandler &callback, uint32_t batchSize) const {
+void RedlandModel::batchDirect(const semweb::TripleHandler &callback, uint32_t batchSize) const {
 	auto triples = std::make_shared<RaptorContainer>(batchSize);
 	auto contexts = librdf_model_get_contexts(model_);
 
@@ -394,7 +393,7 @@ void RedlandModel::batch(const semweb::TripleHandler &callback, uint32_t batchSi
 	librdf_free_iterator(contexts);
 }
 
-bool RedlandModel::contains(const FramedTriple &triple) {
+bool RedlandModel::containsDirect(const FramedTriple &triple) {
 	auto raptorTriple = librdf_new_statement(world_);
 	knowrobToRaptor(triple, raptorTriple);
 	auto result = librdf_model_contains_statement(model_, raptorTriple);
@@ -402,7 +401,7 @@ bool RedlandModel::contains(const FramedTriple &triple) {
 	return result;
 }
 
-void RedlandModel::match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) {
+void RedlandModel::matchDirect(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) {
 	auto triples = std::make_shared<RaptorContainer>(1);
 	auto rdf_query = librdf_new_statement(world_);
 	knowrobToRaptor(query, rdf_query);
@@ -412,16 +411,18 @@ void RedlandModel::match(const FramedTriplePattern &query, const semweb::TripleV
 		auto rdf_statement = librdf_stream_get_object(stream);
 		// TODO: handle object operator
 		triples->add(rdf_statement->subject, rdf_statement->predicate, rdf_statement->object);
-		visitor(*triples->asMutableVector()[0]);
+		visitor(*triples->begin()->ptr);
 		triples->reset();
 		librdf_stream_next(stream);
 	}
 	librdf_free_stream(stream);
 }
 
-void RedlandModel::query(const ConjunctiveQueryPtr &q, const FramedBindingsHandler &callback) {
+void RedlandModel::queryDirect(const ConjunctiveQueryPtr &q, const FramedBindingsHandler &callback) {
+	// TODO: do not ignore query context
+	//SPARQLQuery sparqlQuery(q->literals(), q->ctx());
 	SPARQLQuery sparqlQuery(q->literals());
-	query(sparqlQuery, callback);
+	sparql(sparqlQuery(), callback);
 }
 
 bool RedlandModel::sparql(std::string_view queryString, const FramedBindingsHandler &callback) const {
@@ -432,7 +433,7 @@ bool RedlandModel::sparql(std::string_view queryString, const FramedBindingsHand
 			world_,
 			QUERY_LANGUAGE_SPARQL.data(),
 			nullptr,
-			(unsigned char*)queryString.data(),
+			(unsigned char *) queryString.data(),
 			nullptr);
 	if (!queryObj) {
 		KB_WARN("Failed to create query `{}` for model \"{}\".", queryString, storageName_);
@@ -468,19 +469,19 @@ bool RedlandModel::sparql(std::string_view queryString, const FramedBindingsHand
 	return true;
 }
 
-bool RedlandModel::query(const SPARQLQuery &query, const FramedBindingsHandler &callback) const {
-	return sparql(query(), callback);
+bool RedlandModel::query(const SPARQLQuery &q, const FramedBindingsHandler &callback) const {
+	return sparql(q(), callback);
 }
 
 void RedlandModel::count(const ResourceCounter &callback) const {
 	// TODO: could be moved to a sparql interface
-	static const char* sparqlString = "SELECT ?resource (COUNT(?s) AS ?count) WHERE "\
-	            "{ ?s rdf:type ?resource . } UNION { ?s ?resource ?o . } } "\
-	            "GROUP BY ?resource";
+	static const char *sparqlString = "SELECT ?resource (COUNT(?s) AS ?count) WHERE "\
+                "{ ?s rdf:type ?resource . } UNION { ?s ?resource ?o . } } "\
+                "GROUP BY ?resource";
 	sparql(sparqlString, [&](const SubstitutionPtr &bindings) {
 		auto resource = bindings->getAtomic("resource");
 		auto count = bindings->getAtomic("count");
-		if(!resource || !count || !count->isNumeric()) {
+		if (!resource || !count || !count->isNumeric()) {
 			KB_WARN("Failed to count triples!");
 			return;
 		}
@@ -509,11 +510,11 @@ librdf_node *RedlandModel::getContextNode(const FramedTriple &triple) {
 			semweb::ImportHierarchy::ORIGIN_USER);
 }
 
-RedlandURI& RedlandModel::xsdURI(XSDType xsdType) {
+RedlandURI &RedlandModel::xsdURI(XSDType xsdType) {
 	return xsdURIs_[static_cast<int>(xsdType)];
 }
 
-raptor_term* RedlandModel::knowrobToRaptor(const TermPtr &term) {
+raptor_term *RedlandModel::knowrobToRaptor(const TermPtr &term) {
 	if (!term || !term->isAtomic()) {
 		return nullptr;
 	}
@@ -534,15 +535,15 @@ raptor_term* RedlandModel::knowrobToRaptor(const TermPtr &term) {
 
 void RedlandModel::knowrobToRaptor(const FramedTriplePattern &pat, raptor_statement *raptorTriple) {
 	raptor_term *subject, *predicate, *object;
-	if(pat.subjectTerm()) {
+	if (pat.subjectTerm()) {
 		subject = knowrobToRaptor(pat.subjectTerm());
 		librdf_statement_set_subject(raptorTriple, subject);
 	}
-	if(pat.propertyTerm()) {
+	if (pat.propertyTerm()) {
 		predicate = knowrobToRaptor(pat.propertyTerm());
 		librdf_statement_set_predicate(raptorTriple, predicate);
 	}
-	if(pat.objectTerm()) {
+	if (pat.objectTerm()) {
 		object = knowrobToRaptor(pat.objectTerm());
 		librdf_statement_set_object(raptorTriple, object);
 	}
@@ -558,9 +559,9 @@ void RedlandModel::knowrobToRaptor(const FramedTriple &triple, raptor_statement 
 	}
 	if (triple.isObjectBlank()) {
 		object = KNOWROB_RDF_NEW_BLANK(triple.valueAsString());
-	} else if(triple.isObjectIRI()) {
+	} else if (triple.isObjectIRI()) {
 		object = KNOWROB_RDF_NEW_URI(triple.valueAsString());
-	} else if(triple.xsdType()) {
+	} else if (triple.xsdType()) {
 		switch (triple.xsdType().value()) {
 			case XSDType::STRING:
 				object = KNOWROB_RDF_NEW_LITERAL(triple.valueAsString().data(), xsdURI(triple.xsdType().value()));

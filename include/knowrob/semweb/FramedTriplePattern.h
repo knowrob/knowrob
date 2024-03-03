@@ -172,11 +172,12 @@ namespace knowrob {
 		uint32_t numVariables() const override;
 
 		/**
-		 * Map this pattern into a triple.
-		 * @param data the triple to be filled.
-		 * @return true if the triple was filled.
+		 * Map the instantiation of this expression into a triple.
+		 * @param triple the triple to be instantiated.
+		 * @param bindings the substitution to be applied.
+		 * @return true if the instantiation was successful.
 		 */
-		bool toStatementData(FramedTriple &data) const;
+		bool instantiateInto(FramedTriple &triple, const std::shared_ptr<const Substitution> &bindings = Substitution::emptySubstitution()) const;
 
 	protected:
 		TermPtr subjectTerm_;
@@ -218,11 +219,18 @@ namespace knowrob {
 	/**
 	 * A container that maps a vector of framed triple patterns into a vector of framed triples.
 	 */
-	class RDFLiteralContainer : public semweb::TripleContainer {
+	class TriplePatternContainer : public semweb::MutableTripleContainer {
 	public:
-		void push_back(const FramedTriplePatternPtr &triple);
+		/**
+		 * @param triple a triple query.
+		 */
+		void push_back(const FramedTriplePatternPtr &q);
 
-		const std::vector<FramedTriplePtr> &asImmutableVector() const override { return data_; }
+		// Override TripleContainer
+		ConstGenerator cgenerator() const override;
+
+		// Override MutableTripleContainer
+		MutableGenerator generator() override;
 
 	protected:
 		std::vector<FramedTriplePtr> data_;

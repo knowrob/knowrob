@@ -48,7 +48,7 @@ void GraphRenaming::finalizeTransformation() {
 void GraphRenaming::pushInputTriples(const semweb::TripleContainerPtr &triples) {
 	if (triples->isMutable()) {
 		auto mutableTriples = std::static_pointer_cast<semweb::MutableTripleContainer>(triples);
-		for (auto it = mutableTriples->beginMutable(); it != mutableTriples->endMutable(); ++it) {
+		for (auto it = mutableTriples->begin(); it != mutableTriples->end(); ++it) {
 			rename(**it);
 		}
 	} else {

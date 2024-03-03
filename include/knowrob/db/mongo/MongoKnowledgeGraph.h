@@ -87,7 +87,8 @@ namespace knowrob {
 		 * @param tripleExpressions a vector of triple expressions
 		 * @return a cursor over matching triples
 		 */
-		mongo::BindingsCursorPtr lookup(const std::vector<FramedTriplePatternPtr> &tripleExpressions, uint32_t limit = 0);
+		mongo::BindingsCursorPtr
+		lookup(const std::vector<FramedTriplePatternPtr> &tripleExpressions, uint32_t limit = 0);
 
 		/**
 		 * Watch for instantiations of a literal in the knowledge graph.
@@ -114,23 +115,26 @@ namespace knowrob {
 		// Override DataBackend
 		bool removeAllWithOrigin(std::string_view origin) override;
 
+		// Override DataBackend
+		bool canStoreTripleContext() const override { return true; }
+
 		// Override QueryableBackend
 		bool isPersistent() const override { return true; }
 
 		// Override QueryableBackend
-		bool contains(const FramedTriple &triple) override;
+		bool containsDirect(const FramedTriple &triple) override;
 
 		// Override QueryableBackend
-		void foreach(const semweb::TripleVisitor &visitor) const override;
+		void foreachDirect(const semweb::TripleVisitor &visitor) const override;
 
 		// Override QueryableBackend
-		void batch(const semweb::TripleHandler &callback) const override;
+		void batchDirect(const semweb::TripleHandler &callback) const override;
 
 		// Override QueryableBackend
-		void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
+		void matchDirect(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
 
 		// Override QueryableBackend
-		void query(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback) override;
+		void queryDirect(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback) override;
 
 		// Override QueryableBackend
 		void count(const ResourceCounter &callback) const override;

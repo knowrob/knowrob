@@ -350,7 +350,7 @@ namespace knowrob::py {
 				.def("end", &FramedTriple::end)
 				.def("confidence", &FramedTriple::confidence);
 		class_<FramedTripleCopy, std::shared_ptr<FramedTripleCopy>, bases<FramedTriple>>
-				("FramedTriple", init<>())
+				("FramedTripleCopy", init<>())
 				.def(init<std::string_view, std::string_view, std::string_view>());
 		class_<FramedTripleView, std::shared_ptr<FramedTripleView>, bases<FramedTriple>>
 				("FramedTripleView", init<>())

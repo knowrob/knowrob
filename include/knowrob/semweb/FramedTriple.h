@@ -351,6 +351,60 @@ namespace knowrob {
 			xsdType_ = std::nullopt;
 		}
 
+		explicit FramedTripleTemplate(const FramedTriple &other)
+				: FramedTriple() {
+			subject_ = other.subject();
+			predicate_ = other.predicate();
+			xsdType_ = other.xsdType();
+			graph_ = other.graph();
+			agent_ = other.agent();
+			temporalOperator_ = other.temporalOperator();
+			epistemicOperator_ = other.epistemicOperator();
+			begin_ = other.begin();
+			end_ = other.end();
+			confidence_ = other.confidence();
+
+			if (!xsdType_) {
+				object_ = StringType(other.valueAsString());
+			} else {
+				switch (*xsdType_) {
+					case XSDType::STRING:
+						object_ = StringType(other.valueAsString());
+						break;
+					case XSDType::FLOAT:
+						object_ = other.valueAsFloat();
+						break;
+					case XSDType::DOUBLE:
+						object_ = other.valueAsDouble();
+						break;
+					case XSDType::LONG:
+						object_ = other.valueAsLong();
+						break;
+					case XSDType::NON_NEGATIVE_INTEGER:
+					case XSDType::INTEGER:
+						object_ = other.valueAsInt();
+						break;
+					case XSDType::BOOLEAN:
+						object_ = other.valueAsBoolean();
+						break;
+					case XSDType::SHORT:
+						object_ = other.valueAsShort();
+						break;
+					case XSDType::UNSIGNED_LONG:
+						object_ = other.valueAsUnsignedLong();
+						break;
+					case XSDType::UNSIGNED_INT:
+						object_ = other.valueAsUnsignedInt();
+						break;
+					case XSDType::UNSIGNED_SHORT:
+						object_ = other.valueAsUnsignedShort();
+						break;
+					case XSDType::LAST:
+						break;
+				}
+			}
+		}
+
 		// Override FramedTriple
 		void setSubject(std::string_view subject) override { subject_ = subject; }
 
@@ -483,9 +537,17 @@ namespace knowrob {
 	using FramedTripleCopy = FramedTripleTemplate<std::string>;
 	using FramedTripleView = FramedTripleTemplate<std::string_view>;
 
+	/**
+	 * A shared pointer to a FramedTriple that can have ownership of the object.
+	 * Be careful when using this struct as the triple is deleted by the ptr which has
+	 * the ownership flag set to true.
+	 * Copies are allowed and have the ownership flag set to false.
+	 */
 	struct FramedTriplePtr {
 		FramedTriple *ptr;
-		bool owned;
+		// The ownership flag.
+		// It is marked as mutable to allow changing ownership even if we have a const reference to the object.
+		mutable bool owned;
 
 		explicit FramedTriplePtr() : ptr(nullptr), owned(false) {}
 

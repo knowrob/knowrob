@@ -313,7 +313,7 @@ public:
 								std::static_pointer_cast<Predicate>(psi), false);
 						data[dataIndex].ptr = new FramedTripleCopy();
 						data[dataIndex].owned = true;
-						buf[dataIndex]->toStatementData(*data[dataIndex].ptr);
+						buf[dataIndex]->instantiateInto(*data[dataIndex].ptr);
 						dataIndex += 1;
 						break;
 					default:

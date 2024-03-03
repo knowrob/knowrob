@@ -3,16 +3,18 @@
 //
 
 #include "knowrob/queries/Query.h"
-#include "knowrob/KnowledgeBase.h"
 
 using namespace knowrob;
 
-int Query::defaultFlags()
-{ return (int)QueryFlag::QUERY_FLAG_ALL_SOLUTIONS; }
+namespace knowrob {
+	QueryContextPtr DefaultQueryContext() {
+		return std::make_shared<QueryContext>();
+	}
+}
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const knowrob::Query& q) //NOLINT
-	{
-		return q.print(os);
+	std::ostream &operator<<(std::ostream &os, const knowrob::Query &q) { //NOLINT
+		QueryWriter(q, os);
+		return os;
 	}
 }

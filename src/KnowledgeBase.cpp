@@ -27,6 +27,8 @@
 #include "knowrob/semweb/TripleFormat.h"
 #include "knowrob/db/OntologyFile.h"
 #include "knowrob/db/SPARQLService.h"
+#include "knowrob/reification/ReifiedTriple.h"
+#include "knowrob/reification/ReificationContainer.h"
 #include "knowrob/semweb/TripleContainer.h"
 #include "knowrob/semweb/rdf.h"
 #include "knowrob/semweb/owl.h"
@@ -112,7 +114,7 @@ void KnowledgeBase::initVocabulary() {
 		auto backend = it.second;
 
 		// initialize the import hierarchy
-		for (auto &origin : backend->getOrigins()) {
+		for (auto &origin: backend->getOrigins()) {
 			importHierarchy_->addDirectImport(importHierarchy_->ORIGIN_SYSTEM, origin);
 		}
 
@@ -809,15 +811,27 @@ static inline std::shared_ptr<ThreadPool::Runner> pushPerTripleWork(
 }
 
 bool KnowledgeBase::insertOne(const FramedTriple &triple) {
+	// TODO: redundant with below
+	ReifiedTriplePtr reification;
 	// find the source backend, if any
 	auto sourceBackend = findSourceBackend(triple);
 	// insert into all other backends
 	for (auto &definedBackend: backendManager_->backendPool()) {
+		auto &backend = definedBackend.second->backend();
 		// skip the source backend
-		if (definedBackend.second->backend() == sourceBackend) continue;
+		if (backend == sourceBackend) continue;
 
-		if (!definedBackend.second->backend()->insertOne(triple)) {
-			KB_WARN("assertion of triple into backend '{}' failed!", definedBackend.first);
+		if (!backend->canStoreTripleContext()) {
+			if (!reification) reification = std::make_shared<ReifiedTriple>(triple, vocabulary());
+			for (auto &reified: *reification) {
+				if (!backend->insertOne(*reified.ptr)) {
+					KB_WARN("assertion of triple into backend '{}' failed!", definedBackend.first);
+				}
+			}
+		} else {
+			if (!backend->insertOne(triple)) {
+				KB_WARN("assertion of triple into backend '{}' failed!", definedBackend.first);
+			}
 		}
 	}
 	updateVocabularyInsert(triple);
@@ -825,15 +839,26 @@ bool KnowledgeBase::insertOne(const FramedTriple &triple) {
 }
 
 bool KnowledgeBase::removeOne(const FramedTriple &triple) {
+	ReifiedTriplePtr reification;
 	// find the source backend, if any
 	auto sourceBackend = findSourceBackend(triple);
 	// insert into all other backends
 	for (auto &definedBackend: backendManager_->backendPool()) {
+		auto &backend = definedBackend.second->backend();
 		// skip the source backend
-		if (definedBackend.second->backend() == sourceBackend) continue;
+		if (backend == sourceBackend) continue;
 
-		if (!definedBackend.second->backend()->removeOne(triple)) {
-			KB_WARN("deletion of triple from backend '{}' failed!", definedBackend.first);
+		if (!backend->canStoreTripleContext()) {
+			if (!reification) reification = std::make_shared<ReifiedTriple>(triple, vocabulary());
+			for (auto &reified: *reification) {
+				if (!backend->removeOne(*reified.ptr)) {
+					KB_WARN("deletion of triple from backend '{}' failed!", definedBackend.first);
+				}
+			}
+		} else {
+			if (!backend->removeOne(triple)) {
+				KB_WARN("deletion of triple from backend '{}' failed!", definedBackend.first);
+			}
 		}
 	}
 	updateVocabularyRemove(triple);
@@ -844,6 +869,7 @@ bool KnowledgeBase::insertAllInto(const semweb::TripleContainerPtr &triples,
 								  const std::vector<std::shared_ptr<DefinedBackend>> &backends) {
 	// TODO: apply filter before inserting into backends. each backend should be able to specify GraphSelector
 	//       used for the filtering. e.g. historic triples should not be inserted into backends that do not support time.
+	// TODO: redundant with below
 	if (triples->empty()) return true;
 
 	// find the source backend, if any.
@@ -855,11 +881,19 @@ bool KnowledgeBase::insertAllInto(const semweb::TripleContainerPtr &triples,
 										 });
 
 	// insert into all other backends. currently only a warning is printed if insertion fails for a backend.
+	semweb::TripleContainerPtr reified;
 	std::vector<std::shared_ptr<DataTransaction>> transactions;
 	for (auto &definedBackend: backends) {
 		// skip the source backend
 		if (definedBackend->backend() == sourceBackend) continue;
-		transactions.push_back(createTransaction<DataInsertion>(definedBackend, triples));
+		semweb::TripleContainerPtr backendTriples;
+		if (!definedBackend->backend()->canStoreTripleContext()) {
+			if (!reified) reified = std::make_shared<ReificationContainer>(triples, vocabulary());
+			backendTriples = reified;
+		} else {
+			backendTriples = triples;
+		}
+		transactions.push_back(createTransaction<DataInsertion>(definedBackend, backendTriples));
 	}
 
 	// wait for all transactions to finish
@@ -886,11 +920,21 @@ bool KnowledgeBase::insertAll(const semweb::TripleContainerPtr &triples) {
 										 });
 
 	// insert into all other backends. currently only a warning is printed if insertion fails for a backend.
+	semweb::TripleContainerPtr reified;
 	std::vector<std::shared_ptr<DataTransaction>> transactions;
 	for (auto &definedBackend: backendManager_->backendPool()) {
+		auto &backend = definedBackend.second->backend();
 		// skip the source backend
-		if (definedBackend.second->backend() == sourceBackend) continue;
-		transactions.push_back(createTransaction<DataInsertion>(definedBackend.second, triples));
+		if (backend == sourceBackend) continue;
+
+		semweb::TripleContainerPtr backendTriples;
+		if (!backend->canStoreTripleContext()) {
+			if (!reified) reified = std::make_shared<ReificationContainer>(triples, vocabulary());
+			backendTriples = reified;
+		} else {
+			backendTriples = triples;
+		}
+		transactions.push_back(createTransaction<DataInsertion>(definedBackend.second, backendTriples));
 	}
 
 	// wait for all transactions to finish
@@ -911,11 +955,22 @@ bool KnowledgeBase::removeAll(const semweb::TripleContainerPtr &triples) {
 											 updateVocabularyRemove(*triple);
 										 });
 
-	// remove from all backends. currently only a warning is printed if removal fails for a backend.
+	// remove from all backends.
+	// currently only a warning is printed if removal fails for a backend.
+	semweb::TripleContainerPtr reified;
 	std::vector<std::shared_ptr<DataTransaction>> transactions;
 	for (auto &definedBackend: backendManager_->backendPool()) {
-		if (definedBackend.second->backend() == sourceBackend) continue;
-		transactions.push_back(createTransaction<DataRemoval>(definedBackend.second, triples));
+		auto &backend = definedBackend.second->backend();
+		if (backend == sourceBackend) continue;
+
+		semweb::TripleContainerPtr backendTriples;
+		if (!backend->canStoreTripleContext()) {
+			if (!reified) reified = std::make_shared<ReificationContainer>(triples, vocabulary());
+			backendTriples = reified;
+		} else {
+			backendTriples = triples;
+		}
+		transactions.push_back(createTransaction<DataRemoval>(definedBackend.second, backendTriples));
 	}
 
 	// wait for all transactions to finish

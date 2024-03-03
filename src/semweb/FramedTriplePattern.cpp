@@ -140,78 +140,119 @@ uint32_t FramedTriplePattern::numVariables() const {
 	return varCounter;
 }
 
-static inline std::string_view readStringConstant(const TermPtr &term) {
-	return std::static_pointer_cast<Atomic>(term)->stringForm();
-}
-
-bool FramedTriplePattern::toStatementData(FramedTriple &data) const {
-	if (numVariables() > 0) {
-		KB_WARN("Only ground literals can be mapped to StatementData, but "
-				"the literal '{}' has variables.", *this);
-		return false;
-	}
-	if (isNegated()) {
-		KB_WARN("Only positive literals can be mapped to StatementData, but "
-				"the literal '{}' is negative.", *this);
-		return false;
-	}
-	data.setSubject(std::static_pointer_cast<Atomic>(subjectTerm_)->stringForm());
-	data.setPredicate(std::static_pointer_cast<Atomic>(propertyTerm_)->stringForm());
-
-	if (objectTerm_->isNumeric()) {
-		auto numeric = std::static_pointer_cast<Numeric>(objectTerm_);
-		data.setXSDValue(numeric->stringForm(), numeric->xsdType());
-	} else if (objectTerm_->isAtom()) {
-		auto atom = std::static_pointer_cast<Atomic>(objectTerm_);
-		if (atom->isIRI()) {
-			data.setObjectIRI(atom->stringForm());
+bool
+FramedTriplePattern::instantiateInto(FramedTriple &triple, const std::shared_ptr<const Substitution> &bindings) const {
+	// FIXME: cannot use apply bindings here, because of memory stuff. rather map the memory from bindings to the triple.
+	// return a flag that indicates if s/p/o were assigned successfully.
+	bool hasMissingSPO = false;
+	// handle subject
+	if (subjectTerm_) {
+		auto s = applyBindings(subjectTerm_, *bindings);
+		if (subjectTerm_->isBlank()) {
+			triple.setSubjectBlank(std::static_pointer_cast<Blank>(subjectTerm_)->stringForm());
+		} else if (subjectTerm_->termType() == TermType::ATOMIC) {
+			triple.setSubject(std::static_pointer_cast<Atomic>(s)->stringForm());
 		} else {
-			data.setStringValue(atom->stringForm());
+			hasMissingSPO = true;
 		}
-	} else if (objectTerm_->isString()) {
-		data.setStringValue(std::static_pointer_cast<Atomic>(objectTerm_)->stringForm());
 	} else {
-		KB_WARN("Literal has a non-atomic argument in '{}' which is not allowed.", *this);
-		return false;
+		hasMissingSPO = true;
 	}
-
+	// handle property
+	if (propertyTerm_) {
+		auto p = applyBindings(propertyTerm_, *bindings);
+		if (p->termType() == TermType::ATOMIC) {
+			triple.setPredicate(std::static_pointer_cast<Atomic>(p)->stringForm());
+		} else {
+			hasMissingSPO = true;
+		}
+	} else {
+		hasMissingSPO = true;
+	}
+	// handle object
+	if (objectTerm_) {
+		auto o = applyBindings(objectTerm_, *bindings);
+		if (o->isNumeric()) {
+			auto numeric = std::static_pointer_cast<Numeric>(o);
+			triple.setXSDValue(numeric->stringForm(), numeric->xsdType());
+		} else if (o->termType() == TermType::ATOMIC) {
+			auto atom = std::static_pointer_cast<Atomic>(o);
+			if (atom->isIRI()) {
+				triple.setObjectIRI(atom->stringForm());
+			} else if (atom->isBlank()) {
+				triple.setObjectBlank(atom->stringForm());
+			} else {
+				triple.setStringValue(atom->stringForm());
+			}
+		} else {
+			hasMissingSPO = true;
+		}
+	} else {
+		hasMissingSPO = true;
+	}
+	// handle optional properties
 	if (graphTerm_) {
-		data.setGraph(graphTerm_.grounded()->stringForm());
-	}
-
-	// handle epistemic modality
-	if (epistemicOperator_) {
-		data.setEpistemicOperator(epistemicOperator_.value());
+		auto g = applyBindings(*graphTerm_, *bindings);
+		if (g->termType() == TermType::ATOMIC) {
+			triple.setGraph(std::static_pointer_cast<Atomic>(g)->stringForm());
+		}
 	}
 	if (agentTerm_) {
-		data.setAgent(agentTerm_.grounded()->stringForm());
+		auto a = applyBindings(*agentTerm_, *bindings);
+		if (a->termType() == TermType::ATOMIC) {
+			triple.setAgent(std::static_pointer_cast<Atomic>(a)->stringForm());
+		}
 	}
 	if (confidenceTerm_) {
-		data.setConfidence(confidenceTerm_.grounded()->asDouble());
-	}
-
-	// handle temporal modality
-	if (temporalOperator_) {
-		data.setTemporalOperator(temporalOperator_.value());
+		auto c = applyBindings(*confidenceTerm_, *bindings);
+		if (c->isNumeric()) {
+			triple.setConfidence(std::static_pointer_cast<Numeric>(c)->asDouble());
+		}
 	}
 	if (beginTerm_) {
-		data.setBegin(beginTerm_.grounded()->asDouble());
+		auto b = applyBindings(*beginTerm_, *bindings);
+		if (b->isNumeric()) {
+			triple.setBegin(std::static_pointer_cast<Numeric>(b)->asDouble());
+		}
 	}
 	if (endTerm_) {
-		data.setEnd(endTerm_.grounded()->asDouble());
+		auto e = applyBindings(*endTerm_, *bindings);
+		if (e->isNumeric()) {
+			triple.setEnd(std::static_pointer_cast<Numeric>(e)->asDouble());
+		}
+	}
+	if (epistemicOperator_) {
+		triple.setEpistemicOperator(epistemicOperator_.value());
+	}
+	if (temporalOperator_) {
+		triple.setTemporalOperator(temporalOperator_.value());
 	}
 
-	return true;
+	return !hasMissingSPO;
 }
 
-void RDFLiteralContainer::push_back(const FramedTriplePatternPtr &triple) {
-	statements_.emplace_back(triple);
+void TriplePatternContainer::push_back(const FramedTriplePatternPtr &q) {
+	statements_.emplace_back(q);
 	auto &data = data_.emplace_back();
 	data.ptr = new FramedTripleView();
 	data.owned = true;
-	if (!triple->toStatementData(*data.ptr)) {
+	if (!q->instantiateInto(*data.ptr)) {
 		data_.pop_back();
 	}
+}
+
+semweb::TripleContainer::ConstGenerator TriplePatternContainer::cgenerator() const {
+	return [this, i = 0]() mutable -> const FramedTriplePtr * {
+		if (i < data_.size()) return &data_[i++];
+		return nullptr;
+	};
+}
+
+semweb::MutableTripleContainer::MutableGenerator TriplePatternContainer::generator() {
+	return [this, i = 0]() mutable -> FramedTriplePtr * {
+		if (i < data_.size()) return &data_[i++];
+		return nullptr;
+	};
 }
 
 namespace knowrob {
@@ -274,7 +315,6 @@ namespace knowrob::py {
 				.def("objectOperator", &FramedTriplePattern::objectOperator)
 				.def("temporalOperator", &FramedTriplePattern::temporalOperator)
 				.def("epistemicOperator", &FramedTriplePattern::epistemicOperator)
-				.def("setGraphName", &FramedTriplePattern::setGraphName)
-				.def("toStatementData", &FramedTriplePattern::toStatementData);
+				.def("setGraphName", &FramedTriplePattern::setGraphName);
 	}
 }

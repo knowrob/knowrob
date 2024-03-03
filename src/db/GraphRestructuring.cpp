@@ -49,8 +49,8 @@ void GraphRestructuring::pushInputTriples(const semweb::TripleContainerPtr &trip
 void GraphRestructuring::doTransformation(GraphTransformationRule &rule) {
 	// collect matching originals, and apply the transformation by finding and applying
 	// a substitution mapping to the pattern predicates.
-	auto originals = std::make_shared<RDFLiteralContainer>();
-	auto transformed = std::make_shared<RDFLiteralContainer>();
+	auto originals = std::make_shared<TriplePatternContainer>();
+	auto transformed = std::make_shared<TriplePatternContainer>();
 	// perform query and record transformations
 	model_->query(rule.getSPARQLQuery(), [&](const SubstitutionPtr &bindings) {
 		// apply the substitution mapping to the pattern term

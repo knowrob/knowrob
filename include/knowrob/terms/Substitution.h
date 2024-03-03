@@ -29,7 +29,7 @@ namespace knowrob {
 		/**
 		 * A mapping from variable names to terms.
 		 */
-		using Map = std::map<std::string_view, std::pair<std::shared_ptr<Variable>,TermPtr>>;
+		using Map = std::map<std::string_view, std::pair<std::shared_ptr<Variable>, TermPtr>>;
 
 		Substitution() = default;
 
@@ -117,6 +117,11 @@ namespace knowrob {
 		 * @return the hash of this.
 		 */
 		size_t hash() const;
+
+		/**
+		 * @return a const empty substitution.
+		 */
+		static std::shared_ptr<const Substitution> emptySubstitution();
 
 	protected:
 		Map mapping_;

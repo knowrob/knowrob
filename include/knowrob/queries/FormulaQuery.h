@@ -7,6 +7,7 @@
 #define KNOWROB_FORMULA_QUERY_H_
 
 #include <knowrob/queries/Query.h>
+#include <utility>
 
 namespace knowrob {
 	/**
@@ -18,26 +19,16 @@ namespace knowrob {
 		 * @param formula the formula to query.
 		 * @param ctx the query context.
 		 */
-		FormulaQuery(const FormulaPtr &formula, const QueryContextPtr &ctx);
-
-		/**
-		 * Replaces variables in the query with terms based on a mapping provided in the argument.
-		 * @sub a mapping from variables to terms.
-		 * @return the new query created.
-		 */
-		std::shared_ptr<FormulaQuery> applySubstitution(const Substitution &sub) const;
+		FormulaQuery(FormulaPtr formula, const QueryContextPtr &ctx) : Query(ctx), formula_(std::move(formula)) {}
 
 		// Override Query
-		const FormulaPtr &formula() const override { return formula_; }
-
-		// Override Query
-		std::ostream &print(std::ostream &os) const override;
-
-		// Override Query
-		QueryType type() const override { return QueryType::FORMULA; }
+		const FormulaPtr &formula() const { return formula_; }
 
 	protected:
 		const std::shared_ptr<Formula> formula_;
+
+		// Override Query
+		void write(std::ostream &os) const override { os << *formula_; }
 	};
 }
 

@@ -22,6 +22,8 @@ namespace knowrob {
 	public:
 		static AtomPtr versionProperty;
 
+		QueryableBackend();
+
 		/**
 		 * @return true if the backend is persistent.
 		 */
@@ -31,34 +33,44 @@ namespace knowrob {
 		 * @param triple a framed triple.
 		 * @return true if the model contains the triple.
 		 */
-		virtual bool contains(const FramedTriple &triple) = 0;
+		bool contains(const FramedTriple &triple);
+
+		virtual bool containsDirect(const FramedTriple &triple) = 0;
 
 		/**
 		 * Iterate over all triples in the model.
 		 * @param callback the callback to handle the triples.
 		 * @return true if the iteration was successful.
 		 */
-		virtual void foreach(const semweb::TripleVisitor &visitor) const = 0;
+		void foreach(const semweb::TripleVisitor &visitor) const;
+
+		virtual void foreachDirect(const semweb::TripleVisitor &visitor) const = 0;
 
 		/**
 		 * Iterate over all triples in the model.
 		 * @param callback the callback to handle the triples.
 		 * @return true if the iteration was successful.
 		 */
-		virtual void batch(const semweb::TripleHandler &callback) const = 0;
+		void batch(const semweb::TripleHandler &callback) const;
+
+		virtual void batchDirect(const semweb::TripleHandler &callback) const = 0;
 
 		/**
 		 * @param query a framed triple pattern.
 		 * @param handler a function that is called for each matching framed triple.
 		 */
-		virtual void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) = 0;
+		void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor);
+
+		virtual void matchDirect(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) = 0;
 
 		/**
 		 * Submits a graph query to this knowledge graph.
 		 * @param query a graph query
 		 * @param callback a function that is called for each answer to the query.
 		 */
-		virtual void query(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback) = 0;
+		void query(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback);
+
+		virtual void queryDirect(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback) = 0;
 
 		/**
 		 * @param callback a function that is called for each resource and its count.
@@ -102,7 +114,20 @@ namespace knowrob {
 		 */
 		void setVersionOfOrigin(std::string_view origin, std::string_view version);
 
+		/**
+		 * @return the batch size.
+		 */
+		uint32_t batchSize() const { return batchSize_; }
+
+		/**
+		 * The size of the container used when triples are processed in batches.
+		 * @param batchSize the batch size for the backend.
+		 */
+		void setBatchSize(uint32_t batchSize) { batchSize_ = batchSize; }
+
 	protected:
+		uint32_t batchSize_;
+
 		static AnswerPtr no(const ConjunctiveQueryPtr &q);
 
 		static AnswerPtr yes(const ConjunctiveQueryPtr &q, const FramedBindingsPtr &bindings);

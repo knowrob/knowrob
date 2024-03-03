@@ -193,7 +193,6 @@ add_library(knowrob SHARED
 		src/formulas/Top.cpp
 		src/formulas/ModalFormula.cpp
         src/formulas/FirstOrderLiteral.cpp
-		src/queries/FormulaQuery.cpp
 		src/queries/QueryError.cpp
 		src/queries/Answer.cpp
 		src/queries/TokenStream.cpp
@@ -311,7 +310,11 @@ add_library(knowrob SHARED
         src/modalities/Modality.cpp
         src/semweb/TripleContainer.cpp
         src/KnowRobError.cpp
-        src/py/PythonError.cpp)
+        src/py/PythonError.cpp
+        src/reification/ReifiedTriple.cpp
+        src/reification/ReifiedQuery.cpp
+        src/reification/ReificationContainer.cpp
+        src/reification/UnReificationContainer.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

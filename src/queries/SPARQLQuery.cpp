@@ -67,8 +67,14 @@ void SPARQLQuery::filter(std::ostream &os, std::string_view varName, const TermP
 void SPARQLQuery::where(std::ostream &os, const FramedTriplePattern &triplePattern) {
 	where(os, triplePattern.subjectTerm());
 	where(os, triplePattern.propertyTerm());
+	// TODO: some context properties are optional. e.g. when query has a confidence threshold, then
+	//       all triples without a confidence should be included.
+	//       also in case query contains begin and end time, then triples without a begin/end/begin+end time should be included.
+	//       maybe also sometimes should include always, and belief knowledge.
+	//       BUT how to implement this here? well we could have special code for certain properties here. or try to encode it in the query.
 	where(os, triplePattern.objectTerm());
 	// TODO: need to introduce a temporary variable to handle value expressions like `<(5)`.
+	//            can also support terms like `<(5)->Var` where the value is fixed and the variable is the rest.
 	//filter(os, triplePattern.objectTerm(), tempVar, triplePattern.objectOperator());
 	dot(os);
 }
@@ -83,6 +89,7 @@ void SPARQLQuery::where(std::ostream &os, const TermPtr &term) {
 				os << "<" << std::static_pointer_cast<Atomic>(term)->stringForm() << "> ";
 				break;
 			}
+			// TODO: encoding of blanks in SPARQL
 		}
 		default:
 			os << "\"" << *term << "\" ";

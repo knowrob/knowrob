@@ -13,7 +13,7 @@ RaptorContainer::RaptorContainer(uint32_t size, std::string_view origin)
 		  mappedData_(size),
 		  origin_(origin),
 		  actualSize_(0) {
-	for(auto &triple : mappedData_) {
+	for (auto &triple: mappedData_) {
 		triple.ptr = new FramedTripleView();
 		triple.owned = true;
 	}
@@ -27,6 +27,20 @@ RaptorContainer::RaptorContainer(uint32_t size)
 
 RaptorContainer::~RaptorContainer() {
 	reset();
+}
+
+semweb::TripleContainer::ConstGenerator RaptorContainer::cgenerator() const {
+	return [this, i = 0]() mutable -> const FramedTriplePtr * {
+		if (i < actualSize_) return &mappedData_[i++];
+		return nullptr;
+	};
+}
+
+semweb::MutableTripleContainer::MutableGenerator RaptorContainer::generator() {
+	return [this, i = 0]() mutable -> FramedTriplePtr * {
+		if (i < actualSize_) return &mappedData_[i++];
+		return nullptr;
+	};
 }
 
 void RaptorContainer::reset() {

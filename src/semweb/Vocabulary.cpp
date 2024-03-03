@@ -77,9 +77,22 @@ bool Vocabulary::isDefinedProperty(const std::string_view &iri) {
 	return definedProperties_.count(iri) > 0;
 }
 
+bool Vocabulary::isDefinedReification(const std::string_view &iri) {
+	return definedReifications_.count(iri) > 0;
+}
+
 PropertyPtr Vocabulary::getDefinedProperty(const std::string_view &iri) const {
 	auto it = definedProperties_.find(iri);
 	if (it == definedProperties_.end()) {
+		return {};
+	} else {
+		return it->second;
+	}
+}
+
+PropertyPtr Vocabulary::getDefinedReification(const std::string_view &iri) const {
+	auto it = definedReifications_.find(iri);
+	if (it == definedReifications_.end()) {
 		return {};
 	} else {
 		return it->second;
@@ -109,6 +122,7 @@ PropertyPtr Vocabulary::defineProperty(const std::string_view &iri) {
 	if (it == definedProperties_.end()) {
 		auto newProperty = std::make_shared<Property>(iri);
 		definedProperties_[newProperty->iri()] = newProperty;
+		definedReifications_[newProperty->reification()->stringForm()] = newProperty;
 		return newProperty;
 	} else {
 		return it->second;
@@ -120,6 +134,7 @@ PropertyPtr Vocabulary::defineProperty(const IRIAtomPtr &iri) {
 	if (it == definedProperties_.end()) {
 		auto newProperty = std::make_shared<Property>(iri);
 		definedProperties_[newProperty->iri()] = newProperty;
+		definedReifications_[newProperty->reification()->stringForm()] = newProperty;
 		return newProperty;
 	} else {
 		return it->second;
