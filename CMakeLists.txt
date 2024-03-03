@@ -314,7 +314,8 @@ add_library(knowrob SHARED
         src/reification/ReifiedTriple.cpp
         src/reification/ReifiedQuery.cpp
         src/reification/ReificationContainer.cpp
-        src/reification/UnReificationContainer.cpp)
+        src/reification/UnReificationContainer.cpp
+        src/reification/ReifiedBackend.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

@@ -57,8 +57,10 @@ namespace knowrob {
 
 	protected:
 		const std::string name_;
-		const std::shared_ptr<DataBackend> backend_;
+		std::shared_ptr<DataBackend> backend_;
 		std::map<std::string, std::string> originVersions_;
+
+		friend class BackendManager;
 	};
 }
 

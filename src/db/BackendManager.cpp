@@ -10,6 +10,7 @@
 #include "knowrob/db/BackendManager.h"
 #include "knowrob/db/BackendError.h"
 #include "knowrob/db/QueryableBackend.h"
+#include "knowrob/reification/ReifiedBackend.h"
 
 using namespace knowrob;
 
@@ -145,7 +146,15 @@ void BackendManager::initBackend(const std::shared_ptr<DefinedBackend> &definedK
 	// check if the backend is a QueryableBackend, if so store it in the queryable_ map
 	auto queryable = std::dynamic_pointer_cast<QueryableBackend>(definedKG->backend());
 	if (queryable) {
-		KB_INFO("adding queryable backend with id '{}'.", definedKG->name());
+		if (!queryable->canStoreTripleContext()) {
+			KB_INFO("adding reified backend with id '{}'.", definedKG->name());
+			queryable = std::make_shared<ReifiedBackend>(queryable);
+			queryable->setImportHierarchy(kb_->importHierarchy());
+			queryable->setVocabulary(kb_->vocabulary());
+			definedKG->backend_ = queryable;
+		} else {
+			KB_INFO("adding queryable backend with id '{}'.", definedKG->name());
+		}
 		queryable_[definedKG->name()] = queryable;
 	}
 	// check if the backend is a PersistentBackend, if so store it in the persistent_ map

@@ -122,19 +122,19 @@ namespace knowrob {
 		bool isPersistent() const override { return true; }
 
 		// Override QueryableBackend
-		bool containsDirect(const FramedTriple &triple) override;
+		bool contains(const FramedTriple &triple) override;
 
 		// Override QueryableBackend
-		void foreachDirect(const semweb::TripleVisitor &visitor) const override;
+		void foreach(const semweb::TripleVisitor &visitor) const override;
 
 		// Override QueryableBackend
-		void batchDirect(const semweb::TripleHandler &callback) const override;
+		void batch(const semweb::TripleHandler &callback) const override;
 
 		// Override QueryableBackend
-		void matchDirect(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
+		void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
 
 		// Override QueryableBackend
-		void queryDirect(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback) override;
+		void query(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback) override;
 
 		// Override QueryableBackend
 		void count(const ResourceCounter &callback) const override;

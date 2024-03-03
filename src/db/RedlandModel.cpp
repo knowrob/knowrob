@@ -353,17 +353,17 @@ bool RedlandModel::removeAllWithOrigin(std::string_view origin) {
 	return true;
 }
 
-void RedlandModel::foreachDirect(const semweb::TripleVisitor &visitor) const {
-	batchDirect([&](const semweb::TripleContainerPtr &container) {
+void RedlandModel::foreach(const semweb::TripleVisitor &visitor) const {
+	batch([&](const semweb::TripleContainerPtr &container) {
 		visitor(*container->begin()->ptr);
 	}, 1);
 }
 
-void RedlandModel::batchDirect(const semweb::TripleHandler &callback) const {
-	batchDirect(callback, batchSize_);
+void RedlandModel::batch(const semweb::TripleHandler &callback) const {
+	batch(callback, batchSize_);
 }
 
-void RedlandModel::batchDirect(const semweb::TripleHandler &callback, uint32_t batchSize) const {
+void RedlandModel::batch(const semweb::TripleHandler &callback, uint32_t batchSize) const {
 	auto triples = std::make_shared<RaptorContainer>(batchSize);
 	auto contexts = librdf_model_get_contexts(model_);
 
@@ -393,7 +393,7 @@ void RedlandModel::batchDirect(const semweb::TripleHandler &callback, uint32_t b
 	librdf_free_iterator(contexts);
 }
 
-bool RedlandModel::containsDirect(const FramedTriple &triple) {
+bool RedlandModel::contains(const FramedTriple &triple) {
 	auto raptorTriple = librdf_new_statement(world_);
 	knowrobToRaptor(triple, raptorTriple);
 	auto result = librdf_model_contains_statement(model_, raptorTriple);
@@ -401,7 +401,7 @@ bool RedlandModel::containsDirect(const FramedTriple &triple) {
 	return result;
 }
 
-void RedlandModel::matchDirect(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) {
+void RedlandModel::match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) {
 	auto triples = std::make_shared<RaptorContainer>(1);
 	auto rdf_query = librdf_new_statement(world_);
 	knowrobToRaptor(query, rdf_query);
@@ -418,7 +418,7 @@ void RedlandModel::matchDirect(const FramedTriplePattern &query, const semweb::T
 	librdf_free_stream(stream);
 }
 
-void RedlandModel::queryDirect(const ConjunctiveQueryPtr &q, const FramedBindingsHandler &callback) {
+void RedlandModel::query(const ConjunctiveQueryPtr &q, const FramedBindingsHandler &callback) {
 	// TODO: do not ignore query context
 	//SPARQLQuery sparqlQuery(q->literals(), q->ctx());
 	SPARQLQuery sparqlQuery(q->literals());

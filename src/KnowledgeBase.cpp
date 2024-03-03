@@ -779,6 +779,20 @@ DataBackendPtr KnowledgeBase::findSourceBackend(const FramedTriple &triple) {
 	return {};
 }
 
+static inline std::shared_ptr<ThreadPool::Runner> pushPerTripleWork(
+		const semweb::TripleContainerPtr &triples,
+		const std::function<void(const FramedTriplePtr &)> &fn) {
+	auto perTripleWorker =
+			std::make_shared<ThreadPool::LambdaRunner>([fn, triples](const ThreadPool::LambdaRunner::StopChecker &) {
+				std::for_each(triples->begin(), triples->end(), fn);
+			});
+	DefaultThreadPool()->pushWork(perTripleWorker,
+								  [](const std::exception &exc) {
+									  KB_ERROR("failed to update vocabulary: {}", exc.what());
+								  });
+	return perTripleWorker;
+}
+
 template<typename T>
 static inline std::shared_ptr<T> createTransaction(
 		const std::shared_ptr<DefinedBackend> &definedBackend,
@@ -796,18 +810,29 @@ static inline std::shared_ptr<T> createTransaction(
 	return transaction;
 }
 
-static inline std::shared_ptr<ThreadPool::Runner> pushPerTripleWork(
-		const semweb::TripleContainerPtr &triples,
-		const std::function<void(const FramedTriplePtr &)> &fn) {
-	auto perTripleWorker =
-			std::make_shared<ThreadPool::LambdaRunner>([fn, triples](const ThreadPool::LambdaRunner::StopChecker &) {
-				std::for_each(triples->begin(), triples->end(), fn);
-			});
-	DefaultThreadPool()->pushWork(perTripleWorker,
-								  [](const std::exception &exc) {
-									  KB_ERROR("failed to update vocabulary: {}", exc.what());
-								  });
-	return perTripleWorker;
+template<typename T, typename U>
+bool transaction(const semweb::TripleContainerPtr &triples,
+                 const U &backends,
+				 const std::shared_ptr<semweb::Vocabulary> &vocabulary,
+				 const std::shared_ptr<DataBackend> &sourceBackend) {
+	semweb::TripleContainerPtr reified;
+	std::vector<std::shared_ptr<DataTransaction>> transactions;
+	for (auto &definedBackend: backends) {
+		auto &backend = definedBackend->backend();
+		if (backend == sourceBackend) continue;
+
+		semweb::TripleContainerPtr backendTriples;
+		if (!backend->canStoreTripleContext()) {
+			if (!reified) reified = std::make_shared<ReificationContainer>(triples, vocabulary);
+			backendTriples = reified;
+		} else {
+			backendTriples = triples;
+		}
+		transactions.push_back(createTransaction<T>(definedBackend, backendTriples));
+	}
+	// wait for all transactions to finish
+	for (auto &transaction: transactions) transaction->join();
+	return true;
 }
 
 bool KnowledgeBase::insertOne(const FramedTriple &triple) {
@@ -867,50 +892,12 @@ bool KnowledgeBase::removeOne(const FramedTriple &triple) {
 
 bool KnowledgeBase::insertAllInto(const semweb::TripleContainerPtr &triples,
 								  const std::vector<std::shared_ptr<DefinedBackend>> &backends) {
-	// TODO: apply filter before inserting into backends. each backend should be able to specify GraphSelector
-	//       used for the filtering. e.g. historic triples should not be inserted into backends that do not support time.
-	// TODO: redundant with below
-	if (triples->empty()) return true;
-
-	// find the source backend, if any.
-	auto sourceBackend = findSourceBackend(**triples->begin());
-	// push a worker goal that updates the vocabulary
-	auto vocabWorker = pushPerTripleWork(triples,
-										 [this](const FramedTriplePtr &triple) {
-											 updateVocabularyInsert(*triple);
-										 });
-
-	// insert into all other backends. currently only a warning is printed if insertion fails for a backend.
-	semweb::TripleContainerPtr reified;
-	std::vector<std::shared_ptr<DataTransaction>> transactions;
-	for (auto &definedBackend: backends) {
-		// skip the source backend
-		if (definedBackend->backend() == sourceBackend) continue;
-		semweb::TripleContainerPtr backendTriples;
-		if (!definedBackend->backend()->canStoreTripleContext()) {
-			if (!reified) reified = std::make_shared<ReificationContainer>(triples, vocabulary());
-			backendTriples = reified;
-		} else {
-			backendTriples = triples;
-		}
-		transactions.push_back(createTransaction<DataInsertion>(definedBackend, backendTriples));
-	}
-
-	// wait for all transactions to finish
-	vocabWorker->join();
-	for (auto &transaction: transactions) transaction->join();
-
-	return true;
-}
-
-bool KnowledgeBase::insertAll(const semweb::TripleContainerPtr &triples) {
 	// TODO: maybe it would be best to at least enforce that transactions succeed in the central
 	//       backend, and if not, rollback the transaction in the other backends. For this,
 	//       all backends should be able to rollback the transactions.
 	// TODO: apply filter before inserting into backends. each backend should be able to specify GraphSelector
 	//       used for the filtering. e.g. historic triples should not be inserted into backends that do not support time.
 	if (triples->empty()) return true;
-
 	// find the source backend, if any.
 	auto sourceBackend = findSourceBackend(**triples->begin());
 	// push a worker goal that updates the vocabulary
@@ -918,66 +905,36 @@ bool KnowledgeBase::insertAll(const semweb::TripleContainerPtr &triples) {
 										 [this](const FramedTriplePtr &triple) {
 											 updateVocabularyInsert(*triple);
 										 });
-
-	// insert into all other backends. currently only a warning is printed if insertion fails for a backend.
-	semweb::TripleContainerPtr reified;
-	std::vector<std::shared_ptr<DataTransaction>> transactions;
-	for (auto &definedBackend: backendManager_->backendPool()) {
-		auto &backend = definedBackend.second->backend();
-		// skip the source backend
-		if (backend == sourceBackend) continue;
-
-		semweb::TripleContainerPtr backendTriples;
-		if (!backend->canStoreTripleContext()) {
-			if (!reified) reified = std::make_shared<ReificationContainer>(triples, vocabulary());
-			backendTriples = reified;
-		} else {
-			backendTriples = triples;
-		}
-		transactions.push_back(createTransaction<DataInsertion>(definedBackend.second, backendTriples));
-	}
-
-	// wait for all transactions to finish
+	bool success = transaction<DataInsertion>(triples, backends, vocabulary(), sourceBackend);
 	vocabWorker->join();
-	for (auto &transaction: transactions) transaction->join();
+	return success;
+}
 
-	return true;
+bool KnowledgeBase::insertAll(const semweb::TripleContainerPtr &triples) {
+	if (triples->empty()) return true;
+	std::vector<std::shared_ptr<DefinedBackend>> backends;
+	for (auto &it: backendManager_->backendPool()) {
+		backends.push_back(it.second);
+	}
+	return insertAllInto(triples, backends);
 }
 
 bool KnowledgeBase::removeAll(const semweb::TripleContainerPtr &triples) {
 	if (triples->empty()) return true;
-
 	// find the source backend, if any.
 	auto sourceBackend = findSourceBackend(**triples->begin());
+	std::vector<std::shared_ptr<DefinedBackend>> backends;
+	for (auto &it: backendManager_->backendPool()) {
+		backends.push_back(it.second);
+	}
 	// push a worker goal that updates the vocabulary
 	auto vocabWorker = pushPerTripleWork(triples,
 										 [this](const FramedTriplePtr &triple) {
 											 updateVocabularyRemove(*triple);
 										 });
-
-	// remove from all backends.
-	// currently only a warning is printed if removal fails for a backend.
-	semweb::TripleContainerPtr reified;
-	std::vector<std::shared_ptr<DataTransaction>> transactions;
-	for (auto &definedBackend: backendManager_->backendPool()) {
-		auto &backend = definedBackend.second->backend();
-		if (backend == sourceBackend) continue;
-
-		semweb::TripleContainerPtr backendTriples;
-		if (!backend->canStoreTripleContext()) {
-			if (!reified) reified = std::make_shared<ReificationContainer>(triples, vocabulary());
-			backendTriples = reified;
-		} else {
-			backendTriples = triples;
-		}
-		transactions.push_back(createTransaction<DataRemoval>(definedBackend.second, backendTriples));
-	}
-
-	// wait for all transactions to finish
+	bool success = transaction<DataRemoval>(triples, backends, vocabulary_, sourceBackend);
 	vocabWorker->join();
-	for (auto &transaction: transactions) transaction->join();
-
-	return true;
+	return success;
 }
 
 bool KnowledgeBase::insertAll(const std::vector<FramedTriplePtr> &triples) {
@@ -1132,12 +1089,12 @@ KnowledgeBase::prepareLoad(std::string_view origin, std::string_view newVersion)
 		auto currentVersion = getVersionOfOrigin(definedBackend, origin);
 		if (currentVersion.has_value()) {
 			if (currentVersion.value() != newVersion) {
-				backendsToLoad.push_back(definedBackend);
+				backendsToLoad.emplace_back(it.second);
 				// TODO: rather include this operation as part of the transaction below
 				definedBackend->backend()->removeAllWithOrigin(origin);
 			}
 		} else {
-			backendsToLoad.push_back(definedBackend);
+			backendsToLoad.emplace_back(it.second);
 		}
 	}
 	return backendsToLoad;
@@ -1174,7 +1131,7 @@ bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source
 		auto newVersion = DataSource::getVersionFromURI(resolved);
 
 		// check which backends need to load the ontology.
-		std::vector<std::shared_ptr<DefinedBackend>> backendsToLoad = prepareLoad(origin, newVersion);
+		auto backendsToLoad = prepareLoad(origin, newVersion);
 		if (backendsToLoad.empty()) continue;
 
 		// some OWL files are downloaded compile-time via CMake,
@@ -1227,7 +1184,7 @@ bool KnowledgeBase::loadSPARQLDataSource(const std::shared_ptr<DataSource> &sour
 	service->setBatchSize(tripleBatchSize_);
 
 	// get all backends that do not have the data loaded yet
-	std::vector<std::shared_ptr<DefinedBackend>> backendsToLoad = prepareLoad(origin, newVersion);
+	auto backendsToLoad = prepareLoad(origin, newVersion);
 	if (backendsToLoad.empty()) {
 		// data is already loaded
 		return true;

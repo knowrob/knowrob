@@ -393,15 +393,15 @@ void MongoKnowledgeGraph::count(const ResourceCounter &callback) const {
 	}
 }
 
-bool MongoKnowledgeGraph::containsDirect(const FramedTriple &triple) {
+bool MongoKnowledgeGraph::contains(const FramedTriple &triple) {
 	bool hasTriple = false;
-	matchDirect(FramedTriplePattern(triple), [&hasTriple](const FramedTriple &) {
+	match(FramedTriplePattern(triple), [&hasTriple](const FramedTriple &) {
 		hasTriple = true;
 	});
 	return hasTriple;
 }
 
-void MongoKnowledgeGraph::foreachDirect(const semweb::TripleVisitor &visitor) const {
+void MongoKnowledgeGraph::foreach(const semweb::TripleVisitor &visitor) const {
 	TripleCursor cursor(tripleCollection_);
 	FramedTripleView tripleData;
 	while (cursor.nextTriple(tripleData)) {
@@ -409,7 +409,7 @@ void MongoKnowledgeGraph::foreachDirect(const semweb::TripleVisitor &visitor) co
 	}
 }
 
-void MongoKnowledgeGraph::matchDirect(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) {
+void MongoKnowledgeGraph::match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) {
 	bool b_isTaxonomicProperty = isTaxonomicProperty(query.propertyTerm());
 	TripleCursor cursor(tripleCollection_);
 	FramedTripleView tripleData;
@@ -425,7 +425,7 @@ void MongoKnowledgeGraph::matchDirect(const FramedTriplePattern &query, const se
 	}
 }
 
-void MongoKnowledgeGraph::batchDirect(const semweb::TripleHandler &callback) const {
+void MongoKnowledgeGraph::batch(const semweb::TripleHandler &callback) const {
 	auto batchSize = (batchSize_.has_value() ? batchSize_.value() : 1000);
 	TripleCursor cursor(tripleCollection_);
 	std::vector<FramedTriplePtr> batchData(batchSize);
@@ -449,7 +449,7 @@ void MongoKnowledgeGraph::batchDirect(const semweb::TripleHandler &callback) con
 	}
 }
 
-void MongoKnowledgeGraph::queryDirect(const ConjunctiveQueryPtr &q, const FramedBindingsHandler &callback) {
+void MongoKnowledgeGraph::query(const ConjunctiveQueryPtr &q, const FramedBindingsHandler &callback) {
 	uint32_t limit = (q->ctx()->queryFlags & QUERY_FLAG_ONE_SOLUTION) ? 1 : 0;
 	auto cursor = lookup(q->literals(), limit);
 	// NOTE: for some reason below causes a cursor error. looks like a bug in libmongoc to me!
