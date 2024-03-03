@@ -142,15 +142,18 @@ uint32_t FramedTriplePattern::numVariables() const {
 
 bool
 FramedTriplePattern::instantiateInto(FramedTriple &triple, const std::shared_ptr<const Substitution> &bindings) const {
-	// FIXME: cannot use apply bindings here, because of memory stuff. rather map the memory from bindings to the triple.
 	// return a flag that indicates if s/p/o were assigned successfully.
 	bool hasMissingSPO = false;
 	// handle subject
 	if (subjectTerm_) {
-		auto s = applyBindings(subjectTerm_, *bindings);
-		if (subjectTerm_->isBlank()) {
-			triple.setSubjectBlank(std::static_pointer_cast<Blank>(subjectTerm_)->stringForm());
-		} else if (subjectTerm_->termType() == TermType::ATOMIC) {
+		auto &s = subjectTerm_->isVariable() ?
+				bindings->get(std::static_pointer_cast<Variable>(subjectTerm_)->name()) :
+				subjectTerm_;
+		if (!s) {
+			hasMissingSPO = true;
+		} else if (s->isBlank()) {
+			triple.setSubjectBlank(std::static_pointer_cast<Blank>(s)->stringForm());
+		} else if (s->termType() == TermType::ATOMIC) {
 			triple.setSubject(std::static_pointer_cast<Atomic>(s)->stringForm());
 		} else {
 			hasMissingSPO = true;
@@ -160,8 +163,10 @@ FramedTriplePattern::instantiateInto(FramedTriple &triple, const std::shared_ptr
 	}
 	// handle property
 	if (propertyTerm_) {
-		auto p = applyBindings(propertyTerm_, *bindings);
-		if (p->termType() == TermType::ATOMIC) {
+		auto &p = propertyTerm_->isVariable() ?
+				bindings->get(std::static_pointer_cast<Variable>(propertyTerm_)->name()) :
+				propertyTerm_;
+		if (p && p->termType() == TermType::ATOMIC) {
 			triple.setPredicate(std::static_pointer_cast<Atomic>(p)->stringForm());
 		} else {
 			hasMissingSPO = true;
@@ -171,8 +176,12 @@ FramedTriplePattern::instantiateInto(FramedTriple &triple, const std::shared_ptr
 	}
 	// handle object
 	if (objectTerm_) {
-		auto o = applyBindings(objectTerm_, *bindings);
-		if (o->isNumeric()) {
+		auto &o = objectTerm_->isVariable() ?
+				bindings->get(std::static_pointer_cast<Variable>(objectTerm_)->name()) :
+				objectTerm_;
+		if (!o) {
+			hasMissingSPO = true;
+		} else if (o->isNumeric()) {
 			auto numeric = std::static_pointer_cast<Numeric>(o);
 			triple.setXSDValue(numeric->stringForm(), numeric->xsdType());
 		} else if (o->termType() == TermType::ATOMIC) {
@@ -192,32 +201,42 @@ FramedTriplePattern::instantiateInto(FramedTriple &triple, const std::shared_ptr
 	}
 	// handle optional properties
 	if (graphTerm_) {
-		auto g = applyBindings(*graphTerm_, *bindings);
-		if (g->termType() == TermType::ATOMIC) {
+		auto &g = graphTerm_->isVariable() ?
+				bindings->get(std::static_pointer_cast<Variable>(*graphTerm_)->name()) :
+				*graphTerm_;
+		if (g && g->termType() == TermType::ATOMIC) {
 			triple.setGraph(std::static_pointer_cast<Atomic>(g)->stringForm());
 		}
 	}
 	if (agentTerm_) {
-		auto a = applyBindings(*agentTerm_, *bindings);
-		if (a->termType() == TermType::ATOMIC) {
+		auto &a = agentTerm_->isVariable() ?
+				bindings->get(std::static_pointer_cast<Variable>(*agentTerm_)->name()) :
+				*agentTerm_;
+		if (a && a->termType() == TermType::ATOMIC) {
 			triple.setAgent(std::static_pointer_cast<Atomic>(a)->stringForm());
 		}
 	}
 	if (confidenceTerm_) {
-		auto c = applyBindings(*confidenceTerm_, *bindings);
-		if (c->isNumeric()) {
+		auto &c = confidenceTerm_->isVariable() ?
+				bindings->get(std::static_pointer_cast<Variable>(*confidenceTerm_)->name()) :
+				*confidenceTerm_;
+		if (c && c->isNumeric()) {
 			triple.setConfidence(std::static_pointer_cast<Numeric>(c)->asDouble());
 		}
 	}
 	if (beginTerm_) {
-		auto b = applyBindings(*beginTerm_, *bindings);
-		if (b->isNumeric()) {
+		auto &b = beginTerm_->isVariable() ?
+				bindings->get(std::static_pointer_cast<Variable>(*beginTerm_)->name()) :
+				*beginTerm_;
+		if (b && b->isNumeric()) {
 			triple.setBegin(std::static_pointer_cast<Numeric>(b)->asDouble());
 		}
 	}
 	if (endTerm_) {
-		auto e = applyBindings(*endTerm_, *bindings);
-		if (e->isNumeric()) {
+		auto &e = endTerm_->isVariable() ?
+				bindings->get(std::static_pointer_cast<Variable>(*endTerm_)->name()) :
+				*endTerm_;
+		if (e && e->isNumeric()) {
 			triple.setEnd(std::static_pointer_cast<Numeric>(e)->asDouble());
 		}
 	}
