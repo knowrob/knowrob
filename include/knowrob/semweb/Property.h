@@ -11,6 +11,7 @@
 #include <functional>
 #include "Resource.h"
 #include "knowrob/terms/IRIAtom.h"
+#include "Class.h"
 
 namespace knowrob::semweb {
 	/**
@@ -121,19 +122,19 @@ namespace knowrob::semweb {
 		 * @param iri an IRI of a property.
 		 * @return the reification concept of the property.
 		 */
-		static knowrob::AtomPtr reifiedIRI(std::string_view iri);
+		static knowrob::IRIAtomPtr reifiedIRI(std::string_view iri);
 
 		/**
 		 * Map an IRI of a reification concept to the IRI of the property.
 		 * @param iri an IRI of a reification concept.
 		 * @return the property IRI.
 		 */
-		static knowrob::AtomPtr unReifiedIRI(std::string_view iri);
+		static knowrob::IRIAtomPtr unReifiedIRI(std::string_view iri);
 
 	protected:
 		std::shared_ptr<Property> inverse_;
 		std::list<std::shared_ptr<Property>> directParents_;
-		knowrob::AtomPtr reification_;
+		std::shared_ptr<Class> reification_;
 		int flags_;
 	};
 

@@ -51,12 +51,12 @@ void ReifiedQuery::addNonReified(const FramedTriplePattern &nonReified) {
 	// generate a unique individual name
 	auto name = semweb::Resource::unique_iri(
 			reification::individualPrefix->stringForm(),
-			semweb::Resource::iri_name(relationType->stringForm()));
+			semweb::Resource::iri_name(relationType->iri()));
 	// optionally set origin of reified queries if term is grounded
 	auto g = nonReified.graphTerm();
 
 	// create a type assertion
-	create(name, semweb::rdf::type, relationType, g);
+	create(name, semweb::rdf::type, relationType->iriAtom(), g);
 	// create a query for subject
 	create(name, reification::hasSubject, nonReified.subjectTerm(), g);
 	// create a query for the object/literal value

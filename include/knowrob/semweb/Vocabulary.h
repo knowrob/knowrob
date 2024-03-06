@@ -204,6 +204,8 @@ namespace knowrob::semweb {
 		std::map<std::string_view, PropertyPtr, std::less<>> definedProperties_;
 		std::map<std::string_view, PropertyPtr, std::less<>> definedReifications_;
 		std::map<std::string_view, uint64_t> frequency_;
+
+		PropertyPtr defineProperty(const std::shared_ptr<Property> &p);
 	};
 
 	using VocabularyPtr = std::shared_ptr<Vocabulary>;

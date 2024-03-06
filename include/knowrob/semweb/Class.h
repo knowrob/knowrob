@@ -29,6 +29,11 @@ namespace knowrob::semweb {
 		explicit Class(std::string_view iri);
 
 		/**
+		 * @param iri A class IRI.
+		 */
+		explicit Class(const IRIAtomPtr &iri);
+
+		/**
 		 * @param directParent a direct super class.
 		 */
 		void addDirectParent(const std::shared_ptr<Class> &directParent);

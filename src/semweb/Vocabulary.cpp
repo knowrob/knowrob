@@ -9,6 +9,7 @@
 #include "knowrob/semweb/rdfs.h"
 #include "knowrob/semweb/owl.h"
 #include "knowrob/semweb/PrefixProbe.h"
+#include "knowrob/reification/model.h"
 
 using namespace knowrob::semweb;
 
@@ -120,10 +121,7 @@ std::vector<std::string_view> Vocabulary::getDefinedPropertyNamesWithPrefix(cons
 PropertyPtr Vocabulary::defineProperty(const std::string_view &iri) {
 	auto it = definedProperties_.find(iri);
 	if (it == definedProperties_.end()) {
-		auto newProperty = std::make_shared<Property>(iri);
-		definedProperties_[newProperty->iri()] = newProperty;
-		definedReifications_[newProperty->reification()->stringForm()] = newProperty;
-		return newProperty;
+		return defineProperty(std::make_shared<Property>(iri));
 	} else {
 		return it->second;
 	}
@@ -132,13 +130,21 @@ PropertyPtr Vocabulary::defineProperty(const std::string_view &iri) {
 PropertyPtr Vocabulary::defineProperty(const IRIAtomPtr &iri) {
 	auto it = definedProperties_.find(iri->stringForm());
 	if (it == definedProperties_.end()) {
-		auto newProperty = std::make_shared<Property>(iri);
-		definedProperties_[newProperty->iri()] = newProperty;
-		definedReifications_[newProperty->reification()->stringForm()] = newProperty;
-		return newProperty;
+		return defineProperty(std::make_shared<Property>(iri));
 	} else {
 		return it->second;
 	}
+}
+
+PropertyPtr Vocabulary::defineProperty(const std::shared_ptr<Property> &p) {
+	definedProperties_[p->iri()] = p;
+	definedReifications_[p->reification()->iri()] = p;
+	// define the reification of the property as a concept which inherits knowrob:ReifiedRelation
+	// note further superclasses will be added through Property::addDirectParent
+	auto reification = p->reification();
+	definedClasses_[reification->iri()] = p->reification();
+	reification->addDirectParent(defineClass(reification::ReifiedRelation->stringForm()));
+	return p;
 }
 
 void Vocabulary::setPropertyFlag(const std::string_view &iri, PropertyFlag flag) {

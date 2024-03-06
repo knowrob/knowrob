@@ -26,6 +26,11 @@ namespace knowrob::semweb {
 		auto iri() const { return iri_->stringForm(); }
 
 		/**
+		 * @return the IRI string of this resource as an atom
+		 */
+		auto iriAtom() const { return iri_; }
+
+		/**
 		 * @return the name of this resource
 		 */
 		std::string_view name() const;

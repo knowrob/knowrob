@@ -17,13 +17,13 @@ ReifiedTriple::ReifiedTriple(const FramedTriple &triple, const semweb::Vocabular
 	// generate a unique individual name
 	name_ = semweb::Resource::unique_iri(
 			reification::individualPrefix->stringForm(),
-			semweb::Resource::iri_name(relationType->stringForm()));
+			semweb::Resource::iri_name(relationType->iri()));
 	const auto &name = name_->stringForm();
 	// set origin of the reified triples
 	auto g = triple.graph();
 
 	// create a rdf:type assertion for the relation individual
-	create(name, semweb::rdf::type, g)->setObjectIRI(relationType->stringForm());
+	create(name, semweb::rdf::type, g)->setObjectIRI(relationType->iri());
 
 	// set the subject, and object of the reified triple
 	if (triple.isSubjectBlank()) {

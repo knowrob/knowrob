@@ -11,12 +11,12 @@
 using namespace knowrob::semweb;
 
 Property::Property(std::string_view iri)
-		: Resource(iri), reification_(reifiedIRI(iri)), flags_(0) {}
+		: Resource(iri), reification_(std::make_shared<Class>(reifiedIRI(iri))), flags_(0) {}
 
 Property::Property(const IRIAtomPtr &iri)
-		: Resource(iri), reification_(reifiedIRI(iri->stringForm())), flags_(0) {}
+		: Resource(iri), reification_(std::make_shared<Class>(reifiedIRI(iri->stringForm()))), flags_(0) {}
 
-knowrob::AtomPtr Property::reifiedIRI(std::string_view iri) {
+knowrob::IRIAtomPtr Property::reifiedIRI(std::string_view iri) {
 	// split the IRI at the last '#' and insert 'Reified' in between
 	auto pos = iri.rfind('#');
 	char delimiter = '#';
@@ -24,15 +24,16 @@ knowrob::AtomPtr Property::reifiedIRI(std::string_view iri) {
 		pos = iri.rfind('/');
 		delimiter = '/';
 	}
-	if (pos == std::string::npos) {
-		return IRIAtom::Tabled(iri);
-	}
 	std::stringstream ss;
-	ss << iri.substr(0, pos) << delimiter << "Reified_" << iri.substr(pos);
+	if (pos == std::string::npos) {
+		ss << "Reified_" << iri;
+		return IRIAtom::Tabled(ss.str());
+	}
+	ss << iri.substr(0, pos) << delimiter << "Reified_" << iri.substr(pos+1);
 	return IRIAtom::Tabled(ss.str());
 }
 
-knowrob::AtomPtr Property::unReifiedIRI(std::string_view iri) {
+knowrob::IRIAtomPtr Property::unReifiedIRI(std::string_view iri) {
 	// split the IRI at the last '#' and remove 'Reified' in between
 	auto pos = iri.rfind('#');
 	char delimiter = '#';
@@ -43,7 +44,7 @@ knowrob::AtomPtr Property::unReifiedIRI(std::string_view iri) {
 	if (pos == std::string::npos) {
 		return IRIAtom::Tabled(iri);
 	}
-	auto reified = iri.substr(pos);
+	auto reified = iri.substr(pos+1);
 	if (reified.find("Reified_") != 0) {
 		return IRIAtom::Tabled(iri);
 	}
@@ -54,13 +55,21 @@ knowrob::AtomPtr Property::unReifiedIRI(std::string_view iri) {
 
 void Property::addDirectParent(const std::shared_ptr<Property> &directParent) {
 	directParents_.push_back(directParent);
+	reification_->addDirectParent(directParent->reification_);
 }
 
-void Property::setInverse(const std::shared_ptr<Property> &inverse) { inverse_ = inverse; }
+void Property::setInverse(const std::shared_ptr<Property> &inverse) {
+	inverse_ = inverse;
+}
 
-bool Property::hasFlag(PropertyFlag flag) const { return flags_ & flag; }
+bool Property::hasFlag(PropertyFlag flag) const {
+	return flags_ & flag;
+}
 
-void Property::setFlag(PropertyFlag flag) { flags_ |= flag; }
+void Property::setFlag(PropertyFlag flag) {
+	// TODO: consider translating property flags to OWL axioms that describe the *reification* of the property.
+	flags_ |= flag;
+}
 
 void Property::forallParents(const PropertyVisitor &visitor,
 							 bool includeSelf,
