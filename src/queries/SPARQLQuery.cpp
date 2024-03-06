@@ -10,7 +10,13 @@
 
 using namespace knowrob;
 
-SPARQLQuery::SPARQLQuery(const FramedTriplePattern &triplePattern) {
+// TODO: use prefixes instead of writing the full IRI. e.g.
+//       PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+//       SELECT ?name WHERE {
+//         _:bnode foaf:name ?name .
+//       }
+
+SPARQLQuery::SPARQLQuery(const FramedTriplePattern &triplePattern) : varCounter_(0) {
 	std::stringstream os;
 	selectBegin(os);
 	where(os, triplePattern);
@@ -18,7 +24,7 @@ SPARQLQuery::SPARQLQuery(const FramedTriplePattern &triplePattern) {
 	queryString_ = os.str();
 }
 
-SPARQLQuery::SPARQLQuery(const std::vector<FramedTriplePatternPtr> &triplePatterns) {
+SPARQLQuery::SPARQLQuery(const std::vector<FramedTriplePatternPtr> &triplePatterns) : varCounter_(0) {
 	std::stringstream os;
 	selectBegin(os);
 	for (const auto &triplePattern: triplePatterns) {
@@ -65,6 +71,8 @@ void SPARQLQuery::filter(std::ostream &os, std::string_view varName, const TermP
 }
 
 void SPARQLQuery::where(std::ostream &os, const FramedTriplePattern &triplePattern) {
+	static const std::string adhocVarPrefix = "v_adhoc";
+
 	where(os, triplePattern.subjectTerm());
 	where(os, triplePattern.propertyTerm());
 	// TODO: some context properties are optional. e.g. when query has a confidence threshold, then
@@ -72,11 +80,16 @@ void SPARQLQuery::where(std::ostream &os, const FramedTriplePattern &triplePatte
 	//       also in case query contains begin and end time, then triples without a begin/end/begin+end time should be included.
 	//       maybe also sometimes should include always, and belief knowledge.
 	//       BUT how to implement this here? well we could have special code for certain properties here. or try to encode it in the query.
-	where(os, triplePattern.objectTerm());
-	// TODO: need to introduce a temporary variable to handle value expressions like `<(5)`.
-	//            can also support terms like `<(5)->Var` where the value is fixed and the variable is the rest.
-	//filter(os, triplePattern.objectTerm(), tempVar, triplePattern.objectOperator());
-	dot(os);
+	if(triplePattern.objectOperator() == FramedTriplePattern::OperatorType::EQ) {
+		where(os, triplePattern.objectTerm());
+		dot(os);
+	} else {
+		// we need to introduce a temporary variable to handle value expressions like `<(5)` such
+		// that they can be filtered after the match.
+		auto tempVar = adhocVarPrefix + std::to_string(varCounter_++);
+		os << "?" << tempVar << " . ";
+		filter(os, tempVar, triplePattern.objectTerm(), triplePattern.objectOperator());
+	}
 }
 
 void SPARQLQuery::where(std::ostream &os, const TermPtr &term) {
@@ -88,8 +101,10 @@ void SPARQLQuery::where(std::ostream &os, const TermPtr &term) {
 			if(term->isIRI()) {
 				os << "<" << std::static_pointer_cast<Atomic>(term)->stringForm() << "> ";
 				break;
+			} else if (term->isBlank()) {
+				os << "_:" << std::static_pointer_cast<Atomic>(term)->stringForm() << " ";
+				break;
 			}
-			// TODO: encoding of blanks in SPARQL
 		}
 		default:
 			os << "\"" << *term << "\" ";

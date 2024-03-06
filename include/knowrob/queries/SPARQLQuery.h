@@ -38,6 +38,7 @@ namespace knowrob {
 		asUnsignedString() const { return reinterpret_cast<const unsigned char *>(queryString_.c_str()); }
 
 	protected:
+		uint32_t varCounter_;
 		std::string queryString_;
 
 		static void selectBegin(std::ostream &os);
@@ -46,9 +47,9 @@ namespace knowrob {
 
 		static void dot(std::ostream &os);
 
-		static void where(std::ostream &os, const FramedTriplePattern &triplePattern);
+		void where(std::ostream &os, const FramedTriplePattern &triplePattern);
 
-		static void where(std::ostream &os, const TermPtr &term);
+		void where(std::ostream &os, const TermPtr &term);
 
 		static void filter(std::ostream &os, std::string_view varName, const TermPtr &term, FramedTriplePattern::OperatorType operatorType);
 	};
