@@ -142,7 +142,7 @@ PropertyPtr Vocabulary::defineProperty(const std::shared_ptr<Property> &p) {
 	// define the reification of the property as a concept which inherits knowrob:ReifiedRelation
 	// note further superclasses will be added through Property::addDirectParent
 	auto reification = p->reification();
-	definedClasses_[reification->iri()] = p->reification();
+	definedClasses_[reification->iri()] = reification;
 	reification->addDirectParent(defineClass(reification::ReifiedRelation->stringForm()));
 	return p;
 }

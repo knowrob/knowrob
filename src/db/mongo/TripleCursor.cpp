@@ -40,17 +40,17 @@ bool TripleCursor::nextTriple(FramedTriple &tripleData, const bson_oid_t **tripl
 				tripleData.setGraph(bson_iter_utf8(&tripleIter_, nullptr));
 			} else if (key == "agent") {
 				tripleData.setAgent(bson_iter_utf8(&tripleIter_, nullptr));
-			} else if (key == "uncertain" && bson_iter_bool(&tripleIter_)) {
-				tripleData.setEpistemicOperator(EpistemicOperator::BELIEF);
-			} else if (key == "occasional" && bson_iter_bool(&tripleIter_)) {
-				tripleData.setTemporalOperator(TemporalOperator::SOMETIMES);
+			} else if (key == "uncertain") {
+				tripleData.setIsUncertain(bson_iter_bool(&tripleIter_));
+			} else if (key == "occasional") {
+				tripleData.setIsOccasional(bson_iter_bool(&tripleIter_));
 			} else if (key == "since") {
 				tripleData.setBegin(bson_iter_double(&tripleIter_));
 			} else if (key == "until") {
 				tripleData.setEnd(bson_iter_double(&tripleIter_));
 			} else if (key == "confidence") {
 				tripleData.setConfidence(bson_iter_double(&tripleIter_));
-				tripleData.setEpistemicOperator(EpistemicOperator::BELIEF);
+				tripleData.setIsUncertain(true);
 			} else if (key == "o") {
 				switch (bson_iter_type(&tripleIter_)) {
 					case BSON_TYPE_UTF8: {

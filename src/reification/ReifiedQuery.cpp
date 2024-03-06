@@ -72,10 +72,10 @@ void ReifiedQuery::addNonReified(const FramedTriplePattern &nonReified) {
 	// TODO: should we also include variables here? that would be required if context variables are allowed
 	//       which is currently not really the case, I think. But if we include variables here, be careful
 	//       with querying the context as it is optional! so a regular conjunctive query would not work here.
-	if (nonReified.epistemicOperator() && nonReified.epistemicOperator().value() == EpistemicOperator::BELIEF) {
+	if (nonReified.isUncertainTerm() && nonReified.isUncertainTerm().grounded()->asBoolean()) {
 		create(name, reification::isUncertain, b_true, g);
 	}
-	if (nonReified.temporalOperator() && nonReified.temporalOperator().value() == TemporalOperator::SOMETIMES) {
+	if (nonReified.isOccasionalTerm() && nonReified.isOccasionalTerm().grounded()->asBoolean()) {
 		create(name, reification::isOccasional, b_true, g);
 	}
 	if (nonReified.agentTerm().has_grounding()) {
@@ -103,8 +103,8 @@ bool ReifiedQuery::isReifiable(const FramedTriplePattern &q) {
 	//       For now, if the context has variables do not expand, meaning it is
 	//       not possible to query for context variables of reified triples.
 	return (q.agentTerm() && !q.agentTerm()->isVariable()) ||
-		   (q.epistemicOperator() && q.epistemicOperator().value() == EpistemicOperator::BELIEF) ||
-		   (q.temporalOperator()) ||
+		   (q.isUncertainTerm() && q.isUncertainTerm().grounded()->asBoolean()) ||
+		   (q.isOccasionalTerm() && q.isOccasionalTerm().grounded()->asBoolean()) ||
 		   (q.confidenceTerm() && !q.confidenceTerm()->isVariable()) ||
 		   (q.beginTerm() && !q.beginTerm()->isVariable()) ||
 		   (q.endTerm() && !q.endTerm()->isVariable());

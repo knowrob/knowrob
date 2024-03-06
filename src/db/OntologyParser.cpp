@@ -132,15 +132,16 @@ void OntologyParser::applyFrame(FramedTriple *triple) {
 	if (frame_) {
 		if (frame_->confidence.has_value()) {
 			triple->setConfidence(frame_->confidence.value());
+			triple->setIsUncertain(true);
 		}
 		if (frame_->agent.has_value()) {
 			triple->setAgent(frame_->agent.value()->iri());
 		}
-		if (frame_->epistemicOperator.has_value()) {
-			triple->setEpistemicOperator(frame_->epistemicOperator.value());
+		if (frame_->epistemicOperator.has_value() && frame_->epistemicOperator.value() == EpistemicOperator::BELIEF){
+			triple->setIsUncertain(true);
 		}
-		if (frame_->temporalOperator.has_value()) {
-			triple->setTemporalOperator(frame_->temporalOperator.value());
+		if (frame_->temporalOperator.has_value() && frame_->temporalOperator.value() == TemporalOperator::SOMETIMES) {
+			triple->setIsOccasional(true);
 		}
 		if (frame_->begin.has_value()) {
 			triple->setBegin(frame_->begin.value());

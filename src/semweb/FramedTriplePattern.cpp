@@ -21,9 +21,7 @@ FramedTriplePattern::FramedTriplePattern(const FramedTriple &triple, bool isNega
 		  subjectTerm_(predicate_->arguments()[0]),
 		  propertyTerm_(predicate_->arguments()[1]),
 		  objectTerm_(predicate_->arguments()[2]),
-		  objectOperator_(EQ),
-		  epistemicOperator_(triple.epistemicOperator()),
-		  temporalOperator_(triple.temporalOperator()) {
+		  objectOperator_(EQ) {
 	if (triple.confidence().has_value()) {
 		confidenceTerm_ = std::make_shared<Double>(triple.confidence().value());
 	}
@@ -38,6 +36,12 @@ FramedTriplePattern::FramedTriplePattern(const FramedTriple &triple, bool isNega
 	}
 	if (triple.agent()) {
 		agentTerm_ = Atom::Tabled(triple.agent().value());
+	}
+	if (triple.isOccasional()) {
+		isOccasional_ = Numeric::trueAtom();
+	}
+	if (triple.isUncertain()) {
+		isUncertain_ = Numeric::trueAtom();
 	}
 }
 
@@ -58,8 +62,6 @@ FramedTriplePattern::FramedTriplePattern(const TermPtr &s, const TermPtr &p, con
 }
 
 void FramedTriplePattern::setTripleFrame(const GraphSelector &frame) {
-	epistemicOperator_ = frame.epistemicOperator;
-	temporalOperator_ = frame.temporalOperator;
 	if (frame.confidence.has_value()) {
 		confidenceTerm_ = std::make_shared<Double>(frame.confidence.value());
 	}
@@ -74,6 +76,12 @@ void FramedTriplePattern::setTripleFrame(const GraphSelector &frame) {
 	}
 	if (frame.agent) {
 		agentTerm_ = Atom::Tabled(frame.agent.value()->iri());
+	}
+	if (frame.epistemicOperator.has_value() && frame.epistemicOperator.value() == EpistemicOperator::BELIEF) {
+		isUncertain_ = Numeric::trueAtom();
+	}
+	if (frame.temporalOperator.has_value() && frame.temporalOperator.value() == TemporalOperator::SOMETIMES) {
+		isOccasional_ = Numeric::trueAtom();
 	}
 }
 
@@ -134,6 +142,8 @@ uint32_t FramedTriplePattern::numVariables() const {
 			*agentTerm_,
 			*beginTerm_,
 			*endTerm_,
+			*isUncertain_,
+			*isOccasional_,
 			*confidenceTerm_}) {
 		if (t && t->termType() == TermType::VARIABLE) varCounter += 1;
 	}
@@ -240,11 +250,21 @@ FramedTriplePattern::instantiateInto(FramedTriple &triple, const std::shared_ptr
 			triple.setEnd(std::static_pointer_cast<Numeric>(e)->asDouble());
 		}
 	}
-	if (epistemicOperator_) {
-		triple.setEpistemicOperator(epistemicOperator_.value());
+	if (isOccasional_) {
+		auto &o = isOccasional_->isVariable() ?
+				bindings->get(std::static_pointer_cast<Variable>(*isOccasional_)->name()) :
+				*isOccasional_;
+		if (o && o->isNumeric()) {
+			triple.setIsOccasional(std::static_pointer_cast<Numeric>(o)->asBoolean());
+		}
 	}
-	if (temporalOperator_) {
-		triple.setTemporalOperator(temporalOperator_.value());
+	if (isUncertain_) {
+		auto &u = isUncertain_->isVariable() ?
+				bindings->get(std::static_pointer_cast<Variable>(*isUncertain_)->name()) :
+				*isUncertain_;
+		if (u && u->isNumeric()) {
+			triple.setIsUncertain(std::static_pointer_cast<Numeric>(u)->asBoolean());
+		}
 	}
 
 	return !hasMissingSPO;
@@ -302,6 +322,12 @@ namespace knowrob {
 		auto end = pat->endTerm() ? applyBindings(*pat->endTerm(), bindings) : nullptr;
 		if (end && end != *pat->endTerm()) hasChanges = true;
 
+		auto occasional = pat->isOccasionalTerm() ? applyBindings(*pat->isOccasionalTerm(), bindings) : nullptr;
+		if (occasional && occasional != *pat->isOccasionalTerm()) hasChanges = true;
+
+		auto uncertain = pat->isUncertainTerm() ? applyBindings(*pat->isUncertainTerm(), bindings) : nullptr;
+		if (uncertain && uncertain != *pat->isUncertainTerm()) hasChanges = true;
+
 		if (!hasChanges) return pat;
 
 		auto patInstance = std::make_shared<FramedTriplePattern>(
@@ -312,6 +338,8 @@ namespace knowrob {
 		if (confidence) patInstance->setConfidenceTerm(groundable<Double>::cast(confidence));
 		if (begin) patInstance->setBeginTerm(groundable<Double>::cast(begin));
 		if (end) patInstance->setEndTerm(groundable<Double>::cast(end));
+		if (occasional) patInstance->setIsOccasionalTerm(groundable<Numeric>::cast(occasional));
+		if (uncertain) patInstance->setIsUncertainTerm(groundable<Numeric>::cast(uncertain));
 		return patInstance;
 	}
 }
@@ -332,8 +360,8 @@ namespace knowrob::py {
 				.def("endTerm", &FramedTriplePattern::endTerm)
 				.def("confidenceTerm", &FramedTriplePattern::confidenceTerm)
 				.def("objectOperator", &FramedTriplePattern::objectOperator)
-				.def("temporalOperator", &FramedTriplePattern::temporalOperator)
-				.def("epistemicOperator", &FramedTriplePattern::epistemicOperator)
+				.def("isOccasionalTerm", &FramedTriplePattern::isOccasionalTerm)
+				.def("isUncertainTerm", &FramedTriplePattern::isUncertainTerm)
 				.def("setGraphName", &FramedTriplePattern::setGraphName);
 	}
 }

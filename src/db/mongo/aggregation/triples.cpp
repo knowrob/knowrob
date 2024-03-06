@@ -234,18 +234,16 @@ void aggregation::appendGraphSelector(bson_t *selectorDoc,
 
 void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const FramedTriplePattern &tripleExpression) {
 	static const bool allowConfidenceNullValues = true;
-	static auto zero = std::make_shared<Integer>(0);
 	auto ct = tripleExpression.confidenceTerm();
 	auto at = tripleExpression.agentTerm();
-	auto op = tripleExpression.epistemicOperator();
+	auto u = tripleExpression.isUncertainTerm();
 
-	// enforce that uncertain=false in case knowledge modality is selected in query
-	if (op && op.value() == EpistemicOperator::KNOWLEDGE) {
+	if (!u || !u.grounded()->asBoolean()) {
 		// note: null value of "uncertain" field is seen as value "false"
 		aggregation::appendTermQuery(
 				selectorDoc,
 				"uncertain",
-				zero,
+				Numeric::falseAtom(),
 				nullptr,
 				true);
 	}
@@ -291,13 +289,13 @@ void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedTriplePatt
 	static auto b_always = std::make_shared<Integer>(static_cast<int32_t>(false));
 	auto bt = tripleExpression.beginTerm();
 	auto et = tripleExpression.endTerm();
-	auto op = tripleExpression.temporalOperator();
+	auto o = tripleExpression.isOccasionalTerm();
 
 	// matching must be done depending on temporal operator:
 	// - H: bt >= since_H && et <= until_H
 	// - P: et >= since_H && bt <= until_H
 	// - TODO: there is another case for operator P: bt <= since_P && et >= until_P
-	if (op && op.value() == TemporalOperator::SOMETIMES) {
+	if (o && o.grounded()->asBoolean()) {
 		// just swap bt/et (see above comment)
 		auto swap = bt;
 		bt = et;

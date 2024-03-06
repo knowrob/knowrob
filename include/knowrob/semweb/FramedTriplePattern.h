@@ -145,26 +145,26 @@ namespace knowrob {
 		void setObjectOperator(OperatorType objectOperator) { objectOperator_ = objectOperator; }
 
 		/**
-		 * @return the temporal operator of this expression.
+		 * @return the isOccasional term of this expression.
 		 */
-		auto temporalOperator() const { return temporalOperator_; };
+		auto isOccasionalTerm() const { return isOccasional_; }
 
 		/**
-		 * Set the temporal operator of this expression.
-		 * @param temporalOperator the temporal operator.
+		 * Set the isOccasional term of this expression.
+		 * @param isOccasional the isOccasional term.
 		 */
-		void setTemporalOperator(TemporalOperator temporalOperator) { temporalOperator_ = temporalOperator; }
+		void setIsOccasionalTerm(const groundable<Numeric> &isOccasional) { isOccasional_ = isOccasional; }
 
 		/**
-		 * @return the epistemic operator of this expression.
+		 * @return the isUncertain term of this expression.
 		 */
-		auto epistemicOperator() const { return epistemicOperator_; };
+		auto isUncertainTerm() const { return isUncertain_; }
 
 		/**
-		 * Set the epistemic operator of this expression.
-		 * @param epistemicOperator the epistemic operator.
+		 * Set the isUncertain term of this expression.
+		 * @param isUncertain the isUncertain term.
 		 */
-		void setEpistemicOperator(EpistemicOperator epistemicOperator) { epistemicOperator_ = epistemicOperator; }
+		void setIsUncertainTerm(const groundable<Numeric> &isUncertain) { isUncertain_ = isUncertain; }
 
 		/**
 		 * @return the number of variables in this expression.
@@ -191,8 +191,8 @@ namespace knowrob {
 		groundable<Double> beginTerm_;
 		groundable<Double> endTerm_;
 		groundable<Double> confidenceTerm_;
-		std::optional<TemporalOperator> temporalOperator_;
-		std::optional<EpistemicOperator> epistemicOperator_;
+		groundable<Numeric> isOccasional_;
+		groundable<Numeric> isUncertain_;
 
 		static std::shared_ptr<Atom> getGraphTerm(const std::string_view &graphName);
 

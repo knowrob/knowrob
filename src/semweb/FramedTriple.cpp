@@ -203,11 +203,11 @@ bool FramedTriple::operator<(const FramedTriple &other) const {
 	} else if (valueAsString() != other.valueAsString()) {
 		return valueAsString() < other.valueAsString();
 	}
-	if (temporalOperator() != other.temporalOperator()) {
-		return temporalOperator() < other.temporalOperator();
+	if (isUncertain() != other.isUncertain()) {
+		return isUncertain() < other.isUncertain();
 	}
-	if (epistemicOperator() != other.epistemicOperator()) {
-		return epistemicOperator() < other.epistemicOperator();
+	if (isOccasional() != other.isOccasional()) {
+		return isOccasional() < other.isOccasional();
 	}
 	if (begin() != other.begin()) {
 		return begin() < other.begin();
@@ -226,8 +226,8 @@ bool FramedTriple::operator==(const FramedTriple &other) const {
 	if (predicate() != other.predicate()) return false;
 	if (graph(), other.graph()) return false;
 	if (agent(), other.agent()) return false;
-	if (temporalOperator() != other.temporalOperator()) return false;
-	if (epistemicOperator() != other.epistemicOperator()) return false;
+	if (isUncertain() != other.isUncertain()) return false;
+	if (isOccasional() != other.isOccasional()) return false;
 	if (begin() != other.begin()) return false;
 	if (end() != other.end()) return false;
 	if (confidence() != other.confidence()) return false;
@@ -334,8 +334,8 @@ namespace knowrob::py {
 				.def("xsdTypeIRI", &FramedTriple::xsdTypeIRI)
 				.def("setGraph", pure_virtual(&FramedTriple::setGraph))
 				.def("setAgent", pure_virtual(&FramedTriple::setAgent))
-				.def("setTemporalOperator", &FramedTriple::setTemporalOperator)
-				.def("setEpistemicOperator", &FramedTriple::setEpistemicOperator)
+				.def("setIsOccasional", &FramedTriple::setIsOccasional)
+				.def("setIsUncertain", &FramedTriple::setIsUncertain)
 				.def("setBegin", &FramedTriple::setBegin)
 				.def("setEnd", &FramedTriple::setEnd)
 				.def("setConfidence", &FramedTriple::setConfidence)
@@ -344,8 +344,8 @@ namespace knowrob::py {
 				.def("predicate", pure_virtual(&FramedTriple::predicate))
 				.def("graph", pure_virtual(&FramedTriple::graph))
 				.def("agent", pure_virtual(&FramedTriple::agent))
-				.def("temporalOperator", &FramedTriple::temporalOperator)
-				.def("epistemicOperator", &FramedTriple::epistemicOperator)
+				.def("isOccasional", &FramedTriple::isOccasional)
+				.def("isUncertain", &FramedTriple::isUncertain)
 				.def("begin", &FramedTriple::begin)
 				.def("end", &FramedTriple::end)
 				.def("confidence", &FramedTriple::confidence);

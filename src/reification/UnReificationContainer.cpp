@@ -55,10 +55,10 @@ void UnReificationContainer::add(const FramedTriple &triple) {
 				unReified->setAgent(triple.valueAsString());
 			}},
 			{reification::isUncertain->stringForm(),    [](auto &triple, auto &unReified) {
-				unReified->setEpistemicOperator(EpistemicOperator::BELIEF);
+				unReified->setIsUncertain(triple.valueAsBoolean());
 			}},
 			{reification::isOccasional->stringForm(),   [](auto &triple, auto &unReified) {
-				unReified->setTemporalOperator(TemporalOperator::SOMETIMES);
+				unReified->setIsOccasional(triple.valueAsBoolean());
 			}},
 			{reification::hasConfidence->stringForm(),  [](auto &triple, auto &unReified) {
 				unReified->setConfidence(triple.valueAsDouble());

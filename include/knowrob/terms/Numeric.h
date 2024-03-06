@@ -71,6 +71,16 @@ namespace knowrob {
 		virtual bool asBoolean() const = 0;
 
 		/**
+		 * @return a boolean typed numeric with value true
+		 */
+		static std::shared_ptr<Numeric> trueAtom();
+
+		/**
+		 * @return a boolean typed numeric with value false
+		 */
+		static std::shared_ptr<Numeric> falseAtom();
+
+		/**
 		 * @return true if the numeric is a floating number
 		 */
 		bool isFloatingNumber() const;

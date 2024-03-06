@@ -144,18 +144,18 @@ TEST_F(MongoKnowledgeGraphTest, AssertSubclassOf) {
 
 TEST_F(MongoKnowledgeGraphTest, Knowledge) {
 	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "X");
-	statement.setEpistemicOperator(EpistemicOperator::KNOWLEDGE);
+	statement.setIsUncertain(false);
 	EXPECT_EQ(lookup(statement).size(), 0);
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
-	statement.setEpistemicOperator(EpistemicOperator::BELIEF);
+	statement.setIsUncertain(true);
 	EXPECT_EQ(lookup(statement).size(), 1);
 }
 
 TEST_F(MongoKnowledgeGraphTest, KnowledgeOfAgent) {
 	// assert knowledge of a named agent
 	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "Y");
-	statement.setEpistemicOperator(EpistemicOperator::KNOWLEDGE);
+	statement.setIsUncertain(false);
 	statement.setAgent("agent_a");
 	EXPECT_EQ(lookup(statement).size(), 0);
 	EXPECT_NO_THROW(kg_->insertOne(statement));
@@ -171,7 +171,7 @@ TEST_F(MongoKnowledgeGraphTest, KnowledgeOfAgent) {
 TEST_F(MongoKnowledgeGraphTest, Belief) {
 	// assert uncertain statement
 	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "Lea");
-	statement.setEpistemicOperator(EpistemicOperator::BELIEF);
+	statement.setIsUncertain(true);
 	EXPECT_EQ(lookup(statement).size(), 0);
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
@@ -179,14 +179,14 @@ TEST_F(MongoKnowledgeGraphTest, Belief) {
 		EXPECT_TRUE(solution->frame()->isUncertain());
 	}
 	// statement is filtered if knowledge operator is selected
-	statement.setEpistemicOperator(EpistemicOperator::KNOWLEDGE);
+	statement.setIsUncertain(false);
 	EXPECT_EQ(lookup(statement).size(), 0);
 }
 
 TEST_F(MongoKnowledgeGraphTest, WithConfidence) {
 	// assert uncertain statement with confidence=0.5
 	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "A");
-	statement.setEpistemicOperator(EpistemicOperator::BELIEF);
+	statement.setIsUncertain(true);
 	statement.setConfidence(0.5);
 	EXPECT_EQ(lookup(statement).size(), 0);
 	EXPECT_NO_THROW(kg_->insertOne(statement));
@@ -223,7 +223,7 @@ TEST_F(MongoKnowledgeGraphTest, WithTimeInterval) {
 	statement.setEnd(20.0);
 	EXPECT_EQ(lookup(statement).size(), 0);
 	// but temporal overlap is sufficient if "sometimes" operator is used
-	statement.setTemporalOperator(TemporalOperator::SOMETIMES);
+	statement.setIsOccasional(true);
 	EXPECT_EQ(lookup(statement).size(), 1);
 }
 
@@ -250,6 +250,6 @@ TEST_F(MongoKnowledgeGraphTest, ExtendsTimeInterval) {
 	statement.setBegin(0.0);
 	EXPECT_EQ(lookup(statement).size(), 0);
 	// temporal overlap is sufficient if "sometimes" operator is used
-	statement.setTemporalOperator(TemporalOperator::SOMETIMES);
+	statement.setIsOccasional(true);
 	EXPECT_EQ(lookup(statement).size(), 1);
 }

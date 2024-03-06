@@ -48,11 +48,10 @@ ReifiedTriple::ReifiedTriple(const FramedTriple &triple, const semweb::Vocabular
 	if (triple.agent()) {
 		create(name, reification::hasPerspective, g)->setObjectIRI(triple.agent().value());
 	}
-	if (triple.epistemicOperator() && triple.epistemicOperator().value() == EpistemicOperator::BELIEF ||
-		triple.confidence()) {
+	if (triple.isUncertain() || triple.confidence()) {
 		create(name, reification::isUncertain, g)->setBooleanValue(true);
 	}
-	if (triple.temporalOperator() && triple.temporalOperator().value() == TemporalOperator::SOMETIMES) {
+	if (triple.isOccasional()) {
 		create(name, reification::isOccasional, g)->setBooleanValue(true);
 	}
 	if (triple.confidence()) {
@@ -86,8 +85,8 @@ bool ReifiedTriple::isPartOfReification(const FramedTriple &triple) {
 bool ReifiedTriple::isReifiable(const FramedTriple &triple) {
 	// TODO: only reify triples if the agent is not the one running the KB
 	return triple.agent() ||
-		   (triple.epistemicOperator() && triple.epistemicOperator().value() == EpistemicOperator::BELIEF) ||
-		   (triple.temporalOperator() && triple.temporalOperator().value() == TemporalOperator::SOMETIMES) ||
+		   triple.isUncertain() ||
+		   triple.isOccasional() ||
 		   triple.confidence() ||
 		   triple.begin() ||
 		   triple.end();

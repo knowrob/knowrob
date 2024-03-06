@@ -12,6 +12,16 @@ bool Numeric::isFloatingNumber() const {
 	return xsdType() == XSDType::FLOAT || xsdType() == XSDType::DOUBLE;
 }
 
+std::shared_ptr<Numeric> Numeric::trueAtom() {
+	static auto trueAtom = std::make_shared<Boolean>(true);
+	return trueAtom;
+}
+
+std::shared_ptr<Numeric> Numeric::falseAtom() {
+	static auto falseAtom = std::make_shared<Boolean>(false);
+	return falseAtom;
+}
+
 namespace knowrob::py {
 	// this struct is needed because Numeric has pure virtual methods
 	struct NumericWrap : public Numeric, boost::python::wrapper<Numeric> {

@@ -16,10 +16,10 @@ namespace knowrob {
 	class FramedTriple {
 	public:
 		explicit FramedTriple()
-				: xsdType_(std::nullopt) {}
+				: xsdType_(std::nullopt), isUncertain_(false), isOccasional_(false) {}
 
 		explicit FramedTriple(XSDType xsdType)
-				: xsdType_(xsdType) {}
+				: xsdType_(xsdType), isUncertain_(false), isOccasional_(false) {}
 
 		virtual ~FramedTriple() = default;
 
@@ -247,14 +247,14 @@ namespace knowrob {
 		virtual void setAgent(std::string_view agent) = 0;
 
 		/**
-		 * @return the temporal operator of the triple.
+		 * @return true if the triple is occasionally true.
 		 */
-		auto temporalOperator() const { return temporalOperator_; }
+		bool isOccasional() const { return isOccasional_; }
 
 		/**
-		 * @return the epistemic operator of the triple.
+		 * @return true if the triple is uncertain.
 		 */
-		auto epistemicOperator() const { return epistemicOperator_; }
+		bool isUncertain() const { return isUncertain_; }
 
 		/**
 		 * @return the begin of the triple.
@@ -272,14 +272,14 @@ namespace knowrob {
 		auto confidence() const { return confidence_; }
 
 		/**
-		 * @param temporalOperator the temporal operator of the triple.
+		 * @param isOccasional true if the triple is occasionally true.
 		 */
-		void setTemporalOperator(TemporalOperator temporalOperator) { temporalOperator_ = temporalOperator; }
+		void setIsOccasional(bool isOccasional) { isOccasional_ = isOccasional; }
 
 		/**
-		 * @param epistemicOperator the epistemic operator of the triple.
+		 * @param isUncertain true if the triple is uncertain.
 		 */
-		void setEpistemicOperator(EpistemicOperator epistemicOperator) { epistemicOperator_ = epistemicOperator; }
+		void setIsUncertain(bool isUncertain) { isUncertain_ = isUncertain; }
 
 		/**
 		 * @param begin the begin of the triple.
@@ -314,8 +314,8 @@ namespace knowrob {
 		bool operator<(const FramedTriple &other) const;
 
 	protected:
-		std::optional<TemporalOperator> temporalOperator_;
-		std::optional<EpistemicOperator> epistemicOperator_;
+		bool isOccasional_;
+		bool isUncertain_;
 		std::optional<double> begin_;
 		std::optional<double> end_;
 		std::optional<double> confidence_;
@@ -355,11 +355,11 @@ namespace knowrob {
 				: FramedTriple() {
 			subject_ = other.subject();
 			predicate_ = other.predicate();
+			isOccasional_ = other.isOccasional();
+			isUncertain_ = other.isUncertain();
 			xsdType_ = other.xsdType();
 			graph_ = other.graph();
 			agent_ = other.agent();
-			temporalOperator_ = other.temporalOperator();
-			epistemicOperator_ = other.epistemicOperator();
 			begin_ = other.begin();
 			end_ = other.end();
 			confidence_ = other.confidence();
@@ -515,8 +515,8 @@ namespace knowrob {
 			begin_ = std::nullopt;
 			end_ = std::nullopt;
 			xsdType_ = std::nullopt;
-			temporalOperator_ = TemporalOperator::ALWAYS;
-			epistemicOperator_ = EpistemicOperator::KNOWLEDGE;
+			isUncertain_ = false;
+			isOccasional_ = false;
 		}
 
 	protected:

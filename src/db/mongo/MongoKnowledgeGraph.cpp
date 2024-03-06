@@ -480,7 +480,7 @@ void MongoKnowledgeGraph::updateTimeInterval(const FramedTriple &tripleData) {
 	bson_t selectorDoc = BSON_INITIALIZER;
 
 	FramedTriplePattern overlappingExpr(tripleData);
-	overlappingExpr.setTemporalOperator(TemporalOperator::SOMETIMES);
+	overlappingExpr.setIsOccasionalTerm(groundable(Numeric::trueAtom()));
 	aggregation::appendTripleSelector(&selectorDoc, overlappingExpr, b_isTaxonomicProperty, importHierarchy_);
 	cursor.filter(&selectorDoc);
 
@@ -720,20 +720,19 @@ bson_t *MongoKnowledgeGraph::createTripleDocument(const FramedTriple &tripleData
 	if (tripleData.agent())
 		BSON_APPEND_UTF8(tripleDoc, "agent", tripleData.agent().value().data());
 
-	bool isBelief = false;
+	bool isBelief;
 	if (tripleData.confidence().has_value()) {
 		BSON_APPEND_DOUBLE(tripleDoc, "confidence", tripleData.confidence().value());
 		isBelief = true;
-	} else if (tripleData.epistemicOperator().has_value()) {
-		isBelief = (tripleData.epistemicOperator().value() == EpistemicOperator::BELIEF);
+	} else {
+		isBelief = tripleData.isUncertain();
 	}
 	if (isBelief) {
 		// flag the statement as "uncertain"
 		BSON_APPEND_BOOL(tripleDoc, "uncertain", true);
 	}
 
-	if (tripleData.temporalOperator().has_value() &&
-		tripleData.temporalOperator().value() == TemporalOperator::SOMETIMES) {
+	if (tripleData.isOccasional()) {
 		// flag the statement as "occasional", meaning it is only known that it was true at some past instants
 		BSON_APPEND_BOOL(tripleDoc, "occasional", true);
 	}
