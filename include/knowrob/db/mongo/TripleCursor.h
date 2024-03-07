@@ -1,12 +1,13 @@
-//
-// Created by daniel on 07.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_MONGO_TRIPLE_CURSOR_H
 #define KNOWROB_MONGO_TRIPLE_CURSOR_H
 
 #include "Cursor.h"
-#include "knowrob/semweb/FramedTriple.h"
+#include "knowrob/triples/FramedTriple.h"
 
 namespace knowrob::mongo {
 	/**

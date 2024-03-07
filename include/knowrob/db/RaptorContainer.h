@@ -8,8 +8,8 @@
 
 #include <raptor.h>
 #include <librdf.h>
-#include "knowrob/semweb/TripleContainer.h"
-#include "knowrob/semweb/FramedTriple.h"
+#include "knowrob/triples/TripleContainer.h"
+#include "knowrob/triples/FramedTriple.h"
 
 namespace knowrob {
 	/**

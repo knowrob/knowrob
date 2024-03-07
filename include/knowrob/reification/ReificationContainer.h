@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include "knowrob/semweb/TripleContainer.h"
+#include "knowrob/triples/TripleContainer.h"
 #include "knowrob/semweb/Vocabulary.h"
 
 namespace knowrob {

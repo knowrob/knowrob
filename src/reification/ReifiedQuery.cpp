@@ -38,7 +38,12 @@ std::shared_ptr<FramedTriplePattern> ReifiedQuery::create(const TermPtr &s, cons
 }
 
 void ReifiedQuery::addNonReified(const FramedTriplePattern &nonReified) {
-	static auto b_true = std::make_shared<Boolean>(true);
+	static auto b_true = Numeric::trueAtom();
+	static auto b_false = Numeric::falseAtom();
+	static auto b_var = std::make_shared<Variable>("v_reified_b");
+	static auto e_var = std::make_shared<Variable>("v_reified_e");
+	static auto fullyConfident = std::make_shared<Double>(1.0);
+	static auto egoPerspective = Perspective::getEgoPerspective()->atom();
 
 	if (!nonReified.propertyTerm() || !nonReified.propertyTerm()->isAtom()) {
 		KB_WARN("non-reified triple does not have a property term, ignoring");
@@ -57,8 +62,10 @@ void ReifiedQuery::addNonReified(const FramedTriplePattern &nonReified) {
 
 	// create a type assertion
 	create(name, semweb::rdf::type, relationType->iriAtom(), g);
+
 	// create a query for subject
 	create(name, reification::hasSubject, nonReified.subjectTerm(), g);
+
 	// create a query for the object/literal value
 	std::shared_ptr<FramedTriplePattern> objectQuery;
 	if (property->isObjectProperty()) {
@@ -69,50 +76,138 @@ void ReifiedQuery::addNonReified(const FramedTriplePattern &nonReified) {
 	objectQuery->setObjectOperator(nonReified.objectOperator());
 
 	// create queries for optional properties
-	// TODO: should we also include variables here? that would be required if context variables are allowed
-	//       which is currently not really the case, I think. But if we include variables here, be careful
-	//       with querying the context as it is optional! so a regular conjunctive query would not work here.
-	if (nonReified.isUncertainTerm() && nonReified.isUncertainTerm().grounded()->asBoolean()) {
+	bool includeOnlyCertain;
+	if (nonReified.isUncertainTerm().has_grounding() && nonReified.isUncertainTerm().grounded()->asBoolean()) {
 		create(name, reification::isUncertain, b_true, g);
+		includeOnlyCertain = false;
+	} else if (nonReified.isUncertainTerm().has_variable()) {
+		auto x = create(name, reification::isUncertain, nonReified.isUncertainTerm().variable(), g);
+		x->setIsOptional(true);
+		includeOnlyCertain = false;
+	} else {
+		auto x = create(name, reification::isUncertain, b_false, g);
+		x->setIsOptional(true);
+		includeOnlyCertain = true;
 	}
-	if (nonReified.isOccasionalTerm() && nonReified.isOccasionalTerm().grounded()->asBoolean()) {
-		create(name, reification::isOccasional, b_true, g);
-	}
-	if (nonReified.agentTerm().has_grounding()) {
-		create(name, reification::hasPerspective, nonReified.agentTerm().grounded(), g);
-	}
+
 	if (nonReified.confidenceTerm().has_grounding()) {
 		auto x = create(name, reification::hasConfidence, nonReified.confidenceTerm().grounded(), g);
 		x->setObjectOperator(FramedTriplePattern::GEQ);
-	}
-	if (nonReified.beginTerm().has_grounding()) {
-		auto x = create(name, reification::hasBeginTime, nonReified.beginTerm().grounded(), g);
+	} else if (nonReified.confidenceTerm().has_variable()) {
+		auto x = create(name, reification::hasConfidence, nonReified.confidenceTerm().variable(), g);
+		x->setIsOptional(true);
+	} else if (includeOnlyCertain) {
+		auto x = create(name, reification::hasConfidence, fullyConfident, g);
 		x->setObjectOperator(FramedTriplePattern::GEQ);
+		x->setIsOptional(true);
 	}
+
+	if (nonReified.agentTerm().has_grounding()) {
+		if (Perspective::isEgoPerspective(nonReified.agentTerm().grounded()->stringForm())) {
+			auto x = create(name, reification::hasPerspective, egoPerspective, g);
+			x->setIsOptional(true);
+		} else {
+			create(name, reification::hasPerspective, nonReified.agentTerm().grounded(), g);
+		}
+	} else if (nonReified.agentTerm().has_variable()) {
+		auto x = create(name, reification::hasPerspective, nonReified.agentTerm().variable(), g);
+		x->setIsOptional(true);
+	} else {
+		auto x = create(name, reification::hasPerspective, egoPerspective, g);
+		x->setIsOptional(true);
+	}
+
+	bool includeOccasional;
+	if (nonReified.isOccasionalTerm().has_grounding() && nonReified.isOccasionalTerm().grounded()->asBoolean()) {
+		create(name, reification::isOccasional, b_true, g);
+		includeOccasional = true;
+	} else if (nonReified.isOccasionalTerm().has_variable()) {
+		auto x = create(name, reification::isOccasional, nonReified.isOccasionalTerm().variable(), g);
+		x->setIsOptional(true);
+		includeOccasional = true;
+	} else {
+		auto x = create(name, reification::isOccasional, b_false, g);
+		x->setIsOptional(true);
+		includeOccasional = false;
+	}
+
+	if (nonReified.beginTerm().has_grounding()) {
+		if (includeOccasional) {
+			auto x = create(name, reification::hasEndTime, nonReified.beginTerm().grounded(), g);
+			x->setObjectOperator(FramedTriplePattern::GEQ);
+			x->setIsOptional(true);
+		} else {
+			auto x = create(name, reification::hasBeginTime, nonReified.beginTerm().grounded(), g);
+			x->setObjectOperator(FramedTriplePattern::LEQ);
+			x->setIsOptional(true);
+		}
+	} else if (nonReified.beginTerm().has_variable()) {
+		auto x = create(name, reification::hasBeginTime, nonReified.beginTerm().variable(), g);
+		x->setIsOptional(true);
+	} else {
+		auto x = create(name, reification::hasBeginTime, b_var, g);
+		x->setIsNegated(true);
+	}
+
 	if (nonReified.endTerm().has_grounding()) {
-		auto x = create(name, reification::hasEndTime, nonReified.endTerm().grounded(), g);
-		x->setObjectOperator(FramedTriplePattern::LEQ);
+		if (includeOccasional) {
+			auto x = create(name, reification::hasBeginTime, nonReified.endTerm().grounded(), g);
+			x->setObjectOperator(FramedTriplePattern::LEQ);
+			x->setIsOptional(true);
+		} else {
+			auto x = create(name, reification::hasEndTime, nonReified.endTerm().grounded(), g);
+			x->setObjectOperator(FramedTriplePattern::GEQ);
+			x->setIsOptional(true);
+		}
+	} else if (nonReified.endTerm().has_variable()) {
+		auto x = create(name, reification::hasEndTime, nonReified.endTerm().variable(), g);
+		x->setIsOptional(true);
+	} else {
+		auto x = create(name, reification::hasEndTime, e_var, g);
+		x->setIsNegated(true);
 	}
 }
 
-bool ReifiedQuery::isReifiable(const FramedTriplePattern &q) {
-	// TODO: the variable case is a bit problematic. currently we cannot query
-	//       reified and non-reified triples at the same time because we always
-	//       either expand a query or not. So there should be cases where
-	//       both expanded and unexpanded queries are processed in disjunction.
-	//       For now, if the context has variables do not expand, meaning it is
-	//       not possible to query for context variables of reified triples.
-	return (q.agentTerm() && !q.agentTerm()->isVariable()) ||
-		   (q.isUncertainTerm() && q.isUncertainTerm().grounded()->asBoolean()) ||
-		   (q.isOccasionalTerm() && q.isOccasionalTerm().grounded()->asBoolean()) ||
-		   (q.confidenceTerm() && !q.confidenceTerm()->isVariable()) ||
-		   (q.beginTerm() && !q.beginTerm()->isVariable()) ||
-		   (q.endTerm() && !q.endTerm()->isVariable());
-}
-
-bool ReifiedQuery::isReifiable(const std::shared_ptr<ConjunctiveQuery> &q) {
-	// TODO: would the query context influence isReifiable ?
-	return std::any_of(q->literals().begin(), q->literals().end(), [](const auto &x) {
-		return isReifiable(*x);
-	});
+int ReifiedQuery::getReificationFlags(const FramedTriplePattern &q) {
+	bool includeOriginal = true;
+	bool includeReified = false;
+	// include reified if isUncertain is true or a variable in the query
+	if ((q.isUncertainTerm().has_grounding() && q.isUncertainTerm().grounded()->asBoolean()) || q.isUncertainTerm().has_variable()) {
+		includeReified = true;
+	}
+	// include reified if confidence has a value or is a variable
+	if (q.confidenceTerm().has_grounding() || q.confidenceTerm().has_variable()) {
+		includeReified = true;
+	}
+	// include reified if perspective is not the ego perspective or a variable.
+	// In case perspective is not ego perspective, the original triples are not included.
+	if (q.agentTerm().has_grounding()) {
+		auto perspective = q.agentTerm().grounded();
+		if (!Perspective::isEgoPerspective(perspective->stringForm())) {
+			includeOriginal = false;
+			includeReified = true;
+		}
+	} else if (q.agentTerm().has_variable()) {
+		includeReified = true;
+	}
+	// include reified if isOccasional is true or a variable in the query.
+	// In case isOccasional is true, the original triples are not included.
+	if (q.isOccasionalTerm().has_grounding()) {
+		auto occasional = q.isOccasionalTerm().grounded();
+		if (occasional->asBoolean()) {
+			includeReified = true;
+			includeOriginal = false;
+		}
+	} else if (q.isOccasionalTerm().has_variable()) {
+		includeReified = true;
+	}
+	// include reified if begin or end is a variable or has a grounding.
+	if (q.beginTerm().has_grounding() || q.beginTerm().has_variable() ||
+	    q.endTerm().has_grounding() || q.endTerm().has_variable()) {
+		includeReified = true;
+	}
+	int flags = 0;
+	if (includeOriginal) flags |= IncludeOriginal;
+	if (includeReified) flags |= IncludeReified;
+	return flags;
 }

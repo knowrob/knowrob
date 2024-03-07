@@ -19,7 +19,7 @@ using namespace knowrob;
 SPARQLQuery::SPARQLQuery(const FramedTriplePattern &triplePattern) : varCounter_(0) {
 	std::stringstream os;
 	selectBegin(os);
-	where(os, triplePattern);
+	add(os, triplePattern);
 	selectEnd(os);
 	queryString_ = os.str();
 }
@@ -28,10 +28,20 @@ SPARQLQuery::SPARQLQuery(const std::vector<FramedTriplePatternPtr> &triplePatter
 	std::stringstream os;
 	selectBegin(os);
 	for (const auto &triplePattern: triplePatterns) {
-		where(os, *triplePattern);
+		add(os, *triplePattern);
 	}
 	selectEnd(os);
 	queryString_ = os.str();
+}
+
+void SPARQLQuery::add(std::ostream &os, const FramedTriplePattern &triplePattern) {
+	if (triplePattern.isNegated()) {
+		filterNotExists(os, triplePattern);
+	} else if (triplePattern.isOptional()) {
+		optional(os, triplePattern);
+	} else {
+		where(os, triplePattern);
+	}
 }
 
 void SPARQLQuery::selectBegin(std::ostream &os) {
@@ -40,10 +50,6 @@ void SPARQLQuery::selectBegin(std::ostream &os) {
 
 void SPARQLQuery::selectEnd(std::ostream &os) {
 	os << "}";
-}
-
-void SPARQLQuery::dot(std::ostream &os) {
-	os << ". ";
 }
 
 void SPARQLQuery::filter(std::ostream &os, std::string_view varName, const TermPtr &term, FramedTriplePattern::OperatorType operatorType) {
@@ -70,19 +76,26 @@ void SPARQLQuery::filter(std::ostream &os, std::string_view varName, const TermP
 	os << atomic->stringForm() << ") ";
 }
 
+void SPARQLQuery::filterNotExists(std::ostream &os, const FramedTriplePattern &triplePattern) {
+	os << "FILTER NOT EXISTS { ";
+	where(os, triplePattern);
+	os << "} ";
+}
+
+void SPARQLQuery::optional(std::ostream &os, const FramedTriplePattern &triplePattern) {
+	os << "OPTIONAL { ";
+	where(os, triplePattern);
+	os << "} ";
+}
+
 void SPARQLQuery::where(std::ostream &os, const FramedTriplePattern &triplePattern) {
 	static const std::string adhocVarPrefix = "v_adhoc";
 
 	where(os, triplePattern.subjectTerm());
 	where(os, triplePattern.propertyTerm());
-	// TODO: some context properties are optional. e.g. when query has a confidence threshold, then
-	//       all triples without a confidence should be included.
-	//       also in case query contains begin and end time, then triples without a begin/end/begin+end time should be included.
-	//       maybe also sometimes should include always, and belief knowledge.
-	//       BUT how to implement this here? well we could have special code for certain properties here. or try to encode it in the query.
 	if(triplePattern.objectOperator() == FramedTriplePattern::OperatorType::EQ) {
 		where(os, triplePattern.objectTerm());
-		dot(os);
+		os << ". ";
 	} else {
 		// we need to introduce a temporary variable to handle value expressions like `<(5)` such
 		// that they can be filtered after the match.

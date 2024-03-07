@@ -10,8 +10,8 @@
 #include "knowrob/terms/Term.h"
 #include "knowrob/formulas/Formula.h"
 #include "knowrob/formulas/CompoundFormula.h"
-#include "knowrob/semweb/FramedTriple.h"
-#include "knowrob/semweb/FramedTriplePattern.h"
+#include "knowrob/triples/FramedTriple.h"
+#include "knowrob/triples/FramedTriplePattern.h"
 #include "knowrob/terms/Function.h"
 #include "knowrob/terms/ListTerm.h"
 #include <iostream>

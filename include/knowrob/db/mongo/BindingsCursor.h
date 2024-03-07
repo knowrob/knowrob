@@ -1,6 +1,7 @@
-//
-// Created by daniel on 08.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_MONGO_BINDINGS_CURSOR_H
 #define KNOWROB_MONGO_BINDINGS_CURSOR_H
@@ -9,7 +10,7 @@
 #include "knowrob/queries/Answer.h"
 #include "knowrob/queries/AnswerYes.h"
 #include "knowrob/queries/FramedBindings.h"
-#include "knowrob/semweb/FramedTriplePattern.h"
+#include "knowrob/triples/FramedTriplePattern.h"
 
 namespace knowrob::mongo {
 	class BindingsCursor : public Cursor {

@@ -6,8 +6,8 @@
 #ifndef KNOWROB_SPARQL_QUERY_H
 #define KNOWROB_SPARQL_QUERY_H
 
-#include "knowrob/semweb/FramedTriple.h"
-#include "knowrob/semweb/FramedTriplePattern.h"
+#include "knowrob/triples/FramedTriple.h"
+#include "knowrob/triples/FramedTriplePattern.h"
 
 namespace knowrob {
 	/**
@@ -45,13 +45,18 @@ namespace knowrob {
 
 		static void selectEnd(std::ostream &os);
 
-		static void dot(std::ostream &os);
+		void add(std::ostream &os, const FramedTriplePattern &triplePattern);
+
+		void filterNotExists(std::ostream &os, const FramedTriplePattern &triplePattern);
+
+		void optional(std::ostream &os, const FramedTriplePattern &triplePattern);
 
 		void where(std::ostream &os, const FramedTriplePattern &triplePattern);
 
 		void where(std::ostream &os, const TermPtr &term);
 
-		static void filter(std::ostream &os, std::string_view varName, const TermPtr &term, FramedTriplePattern::OperatorType operatorType);
+		static void filter(std::ostream &os, std::string_view varName, const TermPtr &term,
+						   FramedTriplePattern::OperatorType operatorType);
 	};
 
 } // knowrob

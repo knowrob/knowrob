@@ -7,7 +7,7 @@
 #define KNOWROB_CONJUNCTIVE_QUERY_H
 
 #include "Query.h"
-#include "knowrob/semweb/FramedTriplePattern.h"
+#include "knowrob/triples/FramedTriplePattern.h"
 
 namespace knowrob {
 	/**
@@ -20,13 +20,15 @@ namespace knowrob {
 		 * @param literals an ordered sequence of literals.
 		 * @param ctx the query context.
 		 */
-		explicit ConjunctiveQuery(const std::vector<FramedTriplePatternPtr> &literals, const QueryContextPtr &ctx = DefaultQueryContext());
+		explicit ConjunctiveQuery(const std::vector<FramedTriplePatternPtr> &literals,
+								  const QueryContextPtr &ctx = DefaultQueryContext());
 
 		/**
 		 * @param literal a single literal.
 		 * @param ctx the query context.
 		 */
-		explicit ConjunctiveQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx = DefaultQueryContext());
+		explicit ConjunctiveQuery(const FramedTriplePatternPtr &literal,
+								  const QueryContextPtr &ctx = DefaultQueryContext());
 
 		/**
 		 * @return the literals of the query.

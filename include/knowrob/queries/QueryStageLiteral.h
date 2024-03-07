@@ -7,7 +7,7 @@
 #define KNOWROB_QUERY_STAGE_LITERAL_H
 
 #include "QueryStage.h"
-#include "knowrob/semweb/FramedTriplePattern.h"
+#include "knowrob/triples/FramedTriplePattern.h"
 
 namespace knowrob {
 	class QueryStageLiteral : public QueryStage {

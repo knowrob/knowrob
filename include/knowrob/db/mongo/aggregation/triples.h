@@ -1,6 +1,7 @@
-//
-// Created by daniel on 08.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_MONGO_AGGREGATION_TRIPLES_H
 #define KNOWROB_MONGO_AGGREGATION_TRIPLES_H
@@ -12,7 +13,7 @@
 #include "knowrob/db/mongo/Pipeline.h"
 #include "knowrob/semweb/ImportHierarchy.h"
 #include "knowrob/semweb/Vocabulary.h"
-#include "knowrob/semweb/FramedTriplePattern.h"
+#include "knowrob/triples/FramedTriplePattern.h"
 
 namespace knowrob::mongo::aggregation {
 	struct TripleLookupData {

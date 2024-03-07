@@ -1,11 +1,12 @@
-//
-// Created by danielb on 23.11.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_NEGATION_STAGE_H
 #define KNOWROB_NEGATION_STAGE_H
 
-#include "knowrob/semweb/FramedTriplePattern.h"
+#include "knowrob/triples/FramedTriplePattern.h"
 #include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/KnowledgeBase.h"
 #include "knowrob/formulas/ModalFormula.h"

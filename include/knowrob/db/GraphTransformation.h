@@ -7,7 +7,7 @@
 #define KNOWROB_GRAPH_TRANSFORMATION_H
 
 #include <functional>
-#include "knowrob/semweb/TripleContainer.h"
+#include "knowrob/triples/TripleContainer.h"
 
 namespace knowrob {
 	/**

@@ -453,7 +453,7 @@ std::shared_ptr<GraphSelector> PrologReasoner::createAnswerFrame(const PrologTer
 				if (!frame->epistemicOperator.has_value()) {
 					frame->epistemicOperator = EpistemicOperator::KNOWLEDGE;
 				}
-				frame->agent = Agent::get(PL_atom_chars(agentAtom));
+				frame->agent = Perspective::get(PL_atom_chars(agentAtom));
 			}
 		}
 

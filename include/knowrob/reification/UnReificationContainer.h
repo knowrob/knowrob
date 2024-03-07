@@ -6,7 +6,7 @@
 #ifndef KNOWROB_UN_REIFICATION_CONTAINER_H
 #define KNOWROB_UN_REIFICATION_CONTAINER_H
 
-#include "knowrob/semweb/TripleContainer.h"
+#include "knowrob/triples/TripleContainer.h"
 
 namespace knowrob {
 	/**

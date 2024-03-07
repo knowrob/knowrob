@@ -9,7 +9,7 @@
 #include "Predicate.h"
 
 #include <utility>
-#include "knowrob/semweb/GraphSelector.h"
+#include "knowrob/triples/GraphSelector.h"
 
 namespace knowrob {
 	class FramedPredicate {

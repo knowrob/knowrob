@@ -13,6 +13,11 @@
 #include "knowrob/terms/XSDType.h"
 
 namespace knowrob {
+	/**
+	 * A triple with additional information about its origin, epistemic and temporal context.
+	 * This is an abstract class to support both std::string and std::string_view for triple data,
+	 * however, at the cost of having some virtual methods.
+	 */
 	class FramedTriple {
 	public:
 		explicit FramedTriple()
@@ -326,6 +331,10 @@ namespace knowrob {
 		}
 	};
 
+	/**
+	 * A FramedTriple with a specified string type for the triple data.
+	 * @tparam StringType the string type for the triple data.
+	 */
 	template<class StringType>
 	class FramedTripleTemplate : public FramedTriple {
 	protected:
@@ -534,7 +543,13 @@ namespace knowrob {
 		}
 	};
 
+	/**
+	 * A FramedTriple that holds a copy of the data.
+	 */
 	using FramedTripleCopy = FramedTripleTemplate<std::string>;
+	/**
+	 * A FramedTriple with eternally allocated data.
+	 */
 	using FramedTripleView = FramedTripleTemplate<std::string_view>;
 
 	/**

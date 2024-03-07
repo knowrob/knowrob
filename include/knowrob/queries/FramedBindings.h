@@ -1,12 +1,13 @@
-//
-// Created by daniel on 29.02.24.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_FRAMED_BINDINGS_H
 #define KNOWROB_FRAMED_BINDINGS_H
 
 #include "knowrob/terms/Substitution.h"
-#include "knowrob/semweb/GraphSelector.h"
+#include "knowrob/triples/GraphSelector.h"
 
 namespace knowrob {
 
@@ -15,6 +16,7 @@ namespace knowrob {
 		void setFrame(const std::shared_ptr<GraphSelector> &frame) { frame_ = frame; }
 
 		auto &frame() const { return frame_; }
+
 	protected:
 		std::shared_ptr<GraphSelector> frame_;
 	};

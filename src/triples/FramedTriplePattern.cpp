@@ -3,7 +3,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob/semweb/FramedTriplePattern.h"
+#include "knowrob/triples/FramedTriplePattern.h"
 #include "knowrob/Logger.h"
 #include "knowrob/queries/QueryError.h"
 #include "knowrob/modalities/BeliefModality.h"
@@ -21,7 +21,8 @@ FramedTriplePattern::FramedTriplePattern(const FramedTriple &triple, bool isNega
 		  subjectTerm_(predicate_->arguments()[0]),
 		  propertyTerm_(predicate_->arguments()[1]),
 		  objectTerm_(predicate_->arguments()[2]),
-		  objectOperator_(EQ) {
+		  objectOperator_(EQ),
+		  isOptional_(false) {
 	if (triple.confidence().has_value()) {
 		confidenceTerm_ = std::make_shared<Double>(triple.confidence().value());
 	}
@@ -50,7 +51,8 @@ FramedTriplePattern::FramedTriplePattern(const PredicatePtr &pred, bool isNegate
 		  subjectTerm_(predicate_->arguments()[0]),
 		  propertyTerm_(predicate_->arguments()[1]),
 		  objectTerm_(predicate_->arguments()[2]),
-		  objectOperator_(EQ) {
+		  objectOperator_(EQ),
+		  isOptional_(false) {
 }
 
 FramedTriplePattern::FramedTriplePattern(const TermPtr &s, const TermPtr &p, const TermPtr &o, bool isNegated)
@@ -58,7 +60,8 @@ FramedTriplePattern::FramedTriplePattern(const TermPtr &s, const TermPtr &p, con
 		  subjectTerm_(s),
 		  propertyTerm_(p),
 		  objectTerm_(o),
-		  objectOperator_(EQ) {
+		  objectOperator_(EQ),
+		  isOptional_(false) {
 }
 
 void FramedTriplePattern::setTripleFrame(const GraphSelector &frame) {

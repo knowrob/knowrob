@@ -6,7 +6,7 @@
 #ifndef KNOWROB_RDF_COMPUTABLE_H
 #define KNOWROB_RDF_COMPUTABLE_H
 
-#include "FramedTriplePattern.h"
+#include "knowrob/triples/FramedTriplePattern.h"
 #include "knowrob/reasoner/Reasoner.h"
 
 namespace knowrob {

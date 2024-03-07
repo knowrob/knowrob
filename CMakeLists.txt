@@ -220,7 +220,7 @@ add_library(knowrob SHARED
 		src/semweb/rdf.cpp
 		src/semweb/Property.cpp
 		src/semweb/Class.cpp
-        src/semweb/FramedTriplePattern.cpp
+        src/triples/FramedTriplePattern.cpp
 		src/semweb/ImportHierarchy.cpp
 		src/reasoner/DefinedPredicate.cpp
 		src/reasoner/ReasonerPlugin.cpp
@@ -262,27 +262,23 @@ add_library(knowrob SHARED
         src/db/mongo/Connection.cpp
         src/db/mongo/bson-helper.cpp
 		src/queries/ModalStage.cpp
-		src/semweb/Agent.cpp
-		include/knowrob/semweb/Agent.h
+        src/triples/Perspective.cpp
 		src/formulas/PredicateIndicator.cpp
 		src/formulas/PredicateDescription.cpp
 		src/reasoner/ReasonerModule.cpp
 		src/queries/AnswerYes.cpp
-		include/knowrob/queries/AnswerYes.h
 		src/queries/AnswerNo.cpp
-		include/knowrob/queries/AnswerNo.h
 		src/queries/AnswerDontKnow.cpp
-		include/knowrob/queries/AnswerDontKnow.h
 		src/queries/DisjunctiveBroadcaster.cpp
 		src/queries/Token.cpp
-		src/semweb/GraphSelector.cpp
+		src/triples/GraphSelector.cpp
 		src/queries/AnswerMerger.cpp
 		src/queries/QueryStageLiteral.cpp
 		src/queries/QueryStageFormula.cpp
 		src/py/utils.cpp
-        src/semweb/FramedTriple.cpp
+        src/triples/FramedTriple.cpp
         src/semweb/Transformation.cpp
-        src/semweb/TripleFormat.cpp
+        src/triples/TripleFormat.cpp
         src/semweb/OntologyLanguage.cpp
         src/db/DataService.cpp
         src/reasoner/prolog/semweb.cpp
@@ -308,7 +304,7 @@ add_library(knowrob SHARED
         src/db/DataBackend.cpp
         src/queries/QueryContext.cpp
         src/modalities/Modality.cpp
-        src/semweb/TripleContainer.cpp
+        src/triples/TripleContainer.cpp
         src/KnowRobError.cpp
         src/py/PythonError.cpp
         src/reification/ReifiedTriple.cpp

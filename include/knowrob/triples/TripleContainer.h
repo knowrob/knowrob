@@ -8,7 +8,7 @@
 
 #include <utility>
 #include <vector>
-#include "knowrob/semweb/FramedTriple.h"
+#include "knowrob/triples/FramedTriple.h"
 
 namespace knowrob::semweb {
 	/**
@@ -31,9 +31,13 @@ namespace knowrob::semweb {
 			explicit iterator(const ConstGenerator &generator)
 					: generator_(generator), ptr_(generator_()) {
 			}
+
 			bool equal(iterator const &other) const { return ptr_ == other.ptr_; }
+
 			const FramedTriplePtr &dereference() const { return *ptr_; }
+
 			void increment() { ptr_ = generator_(); }
+
 		private:
 			ConstGenerator generator_;
 			const FramedTriplePtr *ptr_;
@@ -89,9 +93,13 @@ namespace knowrob::semweb {
 			explicit iterator(MutableGenerator generator)
 					: generator_(std::move(generator)), ptr_(generator_()) {
 			}
+
 			bool equal(iterator const &other) const { return ptr_ == other.ptr_; }
+
 			FramedTriplePtr &dereference() const { return *ptr_; }
+
 			void increment() { ptr_ = generator_(); }
+
 		private:
 			MutableGenerator generator_;
 			FramedTriplePtr *ptr_;

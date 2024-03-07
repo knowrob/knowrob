@@ -4,7 +4,7 @@
  */
 
 #include "iomanip"
-#include "knowrob/semweb/GraphSelector.h"
+#include "knowrob/triples/GraphSelector.h"
 #include "knowrob/knowrob.h"
 #include "knowrob/py/utils.h"
 
@@ -107,7 +107,7 @@ std::ostream &GraphSelector::write(std::ostream &os) const {
 			os << 'K';
 		}
 	}
-	if (agent.has_value() && !agent.value()->isEgoAgent()) {
+	if (agent.has_value() && !Perspective::isEgoPerspective(agent.value()->iri())) {
 		if (!hasEpistemicOperator) {
 			hasEpistemicOperator = true;
 			os << 'K';

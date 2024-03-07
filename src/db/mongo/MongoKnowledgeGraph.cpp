@@ -14,7 +14,7 @@
 #include "knowrob/db/mongo/TripleCursor.h"
 #include "knowrob/db/mongo/aggregation/graph.h"
 #include "knowrob/db/mongo/aggregation/triples.h"
-#include "knowrob/semweb/FramedTriplePattern.h"
+#include "knowrob/triples/FramedTriplePattern.h"
 #include "knowrob/semweb/rdf.h"
 #include "knowrob/semweb/rdfs.h"
 #include "knowrob/semweb/owl.h"

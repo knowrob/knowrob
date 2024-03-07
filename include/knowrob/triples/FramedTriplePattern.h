@@ -7,8 +7,8 @@
 #define KNOWROB_FRAMED_TRIPLE_PATTERN_H
 
 #include "knowrob/formulas/Predicate.h"
-#include "knowrob/semweb/FramedTriple.h"
-#include "knowrob/semweb/TripleContainer.h"
+#include "knowrob/triples/FramedTriple.h"
+#include "knowrob/triples/TripleContainer.h"
 #include "knowrob/formulas/FirstOrderLiteral.h"
 #include "knowrob/queries/QueryContext.h"
 #include "knowrob/terms/groundable.h"
@@ -167,6 +167,17 @@ namespace knowrob {
 		void setIsUncertainTerm(const groundable<Numeric> &isUncertain) { isUncertain_ = isUncertain; }
 
 		/**
+		 * @return true if this expression is optional.
+		 */
+		bool isOptional() const { return isOptional_; }
+
+		/**
+		 * Set this expression to be optional.
+		 * @param isOptional true if this expression is optional.
+		 */
+		void setIsOptional(bool isOptional) { isOptional_ = isOptional; }
+
+		/**
 		 * @return the number of variables in this expression.
 		 */
 		uint32_t numVariables() const override;
@@ -177,13 +188,15 @@ namespace knowrob {
 		 * @param bindings the substitution to be applied.
 		 * @return true if the instantiation was successful.
 		 */
-		bool instantiateInto(FramedTriple &triple, const std::shared_ptr<const Substitution> &bindings = Substitution::emptySubstitution()) const;
+		bool instantiateInto(FramedTriple &triple,
+							 const std::shared_ptr<const Substitution> &bindings = Substitution::emptySubstitution()) const;
 
 	protected:
 		TermPtr subjectTerm_;
 		TermPtr propertyTerm_;
 		TermPtr objectTerm_;
 		OperatorType objectOperator_;
+		bool isOptional_;
 
 		// below are treated as optional
 		groundable<Atom> graphTerm_;

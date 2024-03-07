@@ -9,7 +9,7 @@
 #include "optional"
 #include "knowrob/modalities/TemporalModality.h"
 #include "knowrob/modalities/EpistemicModality.h"
-#include "Agent.h"
+#include "Perspective.h"
 
 namespace knowrob {
 	/**
@@ -28,7 +28,7 @@ namespace knowrob {
 		/**
 		 * The agent that is the host of the knowledge.
 		 */
-		std::optional<AgentPtr> agent;
+		std::optional<PerspectivePtr> agent;
 		/**
 		 * The temporal modality of consideration.
 		 */
@@ -66,7 +66,9 @@ namespace knowrob {
 		/**
 		 * @return true if only certain triples are selected.
 		 */
-		bool isCertain() const { return !epistemicOperator || epistemicOperator.value() == EpistemicOperator::KNOWLEDGE; }
+		bool isCertain() const {
+			return !epistemicOperator || epistemicOperator.value() == EpistemicOperator::KNOWLEDGE;
+		}
 
 		/**
 		 * @return true if also uncertain triples are selected.

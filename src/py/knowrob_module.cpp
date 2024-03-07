@@ -36,7 +36,7 @@ using namespace knowrob;
 
 static inline void register_common_types() {
 	py::createType<Logger>();
-	py::createType<Agent>();
+	py::createType<Perspective>();
 	py::createType<Modality>();
 	py::createType<ModalOperator>();
 }
@@ -143,5 +143,5 @@ BOOST_PYTHON_MODULE (knowrob) {
 	python_optional<XSDType>();
 	python_optional<std::string_view>();
 	python_optional<double>();
-	python_optional<AgentPtr>();
+	python_optional<PerspectivePtr>();
 }

@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "knowrob/modalities/ModalOperator.h"
-#include "knowrob/semweb/GraphSelector.h"
+#include "knowrob/triples/GraphSelector.h"
 
 namespace knowrob {
 	enum QueryFlag {

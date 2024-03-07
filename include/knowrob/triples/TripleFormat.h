@@ -22,7 +22,9 @@ namespace knowrob::semweb {
 	};
 
 	TripleFormat tripleFormatFromString(std::string_view format);
+
 	std::string_view tripleFormatToString(TripleFormat format);
+
 	bool isTripleFormatString(std::string_view format);
 }
 

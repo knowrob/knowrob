@@ -503,6 +503,8 @@ static inline void lookupTriple_nontransitive_(
 		matchEmptyArray(pipeline, "next");
 	} else {
 		// at this point the 'next' field holds an array of matching documents that is unwinded next.
+		// TODO: set ignoreEmpty=true if lookupData.expr->isOptional(), but it might be that some of below code will
+		//       fail if next has no triple data.
 		pipeline.unwind("$next");
 		// compute the intersection of time interval so far with time interval of next triple.
 		// note that the operations works fine in case the time interval is undefined.

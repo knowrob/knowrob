@@ -7,7 +7,7 @@
 #define KNOWROB_REIFIED_TRIPLE_H
 
 #include "vector"
-#include "knowrob/semweb/FramedTriple.h"
+#include "knowrob/triples/FramedTriple.h"
 #include "knowrob/semweb/Vocabulary.h"
 
 namespace knowrob {

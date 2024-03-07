@@ -10,7 +10,7 @@
 #include "knowrob/Logger.h"
 #include "knowrob/py/utils.h"
 #include "knowrob/terms/String.h"
-#include "knowrob/semweb/FramedTriple.h"
+#include "knowrob/triples/FramedTriple.h"
 
 namespace python = boost::python;
 using namespace knowrob;

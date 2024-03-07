@@ -106,7 +106,7 @@ std::shared_ptr<GraphSelector> BindingsCursor::readAnswerFrame() {
 			if (!frame->epistemicOperator.has_value()) {
 				frame->epistemicOperator = EpistemicOperator::KNOWLEDGE;
 			}
-			frame->agent = Agent::get(agent_iri);
+			frame->agent = Perspective::get(agent_iri);
 		} else if (scopeKey == "occasional") {
 			if (!frame) frame = std::make_shared<GraphSelector>();
 			if (bson_iter_bool(&scopeIter_)) {

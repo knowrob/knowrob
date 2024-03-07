@@ -1,4 +1,9 @@
-#include "knowrob/semweb/FramedTriple.h"
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
+
+#include "knowrob/triples/FramedTriple.h"
 #include "knowrob/py/utils.h"
 
 using namespace knowrob;

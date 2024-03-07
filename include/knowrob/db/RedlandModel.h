@@ -7,9 +7,9 @@
 #define KNOWROB_REDLAND_MODEL_H
 
 #include <redland.h>
-#include "knowrob/semweb/TripleContainer.h"
+#include "knowrob/triples/TripleContainer.h"
 #include "knowrob/URI.h"
-#include "knowrob/semweb/TripleFormat.h"
+#include "knowrob/triples/TripleFormat.h"
 #include "DataBackend.h"
 #include "knowrob/queries/SPARQLQuery.h"
 #include "RedlandURI.h"

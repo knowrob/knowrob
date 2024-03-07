@@ -10,6 +10,11 @@
 #include "knowrob/semweb/Vocabulary.h"
 
 namespace knowrob {
+	enum ReificationFlag {
+		IncludeOriginal = 1 << 0,
+		IncludeReified  = 1 << 1,
+	};
+
 	/**
 	 * Reifies an inout query such that it can be issued to a backend that does not support
 	 * contextualization of triples.
@@ -30,18 +35,10 @@ namespace knowrob {
 		explicit ReifiedQuery(const FramedTriplePattern &nonReified, semweb::VocabularyPtr vocabulary);
 
 		/**
-		 * Check if a query is reifiable.
-		 * @param q the query to check.
-		 * @return true if the query is reifiable.
+		 * @param q a triple query.
+		 * @return a bitmask of ReificationFlag's that indicates if the pattern may have instances in the original or reified form.
 		 */
-		static bool isReifiable(const FramedTriplePattern &q);
-
-		/**
-		 * Check if a query is reifiable.
-		 * @param q the query to check.
-		 * @return true if the query is reifiable.
-		 */
-		static bool isReifiable(const std::shared_ptr<ConjunctiveQuery> &q);
+		static int getReificationFlags(const FramedTriplePattern &q);
 
 	protected:
 		semweb::VocabularyPtr vocabulary_;
