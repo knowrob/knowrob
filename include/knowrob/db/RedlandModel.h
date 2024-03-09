@@ -11,7 +11,7 @@
 #include "knowrob/URI.h"
 #include "knowrob/triples/TripleFormat.h"
 #include "DataBackend.h"
-#include "knowrob/queries/SPARQLQuery.h"
+#include "knowrob/triples/SPARQLQuery.h"
 #include "RedlandURI.h"
 #include "QueryableBackend.h"
 
@@ -161,7 +161,7 @@ namespace knowrob {
 		void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
 
 		// Override QueryableBackend
-		void query(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback) override;
+		void query(const GraphQueryPtr &query, const FramedBindingsHandler &callback) override;
 
 		// Override QueryableBackend
 		void count(const ResourceCounter &callback) const override;

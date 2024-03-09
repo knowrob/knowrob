@@ -95,7 +95,7 @@ namespace knowrob {
 		 * @param literal a literal
 		 * @return a stream with answers to the query
 		 */
-		TokenBufferPtr watchQuery(const ConjunctiveQueryPtr &literal);
+		TokenBufferPtr watchQuery(const GraphQueryPtr &literal);
 
 		// Override DataBackend
 		bool initializeBackend(const ReasonerConfig &config) override;
@@ -134,7 +134,7 @@ namespace knowrob {
 		void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
 
 		// Override QueryableBackend
-		void query(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback) override;
+		void query(const GraphQueryPtr &query, const FramedBindingsHandler &callback) override;
 
 		// Override QueryableBackend
 		void count(const ResourceCounter &callback) const override;
@@ -180,6 +180,10 @@ namespace knowrob {
 		bool dropOrigin(std::string_view origin);
 
 		bool dropSessionOrigins();
+
+		mongo::BindingsCursorPtr lookupSimpleSequence(const std::vector<std::shared_ptr<GraphTerm>> &graphTerms, uint32_t limit);
+
+		mongo::BindingsCursorPtr lookupComplex(const GraphQueryPtr &graphQuery, uint32_t limit);
 
 		friend class MongoKnowledgeGraphTest;
 	};

@@ -21,6 +21,8 @@
 #include "knowrob/db/BackendManager.h"
 #include "knowrob/KnowledgeBase.h"
 #include "knowrob/queries/AnswerNo.h"
+#include "knowrob/triples/GraphPattern.h"
+#include "knowrob/triples/GraphSequence.h"
 
 #define MONGO_KG_ONE_COLLECTION "one"
 
@@ -354,6 +356,24 @@ MongoKnowledgeGraph::lookup(const std::vector<FramedTriplePatternPtr> &tripleExp
 	return cursor;
 }
 
+mongo::BindingsCursorPtr
+MongoKnowledgeGraph::lookupSimpleSequence(const std::vector<std::shared_ptr<GraphTerm>> &graphTerms, uint32_t limit) {
+	std::vector<FramedTriplePatternPtr> simpleExpressions;
+	for (auto &term: graphTerms) {
+		if (term->isPattern()) {
+			simpleExpressions.push_back(std::static_pointer_cast<GraphPattern>(term)->value());
+		}
+	}
+	return lookup(simpleExpressions, limit);
+}
+
+mongo::BindingsCursorPtr MongoKnowledgeGraph::lookupComplex(const GraphQueryPtr &graphQuery, uint32_t limit) {
+	KB_WARN("MongoKnowledgeGraph::lookupComplex not implemented yet.");
+	// TODO: here it can be assumed that graphQuery has a UNION operation in it, but there is no query
+	//       generator for this yet.
+	return nullptr;
+}
+
 void MongoKnowledgeGraph::count(const ResourceCounter &callback) const {
 	{
 		const bson_t *result;
@@ -449,9 +469,36 @@ void MongoKnowledgeGraph::batch(const semweb::TripleHandler &callback) const {
 	}
 }
 
-void MongoKnowledgeGraph::query(const ConjunctiveQueryPtr &q, const FramedBindingsHandler &callback) {
+void MongoKnowledgeGraph::query(const GraphQueryPtr &q, const FramedBindingsHandler &callback) {
 	uint32_t limit = (q->ctx()->queryFlags & QUERY_FLAG_ONE_SOLUTION) ? 1 : 0;
-	auto cursor = lookup(q->literals(), limit);
+	BindingsCursorPtr cursor;
+
+	switch (q->term()->termType()) {
+		case GraphTermType::Pattern: {
+			auto &pattern = std::static_pointer_cast<GraphPattern>(q->term())->value();
+			cursor = lookup({pattern}, limit);
+			break;
+		}
+		case GraphTermType::Sequence: {
+			auto &terms = std::static_pointer_cast<GraphSequence>(q->term())->terms();
+			bool isSimple = true;
+			for (auto &term: terms) {
+				if (!term->isPattern()) {
+					isSimple = false;
+					break;
+				}
+			}
+			if (isSimple) {
+				cursor = lookupSimpleSequence(terms, limit);
+			} else {
+				cursor = lookupComplex(q, limit);
+			}
+			break;
+		}
+		case GraphTermType::Union:
+			cursor = lookupComplex(q, limit);
+			break;
+	}
 	// NOTE: for some reason below causes a cursor error. looks like a bug in libmongoc to me!
 	//       anyways, we add instead a $limit stage in the aggregation pipeline.
 	//if(query->flags() & QUERY_FLAG_ONE_SOLUTION) { cursor->limit(1); }
@@ -466,7 +513,7 @@ void MongoKnowledgeGraph::query(const ConjunctiveQueryPtr &q, const FramedBindin
 	}
 }
 
-TokenBufferPtr MongoKnowledgeGraph::watchQuery(const ConjunctiveQueryPtr &literal) {
+TokenBufferPtr MongoKnowledgeGraph::watchQuery(const GraphQueryPtr &literal) {
 	// TODO implement watchQuery in MongoKnowledgeGraph
 	return {};
 }

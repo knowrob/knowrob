@@ -4,7 +4,7 @@
  */
 
 #include "knowrob/db/GraphRestructuring.h"
-#include "knowrob/queries/SPARQLQuery.h"
+#include "knowrob/triples/SPARQLQuery.h"
 
 using namespace knowrob;
 

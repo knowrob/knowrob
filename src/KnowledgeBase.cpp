@@ -465,8 +465,8 @@ void KnowledgeBase::createComputationPipeline(
 	lastOut >> pipelineOutput;
 }
 
-TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery) {
-	auto allLiterals = graphQuery->literals();
+TokenBufferPtr KnowledgeBase::submitQuery(const GraphPathQueryPtr &graphQuery) {
+	auto &allLiterals = graphQuery->path();
 
 	// --------------------------------------
 	// Construct a pipeline that holds references to stages.
@@ -535,7 +535,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 	} else {
 		auto edb = getBackendForQuery(edbOnlyLiterals, graphQuery->ctx());
 		edbOut = edb->submitQuery(
-				std::make_shared<ConjunctiveQuery>(edbOnlyLiterals, graphQuery->ctx()));
+				std::make_shared<GraphPathQuery>(edbOnlyLiterals, graphQuery->ctx()));
 	}
 	pipeline->addStage(edbOut);
 
@@ -611,8 +611,8 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FirstOrderLiteralPtr &literal, c
 	auto rdfLiteral = std::make_shared<FramedTriplePattern>(
 			literal->predicate(), literal->isNegated());
 	rdfLiteral->setTripleFrame(ctx->selector);
-	return submitQuery(std::make_shared<ConjunctiveQuery>(
-			ConjunctiveQuery({rdfLiteral}, ctx)));
+	return submitQuery(std::make_shared<GraphPathQuery>(
+			GraphPathQuery({rdfLiteral}, ctx)));
 }
 
 TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryContextPtr &ctx) {
@@ -685,7 +685,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 			channel->push(EndOfEvaluation::get());
 			pipeline->addStage(lastStage);
 		} else {
-			auto pathQuery = std::make_shared<ConjunctiveQuery>(posLiterals, ctx);
+			auto pathQuery = std::make_shared<GraphPathQuery>(posLiterals, ctx);
 			firstBuffer = submitQuery(pathQuery);
 			lastStage = firstBuffer;
 			pipeline->addStage(lastStage);
@@ -812,7 +812,7 @@ static inline std::shared_ptr<T> createTransaction(
 
 template<typename T, typename U>
 bool transaction(const semweb::TripleContainerPtr &triples,
-                 const U &backends,
+				 const U &backends,
 				 const std::shared_ptr<semweb::Vocabulary> &vocabulary,
 				 const std::shared_ptr<DataBackend> &sourceBackend) {
 	semweb::TripleContainerPtr reified;

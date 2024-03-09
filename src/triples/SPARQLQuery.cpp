@@ -5,8 +5,9 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <sstream>
-#include "knowrob/queries/SPARQLQuery.h"
+#include "knowrob/triples/SPARQLQuery.h"
 #include "knowrob/terms/Atom.h"
+#include "knowrob/triples/GraphSequence.h"
 
 using namespace knowrob;
 
@@ -16,6 +17,16 @@ using namespace knowrob;
 //         _:bnode foaf:name ?name .
 //       }
 
+// TODO: support computation of time intervals in the query.
+//       but it would be good is the time interval computation can somehow be encoded in the query!
+//       it can be done along these lines, the update of begin/end would be done within an optional block.
+//       PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+//       BIND (0 AS ?begin)
+//       BIND (xsd:decimal("1e308") AS ?end)
+//       BIND(IF(?begin > ?next_begin, ?begin, ?next_begin) AS ?begin)
+//       BIND(IF(?end < ?next_end, ?end, ?next_end) AS ?end)
+//       FILTER(?begin < ?end)
+
 SPARQLQuery::SPARQLQuery(const FramedTriplePattern &triplePattern) : varCounter_(0) {
 	std::stringstream os;
 	selectBegin(os);
@@ -24,14 +35,45 @@ SPARQLQuery::SPARQLQuery(const FramedTriplePattern &triplePattern) : varCounter_
 	queryString_ = os.str();
 }
 
-SPARQLQuery::SPARQLQuery(const std::vector<FramedTriplePatternPtr> &triplePatterns) : varCounter_(0) {
+SPARQLQuery::SPARQLQuery(const std::shared_ptr<GraphQuery> &query) : varCounter_(0) {
 	std::stringstream os;
 	selectBegin(os);
-	for (const auto &triplePattern: triplePatterns) {
-		add(os, *triplePattern);
-	}
+	add(os, query->term());
 	selectEnd(os);
 	queryString_ = os.str();
+}
+
+void SPARQLQuery::add(std::ostream &os, const std::shared_ptr<GraphTerm> &graphTerm) { // NOLINT
+	switch (graphTerm->termType()) {
+		case GraphTermType::Union: {
+			auto sequence = std::static_pointer_cast<GraphSequence>(graphTerm);
+			bool isFirst = true;
+			os << "{ ";
+			for (const auto &term: sequence->terms()) {
+				if (!isFirst) {
+					os << " UNION ";
+				} else {
+					isFirst = false;
+				}
+				os << "{ ";
+				add(os, term);
+				os << "} ";
+			}
+			os << "} ";
+			break;
+
+		}
+		case GraphTermType::Sequence: {
+			auto sequence = std::static_pointer_cast<GraphSequence>(graphTerm);
+			for (const auto &term: sequence->terms()) {
+				add(os, term);
+			}
+			break;
+		}
+		case GraphTermType::Pattern:
+			add(os, *std::static_pointer_cast<GraphPattern>(graphTerm)->value());
+			break;
+	}
 }
 
 void SPARQLQuery::add(std::ostream &os, const FramedTriplePattern &triplePattern) {
@@ -52,7 +94,8 @@ void SPARQLQuery::selectEnd(std::ostream &os) {
 	os << "}";
 }
 
-void SPARQLQuery::filter(std::ostream &os, std::string_view varName, const TermPtr &term, FramedTriplePattern::OperatorType operatorType) {
+void SPARQLQuery::filter(std::ostream &os, std::string_view varName, const TermPtr &term,
+						 FramedTriplePattern::OperatorType operatorType) {
 	if (!term->isAtomic()) return;
 	auto atomic = std::static_pointer_cast<Atomic>(term);
 	os << "FILTER (?" << varName;
@@ -93,7 +136,7 @@ void SPARQLQuery::where(std::ostream &os, const FramedTriplePattern &triplePatte
 
 	where(os, triplePattern.subjectTerm());
 	where(os, triplePattern.propertyTerm());
-	if(triplePattern.objectOperator() == FramedTriplePattern::OperatorType::EQ) {
+	if (triplePattern.objectOperator() == FramedTriplePattern::OperatorType::EQ) {
 		where(os, triplePattern.objectTerm());
 		os << ". ";
 	} else {
@@ -111,7 +154,7 @@ void SPARQLQuery::where(std::ostream &os, const TermPtr &term) {
 			os << "?" << ((Variable *) term.get())->name() << " ";
 			break;
 		case TermType::ATOMIC: {
-			if(term->isIRI()) {
+			if (term->isIRI()) {
 				os << "<" << std::static_pointer_cast<Atomic>(term)->stringForm() << "> ";
 				break;
 			} else if (term->isBlank()) {

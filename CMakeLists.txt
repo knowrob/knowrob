@@ -203,7 +203,7 @@ add_library(knowrob SHARED
 		src/queries/QueryParser.cpp
 		src/queries/QueryTree.cpp
 		src/queries/TokenBuffer.cpp
-		src/queries/ConjunctiveQuery.cpp
+        src/triples/GraphQuery.cpp
 		src/queries/Query.cpp
 		src/queries/RedundantAnswerFilter.cpp
 		src/queries/EDBStage.cpp
@@ -290,7 +290,6 @@ add_library(knowrob SHARED
         src/db/GraphRestructuring.cpp
         src/db/RedlandModel.cpp
         src/db/GraphTransformation.cpp
-        src/queries/SPARQLQuery.cpp
         src/terms/Atom.cpp
         src/terms/Atomic.cpp
         src/terms/Function.cpp
@@ -304,6 +303,7 @@ add_library(knowrob SHARED
         src/db/DataBackend.cpp
         src/queries/QueryContext.cpp
         src/modalities/Modality.cpp
+        src/triples/SPARQLQuery.cpp
         src/triples/TripleContainer.cpp
         src/KnowRobError.cpp
         src/py/PythonError.cpp
@@ -311,7 +311,10 @@ add_library(knowrob SHARED
         src/reification/ReifiedQuery.cpp
         src/reification/ReificationContainer.cpp
         src/reification/UnReificationContainer.cpp
-        src/reification/ReifiedBackend.cpp)
+        src/reification/ReifiedBackend.cpp
+        src/triples/GraphUnion.cpp
+        src/triples/GraphSequence.cpp
+        src/triples/GraphTerm.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

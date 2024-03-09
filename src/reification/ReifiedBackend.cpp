@@ -138,17 +138,13 @@ void ReifiedBackend::match(const FramedTriplePattern &q, const semweb::TripleVis
 	}
 }
 
-void ReifiedBackend::query(const ConjunctiveQueryPtr &q, const FramedBindingsHandler &callback) {
-	// TODO: why does the query have a frame, plus each of its literals?
-	//       do really need both be taken into account here? I guess the meaning is that each literal
-	//       has the same query frame? but query backends might ust iterate over the literals.
-#if 0
-	if (ReifiedQuery::isReifiable(q)) {
-		// FIXME: must expand into conjunction of atomic disjunctions of two literals
-		// TODO: maybe also need to do some special expansion magic for adding context variables to construct the
-		//       answer frame from bindings.
+void ReifiedBackend::query(const GraphQueryPtr &q, const FramedBindingsHandler &callback) {
+	if (ReifiedQuery::hasReifiablePattern(q)) {
+		// if there is at least one reifiable pattern, we need to reify the query entirely,
+		// and run the reified query on the original backend.
 		auto reified = std::make_shared<ReifiedQuery>(q, vocabulary());
 		originalBackend_->query(reified, [&](const FramedBindingsPtr &bindings) {
+			// TODO: do we need special handling for the frame here at all? there is also some code in QueryableBackend.
 			// TODO: computation of frame would need to be implemented here.
 			//       for this we can iterate over literals and apply bindings to them to consolidate
 			//       an overall frame.
@@ -167,7 +163,6 @@ void ReifiedBackend::query(const ConjunctiveQueryPtr &q, const FramedBindingsHan
 	} else {
 		originalBackend_->query(q, callback);
 	}
-#endif
 }
 
 void ReifiedBackend::count(const ResourceCounter &callback) const {

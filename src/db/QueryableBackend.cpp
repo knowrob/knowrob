@@ -11,6 +11,7 @@
 #include "knowrob/reification/ReifiedTriple.h"
 #include "knowrob/reification/UnReificationContainer.h"
 #include "knowrob/reification/ReifiedQuery.h"
+#include "knowrob/triples/GraphBuiltin.h"
 
 using namespace knowrob;
 
@@ -45,7 +46,7 @@ std::optional<std::string> QueryableBackend::getVersionOfOrigin(std::string_view
 	return version;
 }
 
-void QueryableBackend::evaluateQuery(const ConjunctiveQueryPtr &q, const TokenBufferPtr &resultStream) {
+void QueryableBackend::evaluateQuery(const GraphPathQueryPtr &q, const TokenBufferPtr &resultStream) {
 	auto channel = TokenStream::Channel::create(resultStream);
 	try {
 		bool hasPositiveAnswer = false;
@@ -65,7 +66,7 @@ void QueryableBackend::evaluateQuery(const ConjunctiveQueryPtr &q, const TokenBu
 	}
 }
 
-TokenBufferPtr QueryableBackend::submitQuery(const ConjunctiveQueryPtr &q) {
+TokenBufferPtr QueryableBackend::submitQuery(const GraphPathQueryPtr &q) {
 	std::shared_ptr<TokenBuffer> result = std::make_shared<TokenBuffer>();
 	auto runner =
 			std::make_shared<ThreadPool::LambdaRunner>(
@@ -79,7 +80,7 @@ TokenBufferPtr QueryableBackend::submitQuery(const ConjunctiveQueryPtr &q) {
 	return result;
 }
 
-AnswerPtr QueryableBackend::yes(const ConjunctiveQueryPtr &q, const FramedBindingsPtr &bindings) {
+AnswerPtr QueryableBackend::yes(const GraphPathQueryPtr &q, const FramedBindingsPtr &bindings) {
 	static const auto edbTerm = Atom::Tabled("EDB");
 	auto positiveAnswer = std::make_shared<AnswerYes>(bindings);
 	positiveAnswer->setReasonerTerm(edbTerm);
@@ -87,7 +88,7 @@ AnswerPtr QueryableBackend::yes(const ConjunctiveQueryPtr &q, const FramedBindin
 		positiveAnswer->setFrame(bindings->frame());
 	}
 	// add predicate groundings to the answer
-	for (auto &rdfLiteral: q->literals()) {
+	for (auto &rdfLiteral: q->path()) {
 		auto p = rdfLiteral->predicate();
 		auto p_instance = applyBindings(p, *positiveAnswer->substitution());
 		positiveAnswer->addGrounding(
@@ -98,7 +99,7 @@ AnswerPtr QueryableBackend::yes(const ConjunctiveQueryPtr &q, const FramedBindin
 	return positiveAnswer;
 }
 
-AnswerPtr QueryableBackend::no(const ConjunctiveQueryPtr &q) {
+AnswerPtr QueryableBackend::no(const GraphPathQueryPtr &q) {
 	static const auto edbTerm = Atom::Tabled("EDB");
 	// send one negative answer if no positive answer was found
 	auto negativeAnswer = std::make_shared<AnswerNo>();
@@ -112,9 +113,9 @@ AnswerPtr QueryableBackend::no(const ConjunctiveQueryPtr &q) {
 	//       but seems hard to provide this information in the current framework.
 	//       it could be queried here, but that seems a bit costly.
 	// well at least we know if it is a single literal.
-	if (q->literals().size() == 1) {
-		negativeAnswer->addUngrounded(q->literals().front()->predicate(),
-									  q->literals().front()->isNegated());
+	if (q->path().size() == 1) {
+		negativeAnswer->addUngrounded(q->path().front()->predicate(),
+									  q->path().front()->isNegated());
 	}
 	return negativeAnswer;
 }

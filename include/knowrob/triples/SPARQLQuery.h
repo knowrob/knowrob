@@ -8,6 +8,7 @@
 
 #include "knowrob/triples/FramedTriple.h"
 #include "knowrob/triples/FramedTriplePattern.h"
+#include "GraphQuery.h"
 
 namespace knowrob {
 	/**
@@ -24,7 +25,7 @@ namespace knowrob {
 		/**
 		 * @param triplePatterns the patterns to match.
 		 */
-		explicit SPARQLQuery(const std::vector<FramedTriplePatternPtr> &triplePatterns);
+		explicit SPARQLQuery(const std::shared_ptr<GraphQuery> &query);
 
 		/**
 		 * @return the query string.
@@ -46,6 +47,8 @@ namespace knowrob {
 		static void selectEnd(std::ostream &os);
 
 		void add(std::ostream &os, const FramedTriplePattern &triplePattern);
+
+		void add(std::ostream &os, const std::shared_ptr<GraphTerm> &graphTerm);
 
 		void filterNotExists(std::ostream &os, const FramedTriplePattern &triplePattern);
 

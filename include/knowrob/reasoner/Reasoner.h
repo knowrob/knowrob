@@ -16,7 +16,7 @@
 #include "knowrob/queries/TokenBuffer.h"
 #include "knowrob/formulas/FirstOrderLiteral.h"
 #include "knowrob/formulas/PredicateDescription.h"
-#include "knowrob/queries/ConjunctiveQuery.h"
+#include "knowrob/triples/GraphQuery.h"
 #include "knowrob/db/DataSourceHandler.h"
 #include "knowrob/semweb/Vocabulary.h"
 #include "knowrob/semweb/ImportHierarchy.h"

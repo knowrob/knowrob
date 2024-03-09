@@ -18,6 +18,7 @@
 #include "knowrob/db/OntologyFile.h"
 #include "knowrob/db/QueryableBackend.h"
 #include "knowrob/db/DefinedBackend.h"
+#include "knowrob/triples/GraphPathQuery.h"
 
 namespace knowrob {
 	// forward declaration
@@ -88,7 +89,7 @@ namespace knowrob {
 		 * @param label an optional modalFrame label
 		 * @return a stream of query results
 		 */
-		TokenBufferPtr submitQuery(const ConjunctiveQueryPtr &graphQuery);
+		TokenBufferPtr submitQuery(const GraphPathQueryPtr &graphQuery);
 
 		/**
 		 * Evaluate a query represented as a Literal.

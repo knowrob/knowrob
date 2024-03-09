@@ -6,7 +6,7 @@
 #ifndef KNOWROB_GRAPH_TRANSFORMATION_RULE_H
 #define KNOWROB_GRAPH_TRANSFORMATION_RULE_H
 
-#include "knowrob/queries/SPARQLQuery.h"
+#include "knowrob/triples/SPARQLQuery.h"
 
 namespace knowrob {
 	/**
@@ -24,7 +24,7 @@ namespace knowrob {
 		/**
 		 * @return the SPARQL query that is used to match the input graph.
 		 */
-		SPARQLQuery getSPARQLQuery() const { return SPARQLQuery(from_); }
+		SPARQLQuery getSPARQLQuery() const { return SPARQLQuery(std::make_shared<GraphQuery>(from_)); }
 
 		/**
 		 * @return the statements to match in the input graph.

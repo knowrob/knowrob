@@ -418,10 +418,8 @@ void RedlandModel::match(const FramedTriplePattern &query, const semweb::TripleV
 	librdf_free_stream(stream);
 }
 
-void RedlandModel::query(const ConjunctiveQueryPtr &q, const FramedBindingsHandler &callback) {
-	// TODO: do not ignore query context
-	//SPARQLQuery sparqlQuery(q->literals(), q->ctx());
-	SPARQLQuery sparqlQuery(q->literals());
+void RedlandModel::query(const GraphQueryPtr &q, const FramedBindingsHandler &callback) {
+	SPARQLQuery sparqlQuery(q);
 	sparql(sparqlQuery(), callback);
 }
 

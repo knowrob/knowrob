@@ -6,11 +6,11 @@
 #ifndef KNOWROB_QUERYABLE_BACKEND_H
 #define KNOWROB_QUERYABLE_BACKEND_H
 
-#include "knowrob/queries/ConjunctiveQuery.h"
 #include "knowrob/queries/TokenBuffer.h"
 #include "knowrob/queries/FramedBindings.h"
 #include "DataBackend.h"
 #include "knowrob/queries/Answer.h"
+#include "knowrob/triples/GraphPathQuery.h"
 
 namespace knowrob {
 	using ResourceCounter = std::function<void(std::string_view,uint64_t)>;
@@ -60,7 +60,7 @@ namespace knowrob {
 		 * @param query a graph query
 		 * @param callback a function that is called for each answer to the query.
 		 */
-		virtual void query(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback) = 0;
+		virtual void query(const GraphQueryPtr &query, const FramedBindingsHandler &callback) = 0;
 
 		/**
 		 * @param callback a function that is called for each resource and its count.
@@ -76,7 +76,7 @@ namespace knowrob {
 		 * @param query a graph query
 		 * @return a stream with answers to the query
 		 */
-		TokenBufferPtr submitQuery(const ConjunctiveQueryPtr &query);
+		TokenBufferPtr submitQuery(const GraphPathQueryPtr &query);
 
 		/**
 		 * Evaluates a query and may block until evaluation completed.
@@ -84,7 +84,7 @@ namespace knowrob {
 		 * @param query a query.
 		 * @param resultStream a stream of answers.
 		 */
-		void evaluateQuery(const ConjunctiveQueryPtr &query, const TokenBufferPtr &resultStream);
+		void evaluateQuery(const GraphPathQueryPtr &query, const TokenBufferPtr &resultStream);
 
 		/**
 		 * @return a list of all origins that have been persisted.
@@ -118,9 +118,9 @@ namespace knowrob {
 	protected:
 		uint32_t batchSize_;
 
-		static AnswerPtr no(const ConjunctiveQueryPtr &q);
+		static AnswerPtr no(const GraphPathQueryPtr &q);
 
-		static AnswerPtr yes(const ConjunctiveQueryPtr &q, const FramedBindingsPtr &bindings);
+		static AnswerPtr yes(const GraphPathQueryPtr &q, const FramedBindingsPtr &bindings);
 	};
 
 	using QueryableBackendPtr = std::shared_ptr<QueryableBackend>;
