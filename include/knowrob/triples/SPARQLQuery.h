@@ -9,6 +9,7 @@
 #include "knowrob/triples/FramedTriple.h"
 #include "knowrob/triples/FramedTriplePattern.h"
 #include "GraphQuery.h"
+#include "GraphBuiltin.h"
 
 namespace knowrob {
 	/**
@@ -48,6 +49,8 @@ namespace knowrob {
 
 		void add(std::ostream &os, const FramedTriplePattern &triplePattern);
 
+		static void add(std::ostream &os, const GraphBuiltin &builtin);
+
 		void add(std::ostream &os, const std::shared_ptr<GraphTerm> &graphTerm);
 
 		void filterNotExists(std::ostream &os, const FramedTriplePattern &triplePattern);
@@ -56,7 +59,11 @@ namespace knowrob {
 
 		void where(std::ostream &os, const FramedTriplePattern &triplePattern);
 
-		void where(std::ostream &os, const TermPtr &term);
+		static void where(std::ostream &os, const TermPtr &term);
+
+		static void comparison(std::ostream &os, const GraphBuiltin &builtin, const char *comparisonOperator);
+
+		static void bindOneOfIf(std::ostream &os, const GraphBuiltin &builtin, const char *comparisonOperator);
 
 		static void filter(std::ostream &os, std::string_view varName, const TermPtr &term,
 						   FramedTriplePattern::OperatorType operatorType);

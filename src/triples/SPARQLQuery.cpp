@@ -3,7 +3,6 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <boost/algorithm/string/predicate.hpp>
 #include <sstream>
 #include "knowrob/triples/SPARQLQuery.h"
 #include "knowrob/terms/Atom.h"
@@ -16,16 +15,6 @@ using namespace knowrob;
 //       SELECT ?name WHERE {
 //         _:bnode foaf:name ?name .
 //       }
-
-// TODO: support computation of time intervals in the query.
-//       but it would be good is the time interval computation can somehow be encoded in the query!
-//       it can be done along these lines, the update of begin/end would be done within an optional block.
-//       PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-//       BIND (0 AS ?begin)
-//       BIND (xsd:decimal("1e308") AS ?end)
-//       BIND(IF(?begin > ?next_begin, ?begin, ?next_begin) AS ?begin)
-//       BIND(IF(?end < ?next_end, ?end, ?next_end) AS ?end)
-//       FILTER(?begin < ?end)
 
 SPARQLQuery::SPARQLQuery(const FramedTriplePattern &triplePattern) : varCounter_(0) {
 	std::stringstream os;
@@ -73,6 +62,9 @@ void SPARQLQuery::add(std::ostream &os, const std::shared_ptr<GraphTerm> &graphT
 		case GraphTermType::Pattern:
 			add(os, *std::static_pointer_cast<GraphPattern>(graphTerm)->value());
 			break;
+		case GraphTermType::Builtin:
+			add(os, *std::static_pointer_cast<GraphBuiltin>(graphTerm));
+			break;
 	}
 }
 
@@ -83,6 +75,60 @@ void SPARQLQuery::add(std::ostream &os, const FramedTriplePattern &triplePattern
 		optional(os, triplePattern);
 	} else {
 		where(os, triplePattern);
+	}
+}
+
+void SPARQLQuery::comparison(std::ostream &os, const GraphBuiltin &builtin, const char *comparisonOperator) {
+	// e.g. `FILTER (?begin < ?end)`
+	os << "FILTER (";
+	where(os, builtin.arguments()[0]);
+	os << comparisonOperator << ' ';
+	where(os, builtin.arguments()[1]);
+	os << ") ";
+}
+
+void SPARQLQuery::bindOneOfIf(std::ostream &os, const GraphBuiltin &builtin, const char *comparisonOperator) {
+	// e.g. `BIND(IF(?begin > ?next_begin, ?begin, ?next_begin) AS ?begin)`
+	os << "BIND (IF(";
+	where(os, builtin.arguments()[0]);
+	os << ' ' << comparisonOperator << ' ';
+	where(os, builtin.arguments()[1]);
+	os << ", ";
+	where(os, builtin.arguments()[0]);
+	os << ", ";
+	where(os, builtin.arguments()[1]);
+	os << ") AS ?" << builtin.bindVar()->name() << ") ";
+}
+
+void SPARQLQuery::add(std::ostream &os, const GraphBuiltin &builtin) {
+	switch (builtin.builtinType()) {
+		case GraphBuiltinType::Equal:
+			comparison(os, builtin, "=");
+			break;
+		case GraphBuiltinType::Less:
+			comparison(os, builtin, "<");
+			break;
+		case GraphBuiltinType::Greater:
+			comparison(os, builtin, ">");
+			break;
+		case GraphBuiltinType::LessOrEqual:
+			comparison(os, builtin, "<=");
+			break;
+		case GraphBuiltinType::GreaterOrEqual:
+			comparison(os, builtin, ">=");
+			break;
+		case GraphBuiltinType::Bind:
+			os << "BIND (";
+			where(os, builtin.arguments()[0]);
+			os << " AS ?" << builtin.bindVar()->name();
+			os << ") ";
+			break;
+		case GraphBuiltinType::Min:
+			bindOneOfIf(os, builtin, "<");
+			break;
+		case GraphBuiltinType::Max:
+			bindOneOfIf(os, builtin, ">");
+			break;
 	}
 }
 
