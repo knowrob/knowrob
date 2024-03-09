@@ -36,6 +36,9 @@ void ReifiedQuery::setNonReified(const std::shared_ptr<GraphTerm> &nonReified) {
 		case GraphTermType::Sequence:
 			term_ = reifySequence(std::static_pointer_cast<GraphSequence>(nonReified));
 			break;
+		case GraphTermType::Builtin:
+			term_ = nonReified;
+			break;
 	}
 }
 
@@ -51,6 +54,9 @@ void ReifiedQuery::reifyConnective(const std::shared_ptr<GraphConnective> &reifi
 				break;
 			case GraphTermType::Sequence:
 				reifiedConnective->addMember(reifySequence(std::static_pointer_cast<GraphSequence>(t)));
+				break;
+			case GraphTermType::Builtin:
+				reifiedConnective->addMember(t);
 				break;
 		}
 	}
@@ -248,7 +254,10 @@ bool ReifiedQuery::hasReifiablePattern(const GraphTerm *term) { //NOLINT
 				}
 			}
 			return false;
+		case GraphTermType::Builtin:
+			return false;
 	}
+	return false;
 }
 
 bool ReifiedQuery::hasReifiablePattern(const std::shared_ptr<GraphQuery> &nonReified) {
