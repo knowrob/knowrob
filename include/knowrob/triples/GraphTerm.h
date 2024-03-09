@@ -20,6 +20,8 @@ namespace knowrob {
 	public:
 		bool isPattern() const { return termType_ == GraphTermType::Pattern; }
 
+		bool isBuiltin() const { return termType_ == GraphTermType::Builtin; }
+
 		auto termType() const { return termType_; }
 
 		virtual void write(std::ostream &os) const = 0;

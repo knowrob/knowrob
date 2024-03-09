@@ -362,6 +362,8 @@ MongoKnowledgeGraph::lookupSimpleSequence(const std::vector<std::shared_ptr<Grap
 	for (auto &term: graphTerms) {
 		if (term->isPattern()) {
 			simpleExpressions.push_back(std::static_pointer_cast<GraphPattern>(term)->value());
+		} else {
+			KB_WARN("term with unsupported type {} in sequence.", (int) term->termType());
 		}
 	}
 	return lookup(simpleExpressions, limit);
@@ -483,7 +485,7 @@ void MongoKnowledgeGraph::query(const GraphQueryPtr &q, const FramedBindingsHand
 			auto &terms = std::static_pointer_cast<GraphSequence>(q->term())->terms();
 			bool isSimple = true;
 			for (auto &term: terms) {
-				if (!term->isPattern()) {
+				if (!term->isPattern() && !term->isBuiltin()) {
 					isSimple = false;
 					break;
 				}
@@ -498,6 +500,12 @@ void MongoKnowledgeGraph::query(const GraphQueryPtr &q, const FramedBindingsHand
 		case GraphTermType::Union:
 			cursor = lookupComplex(q, limit);
 			break;
+		case GraphTermType::Builtin: {
+			auto sequence = std::make_shared<GraphSequence>();
+			sequence->addMember(q->term());
+			std::shared_ptr<GraphTerm> sequenceTerm = sequence;
+			return query(std::make_shared<GraphQuery>(sequenceTerm), callback);
+		}
 	}
 	// NOTE: for some reason below causes a cursor error. looks like a bug in libmongoc to me!
 	//       anyways, we add instead a $limit stage in the aggregation pipeline.
