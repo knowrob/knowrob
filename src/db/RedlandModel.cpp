@@ -418,12 +418,12 @@ void RedlandModel::match(const FramedTriplePattern &query, const semweb::TripleV
 	librdf_free_stream(stream);
 }
 
-void RedlandModel::query(const GraphQueryPtr &q, const FramedBindingsHandler &callback) {
+void RedlandModel::query(const GraphQueryPtr &q, const BindingsHandler &callback) {
 	SPARQLQuery sparqlQuery(q);
 	sparql(sparqlQuery(), callback);
 }
 
-bool RedlandModel::sparql(std::string_view queryString, const FramedBindingsHandler &callback) const {
+bool RedlandModel::sparql(std::string_view queryString, const BindingsHandler &callback) const {
 	// TODO: add sparql interface to a common base class?
 	// NOTE: a more simple interface can also provide origin of triple, but we cannot provide this from sparql in a standard way.
 
@@ -444,7 +444,7 @@ bool RedlandModel::sparql(std::string_view queryString, const FramedBindingsHand
 		return false;
 	}
 	while (!librdf_query_results_finished(results)) {
-		auto bindings = std::make_shared<FramedBindings>();
+		auto bindings = std::make_shared<Substitution>();
 
 		// read bindings
 		int bindings_count = librdf_query_results_get_bindings_count(results);
@@ -467,7 +467,7 @@ bool RedlandModel::sparql(std::string_view queryString, const FramedBindingsHand
 	return true;
 }
 
-bool RedlandModel::query(const SPARQLQuery &q, const FramedBindingsHandler &callback) const {
+bool RedlandModel::query(const SPARQLQuery &q, const BindingsHandler &callback) const {
 	return sparql(q(), callback);
 }
 

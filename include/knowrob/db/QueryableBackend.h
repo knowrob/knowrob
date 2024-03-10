@@ -7,7 +7,6 @@
 #define KNOWROB_QUERYABLE_BACKEND_H
 
 #include "knowrob/queries/TokenBuffer.h"
-#include "knowrob/queries/FramedBindings.h"
 #include "DataBackend.h"
 #include "knowrob/queries/Answer.h"
 #include "knowrob/triples/GraphPathQuery.h"
@@ -63,7 +62,7 @@ namespace knowrob {
 		 * @param query a graph query
 		 * @param callback a function that is called for each answer to the query.
 		 */
-		virtual void query(const GraphQueryPtr &query, const FramedBindingsHandler &callback) = 0;
+		virtual void query(const GraphQueryPtr &query, const BindingsHandler &callback) = 0;
 
 		/**
 		 * @param callback a function that is called for each resource and its count.
@@ -134,7 +133,7 @@ namespace knowrob {
 
 		static std::shared_ptr<AnswerNo> no(const GraphPathQueryPtr &q);
 
-		static std::shared_ptr<AnswerYes> yes(const GraphPathQueryPtr &q, const FramedBindingsPtr &bindings);
+		static std::shared_ptr<AnswerYes> yes(const GraphPathQueryPtr &q, const SubstitutionPtr &bindings);
 
 		static GraphQueryPtr expand(ExpansionContext &ctx, const GraphPathQueryPtr &q);
 

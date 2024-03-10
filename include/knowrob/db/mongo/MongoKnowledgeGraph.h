@@ -122,7 +122,7 @@ namespace knowrob {
 		void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
 
 		// Override QueryableBackend
-		void query(const GraphQueryPtr &query, const FramedBindingsHandler &callback) override;
+		void query(const GraphQueryPtr &query, const BindingsHandler &callback) override;
 
 		// Override QueryableBackend
 		void count(const ResourceCounter &callback) const override;

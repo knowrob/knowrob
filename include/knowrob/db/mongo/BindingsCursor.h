@@ -9,7 +9,6 @@
 #include "Cursor.h"
 #include "knowrob/queries/Answer.h"
 #include "knowrob/queries/AnswerYes.h"
-#include "knowrob/queries/FramedBindings.h"
 #include "knowrob/triples/FramedTriplePattern.h"
 
 namespace knowrob::mongo {
@@ -17,7 +16,7 @@ namespace knowrob::mongo {
 	public:
 		explicit BindingsCursor(const std::shared_ptr<Collection> &collection);
 
-		bool nextBindings(const FramedBindingsPtr &bindings);
+		bool nextBindings(const SubstitutionPtr &bindings);
 
 	protected:
 		const bson_t *resultDocument_;
@@ -27,9 +26,7 @@ namespace knowrob::mongo {
 		bson_iter_t scopeIter_;
 		bson_iter_t timeIter_;
 
-		void setSubstitution(const FramedBindingsPtr &bindings);
-
-		std::shared_ptr<GraphSelector> readAnswerFrame();
+		void setSubstitution(const SubstitutionPtr &bindings);
 	};
 
 	using BindingsCursorPtr = std::shared_ptr<BindingsCursor>;

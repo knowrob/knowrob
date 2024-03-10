@@ -120,7 +120,7 @@ namespace knowrob {
 		 * @param callback the callback to handle the results.
 		 * @return true if the query was successful.
 		 */
-		bool sparql(std::string_view queryString, const FramedBindingsHandler &callback) const;
+		bool sparql(std::string_view queryString, const BindingsHandler &callback) const;
 
 		/**
 		 * Run a SPARQL query on the model.
@@ -128,7 +128,7 @@ namespace knowrob {
 		 * @param callback the callback to handle the results.
 		 * @return true if the query was successful.
 		 */
-		bool query(const SPARQLQuery &query, const FramedBindingsHandler &callback) const;
+		bool query(const SPARQLQuery &query, const BindingsHandler &callback) const;
 
 		// override DataBackend
 		bool insertOne(const FramedTriple &triple) override;
@@ -161,7 +161,7 @@ namespace knowrob {
 		void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
 
 		// Override QueryableBackend
-		void query(const GraphQueryPtr &query, const FramedBindingsHandler &callback) override;
+		void query(const GraphQueryPtr &query, const BindingsHandler &callback) override;
 
 		// Override QueryableBackend
 		void count(const ResourceCounter &callback) const override;

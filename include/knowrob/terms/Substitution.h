@@ -129,7 +129,7 @@ namespace knowrob {
 
 	// alias declaration
 	using SubstitutionPtr = std::shared_ptr<Substitution>;
-	using SubstitutionHandler = std::function<void(const SubstitutionPtr &)>;
+	using BindingsHandler = std::function<void(const SubstitutionPtr &)>;
 
 	/**
 	 * Apply a substitution to a term.

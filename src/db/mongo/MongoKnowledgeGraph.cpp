@@ -374,14 +374,14 @@ BindingsCursorPtr MongoKnowledgeGraph::lookup(const GraphTerm &query) {
 	return doLookup(query, mongo::TripleStore(tripleCollection_, oneCollection_, vocabulary_, importHierarchy_));
 }
 
-void MongoKnowledgeGraph::query(const GraphQueryPtr &q, const FramedBindingsHandler &callback) {
+void MongoKnowledgeGraph::query(const GraphQueryPtr &q, const BindingsHandler &callback) {
 	const bool onlyOneSol = (q->ctx()->queryFlags & QUERY_FLAG_ONE_SOLUTION);
 	BindingsCursorPtr cursor = lookup(*q->term());
 	// NOTE: for some reason below causes a cursor error. looks like a bug in libmongoc to me!
 	//if(query->flags() & QUERY_FLAG_ONE_SOLUTION) { cursor->limit(1); }
 
 	while (true) {
-		auto next = std::make_shared<FramedBindings>();
+		auto next = std::make_shared<Substitution>();
 		if (cursor->nextBindings(next)) callback(next);
 		else break;
 		if (onlyOneSol) break;
