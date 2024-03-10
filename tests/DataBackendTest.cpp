@@ -8,12 +8,15 @@
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/db/OntologyParser.h"
 #include "knowrob/semweb/rdfs.h"
+#include "knowrob/db/RedlandModel.h"
 
 using namespace knowrob;
 using namespace knowrob::mongo;
 using namespace knowrob::semweb;
 
-std::shared_ptr<MongoKnowledgeGraph> createBackend() {
+template<typename T> std::shared_ptr<T> createBackend();
+
+template<> std::shared_ptr<MongoKnowledgeGraph> createBackend<MongoKnowledgeGraph>() {
 	auto kg = std::make_shared<MongoKnowledgeGraph>();
 	kg->setVocabulary(std::make_shared<semweb::Vocabulary>());
 	kg->setImportHierarchy(std::make_shared<semweb::ImportHierarchy>());
@@ -23,6 +26,12 @@ std::shared_ptr<MongoKnowledgeGraph> createBackend() {
 			MongoKnowledgeGraph::COLL_NAME_TESTS);
 	kg->drop();
 	kg->tripleCollection()->createTripleIndex();
+	return kg;
+}
+
+template<> std::shared_ptr<RedlandModel> createBackend<RedlandModel>() {
+	auto kg = std::make_shared<RedlandModel>();
+	kg->initializeBackend();
 	return kg;
 }
 
@@ -36,7 +45,7 @@ public:
 
 	static void SetUpTestSuite() {
 		vocabulary_ = std::make_shared<semweb::Vocabulary>();
-		kg_ = createBackend();
+		kg_ = createBackend<BackendType>();
 		queryable_ = kg_;
 	}
 
@@ -84,7 +93,7 @@ static FramedTriplePattern parse(const std::string &str) {
 	return {p->arguments()[0], p->arguments()[1], p->arguments()[2], false};
 }
 
-using TestableBackends = ::testing::Types<MongoKnowledgeGraph>;
+using TestableBackends = ::testing::Types<RedlandModel, MongoKnowledgeGraph>;
 TYPED_TEST_SUITE(DataBackendTest, TestableBackends);
 
 #define TEST_LOOKUP(x) DataBackendTest<TypeParam>::lookup(x)
@@ -92,7 +101,7 @@ TYPED_TEST_SUITE(DataBackendTest, TestableBackends);
 
 TYPED_TEST(DataBackendTest, Assert_a_b_c) {
 	FramedTripleCopy data_abc("a", "b", "c");
-	EXPECT_NO_THROW(DataBackendTest<TypeParam>::kg_->insertOne(data_abc));
+	EXPECT_NO_THROW(TEST_INSERT_ONE(data_abc));
 	EXPECT_EQ(TEST_LOOKUP(data_abc).size(), 1);
 	EXPECT_EQ(TEST_LOOKUP(parse("triple(x,b,c)")).size(), 0);
 	EXPECT_EQ(TEST_LOOKUP(parse("triple(a,x,c)")).size(), 0);
