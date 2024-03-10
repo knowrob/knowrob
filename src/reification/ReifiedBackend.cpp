@@ -129,7 +129,7 @@ void ReifiedBackend::match(const FramedTriplePattern &q, const semweb::TripleVis
 	}
 	if (flags & IncludeReified) {
 		auto reified = std::make_shared<ReifiedQuery>(q, vocabulary());
-		originalBackend_->query(reified, [&](const SubstitutionPtr &bindings) {
+		originalBackend_->query(reified, [&](const BindingsPtr &bindings) {
 			FramedTripleView triple;
 			if (q.instantiateInto(triple, bindings)) {
 				visitor(triple);
@@ -143,7 +143,7 @@ void ReifiedBackend::query(const GraphQueryPtr &q, const BindingsHandler &callba
 		// if there is at least one reifiable pattern, we need to reify the query entirely,
 		// and run the reified query on the original backend.
 		auto reified = std::make_shared<ReifiedQuery>(q, vocabulary());
-		originalBackend_->query(reified, [&](const SubstitutionPtr &bindings) {
+		originalBackend_->query(reified, [&](const BindingsPtr &bindings) {
 			// TODO: do we need special handling for the frame here at all? there is also some code in QueryableBackend.
 			// TODO: computation of frame would need to be implemented here.
 			//       for this we can iterate over literals and apply bindings to them to consolidate

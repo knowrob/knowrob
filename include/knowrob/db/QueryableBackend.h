@@ -133,7 +133,7 @@ namespace knowrob {
 
 		static std::shared_ptr<AnswerNo> no(const GraphPathQueryPtr &q);
 
-		static std::shared_ptr<AnswerYes> yes(const GraphPathQueryPtr &q, const SubstitutionPtr &bindings);
+		static std::shared_ptr<AnswerYes> yes(const GraphPathQueryPtr &q, const BindingsPtr &bindings);
 
 		static GraphQueryPtr expand(ExpansionContext &ctx, const GraphPathQueryPtr &q);
 

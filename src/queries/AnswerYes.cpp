@@ -13,17 +13,17 @@ using namespace knowrob;
 
 AnswerYes::AnswerYes()
 		: Answer(),
-		  substitution_(std::make_shared<Substitution>()) {
+		  substitution_(std::make_shared<Bindings>()) {
 }
 
-AnswerYes::AnswerYes(SubstitutionPtr substitution)
+AnswerYes::AnswerYes(BindingsPtr substitution)
 		: Answer(),
 		  substitution_(std::move(substitution)) {
 }
 
 AnswerYes::AnswerYes(const AnswerYes &other)
 		: Answer(other),
-		  substitution_(std::make_shared<Substitution>(*other.substitution_)),
+		  substitution_(std::make_shared<Bindings>(*other.substitution_)),
 		  positiveGroundings_(other.positiveGroundings_),
 		  negativeGroundings_(other.negativeGroundings_) {
 }

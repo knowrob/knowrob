@@ -3,8 +3,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_SUBSTITUTION_H_
-#define KNOWROB_SUBSTITUTION_H_
+#ifndef KNOWROB_BINDINGS_H_
+#define KNOWROB_BINDINGS_H_
 
 #include <queue>
 #include <functional>
@@ -24,31 +24,31 @@ namespace knowrob {
 	 * Applying a substitution to a term t means to replace occurrences
 	 * of each xi with ti. The resulting term is referred to as an *instance* of t.
 	 */
-	class Substitution {
+	class Bindings {
 	public:
 		/**
 		 * A mapping from variable names to terms.
 		 */
 		using Map = std::map<std::string_view, std::pair<std::shared_ptr<Variable>, TermPtr>>;
 
-		Substitution() = default;
+		Bindings() = default;
 
 		/**
 		 * @param mapping a mapping from variables to terms.
 		 */
-		explicit Substitution(const std::map<std::shared_ptr<Variable>, TermPtr> &mapping);
+		explicit Bindings(const std::map<std::shared_ptr<Variable>, TermPtr> &mapping);
 
 		/**
 		 * @param other another substitution.
 		 * @return true if this substitution is equal to the other substitution.
 		 */
-		bool operator==(const Substitution &other) const;
+		bool operator==(const Bindings &other) const;
 
 		/**
 		 * Combine with another substitution.
 		 * @param other another substitution.
 		 */
-		void operator+=(const Substitution &other);
+		void operator+=(const Bindings &other);
 
 		/**
 		 * @return true if this substitution does not map a single variable to a term.
@@ -111,7 +111,7 @@ namespace knowrob {
 		 * @other another substitution
 		 * @return true if the operation succeeded.
 		 */
-		bool unifyWith(const Substitution &other);
+		bool unifyWith(const Bindings &other);
 
 		/**
 		 * @return the hash of this.
@@ -121,15 +121,15 @@ namespace knowrob {
 		/**
 		 * @return a const empty substitution.
 		 */
-		static std::shared_ptr<const Substitution> emptySubstitution();
+		static std::shared_ptr<const Bindings> emptyBindings();
 
 	protected:
 		Map mapping_;
 	};
 
 	// alias declaration
-	using SubstitutionPtr = std::shared_ptr<Substitution>;
-	using BindingsHandler = std::function<void(const SubstitutionPtr &)>;
+	using BindingsPtr = std::shared_ptr<Bindings>;
+	using BindingsHandler = std::function<void(const BindingsPtr &)>;
 
 	/**
 	 * Apply a substitution to a term.
@@ -137,7 +137,7 @@ namespace knowrob {
 	 * @param bindings a substitution.
 	 * @return the term with the substitution applied.
 	 */
-	TermPtr applyBindings(const TermPtr &term, const Substitution &bindings);
+	TermPtr applyBindings(const TermPtr &term, const Bindings &bindings);
 
 	/**
 	 * Apply a substitution to a formula.
@@ -145,11 +145,11 @@ namespace knowrob {
 	 * @param bindings a substitution.
 	 * @return the formula with the substitution applied.
 	 */
-	FormulaPtr applyBindings(const FormulaPtr &phi, const Substitution &bindings);
+	FormulaPtr applyBindings(const FormulaPtr &phi, const Bindings &bindings);
 }
 
 namespace std {
-	std::ostream &operator<<(std::ostream &os, const knowrob::Substitution &omega);
+	std::ostream &operator<<(std::ostream &os, const knowrob::Bindings &omega);
 }
 
-#endif //KNOWROB_SUBSTITUTION_H_
+#endif //KNOWROB_BINDINGS_H_

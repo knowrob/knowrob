@@ -23,7 +23,7 @@ namespace knowrob {
 		 */
 		AnswerYes();
 
-		explicit AnswerYes(SubstitutionPtr substitution);
+		explicit AnswerYes(BindingsPtr substitution);
 
 		/**
 		 * Copy constructor.
@@ -113,7 +113,7 @@ namespace knowrob {
 	protected:
 		std::vector<FramedPredicate> positiveGroundings_;
 		std::vector<FramedPredicate> negativeGroundings_;
-		SubstitutionPtr substitution_;
+		BindingsPtr substitution_;
 	};
 
 	// alias

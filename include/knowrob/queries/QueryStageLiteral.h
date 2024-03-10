@@ -26,7 +26,7 @@ namespace knowrob {
 		const FramedTriplePatternPtr literal_;
 
 		// override QueryStage
-		TokenBufferPtr submitQuery(const Substitution &substitution) override;
+		TokenBufferPtr submitQuery(const Bindings &substitution) override;
 	};
 } // knowrob
 

@@ -16,7 +16,7 @@
 using namespace knowrob;
 
 Unifier::Unifier(const TermPtr &t0, const TermPtr &t1)
-		: Substitution(),
+		: Bindings(),
 		  t0_(t0),
 		  t1_(t1),
 		  exists_(unify(t0, t1)) {

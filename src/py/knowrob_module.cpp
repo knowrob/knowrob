@@ -54,7 +54,7 @@ static inline void register_term_types() {
 	py::createType<XSDAtomic>();
 	py::createType<String>();
 	py::createType<Numeric>();
-	py::createType<Substitution>();
+	py::createType<Bindings>();
 	// allow conversion between std::vector and python::list for Term objects.
 	typedef std::vector<TermPtr> TermList;
 	custom_vector_from_seq<TermPtr>();

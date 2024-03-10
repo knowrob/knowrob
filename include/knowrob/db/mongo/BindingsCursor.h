@@ -16,7 +16,7 @@ namespace knowrob::mongo {
 	public:
 		explicit BindingsCursor(const std::shared_ptr<Collection> &collection);
 
-		bool nextBindings(const SubstitutionPtr &bindings);
+		bool nextBindings(const BindingsPtr &bindings);
 
 	protected:
 		const bson_t *resultDocument_;
@@ -26,7 +26,7 @@ namespace knowrob::mongo {
 		bson_iter_t scopeIter_;
 		bson_iter_t timeIter_;
 
-		void setSubstitution(const SubstitutionPtr &bindings);
+		void setSubstitution(const BindingsPtr &bindings);
 	};
 
 	using BindingsCursorPtr = std::shared_ptr<BindingsCursor>;

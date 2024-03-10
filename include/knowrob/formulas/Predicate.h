@@ -12,7 +12,7 @@
 #include "Formula.h"
 #include "PredicateIndicator.h"
 #include "knowrob/terms/Term.h"
-#include "knowrob/terms/Substitution.h"
+#include "knowrob/terms/Bindings.h"
 #include "knowrob/terms/Atom.h"
 #include "knowrob/terms/Function.h"
 

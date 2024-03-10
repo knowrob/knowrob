@@ -194,7 +194,7 @@ namespace knowrob {
 		 * @return true if the instantiation was successful.
 		 */
 		bool instantiateInto(FramedTriple &triple,
-							 const std::shared_ptr<const Substitution> &bindings = Substitution::emptySubstitution()) const;
+							 const std::shared_ptr<const Bindings> &bindings = Bindings::emptyBindings()) const;
 
 	protected:
 		TermPtr subjectTerm_;
@@ -232,7 +232,7 @@ namespace knowrob {
 	 * @param bindings the substitution.
 	 * @return the framed triple pattern with the substitution applied.
 	 */
-	FramedTriplePatternPtr applyBindings(const FramedTriplePatternPtr &pat, const Substitution &bindings);
+	FramedTriplePatternPtr applyBindings(const FramedTriplePatternPtr &pat, const Bindings &bindings);
 
 	/**
 	 * A container that maps a vector of framed triple patterns into a vector of framed triples.

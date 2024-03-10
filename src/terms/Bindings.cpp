@@ -3,7 +3,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob/terms/Substitution.h"
+#include "knowrob/terms/Bindings.h"
 #include "knowrob/terms/Unifier.h"
 #include "knowrob/knowrob.h"
 #include "knowrob/formulas/CompoundFormula.h"
@@ -17,13 +17,13 @@
 
 using namespace knowrob;
 
-Substitution::Substitution(const std::map<std::shared_ptr<Variable>, TermPtr> &mapping) {
+Bindings::Bindings(const std::map<std::shared_ptr<Variable>, TermPtr> &mapping) {
 	for (const auto &pair: mapping) {
 		set(pair.first, pair.second);
 	}
 }
 
-bool Substitution::operator==(const Substitution &other) const {
+bool Bindings::operator==(const Bindings &other) const {
 	if (mapping_.size() != other.mapping_.size()) {
 		return false;
 	}
@@ -41,21 +41,21 @@ bool Substitution::operator==(const Substitution &other) const {
 	return true;
 }
 
-void Substitution::operator+=(const Substitution &other) {
+void Bindings::operator+=(const Bindings &other) {
 	for (auto &x: other.mapping_) {
 		set(x.second.first, x.second.second);
 	}
 }
 
-void Substitution::set(const std::shared_ptr<Variable> &var, const TermPtr &term) {
+void Bindings::set(const std::shared_ptr<Variable> &var, const TermPtr &term) {
 	mapping_.insert({var->name(), {var, term}});
 }
 
-bool Substitution::contains(std::string_view varName) const {
+bool Bindings::contains(std::string_view varName) const {
 	return mapping_.find(varName) != mapping_.end();
 }
 
-const TermPtr &Substitution::get(std::string_view varName) const {
+const TermPtr &Bindings::get(std::string_view varName) const {
 	static const TermPtr null_term;
 
 	auto it = mapping_.find(varName);
@@ -66,7 +66,7 @@ const TermPtr &Substitution::get(std::string_view varName) const {
 	}
 }
 
-const std::shared_ptr<Atomic> Substitution::getAtomic(std::string_view varName) const {
+const std::shared_ptr<Atomic> Bindings::getAtomic(std::string_view varName) const {
 	static const std::shared_ptr<Atomic> null_term;
 
 	auto term = get(varName);
@@ -77,7 +77,7 @@ const std::shared_ptr<Atomic> Substitution::getAtomic(std::string_view varName) 
 	}
 }
 
-size_t Substitution::hash() const {
+size_t Bindings::hash() const {
 	auto seed = static_cast<size_t>(0);
 
 	for (const auto &item: mapping_) {
@@ -94,12 +94,12 @@ size_t Substitution::hash() const {
 	return seed;
 }
 
-std::shared_ptr<const Substitution> Substitution::emptySubstitution() {
-	static const auto empty = std::make_shared<Substitution>();
+std::shared_ptr<const Bindings> Bindings::emptyBindings() {
+	static const auto empty = std::make_shared<Bindings>();
 	return empty;
 }
 
-bool Substitution::unifyWith(const Substitution &other) {
+bool Bindings::unifyWith(const Bindings &other) {
 	for (const auto &pair: other.mapping_) {
 		auto it = mapping_.find(pair.first);
 		if (it == mapping_.end()) {
@@ -128,7 +128,7 @@ bool Substitution::unifyWith(const Substitution &other) {
 template<class T>
 std::shared_ptr<T> applyCompoundBindings( //NOLINT
 		const std::shared_ptr<T> &phi,
-		const Substitution &bindings) {
+		const Bindings &bindings) {
 	std::vector<FormulaPtr> formulae;
 	bool hasNewFormula = false;
 	for (const auto &f: phi->formulae()) {
@@ -146,7 +146,7 @@ std::shared_ptr<T> applyCompoundBindings( //NOLINT
 }
 
 namespace knowrob {
-	FormulaPtr applyBindings(const FormulaPtr &phi, const Substitution &bindings) { //NOLINT
+	FormulaPtr applyBindings(const FormulaPtr &phi, const Bindings &bindings) { //NOLINT
 		if (phi->isGround()) {
 			return phi;
 		}
@@ -205,7 +205,7 @@ namespace knowrob {
 		return phi;
 	}
 
-	TermPtr applyBindings(const TermPtr &t, const Substitution &bindings) { //NOLINT
+	TermPtr applyBindings(const TermPtr &t, const Bindings &bindings) { //NOLINT
 		if (t->isGround()) {
 			return t;
 		}
@@ -245,7 +245,7 @@ namespace knowrob {
 }
 
 namespace std {
-	std::ostream &operator<<(std::ostream &os, const Substitution &omega) //NOLINT
+	std::ostream &operator<<(std::ostream &os, const Bindings &omega) //NOLINT
 	{
 		uint32_t i = 0;
 		os << '{';
@@ -259,16 +259,16 @@ namespace std {
 
 namespace knowrob::py {
 	template<>
-	void createType<Substitution>() {
+	void createType<Bindings>() {
 		using namespace boost::python;
-		class_<Substitution, std::shared_ptr<Substitution>>("Substitution", init<>())
+		class_<Bindings, std::shared_ptr<Bindings>>("Bindings", init<>())
 				.def(init<std::map<std::shared_ptr<Variable>, TermPtr>>())
-				.def("__eq__", &Substitution::operator==)
-				.def("__iter__", range(&Substitution::begin, &Substitution::end))
-				.def("empty", &Substitution::empty)
-				.def("set", &Substitution::set)
-				.def("get", &Substitution::get, return_value_policy<copy_const_reference>())
-				.def("contains", &Substitution::contains)
-				.def("hash", &Substitution::hash);
+				.def("__eq__", &Bindings::operator==)
+				.def("__iter__", range(&Bindings::begin, &Bindings::end))
+				.def("empty", &Bindings::empty)
+				.def("set", &Bindings::set)
+				.def("get", &Bindings::get, return_value_policy<copy_const_reference>())
+				.def("contains", &Bindings::contains)
+				.def("hash", &Bindings::hash);
 	}
 }

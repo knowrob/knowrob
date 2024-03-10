@@ -180,7 +180,7 @@ add_library(knowrob SHARED
 		src/terms/Variable.cpp
 		src/terms/ListTerm.cpp
 		src/terms/OptionList.cpp
-		src/terms/Substitution.cpp
+        src/terms/Bindings.cpp
 		src/terms/Unifier.cpp
 		src/formulas/Formula.cpp
 		src/formulas/CompoundFormula.cpp

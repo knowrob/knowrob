@@ -23,7 +23,7 @@ BindingsCursor::BindingsCursor(const std::shared_ptr<Collection> &collection)
 		  scopeIter_() {
 }
 
-void BindingsCursor::setSubstitution(const SubstitutionPtr &bindings) {
+void BindingsCursor::setSubstitution(const BindingsPtr &bindings) {
 	while (bson_iter_next(&varIter_)) {
 		auto var = std::make_shared<Variable>(bson_iter_key(&varIter_));
 
@@ -68,7 +68,7 @@ void BindingsCursor::setSubstitution(const SubstitutionPtr &bindings) {
 	}
 }
 
-bool BindingsCursor::nextBindings(const SubstitutionPtr &bindings) {
+bool BindingsCursor::nextBindings(const BindingsPtr &bindings) {
 	if (!next(&resultDocument_)) return false;
 	if (!bson_iter_init(&resultIter_, resultDocument_)) return false;
 

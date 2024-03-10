@@ -381,7 +381,7 @@ void MongoKnowledgeGraph::query(const GraphQueryPtr &q, const BindingsHandler &c
 	//if(query->flags() & QUERY_FLAG_ONE_SOLUTION) { cursor->limit(1); }
 
 	while (true) {
-		auto next = std::make_shared<Substitution>();
+		auto next = std::make_shared<Bindings>();
 		if (cursor->nextBindings(next)) callback(next);
 		else break;
 		if (onlyOneSol) break;

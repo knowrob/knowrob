@@ -52,7 +52,7 @@ void GraphRestructuring::doTransformation(GraphTransformationRule &rule) {
 	auto originals = std::make_shared<TriplePatternContainer>();
 	auto transformed = std::make_shared<TriplePatternContainer>();
 	// perform query and record transformations
-	model_->query(rule.getSPARQLQuery(), [&](const SubstitutionPtr &bindings) {
+	model_->query(rule.getSPARQLQuery(), [&](const BindingsPtr &bindings) {
 		// apply the substitution mapping to the pattern term
 		for (auto &p: rule.to()) {
 			auto x = applyBindings(p, *bindings);

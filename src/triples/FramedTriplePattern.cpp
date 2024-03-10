@@ -158,7 +158,7 @@ uint32_t FramedTriplePattern::numVariables() const {
 }
 
 bool
-FramedTriplePattern::instantiateInto(FramedTriple &triple, const std::shared_ptr<const Substitution> &bindings) const {
+FramedTriplePattern::instantiateInto(FramedTriple &triple, const std::shared_ptr<const Bindings> &bindings) const {
 	// return a flag that indicates if s/p/o were assigned successfully.
 	bool hasMissingSPO = false;
 	// handle subject
@@ -302,7 +302,7 @@ semweb::MutableTripleContainer::MutableGenerator TriplePatternContainer::generat
 }
 
 namespace knowrob {
-	FramedTriplePatternPtr applyBindings(const FramedTriplePatternPtr &pat, const Substitution &bindings) {
+	FramedTriplePatternPtr applyBindings(const FramedTriplePatternPtr &pat, const Bindings &bindings) {
 		bool hasChanges = false;
 
 		auto subject = applyBindings(pat->subjectTerm(), bindings);

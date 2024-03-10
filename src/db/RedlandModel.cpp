@@ -444,7 +444,7 @@ bool RedlandModel::sparql(std::string_view queryString, const BindingsHandler &c
 		return false;
 	}
 	while (!librdf_query_results_finished(results)) {
-		auto bindings = std::make_shared<Substitution>();
+		auto bindings = std::make_shared<Bindings>();
 
 		// read bindings
 		int bindings_count = librdf_query_results_get_bindings_count(results);
@@ -476,7 +476,7 @@ void RedlandModel::count(const ResourceCounter &callback) const {
 	static const char *sparqlString = "SELECT ?resource (COUNT(?s) AS ?count) WHERE "\
                 "{ ?s rdf:type ?resource . } UNION { ?s ?resource ?o . } } "\
                 "GROUP BY ?resource";
-	sparql(sparqlString, [&](const SubstitutionPtr &bindings) {
+	sparql(sparqlString, [&](const BindingsPtr &bindings) {
 		auto resource = bindings->getAtomic("resource");
 		auto count = bindings->getAtomic("count");
 		if (!resource || !count || !count->isNumeric()) {

@@ -35,11 +35,11 @@ protected:
 
 	// void TearDown() override {}
 	template<class T>
-	std::list<SubstitutionPtr> lookup(const T &data) {
+	std::list<BindingsPtr> lookup(const T &data) {
 		auto cursor = kg_->lookup(FramedTriplePattern(data));
-		std::list<SubstitutionPtr> out;
+		std::list<BindingsPtr> out;
 		while (true) {
-			auto next = std::make_shared<Substitution>();
+			auto next = std::make_shared<Bindings>();
 			if (cursor->nextBindings(next)) {
 				out.push_back(next);
 			} else {

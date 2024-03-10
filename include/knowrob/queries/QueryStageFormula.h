@@ -24,7 +24,7 @@ namespace knowrob {
 	protected:
 		const FormulaPtr formula_;
 
-		TokenBufferPtr submitQuery(const Substitution &substitution) override;
+		TokenBufferPtr submitQuery(const Bindings &substitution) override;
 	};
 } // knowrob
 

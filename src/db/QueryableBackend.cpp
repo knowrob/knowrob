@@ -56,7 +56,7 @@ void QueryableBackend::evaluateQuery(const GraphPathQueryPtr &q, const TokenBuff
 	auto channel = TokenStream::Channel::create(resultStream);
 	try {
 		bool hasPositiveAnswer = false;
-		query(expandedQuery, [&](const SubstitutionPtr &bindings) {
+		query(expandedQuery, [&](const BindingsPtr &bindings) {
 			auto answer = yes(q, bindings);
 
 			// The answer is uncertain is any of the groundings is uncertain.
@@ -101,7 +101,7 @@ TokenBufferPtr QueryableBackend::submitQuery(const GraphPathQueryPtr &q) {
 	return result;
 }
 
-std::shared_ptr<AnswerYes> QueryableBackend::yes(const GraphPathQueryPtr &q, const SubstitutionPtr &bindings) {
+std::shared_ptr<AnswerYes> QueryableBackend::yes(const GraphPathQueryPtr &q, const BindingsPtr &bindings) {
 	static const auto edbTerm = Atom::Tabled("EDB");
 
 	auto positiveAnswer = std::make_shared<AnswerYes>(bindings);
