@@ -13,7 +13,7 @@ using namespace knowrob;
 
 void Answer::applyFrame(const GraphSelector &frame) {
 	frame_->graph = frame.graph;
-	frame_->agent = frame.agent;
+	frame_->perspective = frame.perspective;
 	frame_->confidence = std::nullopt;
 	frame_->begin = frame.begin;
 	frame_->end = frame.end;

@@ -156,12 +156,12 @@ TEST_F(MongoKnowledgeGraphTest, KnowledgeOfAgent) {
 	// assert knowledge of a named agent
 	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "Y");
 	statement.setIsUncertain(false);
-	statement.setAgent("agent_a");
+	statement.setPerspective("agent_a");
 	EXPECT_EQ(lookup(statement).size(), 0);
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
 	// the statement is not known to be true for other agents
-	statement.setAgent("agent_b");
+	statement.setPerspective("agent_b");
 	EXPECT_EQ(lookup(statement).size(), 0);
 }
 

@@ -126,8 +126,8 @@ bool FramedTriple::operator<(const FramedTriple &other) const {
 	if (graph() != other.graph()) {
 		return graph() < other.graph();
 	}
-	if (agent() != other.agent()) {
-		return agent() < other.agent();
+	if (perspective() != other.perspective()) {
+		return perspective() < other.perspective();
 	}
 	if (subject() != other.subject()) {
 		return subject() < other.subject();
@@ -230,7 +230,7 @@ bool FramedTriple::operator==(const FramedTriple &other) const {
 	if (subject() != other.subject()) return false;
 	if (predicate() != other.predicate()) return false;
 	if (graph(), other.graph()) return false;
-	if (agent(), other.agent()) return false;
+	if (perspective(), other.perspective()) return false;
 	if (isUncertain() != other.isUncertain()) return false;
 	if (isOccasional() != other.isOccasional()) return false;
 	if (begin() != other.begin()) return false;
@@ -301,13 +301,13 @@ namespace knowrob::py {
 
 		void setGraph(std::string_view graph) override { call_method<void>(self, "setGraph", graph); }
 
-		void setAgent(std::string_view agent) override { call_method<void>(self, "setAgent", agent); }
+		void setPerspective(std::string_view agent) override { call_method<void>(self, "setPerspective", agent); }
 
 		std::optional<std::string_view> graph() const override {
 			return call_method<std::optional<std::string_view>>(self, "graph");
 		}
 
-		std::optional<std::string_view> agent() const override {
+		std::optional<std::string_view> perspective() const override {
 			return call_method<std::optional<std::string_view>>(self, "agent");
 		}
 
@@ -338,7 +338,7 @@ namespace knowrob::py {
 				.def("setXSDValue", &FramedTriple::setXSDValue)
 				.def("xsdTypeIRI", &FramedTriple::xsdTypeIRI)
 				.def("setGraph", pure_virtual(&FramedTriple::setGraph))
-				.def("setAgent", pure_virtual(&FramedTriple::setAgent))
+				.def("setPerspective", pure_virtual(&FramedTriple::setPerspective))
 				.def("setIsOccasional", &FramedTriple::setIsOccasional)
 				.def("setIsUncertain", &FramedTriple::setIsUncertain)
 				.def("setBegin", &FramedTriple::setBegin)
@@ -348,7 +348,7 @@ namespace knowrob::py {
 				.def("subject", pure_virtual(&FramedTriple::subject))
 				.def("predicate", pure_virtual(&FramedTriple::predicate))
 				.def("graph", pure_virtual(&FramedTriple::graph))
-				.def("agent", pure_virtual(&FramedTriple::agent))
+				.def("agent", pure_virtual(&FramedTriple::perspective))
 				.def("isOccasional", &FramedTriple::isOccasional)
 				.def("isUncertain", &FramedTriple::isUncertain)
 				.def("begin", &FramedTriple::begin)

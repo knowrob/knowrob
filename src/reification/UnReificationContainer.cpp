@@ -52,7 +52,7 @@ void UnReificationContainer::add(const FramedTriple &triple) {
 				unReified->setXSDValue(triple.valueAsString(), triple.xsdType().value());
 			}},
 			{reification::hasPerspective->stringForm(), [](auto &triple, auto &unReified) {
-				unReified->setAgent(triple.valueAsString());
+				unReified->setPerspective(triple.valueAsString());
 			}},
 			{reification::isUncertain->stringForm(),    [](auto &triple, auto &unReified) {
 				unReified->setIsUncertain(triple.valueAsBoolean());

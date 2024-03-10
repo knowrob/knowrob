@@ -168,15 +168,15 @@ std::shared_ptr<GraphTerm> ReifiedQuery::reifiedPatternSequence(const FramedTrip
 		x->setIsOptional(true);
 	}
 
-	if (nonReified.agentTerm().has_grounding()) {
-		if (Perspective::isEgoPerspective(nonReified.agentTerm().grounded()->stringForm())) {
+	if (nonReified.perspectiveTerm().has_grounding()) {
+		if (Perspective::isEgoPerspective(nonReified.perspectiveTerm().grounded()->stringForm())) {
 			auto x = addPattern(seq, name, reification::hasPerspective, egoPerspective, g);
 			x->setIsOptional(true);
 		} else {
-			addPattern(seq, name, reification::hasPerspective, nonReified.agentTerm().grounded(), g);
+			addPattern(seq, name, reification::hasPerspective, nonReified.perspectiveTerm().grounded(), g);
 		}
-	} else if (nonReified.agentTerm().has_variable()) {
-		auto x = addPattern(seq, name, reification::hasPerspective, nonReified.agentTerm().variable(), g);
+	} else if (nonReified.perspectiveTerm().has_variable()) {
+		auto x = addPattern(seq, name, reification::hasPerspective, nonReified.perspectiveTerm().variable(), g);
 		x->setIsOptional(true);
 	} else {
 		auto x = addPattern(seq, name, reification::hasPerspective, egoPerspective, g);
@@ -277,13 +277,13 @@ int ReifiedQuery::getReificationFlags(const FramedTriplePattern &q) {
 	}
 	// include reified if perspective is not the ego perspective or a variable.
 	// In case perspective is not ego perspective, the original triples are not included.
-	if (q.agentTerm().has_grounding()) {
-		auto perspective = q.agentTerm().grounded();
+	if (q.perspectiveTerm().has_grounding()) {
+		auto perspective = q.perspectiveTerm().grounded();
 		if (!Perspective::isEgoPerspective(perspective->stringForm())) {
 			includeOriginal = false;
 			includeReified = true;
 		}
-	} else if (q.agentTerm().has_variable()) {
+	} else if (q.perspectiveTerm().has_variable()) {
 		includeReified = true;
 	}
 	// include reified if isOccasional is true or a variable in the query.

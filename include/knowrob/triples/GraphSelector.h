@@ -26,9 +26,9 @@ namespace knowrob {
 		 */
 		const char *graph; // TODO: rename to "ontology" ?
 		/**
-		 * The agent that is the host of the knowledge.
+		 * The perspective of statement.
 		 */
-		std::optional<PerspectivePtr> agent;
+		std::optional<PerspectivePtr> perspective;
 		/**
 		 * The temporal modality of consideration.
 		 */

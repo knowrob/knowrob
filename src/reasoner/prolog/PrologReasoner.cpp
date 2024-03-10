@@ -329,7 +329,7 @@ bool PrologReasoner::putQueryFrame(PrologTerm &frameTerm, const GraphSelector &f
 	//   [until: $time] }
 
 	int numFrameKeys = 2;
-	if (frame.agent.has_value()) numFrameKeys += 1;
+	if (frame.perspective.has_value()) numFrameKeys += 1;
 	if (frame.begin.has_value()) numFrameKeys += 1;
 	if (frame.end.has_value()) numFrameKeys += 1;
 
@@ -359,10 +359,10 @@ bool PrologReasoner::putQueryFrame(PrologTerm &frameTerm, const GraphSelector &f
 	if (!PL_put_atom(scopeValues + keyIndex, isAboutSomePast ? sometimes_a : always_a)) return false;
 
 	// agent: $name
-	if (frame.agent.has_value()) {
+	if (frame.perspective.has_value()) {
 		static const auto agent_a = PL_new_atom("agent");
 		scopeKeys[++keyIndex] = agent_a;
-		auto agent_iri = frame.agent.value()->iri();
+		auto agent_iri = frame.perspective.value()->iri();
 		if (!PL_put_atom_chars(scopeValues + keyIndex, agent_iri.data())) return false;
 	}
 
@@ -453,7 +453,7 @@ std::shared_ptr<GraphSelector> PrologReasoner::createAnswerFrame(const PrologTer
 				if (!frame->epistemicOperator.has_value()) {
 					frame->epistemicOperator = EpistemicOperator::KNOWLEDGE;
 				}
-				frame->agent = Perspective::get(PL_atom_chars(agentAtom));
+				frame->perspective = Perspective::get(PL_atom_chars(agentAtom));
 			}
 		}
 

@@ -152,9 +152,9 @@ namespace knowrob {
 		virtual std::optional<std::string_view> graph() const = 0;
 
 		/**
-		 * @return the agent of the triple.
+		 * @return the perspective of the triple.
 		 */
-		virtual std::optional<std::string_view> agent() const = 0;
+		virtual std::optional<std::string_view> perspective() const = 0;
 
 		/**
 		 * @param subject the subject of the triple.
@@ -247,9 +247,9 @@ namespace knowrob {
 		virtual void setGraph(std::string_view graph) = 0;
 
 		/**
-		 * @param agent the agent of the triple.
+		 * @param perspective the perspective of the triple.
 		 */
-		virtual void setAgent(std::string_view agent) = 0;
+		virtual void setPerspective(std::string_view perspective) = 0;
 
 		/**
 		 * @return true if the triple is occasionally true.
@@ -368,7 +368,7 @@ namespace knowrob {
 			isUncertain_ = other.isUncertain();
 			xsdType_ = other.xsdType();
 			graph_ = other.graph();
-			agent_ = other.agent();
+			perspective_ = other.perspective();
 			begin_ = other.begin();
 			end_ = other.end();
 			confidence_ = other.confidence();
@@ -469,7 +469,7 @@ namespace knowrob {
 		void setGraph(std::string_view graph) override { graph_ = graph; }
 
 		// Override FramedTriple
-		void setAgent(std::string_view agent) override { agent_ = agent; }
+		void setPerspective(std::string_view perspective) override { perspective_ = perspective; }
 
 		// Override FramedTriple
 		std::string_view subject() const override { return subject_; }
@@ -514,8 +514,8 @@ namespace knowrob {
 		}
 
 		// Override FramedTripleBase
-		std::optional<std::string_view> agent() const override {
-			if (agent_.has_value()) return agent_.value();
+		std::optional<std::string_view> perspective() const override {
+			if (perspective_.has_value()) return perspective_.value();
 			else return std::nullopt;
 		}
 
@@ -534,7 +534,7 @@ namespace knowrob {
 		TypedObject object_;
 
 		std::optional<StringType> graph_;
-		std::optional<StringType> agent_;
+		std::optional<StringType> perspective_;
 
 		template<typename ValT>
 		void set(const ValT &value, XSDType type) {

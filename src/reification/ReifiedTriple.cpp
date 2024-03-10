@@ -45,8 +45,8 @@ ReifiedTriple::ReifiedTriple(const FramedTriple &triple, const semweb::Vocabular
 	}
 
 	// set the optional properties of the reified triple
-	if (triple.agent()) {
-		create(name, reification::hasPerspective, g)->setObjectIRI(triple.agent().value());
+	if (triple.perspective()) {
+		create(name, reification::hasPerspective, g)->setObjectIRI(triple.perspective().value());
 	}
 	if (triple.isUncertain() || triple.confidence()) {
 		create(name, reification::isUncertain, g)->setBooleanValue(true);
@@ -84,7 +84,7 @@ bool ReifiedTriple::isPartOfReification(const FramedTriple &triple) {
 
 bool ReifiedTriple::isReifiable(const FramedTriple &triple) {
 	// TODO: only reify triples if the agent is not the one running the KB
-	return triple.agent() ||
+	return triple.perspective() ||
 		   triple.isUncertain() ||
 		   triple.isOccasional() ||
 		   triple.confidence() ||

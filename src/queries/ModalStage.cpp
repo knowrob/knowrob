@@ -33,7 +33,7 @@ ModalStage::ModalStage(
 			// that runs the knowledge base and its information about the other agents.
 			auto *em = (EpistemicModality *) &modalOperator->modality();
 
-			if (ctx->selector.agent.has_value() && ctx->selector.agent.value() != Perspective::getEgoPerspective()) {
+			if (ctx->selector.perspective.has_value() && ctx->selector.perspective.value() != Perspective::getEgoPerspective()) {
 				// For now higher-level epistemic states are not allowed in queries,
 				// e.g. `B_a1(B_a2(x))` where `a1` is not the agent that runs the knowledge base is an example
 				// of such a higher-order query which is not allowed.
@@ -48,9 +48,9 @@ ModalStage::ModalStage(
 			// TODO: handle confidence parameter of modality operator
 			modalContext->selector.confidence = std::nullopt;
 			if (em->agent().has_value()) {
-				modalContext->selector.agent = em->agent();
+				modalContext->selector.perspective = em->agent();
 			} else {
-				modalContext->selector.agent = std::nullopt;
+				modalContext->selector.perspective = std::nullopt;
 			}
 			break;
 		}

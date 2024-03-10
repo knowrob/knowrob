@@ -134,8 +134,8 @@ void OntologyParser::applyFrame(FramedTriple *triple) {
 			triple->setConfidence(frame_->confidence.value());
 			triple->setIsUncertain(true);
 		}
-		if (frame_->agent.has_value()) {
-			triple->setAgent(frame_->agent.value()->iri());
+		if (frame_->perspective.has_value()) {
+			triple->setPerspective(frame_->perspective.value()->iri());
 		}
 		if (frame_->epistemicOperator.has_value() && frame_->epistemicOperator.value() == EpistemicOperator::BELIEF){
 			triple->setIsUncertain(true);

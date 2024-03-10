@@ -92,13 +92,13 @@ namespace knowrob {
 		/**
 		 * @return the agent term of this expression.
 		 */
-		auto &agentTerm() const { return agentTerm_; }
+		auto &perspectiveTerm() const { return perspectiveTerm_; }
 
 		/**
 		 * Set the agent term of this expression.
 		 * @param agentTerm the agent term.
 		 */
-		void setAgentTerm(const groundable<Atom> &agentTerm) { agentTerm_ = agentTerm; }
+		void setPerspectiveTerm(const groundable<Atom> &perspectiveTerm) { perspectiveTerm_ = perspectiveTerm; }
 
 		/**
 		 * @return the begin term of this expression.
@@ -205,7 +205,7 @@ namespace knowrob {
 
 		// below are treated as optional
 		groundable<Atom> graphTerm_;
-		groundable<Atom> agentTerm_;
+		groundable<Atom> perspectiveTerm_;
 		groundable<Double> beginTerm_;
 		groundable<Double> endTerm_;
 		groundable<Double> confidenceTerm_;

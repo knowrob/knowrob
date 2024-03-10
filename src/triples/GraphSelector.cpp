@@ -17,15 +17,15 @@ bool GraphSelector::mergeWith(const GraphSelector &other) {
 
 	// agent cannot be changed in merge operation.
 	// So GraphSelector can only be merged within a modal in which both are embedded.
-	if (agent.has_value()) {
-		if (other.agent.has_value()) {
-			if (agent.value()->iri() != other.agent.value()->iri()) {
+	if (perspective.has_value()) {
+		if (other.perspective.has_value()) {
+			if (perspective.value()->iri() != other.perspective.value()->iri()) {
 				return false;
 			}
 		} else {
 			return false;
 		}
-	} else if (other.agent.has_value()) {
+	} else if (other.perspective.has_value()) {
 		return false;
 	}
 
@@ -67,8 +67,8 @@ size_t GraphSelector::hash() const {
 	} else {
 		hashCombine(val, 0);
 	}
-	if (agent.has_value()) {
-		hashCombine(val, std::hash<std::string_view>{}(agent.value()->iri()));
+	if (perspective.has_value()) {
+		hashCombine(val, std::hash<std::string_view>{}(perspective.value()->iri()));
 	} else {
 		hashCombine(val, 0);
 	}
@@ -107,12 +107,12 @@ std::ostream &GraphSelector::write(std::ostream &os) const {
 			os << 'K';
 		}
 	}
-	if (agent.has_value() && !Perspective::isEgoPerspective(agent.value()->iri())) {
+	if (perspective.has_value() && !Perspective::isEgoPerspective(perspective.value()->iri())) {
 		if (!hasEpistemicOperator) {
 			hasEpistemicOperator = true;
 			os << 'K';
 		}
-		os << '[' << agent.value()->iri() << ']';
+		os << '[' << perspective.value()->iri() << ']';
 	}
 
 	bool hasTemporalOperator = false;
@@ -159,7 +159,7 @@ namespace knowrob::py {
 		class_<GraphSelector, std::shared_ptr<GraphSelector>>
 				("GraphSelector", init<>())
 				.def_readwrite("graph", &GraphSelector::graph)
-				.BOOST_PYTHON_ADD_OPTIONAL("agent", &GraphSelector::agent)
+				.BOOST_PYTHON_ADD_OPTIONAL("agent", &GraphSelector::perspective)
 				.BOOST_PYTHON_ADD_OPTIONAL("temporalOperator", &GraphSelector::temporalOperator)
 				.BOOST_PYTHON_ADD_OPTIONAL("epistemicOperator", &GraphSelector::epistemicOperator)
 				.BOOST_PYTHON_ADD_OPTIONAL("begin", &GraphSelector::begin)

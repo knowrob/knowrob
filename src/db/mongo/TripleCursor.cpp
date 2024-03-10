@@ -40,7 +40,7 @@ bool TripleCursor::nextTriple(FramedTriple &tripleData, const bson_oid_t **tripl
 			} else if (key == "graph") {
 				tripleData.setGraph(bson_iter_utf8(&tripleIter_, nullptr));
 			} else if (key == "agent") {
-				tripleData.setAgent(bson_iter_utf8(&tripleIter_, nullptr));
+				tripleData.setPerspective(bson_iter_utf8(&tripleIter_, nullptr));
 			} else if (key == "uncertain") {
 				tripleData.setIsUncertain(bson_iter_bool(&tripleIter_));
 			} else if (key == "occasional") {

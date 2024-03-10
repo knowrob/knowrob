@@ -117,8 +117,8 @@ bson_t *MongoTriple::createDocument(
 		BSON_APPEND_UTF8(tripleDoc, "graph", fallbackOrigin.c_str());
 	}
 
-	if (tripleData.agent())
-		BSON_APPEND_UTF8(tripleDoc, "agent", tripleData.agent().value().data());
+	if (tripleData.perspective())
+		BSON_APPEND_UTF8(tripleDoc, "agent", tripleData.perspective().value().data());
 
 	bool isBelief;
 	if (tripleData.confidence().has_value()) {

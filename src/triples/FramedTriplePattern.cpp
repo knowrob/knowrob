@@ -35,8 +35,8 @@ FramedTriplePattern::FramedTriplePattern(const FramedTriple &triple, bool isNega
 	if (triple.graph()) {
 		graphTerm_ = getGraphTerm(triple.graph().value());
 	}
-	if (triple.agent()) {
-		agentTerm_ = Atom::Tabled(triple.agent().value());
+	if (triple.perspective()) {
+		perspectiveTerm_ = Atom::Tabled(triple.perspective().value());
 	}
 	if (triple.isOccasional()) {
 		isOccasional_ = Numeric::trueAtom();
@@ -77,8 +77,8 @@ void FramedTriplePattern::setTripleFrame(const GraphSelector &frame) {
 	if (frame.graph) {
 		graphTerm_ = getGraphTerm(frame.graph);
 	}
-	if (frame.agent) {
-		agentTerm_ = Atom::Tabled(frame.agent.value()->iri());
+	if (frame.perspective) {
+		perspectiveTerm_ = Atom::Tabled(frame.perspective.value()->iri());
 	}
 	if (frame.epistemicOperator.has_value() && frame.epistemicOperator.value() == EpistemicOperator::BELIEF) {
 		isUncertain_ = Numeric::trueAtom();
@@ -142,7 +142,7 @@ std::vector<VariablePtr> FramedTriplePattern::getVariables() const {
 			propertyTerm_,
 			objectTerm_,
 			*graphTerm_,
-			*agentTerm_,
+			*perspectiveTerm_,
 			*beginTerm_,
 			*endTerm_,
 			*isUncertain_,
@@ -225,12 +225,12 @@ FramedTriplePattern::instantiateInto(FramedTriple &triple, const std::shared_ptr
 			triple.setGraph(std::static_pointer_cast<Atomic>(g)->stringForm());
 		}
 	}
-	if (agentTerm_) {
-		auto &a = agentTerm_->isVariable() ?
-				  bindings->get(std::static_pointer_cast<Variable>(*agentTerm_)->name()) :
-				  *agentTerm_;
+	if (perspectiveTerm_) {
+		auto &a = perspectiveTerm_->isVariable() ?
+				  bindings->get(std::static_pointer_cast<Variable>(*perspectiveTerm_)->name()) :
+				  *perspectiveTerm_;
 		if (a && a->termType() == TermType::ATOMIC) {
-			triple.setAgent(std::static_pointer_cast<Atomic>(a)->stringForm());
+			triple.setPerspective(std::static_pointer_cast<Atomic>(a)->stringForm());
 		}
 	}
 	if (confidenceTerm_) {
@@ -317,8 +317,8 @@ namespace knowrob {
 		auto graph = pat->graphTerm() ? applyBindings(*pat->graphTerm(), bindings) : nullptr;
 		if (graph && graph != *pat->graphTerm()) hasChanges = true;
 
-		auto agent = pat->agentTerm() ? applyBindings(*pat->agentTerm(), bindings) : nullptr;
-		if (agent && agent != *pat->agentTerm()) hasChanges = true;
+		auto agent = pat->perspectiveTerm() ? applyBindings(*pat->perspectiveTerm(), bindings) : nullptr;
+		if (agent && agent != *pat->perspectiveTerm()) hasChanges = true;
 
 		auto confidence = pat->confidenceTerm() ? applyBindings(*pat->confidenceTerm(), bindings) : nullptr;
 		if (confidence && confidence != *pat->confidenceTerm()) hasChanges = true;
@@ -341,7 +341,7 @@ namespace knowrob {
 				subject, property, object, pat->isNegated());
 		patInstance->setObjectOperator(pat->objectOperator());
 		if (graph) patInstance->setGraphTerm(groundable<Atom>::cast(graph));
-		if (agent) patInstance->setAgentTerm(groundable<Atom>::cast(agent));
+		if (agent) patInstance->setPerspectiveTerm(groundable<Atom>::cast(agent));
 		if (confidence) patInstance->setConfidenceTerm(groundable<Double>::cast(confidence));
 		if (begin) patInstance->setBeginTerm(groundable<Double>::cast(begin));
 		if (end) patInstance->setEndTerm(groundable<Double>::cast(end));
@@ -362,7 +362,7 @@ namespace knowrob::py {
 				.def("propertyTerm", &FramedTriplePattern::propertyTerm, return_value_policy<return_by_value>())
 				.def("objectTerm", &FramedTriplePattern::objectTerm, return_value_policy<return_by_value>())
 				.def("graphTerm", &FramedTriplePattern::graphTerm, return_value_policy<return_by_value>())
-				.def("agentTerm", &FramedTriplePattern::agentTerm, return_value_policy<return_by_value>())
+				.def("perspectiveTerm", &FramedTriplePattern::perspectiveTerm, return_value_policy<return_by_value>())
 				.def("beginTerm", &FramedTriplePattern::beginTerm, return_value_policy<return_by_value>())
 				.def("endTerm", &FramedTriplePattern::endTerm, return_value_policy<return_by_value>())
 				.def("confidenceTerm", &FramedTriplePattern::confidenceTerm, return_value_policy<return_by_value>())
