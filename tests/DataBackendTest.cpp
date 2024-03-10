@@ -9,6 +9,7 @@
 #include "knowrob/db/OntologyParser.h"
 #include "knowrob/semweb/rdfs.h"
 #include "knowrob/db/RedlandModel.h"
+#include "knowrob/semweb/PrefixRegistry.h"
 
 using namespace knowrob;
 using namespace knowrob::mongo;
@@ -31,6 +32,7 @@ template<> std::shared_ptr<MongoKnowledgeGraph> createBackend<MongoKnowledgeGrap
 
 template<> std::shared_ptr<RedlandModel> createBackend<RedlandModel>() {
 	auto kg = std::make_shared<RedlandModel>();
+	//kg->setStorageType(RedlandStorageType::HASHES);
 	kg->initializeBackend();
 	return kg;
 }
@@ -47,6 +49,7 @@ public:
 		vocabulary_ = std::make_shared<semweb::Vocabulary>();
 		kg_ = createBackend<BackendType>();
 		queryable_ = kg_;
+		semweb::PrefixRegistry::get().registerPrefix("swrl_test", "http://knowrob.org/kb/swrl_test#");
 	}
 
 	// void TearDown() override {}
@@ -99,27 +102,27 @@ TYPED_TEST_SUITE(DataBackendTest, TestableBackends);
 #define TEST_LOOKUP(x) DataBackendTest<TypeParam>::lookup(x)
 #define TEST_INSERT_ONE(x) DataBackendTest<TypeParam>::kg_->insertOne(x)
 
+#define swrl_test_ "http://knowrob.org/kb/swrl_test#"
+
 TYPED_TEST(DataBackendTest, Assert_a_b_c) {
-	FramedTripleCopy data_abc("a", "b", "c");
+	FramedTripleCopy data_abc(swrl_test_"a", swrl_test_"b", swrl_test_"c");
 	EXPECT_NO_THROW(TEST_INSERT_ONE(data_abc));
 	EXPECT_EQ(TEST_LOOKUP(data_abc).size(), 1);
-	EXPECT_EQ(TEST_LOOKUP(parse("triple(x,b,c)")).size(), 0);
-	EXPECT_EQ(TEST_LOOKUP(parse("triple(a,x,c)")).size(), 0);
-	EXPECT_EQ(TEST_LOOKUP(parse("triple(a,b,x)")).size(), 0);
-	EXPECT_EQ(TEST_LOOKUP(parse("triple(A,b,c)")).size(), 1);
-	EXPECT_EQ(TEST_LOOKUP(parse("triple(A,x,c)")).size(), 0);
-	EXPECT_EQ(TEST_LOOKUP(parse("triple(a,B,c)")).size(), 1);
-	EXPECT_EQ(TEST_LOOKUP(parse("triple(x,B,c)")).size(), 0);
-	EXPECT_EQ(TEST_LOOKUP(parse("triple(a,b,C)")).size(), 1);
-	EXPECT_EQ(TEST_LOOKUP(parse("triple(x,b,C)")).size(), 0);
+	EXPECT_EQ(TEST_LOOKUP(FramedTripleCopy(swrl_test_"x",swrl_test_"b",swrl_test_"c")).size(), 0);
+	EXPECT_EQ(TEST_LOOKUP(FramedTripleCopy(swrl_test_"a",swrl_test_"x",swrl_test_"c")).size(), 0);
+	EXPECT_EQ(TEST_LOOKUP(FramedTripleCopy(swrl_test_"a",swrl_test_"b",swrl_test_"x")).size(), 0);
+	EXPECT_EQ(TEST_LOOKUP(parse("triple(A, swrl_test:b, swrl_test:c)")).size(), 1);
+	EXPECT_EQ(TEST_LOOKUP(parse("triple(A, swrl_test:x, swrl_test:c)")).size(), 0);
+	EXPECT_EQ(TEST_LOOKUP(parse("triple(swrl_test:a, B, swrl_test:c)")).size(), 1);
+	EXPECT_EQ(TEST_LOOKUP(parse("triple(swrl_test:x, B, swrl_test:c)")).size(), 0);
+	EXPECT_EQ(TEST_LOOKUP(parse("triple(swrl_test:a, swrl_test:b, C)")).size(), 1);
+	EXPECT_EQ(TEST_LOOKUP(parse("triple(swrl_test:x, swrl_test:b, C)")).size(), 0);
 }
 
 TYPED_TEST(DataBackendTest, LoadSOMAandDUL) {
 	EXPECT_NO_THROW(DataBackendTest<TypeParam>::loadOntology("owl/test/swrl.owl"));
 	EXPECT_NO_THROW(DataBackendTest<TypeParam>::loadOntology("owl/test/datatype_test.owl"));
 }
-
-#define swrl_test_ "http://knowrob.org/kb/swrl_test#"
 
 TYPED_TEST(DataBackendTest, QueryTriple) {
 	FramedTripleCopy triple(
@@ -131,9 +134,9 @@ TYPED_TEST(DataBackendTest, QueryTriple) {
 
 TYPED_TEST(DataBackendTest, QueryNegatedTriple) {
 	auto negated = std::make_shared<FramedTriplePattern>(
-			QueryParser::parsePredicate("p(x,y)"), true);
+			QueryParser::parsePredicate("triple(swrl_test:x, swrl_test:p, swrl_test:y)"), true);
 	EXPECT_EQ(TEST_LOOKUP(*negated).size(), 1);
-	FramedTripleCopy statement("x", "p", "y");
+	FramedTripleCopy statement(swrl_test_"x", swrl_test_"p", swrl_test_"y");
 	EXPECT_NO_THROW(TEST_INSERT_ONE(statement));
 	EXPECT_EQ(TEST_LOOKUP(*negated).size(), 0);
 }
@@ -175,12 +178,12 @@ TYPED_TEST(DataBackendTest, KnowledgeOfAgent) {
 	// assert knowledge of a named agent
 	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "Y");
 	statement.setIsUncertain(false);
-	statement.setPerspective("agent_a");
+	statement.setPerspective(swrl_test_"agent_a");
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 0);
 	EXPECT_NO_THROW(TEST_INSERT_ONE(statement));
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 1);
 	// the statement is not known to be true for other agents
-	statement.setPerspective("agent_b");
+	statement.setPerspective(swrl_test_"agent_b");
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 0);
 }
 

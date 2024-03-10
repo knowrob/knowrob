@@ -54,6 +54,28 @@ static inline const char *getStorageTypeString(RedlandStorageType storageType) {
 	return "unknown";
 }
 
+static int logRedlandMessage(void *user_data, librdf_log_message *message) {
+	switch (message->level) {
+		case LIBRDF_LOG_DEBUG:
+			KB_DEBUG("[redland] {}", librdf_log_message_message(message));
+			break;
+		case LIBRDF_LOG_INFO:
+			KB_INFO("[redland] {}", librdf_log_message_message(message));
+			break;
+		case LIBRDF_LOG_WARN:
+			KB_WARN("[redland] {}", librdf_log_message_message(message));
+			break;
+		case LIBRDF_LOG_FATAL:
+		case LIBRDF_LOG_ERROR:
+			KB_ERROR("[redland] {}", librdf_log_message_message(message));
+			break;
+		default:
+			KB_WARN("[redland]: {}", librdf_log_message_message(message));
+			break;
+	}
+	return 1;
+}
+
 RedlandModel::RedlandModel()
 		: world_(nullptr),
 		  ownedWorld_(nullptr),
@@ -137,6 +159,7 @@ bool RedlandModel::initializeBackend() {
 			throw BackendError("Failed to create Redland world.");
 		}
 		librdf_world_open(world_);
+		librdf_world_set_logger(world_, nullptr, logRedlandMessage);
 	}
 
 	// initialize the storage
@@ -144,6 +167,8 @@ bool RedlandModel::initializeBackend() {
 	const char *storageOptions = storageOptions_.empty() ? nullptr : storageOptions_.c_str();
 	const char *storageType = getStorageTypeString(storageType_);
 	const char *storageName = origin_.has_value() ? origin_.value().c_str() : "knowrob";
+	KB_WARN("Initializing Redland storage of type \"{}\" with name \"{}\" and options \"{}\".",
+			storageType, storageName, storageOptions);
 	storage_ = librdf_new_storage(world_,
 								  storageType,
 								  storageName,
@@ -210,6 +235,22 @@ bool RedlandModel::initializeBackend(const ReasonerConfig &config) {
 }
 
 std::string RedlandModel::getStorageOptions() const {
+
+	// TODO: support more options. This is needed for "hashes" storage type:
+	//		- "hash-type" (string) - the hash type to use
+	//		- "dir" (string) - the directory to use
+	//		- "new" (bool) - whether to create a new store
+/**
+  // A new BDB hashed persistent store in the current directory
+  storage=librdf_new_storage(world, "hashes", "db1", "new='yes',hash-type='bdb',dir='.'");
+  // Hashed in-memory store
+  storage=librdf_new_storage(world, "hashes", NULL, "hash-type='memory'");
+  // An existing BDB hashed persistent store in dir /somewhere
+  storage=librdf_new_storage(world, "hashes", "dv2", "hash-type='bdb',dir='/somewhere'");
+  // An existing BDB hashed store with contexts
+  storage=librdf_new_storage(world, "hashes", "db3", "hash-type='bdb',contexts='yes'");
+ */
+
 	using OptPair_o = std::pair<std::string, std::optional<std::string>>;
 	std::vector<std::pair<std::string, std::string>> opts;
 	for (auto &option: {
@@ -222,11 +263,14 @@ std::string RedlandModel::getStorageOptions() const {
 			opts.emplace_back(option.first, option.second.value());
 		}
 	}
+	// context support currently is required which limits the storage types we can use.
+	// but "memory" and "hashes" can do it.
+	opts.emplace_back("contexts", "yes");
 	std::stringstream ss;
 	for (int i = 0; i < opts.size(); i++) {
-		ss << opts[i].first << "='" << opts[i].second;
+		ss << opts[i].first << "='" << opts[i].second << '\'';
 		if (i < opts.size() - 1) {
-			ss << "',";
+			ss << ",";
 		}
 	}
 	return ss.str();
