@@ -431,8 +431,8 @@ endif()
 add_executable(all_gtests
 		tests/gtests.cpp
 		src/neems/test.cpp
-        tests/mongodb/MongoKnowledgeGraphTest.cpp
 		tests/KnowledgeBaseTest.cpp
+        tests/DataBackendTest.cpp
 		tests/py/test-module.cpp)
 add_dependencies(all_gtests knowrob_py)
 target_link_libraries(all_gtests
