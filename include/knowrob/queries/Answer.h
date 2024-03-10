@@ -16,9 +16,36 @@ namespace knowrob {
 	 */
 	class Answer : public Token {
 	public:
-		Answer() = default;
+		Answer() : frame_(std::make_shared<GraphSelector>()) {}
 
-		Answer(const Answer &other) = default;
+		Answer(const Answer &other) : frame_(other.frame_), reasonerTerm_(other.reasonerTerm_) {};
+
+		/**
+		 * The answer is framed in the context of a graph selector which determines
+		 * the set of graphs in which the answer is valid.
+		 * This can be used to e.g. address graphs that represent the world state from the
+		 * perspective of a specific agent, or a specific point in time.
+		 * @return a graph selector.
+		 */
+		auto &frame() { return frame_; }
+
+		/**
+		 * Assign a graph selector to this answer.
+		 * @param frame a graph selector.
+		 */
+		void setFrame(const std::shared_ptr<GraphSelector> &frame) {
+			if (frame != nullptr) {
+				frame_ = frame;
+			} else {
+				throw std::invalid_argument("frame must not be null");
+			}
+		}
+
+		/**
+		 * Apply a frame to this answer.
+		 * @param frame a graph selector.
+		 */
+		void applyFrame(const GraphSelector &frame);
 
 		/**
 		 * @return true if this answer is negative.
@@ -33,7 +60,7 @@ namespace knowrob {
 		/**
 		 * @return true if truth of this answer is uncertain.
 		 */
-		virtual bool isUncertain() const = 0;
+		bool isUncertain() const;
 
 		/**
 		 * @return true if truth of this answer is certain.
@@ -44,7 +71,23 @@ namespace knowrob {
 		 * Mark this answer as uncertain by modification of the associated frame.
 		 * @param confidence an optional confidence value.
 		 */
-		virtual void setIsUncertain(std::optional<double> confidence) = 0;
+		void setIsUncertain(bool val, std::optional<double> confidence);
+
+		/**
+		 * @return true if truth of this answer is uncertain.
+		 */
+		bool isOccasionallyTrue() const;
+
+		/**
+		 * @return true if truth of this answer is certain.
+		 */
+		bool isAllwaysTrue() const { return !isOccasionallyTrue(); }
+
+		/**
+		 * Mark this answer as uncertain by modification of the associated frame.
+		 * @param confidence an optional confidence value.
+		 */
+		void setIsOccasionallyTrue(bool val);
 
 		/**
 		 * @return a human readable string representation of this answer.
@@ -66,6 +109,7 @@ namespace knowrob {
 		size_t hash() const override;
 
 	protected:
+		std::shared_ptr<GraphSelector> frame_;
 		AtomPtr reasonerTerm_;
 	};
 

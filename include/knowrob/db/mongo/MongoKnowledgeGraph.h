@@ -1,6 +1,7 @@
-//
-// Created by daniel on 01.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_MONGO_KNOWLEDGE_GRAPH_H
 #define KNOWROB_MONGO_KNOWLEDGE_GRAPH_H
@@ -15,6 +16,7 @@
 #include "knowrob/formulas/FirstOrderLiteral.h"
 #include "knowrob/semweb/ImportHierarchy.h"
 #include "BindingsCursor.h"
+#include "MongoTaxonomy.h"
 
 namespace knowrob {
 	/**
@@ -37,8 +39,12 @@ namespace knowrob {
 		 * @param collectionName the name of the collection for triples.
 		 * @return true on success
 		 */
-		bool init(std::string_view db_uri, std::string_view db_name = "knowrob",
-				  std::string_view collectionName = "triples");
+		bool initializeBackend(std::string_view db_uri,
+							   std::string_view db_name = "knowrob",
+							   std::string_view collectionName = "triples");
+
+		// Override DataBackend
+		bool initializeBackend(const ReasonerConfig &config) override;
 
 		/**
 		 * @return the name of the database.
@@ -56,9 +62,9 @@ namespace knowrob {
 		bool isReadOnly() const { return isReadOnly_; }
 
 		/**
-		 * (re)create search indices.
+		 * @return the collection for triples.
 		 */
-		void createSearchIndices();
+		auto tripleCollection() { return tripleCollection_; }
 
 		/**
 		 * Delete all statements in the database.
@@ -71,14 +77,7 @@ namespace knowrob {
 		 * @param tripleExpression a triple expression
 		 * @return a cursor over matching triples
 		 */
-		mongo::BindingsCursorPtr lookup(const FramedTriplePattern &tripleExpression);
-
-		/**
-		 * Lookup up all matching triples.
-		 * @param tripleData an atomic proposition
-		 * @return a cursor over matching triples
-		 */
-		mongo::BindingsCursorPtr lookup(const FramedTriple &tripleData);
+		mongo::BindingsCursorPtr lookup(const FramedTriplePattern &query);
 
 		/**
 		 * Lookup up a path of matching triples.
@@ -87,18 +86,7 @@ namespace knowrob {
 		 * @param tripleExpressions a vector of triple expressions
 		 * @return a cursor over matching triples
 		 */
-		mongo::BindingsCursorPtr
-		lookup(const std::vector<FramedTriplePatternPtr> &tripleExpressions, uint32_t limit = 0);
-
-		/**
-		 * Watch for instantiations of a literal in the knowledge graph.
-		 * @param literal a literal
-		 * @return a stream with answers to the query
-		 */
-		TokenBufferPtr watchQuery(const GraphQueryPtr &literal);
-
-		// Override DataBackend
-		bool initializeBackend(const ReasonerConfig &config) override;
+		mongo::BindingsCursorPtr lookup(const GraphTerm &query);
 
 		// Override DataBackend
 		bool insertOne(const FramedTriple &triple) override;
@@ -140,50 +128,30 @@ namespace knowrob {
 		void count(const ResourceCounter &callback) const override;
 
 	protected:
-		using StringPair = std::pair<std::string_view, std::string_view>;
-
 		std::shared_ptr<mongo::Collection> tripleCollection_;
 		std::shared_ptr<mongo::Collection> oneCollection_;
+		std::shared_ptr<MongoTaxonomy> taxonomy_;
+		std::optional<uint32_t> batchSize_;
 		bool isReadOnly_;
 
-		std::optional<uint32_t> batchSize_;
-
-		void initialize();
+		void initializeMongo();
 
 		static std::shared_ptr<mongo::Collection> connect(const boost::property_tree::ptree &config);
 
 		static std::shared_ptr<mongo::Collection>
-		connect(std::string_view db_uri, std::string_view db_name, std::string_view collectionName);
+		connect(std::string_view uri, std::string_view db, std::string_view collection);
 
 		static std::string getDBName(const boost::property_tree::ptree &config);
 
 		static std::string getCollectionName(const boost::property_tree::ptree &config);
 
-		bson_t *createTripleDocument(const FramedTriple &tripleData, const std::string &graphName, bool isTaxonomic);
-
 		static std::string getURI(const boost::property_tree::ptree &config);
-
-		void updateHierarchy(
-				const std::vector<StringPair> &subClassAssertions,
-				const std::vector<StringPair> &subPropertyAssertions);
 
 		void updateTimeInterval(const FramedTriple &tripleLoader);
 
-		bson_t *getSelector(const FramedTriplePattern &tripleExpression, bool isTaxonomicProperty);
-
-		bson_t *getSelector(const FramedTriple &triple, bool isTaxonomicProperty);
-
-		bool isTaxonomicProperty(const TermPtr &propertyTerm);
-
-		bool isTaxonomicProperty(std::string_view property);
-
 		bool dropOrigin(std::string_view origin);
 
-		bool dropSessionOrigins();
-
-		mongo::BindingsCursorPtr lookupSimpleSequence(const std::vector<std::shared_ptr<GraphTerm>> &graphTerms, uint32_t limit);
-
-		mongo::BindingsCursorPtr lookupComplex(const GraphQueryPtr &graphQuery, uint32_t limit);
+		void dropSessionOrigins();
 
 		friend class MongoKnowledgeGraphTest;
 	};

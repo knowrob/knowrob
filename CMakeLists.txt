@@ -253,11 +253,9 @@ add_library(knowrob SHARED
         src/db/mongo/QueryWatch.cpp
         src/db/mongo/MongoKnowledgeGraph.cpp
         src/db/mongo/BulkOperation.cpp
-        src/db/mongo/aggregation/graph.cpp
         src/db/mongo/Pipeline.cpp
         src/db/mongo/TripleCursor.cpp
         src/db/mongo/BindingsCursor.cpp
-        src/db/mongo/aggregation/terms.cpp
         src/db/mongo/aggregation/triples.cpp
         src/db/mongo/Connection.cpp
         src/db/mongo/bson-helper.cpp
@@ -314,7 +312,11 @@ add_library(knowrob SHARED
         src/reification/ReifiedBackend.cpp
         src/triples/GraphUnion.cpp
         src/triples/GraphSequence.cpp
-        src/triples/GraphTerm.cpp)
+        src/triples/GraphTerm.cpp
+        src/db/mongo/MongoTriple.cpp
+        src/db/mongo/MongoTriplePattern.cpp
+        src/db/mongo/MongoTerm.cpp
+        src/db/mongo/MongoTaxonomy.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

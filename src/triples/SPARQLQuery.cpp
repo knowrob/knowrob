@@ -79,8 +79,16 @@ void SPARQLQuery::add(std::ostream &os, const FramedTriplePattern &triplePattern
 }
 
 void SPARQLQuery::comparison(std::ostream &os, const GraphBuiltin &builtin, const char *comparisonOperator) {
-	// e.g. `FILTER (?begin < ?end)`
-	os << "FILTER (";
+	// Filter using a comparison operator, also succeed if one of the arguments is not bound.
+	// e.g. `FILTER (!BOUND(?begin) || !BOUND(?end) || ?begin < ?end)`
+	os << "FILTER ( ";
+	// TODO: seems like a bad idea for "=" operator
+	if (builtin.arguments()[0]->isVariable()) {
+		os << "!BOUND(?" << std::static_pointer_cast<Variable>(builtin.arguments()[0])->name() << ") || ";
+	}
+	if (builtin.arguments()[1]->isVariable()) {
+		os << "!BOUND(?" << std::static_pointer_cast<Variable>(builtin.arguments()[1])->name() << ") || ";
+	}
 	where(os, builtin.arguments()[0]);
 	os << comparisonOperator << ' ';
 	where(os, builtin.arguments()[1]);
@@ -88,15 +96,22 @@ void SPARQLQuery::comparison(std::ostream &os, const GraphBuiltin &builtin, cons
 }
 
 void SPARQLQuery::bindOneOfIf(std::ostream &os, const GraphBuiltin &builtin, const char *comparisonOperator) {
-	// e.g. `BIND(IF(?begin > ?next_begin, ?begin, ?next_begin) AS ?begin)`
+	// e.g. `BIND(IF(BOUND(?optional_val) && !(?begin < ?optional_val), ?optional_val, ?begin) AS ?begin)`
+	// NOTE: Here it is assumed that only the second argument could be undefined in the evaluation context.
 	os << "BIND (IF(";
-	where(os, builtin.arguments()[0]);
-	os << ' ' << comparisonOperator << ' ';
+	if (builtin.arguments()[1]->isVariable()) {
+		os << "BOUND(?" << std::static_pointer_cast<Variable>(builtin.arguments()[1])->name() << ") && ";
+	}
+	os << "!(";
+	{
+		where(os, builtin.arguments()[0]);
+		os << ' ' << comparisonOperator << ' ';
+		where(os, builtin.arguments()[1]);
+	}
+	os << "), ";
 	where(os, builtin.arguments()[1]);
 	os << ", ";
 	where(os, builtin.arguments()[0]);
-	os << ", ";
-	where(os, builtin.arguments()[1]);
 	os << ") AS ?" << builtin.bindVar()->name() << ") ";
 }
 
@@ -182,7 +197,8 @@ void SPARQLQuery::where(std::ostream &os, const FramedTriplePattern &triplePatte
 
 	where(os, triplePattern.subjectTerm());
 	where(os, triplePattern.propertyTerm());
-	if (triplePattern.objectOperator() == FramedTriplePattern::OperatorType::EQ) {
+	if (triplePattern.objectTerm()->isVariable() ||
+		triplePattern.objectOperator() == FramedTriplePattern::OperatorType::EQ) {
 		where(os, triplePattern.objectTerm());
 		os << ". ";
 	} else {

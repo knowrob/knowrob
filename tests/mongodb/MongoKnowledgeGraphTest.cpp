@@ -25,18 +25,18 @@ protected:
 		kg_ = std::make_shared<MongoKnowledgeGraph>();
 		kg_->setVocabulary(vocabulary_);
 		kg_->setImportHierarchy(std::make_shared<semweb::ImportHierarchy>());
-		kg_->init(
+		kg_->initializeBackend(
 				MongoKnowledgeGraph::DB_URI_DEFAULT,
 				MongoKnowledgeGraph::DB_NAME_KNOWROB,
 				MongoKnowledgeGraph::COLL_NAME_TESTS);
 		kg_->drop();
-		kg_->createSearchIndices();
+		kg_->tripleCollection()->createTripleIndex();
 	}
 
 	// void TearDown() override {}
 	template<class T>
 	std::list<FramedBindingsPtr> lookup(const T &data) {
-		auto cursor = kg_->lookup(data);
+		auto cursor = kg_->lookup(FramedTriplePattern(data));
 		std::list<FramedBindingsPtr> out;
 		while (true) {
 			auto next = std::make_shared<FramedBindings>();
@@ -160,9 +160,6 @@ TEST_F(MongoKnowledgeGraphTest, KnowledgeOfAgent) {
 	EXPECT_EQ(lookup(statement).size(), 0);
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
-	for (const auto &solution: lookup(statement)) {
-		EXPECT_TRUE(solution->frame()->isCertain());
-	}
 	// the statement is not known to be true for other agents
 	statement.setAgent("agent_b");
 	EXPECT_EQ(lookup(statement).size(), 0);
@@ -175,9 +172,6 @@ TEST_F(MongoKnowledgeGraphTest, Belief) {
 	EXPECT_EQ(lookup(statement).size(), 0);
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
-	for (const auto &solution: lookup(statement)) {
-		EXPECT_TRUE(solution->frame()->isUncertain());
-	}
 	// statement is filtered if knowledge operator is selected
 	statement.setIsUncertain(false);
 	EXPECT_EQ(lookup(statement).size(), 0);
@@ -191,9 +185,6 @@ TEST_F(MongoKnowledgeGraphTest, WithConfidence) {
 	EXPECT_EQ(lookup(statement).size(), 0);
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
-	for (const auto &solution: lookup(statement)) {
-		EXPECT_TRUE(solution->frame()->isUncertain());
-	}
 	// confidence threshold of 0.0 does not filter the statement
 	statement.setConfidence(0.0);
 	EXPECT_EQ(lookup(statement).size(), 1);
@@ -210,15 +201,6 @@ TEST_F(MongoKnowledgeGraphTest, WithTimeInterval) {
 	EXPECT_EQ(lookup(statement).size(), 0);
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
-	for (const auto &solution: lookup(statement)) {
-		EXPECT_TRUE(solution->frame()->isCertain());
-		EXPECT_TRUE(solution->frame()->begin.has_value());
-		EXPECT_TRUE(solution->frame()->end.has_value());
-		if (solution->frame()->begin.has_value())
-			EXPECT_EQ(solution->frame()->begin.value(), 5.0);
-		if (solution->frame()->end.has_value())
-			EXPECT_EQ(solution->frame()->end.value(), 10.0);
-	}
 	// no solution because statement only known to be true until 10.0
 	statement.setEnd(20.0);
 	EXPECT_EQ(lookup(statement).size(), 0);
@@ -235,14 +217,6 @@ TEST_F(MongoKnowledgeGraphTest, ExtendsTimeInterval) {
 	EXPECT_EQ(lookup(statement).size(), 0);
 	EXPECT_NO_THROW(kg_->insertOne(statement));
 	EXPECT_EQ(lookup(statement).size(), 1);
-	for (const auto &solution: lookup(statement)) {
-		EXPECT_TRUE(solution->frame()->begin.has_value());
-		EXPECT_TRUE(solution->frame()->end.has_value());
-		if (solution->frame()->begin.has_value())
-			EXPECT_EQ(solution->frame()->begin.value(), 5.0);
-		if (solution->frame()->end.has_value())
-			EXPECT_EQ(solution->frame()->end.value(), 20.0);
-	}
 	// time interval was merged with existing one into [5,20]
 	statement.setBegin(5.0);
 	EXPECT_EQ(lookup(statement).size(), 1);

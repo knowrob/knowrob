@@ -13,12 +13,14 @@ namespace knowrob {
 
 	class FramedBindings : public Substitution {
 	public:
+		FramedBindings() : frame_(DefaultGraphSelector()) {}
+
 		void setFrame(const std::shared_ptr<GraphSelector> &frame) { frame_ = frame; }
 
 		auto &frame() const { return frame_; }
 
 	protected:
-		std::shared_ptr<GraphSelector> frame_;
+		std::shared_ptr<const GraphSelector> frame_;
 	};
 
 	using FramedBindingsPtr = std::shared_ptr<FramedBindings>;

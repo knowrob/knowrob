@@ -7,6 +7,7 @@
 #include "knowrob/Logger.h"
 #include "knowrob/db/mongo/TripleCursor.h"
 #include "knowrob/terms/RDFNode.h"
+#include "knowrob/db/mongo/bson-helper.h"
 
 using namespace knowrob::mongo;
 
@@ -57,7 +58,7 @@ bool TripleCursor::nextTriple(FramedTriple &tripleData, const bson_oid_t **tripl
 						// note: currently mongo KG does not store the type of the literal,
 						// so we cannot trivially distinguish between IRI and literal and need to guess here.
 						auto utf8 = bson_iter_utf8(&tripleIter_, nullptr);
-						switch(rdfNodeTypeGuess(utf8)) {
+						switch (rdfNodeTypeGuess(utf8)) {
 							case RDFNodeType::IRI:
 								tripleData.setObjectIRI(utf8);
 								break;

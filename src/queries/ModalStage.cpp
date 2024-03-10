@@ -52,6 +52,7 @@ ModalStage::ModalStage(
 			} else {
 				modalContext->selector.agent = std::nullopt;
 			}
+			break;
 		}
 
 		case ModalityType::Temporal_Past: {
@@ -75,6 +76,7 @@ ModalStage::ModalStage(
 				modalContext->selector.begin = std::nullopt;
 				modalContext->selector.end = std::nullopt;
 			}
+			break;
 		}
 	}
 }

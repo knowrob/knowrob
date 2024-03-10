@@ -1,7 +1,4 @@
-/* 
- * Copyright (c) 2020, Daniel Beßler
- * All rights reserved.
- * 
+/*
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -13,7 +10,6 @@
 #include <string>
 #include "BulkOperation.h"
 #include "Document.h"
-#include "Pipeline.h"
 #include "Connection.h"
 
 namespace knowrob::mongo {
@@ -152,6 +148,11 @@ namespace knowrob::mongo {
 		 * @param keys vector of keys
 		 */
 		void createIndex(const std::vector<IndexKey> &keys);
+
+		/**
+		 * Create a search index for s/p/o fields.
+		 */
+		void createTripleIndex();
 
 		/**
 		 * @return true is this collection is empty.

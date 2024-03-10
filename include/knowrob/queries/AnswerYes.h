@@ -64,28 +64,13 @@ namespace knowrob {
 		bool hasGrounding(const Variable &var) const { return substitution_->contains(var.name()); }
 
 		/**
-		 * The answer is framed in the context of a graph selector which determines
-		 * the set of graphs in which the answer is valid.
-		 * This can be used to e.g. address graphs that represent the world state from the
-		 * perspective of a specific agent, or a specific point in time.
-		 * @return a graph selector.
-		 */
-		auto &frame() { return frame_; }
-
-		/**
-		 * Assign a graph selector to this answer.
-		 * @param frame a graph selector.
-		 */
-		void setFrame(const std::shared_ptr<GraphSelector> &frame) { frame_ = frame; }
-
-		/**
 		 * Add a grounded literal to the answer.
 		 * Positive literals may not contain variables.t
 		 * @param predicate a predicate.
 		 * @param isNegated true if the negation of the predicate is grounded.
 		 */
 		bool addGrounding(const std::shared_ptr<Predicate> &predicate,
-		                  const GraphSelectorPtr &frame,
+						  const GraphSelectorPtr &frame,
 						  bool isNegated = false);
 
 		/**
@@ -125,17 +110,10 @@ namespace knowrob {
 		// override Answer
 		bool isPositive() const override { return true; }
 
-		// override Answer
-		bool isUncertain() const override;
-
-		// override Answer
-		void setIsUncertain(std::optional<double> confidence) override;
-
 	protected:
 		std::vector<FramedPredicate> positiveGroundings_;
 		std::vector<FramedPredicate> negativeGroundings_;
 		SubstitutionPtr substitution_;
-		std::shared_ptr<GraphSelector> frame_;
 	};
 
 	// alias

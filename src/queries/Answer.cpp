@@ -11,6 +11,54 @@
 
 using namespace knowrob;
 
+void Answer::applyFrame(const GraphSelector &frame) {
+	frame_->graph = frame.graph;
+	frame_->agent = frame.agent;
+	frame_->confidence = std::nullopt;
+	frame_->begin = frame.begin;
+	frame_->end = frame.end;
+	if (frame.epistemicOperator && frame.epistemicOperator.value() == EpistemicOperator::BELIEF) {
+		frame_->epistemicOperator = frame.epistemicOperator;
+	}
+	if (frame.temporalOperator && frame.temporalOperator.value() == TemporalOperator::SOMETIMES) {
+		frame_->temporalOperator = frame.temporalOperator;
+	}
+}
+
+bool Answer::isUncertain() const {
+	if (frame_->confidence.has_value()) {
+		if (frame_->confidence.value() < 1.0) return true;
+	}
+	if (frame_->epistemicOperator == EpistemicOperator::BELIEF) {
+		return true;
+	}
+	return false;
+}
+
+bool Answer::isOccasionallyTrue() const {
+	return frame_->temporalOperator == TemporalOperator::SOMETIMES;
+}
+
+void Answer::setIsUncertain(bool val, std::optional<double> confidence) {
+	if (val) {
+		frame_->epistemicOperator = EpistemicOperator::BELIEF;
+		if (confidence.has_value()) {
+			frame_->confidence = confidence;
+		}
+	} else {
+		frame_->epistemicOperator = EpistemicOperator::KNOWLEDGE;
+		frame_->confidence = 1.0;
+	}
+}
+
+void Answer::setIsOccasionallyTrue(bool val) {
+	if (val) {
+		frame_->temporalOperator = TemporalOperator::SOMETIMES;
+	} else {
+		frame_->temporalOperator = TemporalOperator::ALWAYS;
+	}
+}
+
 size_t Answer::hash() const {
 	size_t val = Token::hash();
 	if (isNegative()) {
@@ -27,7 +75,7 @@ namespace knowrob {
 	AnswerPtr mergeAnswers(const AnswerPtr &a, const AnswerPtr &b, bool ignoreInconsistencies) {
 		// also for the moment we do not combine two negative answers
 		if (a->isNegative()) {
-			if(b->isNegative()) {
+			if (b->isNegative()) {
 				// both are on
 				auto a_negative = std::static_pointer_cast<const AnswerNo>(a);
 				auto b_negative = std::static_pointer_cast<const AnswerNo>(b);

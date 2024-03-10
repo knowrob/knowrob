@@ -63,9 +63,9 @@ void QueryStage::pushTransformed(const TokenPtr &transformedTok,
 		// note that pushing of "no" must be deferred, because it could be that another
 		// instance of the query is asked with response "yes" later.
 
-		if(transformedTok->isAnswerToken()) {
+		if (transformedTok->isAnswerToken()) {
 			auto answer = std::static_pointer_cast<const Answer>(transformedTok);
-			if(answer->isPositive()) {
+			if (answer->isPositive()) {
 				hasPositiveAnswer_ = true;
 				// if a positive answer is received, all deferred negative answers can be discarded.
 				deferredNegativeAnswers_.clear();
@@ -78,7 +78,7 @@ void QueryStage::pushTransformed(const TokenPtr &transformedTok,
 					pushToBroadcast(EndOfEvaluation::get());
 					close();
 				}
-			} else if(answer->isNegative()) {
+			} else if (answer->isNegative()) {
 				deferredNegativeAnswers_.emplace_back(std::static_pointer_cast<const AnswerNo>(answer));
 			} else {
 				deferredDontKnowAnswers_.emplace_back(std::static_pointer_cast<const AnswerDontKnow>(answer));
@@ -93,16 +93,16 @@ void QueryStage::pushTransformed(const TokenPtr &transformedTok,
 void QueryStage::pushDeferred() {
 	// all positive answers are pushed directly, only negative answers are deferred.
 	// but only push a negative answer if no positive answer has been produced.
-	if(!hasPositiveAnswer_) {
-		if(!deferredNegativeAnswers_.empty() || deferredDontKnowAnswers_.empty()) {
-			if(deferredNegativeAnswers_.size()==1) {
+	if (!hasPositiveAnswer_) {
+		if (!deferredNegativeAnswers_.empty() || deferredDontKnowAnswers_.empty()) {
+			if (deferredNegativeAnswers_.size() == 1) {
 				pushToBroadcast(deferredNegativeAnswers_.front());
 			} else {
 				auto no = std::make_shared<AnswerNo>();
-				if(deferredNegativeAnswers_.empty()) {
-					no->setIsUncertain(true);
+				if (deferredNegativeAnswers_.empty()) {
+					no->setIsUncertain(true, std::nullopt);
 				} else {
-					for(auto &x : deferredNegativeAnswers_) {
+					for (auto &x: deferredNegativeAnswers_) {
 						no->mergeWith(*x);
 					}
 				}

@@ -276,10 +276,13 @@ TEST_F(KnowledgeBaseTest, IDB_interaction) {
 		}))
 }
 
-TEST_F(KnowledgeBaseTest, modal_EDB) {
+TEST_F(KnowledgeBaseTest, modal_EDB_K) {
 	EXPECT_ONLY_SOLUTION(
 		K((*hasSibling_)(Fred_, varX_)),
 		Substitution({{varX_, Ernest_}}))
+}
+
+TEST_F(KnowledgeBaseTest, modal_EDB_B) {
 	EXPECT_ONLY_SOLUTION(
 		B((*hasSibling_)(Fred_, varX_)),
 		Substitution({{varX_, Ernest_}}))

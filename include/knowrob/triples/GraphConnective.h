@@ -40,6 +40,9 @@ namespace knowrob {
 		std::vector<std::shared_ptr<GraphTerm>> terms_;
 
 		explicit GraphConnective(GraphTermType termType) : GraphTerm(termType) {}
+
+		explicit GraphConnective(GraphTermType termType, const std::vector<std::shared_ptr<GraphTerm>> &terms)
+				: GraphTerm(termType), terms_(terms) {}
 	};
 } // knowrob
 

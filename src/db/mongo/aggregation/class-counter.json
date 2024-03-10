@@ -11,6 +11,6 @@
 		"let" : { "outer" : "$s" },
 		"pipeline" : [ { "$match" : { "$expr" : { "$eq" : [ "$o", "$$outer" ] } } } ]
 	} },
-	{ "$project" : { "class" : "$s", "count" : { "$size" : "$x" } } },
+	{ "$project" : { "resource" : "$s", "count" : { "$size" : "$x" } } },
 	{ "$match" : { "$expr" : { "$gt" : [ "$count", { "$numberInt" : "0" } ] } } }
 ] }

@@ -11,9 +11,12 @@
 #include "DataBackend.h"
 #include "knowrob/queries/Answer.h"
 #include "knowrob/triples/GraphPathQuery.h"
+#include "knowrob/queries/AnswerYes.h"
+#include "knowrob/queries/AnswerNo.h"
+#include "knowrob/triples/GraphConnective.h"
 
 namespace knowrob {
-	using ResourceCounter = std::function<void(std::string_view,uint64_t)>;
+	using ResourceCounter = std::function<void(std::string_view, uint64_t)>;
 
 	/**
 	 * A backend that can be queried.
@@ -118,9 +121,29 @@ namespace knowrob {
 	protected:
 		uint32_t batchSize_;
 
-		static AnswerPtr no(const GraphPathQueryPtr &q);
+		struct ExpansionContext {
+			ExpansionContext() : counter(0) {}
 
-		static AnswerPtr yes(const GraphPathQueryPtr &q, const FramedBindingsPtr &bindings);
+			std::vector<VariablePtr> o_vars;
+			std::vector<VariablePtr> u_vars;
+			VariablePtr accumulated_begin;
+			VariablePtr accumulated_end;
+			QueryContextPtr query_ctx;
+			uint32_t counter;
+		};
+
+		static std::shared_ptr<AnswerNo> no(const GraphPathQueryPtr &q);
+
+		static std::shared_ptr<AnswerYes> yes(const GraphPathQueryPtr &q, const FramedBindingsPtr &bindings);
+
+		static GraphQueryPtr expand(ExpansionContext &ctx, const GraphPathQueryPtr &q);
+
+		static std::shared_ptr<GraphTerm> expand(ExpansionContext &ctx, const std::shared_ptr<GraphTerm> &q);
+
+		static std::shared_ptr<GraphTerm> expandPattern(ExpansionContext &ctx, const std::shared_ptr<GraphPattern> &q);
+
+		static bool expandAll(ExpansionContext &ctx, const std::shared_ptr<GraphConnective> &q,
+							  std::vector<std::shared_ptr<GraphTerm>> &expandedTerms);
 	};
 
 	using QueryableBackendPtr = std::shared_ptr<QueryableBackend>;

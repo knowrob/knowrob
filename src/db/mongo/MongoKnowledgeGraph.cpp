@@ -3,26 +3,15 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <filesystem>
-#include <boost/foreach.hpp>
-#include "knowrob/Logger.h"
-#include "knowrob/URI.h"
 #include "knowrob/db/mongo/MongoKnowledgeGraph.h"
-#include "knowrob/db/mongo/Document.h"
-#include "knowrob/db/mongo/Cursor.h"
-#include "knowrob/db/mongo/MongoInterface.h"
+#include "knowrob/db/mongo/MongoTriplePattern.h"
 #include "knowrob/db/mongo/TripleCursor.h"
-#include "knowrob/db/mongo/aggregation/graph.h"
-#include "knowrob/db/mongo/aggregation/triples.h"
-#include "knowrob/triples/FramedTriplePattern.h"
-#include "knowrob/semweb/rdf.h"
-#include "knowrob/semweb/rdfs.h"
-#include "knowrob/semweb/owl.h"
+#include "knowrob/db/mongo/MongoTriple.h"
+#include "knowrob/db/mongo/MongoInterface.h"
 #include "knowrob/db/BackendManager.h"
-#include "knowrob/KnowledgeBase.h"
-#include "knowrob/queries/AnswerNo.h"
-#include "knowrob/triples/GraphPattern.h"
 #include "knowrob/triples/GraphSequence.h"
+#include "knowrob/semweb/rdfs.h"
+#include <boost/foreach.hpp>
 
 #define MONGO_KG_ONE_COLLECTION "one"
 
@@ -63,10 +52,11 @@ MongoKnowledgeGraph::MongoKnowledgeGraph()
 		  isReadOnly_(false) {
 }
 
-bool MongoKnowledgeGraph::init(std::string_view db_uri, std::string_view db_name, std::string_view collectionName) {
+bool MongoKnowledgeGraph::initializeBackend(std::string_view db_uri, std::string_view db_name,
+											std::string_view collectionName) {
 	tripleCollection_ = connect(db_uri, db_name, collectionName);
 	if (tripleCollection_) {
-		initialize();
+		initializeMongo();
 		dropSessionOrigins();
 		return true;
 	} else {
@@ -79,34 +69,71 @@ bool MongoKnowledgeGraph::initializeBackend(const ReasonerConfig &config) {
 	if (!ptree) {
 		tripleCollection_ = connect(DB_URI_DEFAULT, DB_NAME_KNOWROB, COLL_NAME_TESTS);
 		if (tripleCollection_) {
-			initialize();
+			initializeMongo();
 			dropSessionOrigins();
 			return true;
 		} else {
 			return false;
 		}
 	}
-
 	tripleCollection_ = connect(*ptree);
-	initialize();
+	initializeMongo();
 
 	// set isReadOnly_ flag
 	auto o_readOnly = ptree->get_optional<bool>(MONGO_KG_SETTING_READ_ONLY);
 	if (o_readOnly.has_value()) {
 		isReadOnly_ = o_readOnly.value();
 	}
+	if (!isReadOnly_) {
+		dropSessionOrigins();
+	}
 
-	// auto-drop some named graphs
+	// Auto-drop some named graphs
 	auto o_drop_graphs = ptree->get_child_optional(MONGO_KG_SETTING_DROP_GRAPHS);
 	if (o_drop_graphs.has_value()) {
 		BOOST_FOREACH(const auto &v, o_drop_graphs.value()) {
 						removeAllWithOrigin(v.second.data());
 					}
-	} else {
-		dropSessionOrigins();
 	}
 
 	return true;
+}
+
+void MongoKnowledgeGraph::initializeMongo() {
+	// make sure s/p/o index is defined
+	tripleCollection_->createTripleIndex();
+	// a collection with just a single document used for querying
+	oneCollection_ = std::make_shared<Collection>(
+			tripleCollection_->connection(),
+			tripleCollection_->dbName().c_str(),
+			MONGO_KG_ONE_COLLECTION);
+	// Make sure there is one document in the "one" collection.
+	// The collection is used to initiate a pipeline for a single input document.
+	if (oneCollection_->empty()) {
+		Document oneDoc(bson_new());
+		bson_t scopeDoc, timeDoc;
+		bson_decimal128_t infinity, zero;
+		bson_decimal128_from_string(BSON_DECIMAL128_INF, &infinity);
+		bson_decimal128_from_string("0", &zero);
+		// TODO: time interval is optional now, right? so we do not need to add the fields here? test it!
+		//        but maybe mongolog still needs it
+		BSON_APPEND_DOCUMENT_BEGIN(oneDoc.bson(), "v_scope", &scopeDoc);
+		BSON_APPEND_DOCUMENT_BEGIN(&scopeDoc, "time", &timeDoc);
+		BSON_APPEND_DECIMAL128(&timeDoc, "since", &zero);
+		BSON_APPEND_DECIMAL128(&timeDoc, "until", &infinity);
+		bson_append_document_end(&scopeDoc, &timeDoc);
+		bson_append_document_end(oneDoc.bson(), &scopeDoc);
+		oneCollection_->storeOne(oneDoc);
+	}
+	// Create an object used for taxonomy operations
+	taxonomy_ = std::make_shared<MongoTaxonomy>(tripleCollection_, oneCollection_);
+}
+
+void MongoKnowledgeGraph::dropSessionOrigins() {
+	// TODO: move into KnowledgeBase, and do it for all backends
+	dropOrigin(semweb::ImportHierarchy::ORIGIN_USER);
+	dropOrigin(semweb::ImportHierarchy::ORIGIN_REASONER);
+	dropOrigin(semweb::ImportHierarchy::ORIGIN_SESSION);
 }
 
 std::shared_ptr<Collection> MongoKnowledgeGraph::connect(
@@ -158,97 +185,24 @@ std::string MongoKnowledgeGraph::getURI(const boost::property_tree::ptree &confi
 	return uriStream.str();
 }
 
-void MongoKnowledgeGraph::initialize() {
-	createSearchIndices();
-	// a collection with just a single document used for querying
-	oneCollection_ = std::make_shared<Collection>(
-			tripleCollection_->connection(),
-			tripleCollection_->dbName().c_str(),
-			MONGO_KG_ONE_COLLECTION);
-	// make sure there is one document in the "one" collection.
-	if (oneCollection_->empty()) {
-		Document oneDoc(bson_new());
-		bson_t scopeDoc, timeDoc;
-		bson_decimal128_t infinity, zero;
-		bson_decimal128_from_string(BSON_DECIMAL128_INF, &infinity);
-		bson_decimal128_from_string("0", &zero);
-		// TODO: time interval is optional now, right? so we do not need to add the fields here? test it!
-		BSON_APPEND_DOCUMENT_BEGIN(oneDoc.bson(), "v_scope", &scopeDoc);
-		BSON_APPEND_DOCUMENT_BEGIN(&scopeDoc, "time", &timeDoc);
-		BSON_APPEND_DECIMAL128(&timeDoc, "since", &zero);
-		BSON_APPEND_DECIMAL128(&timeDoc, "until", &infinity);
-		bson_append_document_end(&scopeDoc, &timeDoc);
-		bson_append_document_end(oneDoc.bson(), &scopeDoc);
-		oneCollection_->storeOne(oneDoc);
-	}
-}
-
-void MongoKnowledgeGraph::createSearchIndices() {
-	// TODO: shouldn't fields "graph", "agent", "scope.time.since", "scope.time.until", "confidence",
-	//  "uncertain", "occasional" be included in each index?
-	tripleCollection_->createAscendingIndex({"s"});
-	tripleCollection_->createAscendingIndex({"p"});
-	tripleCollection_->createAscendingIndex({"o"});
-	tripleCollection_->createAscendingIndex({"p*"});
-	tripleCollection_->createAscendingIndex({"o*"});
-	tripleCollection_->createAscendingIndex({"s", "p"});
-	tripleCollection_->createAscendingIndex({"s", "p*"});
-	tripleCollection_->createAscendingIndex({"s", "o"});
-	tripleCollection_->createAscendingIndex({"s", "o*"});
-	tripleCollection_->createAscendingIndex({"o", "p"});
-	tripleCollection_->createAscendingIndex({"o", "p*"});
-	tripleCollection_->createAscendingIndex({"p", "o*"});
-	tripleCollection_->createAscendingIndex({"s", "o", "p"});
-	tripleCollection_->createAscendingIndex({"s", "o", "p*"});
-	tripleCollection_->createAscendingIndex({"s", "o*", "p"});
-}
-
 void MongoKnowledgeGraph::drop() {
 	tripleCollection_->drop();
 	vocabulary_ = std::make_shared<semweb::Vocabulary>();
 	importHierarchy_->clear();
 }
 
-bool MongoKnowledgeGraph::dropOrigin(std::string_view graphName) {
-	KB_INFO("[mongodb] dropping triples with origin \"{}\".", graphName);
-	tripleCollection_->removeAll(Document(
-			BCON_NEW("graph", BCON_UTF8(graphName.data()))));
-	return true;
-}
-
-bool MongoKnowledgeGraph::dropSessionOrigins() {
-	// TODO: rather iterate over all children of ORIGIN_SESSION, and drop all of them
-	// TODO: I think it would be better if this is done centrally
-	return dropOrigin(semweb::ImportHierarchy::ORIGIN_USER) &&
-		   dropOrigin(semweb::ImportHierarchy::ORIGIN_REASONER) &&
-		   dropOrigin(semweb::ImportHierarchy::ORIGIN_SESSION);
-}
-
-bson_t *MongoKnowledgeGraph::getSelector(
-		const FramedTriplePattern &tripleExpression,
-		bool b_isTaxonomicProperty) {
-	auto doc = bson_new();
-	aggregation::appendTripleSelector(doc, tripleExpression, b_isTaxonomicProperty, importHierarchy_);
-	return doc;
-}
-
-bson_t *MongoKnowledgeGraph::getSelector(
-		const FramedTriple &triple,
-		bool b_isTaxonomicProperty) {
-	return getSelector(FramedTriplePattern(triple), b_isTaxonomicProperty);
-}
-
 bool MongoKnowledgeGraph::insertOne(const FramedTriple &tripleData) {
 	auto &fallbackOrigin = importHierarchy_->defaultGraph();
-	bool isTaxonomic = isTaxonomicProperty(tripleData.predicate());
-	auto document = createTripleDocument(tripleData, fallbackOrigin, isTaxonomic);
-	tripleCollection_->storeOne(Document(document));
+	bool isTaxonomic = vocabulary_->isTaxonomicProperty(tripleData.predicate());
+	MongoTriple mngTriple(vocabulary_, tripleData, fallbackOrigin, isTaxonomic);
+	tripleCollection_->storeOne(mngTriple.document());
 
 	if (semweb::isSubClassOfIRI(tripleData.predicate())) {
-		updateHierarchy({{tripleData.subject(), tripleData.valueAsString()}}, {});
+		taxonomy_->update({{tripleData.subject(), tripleData.valueAsString()}}, {});
 	} else if (semweb::isSubPropertyOfIRI(tripleData.predicate())) {
-		updateHierarchy({}, {{tripleData.subject(), tripleData.valueAsString()}});
+		taxonomy_->update({}, {{tripleData.subject(), tripleData.valueAsString()}});
 	}
+	// TODO: It is questionable if this should be handled here, if it should be done at all, or if it rather should be done centrally.
 	updateTimeInterval(tripleData);
 	return true;
 }
@@ -258,17 +212,15 @@ bool MongoKnowledgeGraph::insertAll(const semweb::TripleContainerPtr &triples) {
 	auto &fallbackOrigin = importHierarchy_->defaultGraph();
 	auto bulk = tripleCollection_->createBulkOperation();
 	struct TaxonomyAssertions {
-		std::vector<StringPair> subClassAssertions;
-		std::vector<StringPair> subPropertyAssertions;
+		std::vector<MongoTaxonomy::StringPair> subClassAssertions;
+		std::vector<MongoTaxonomy::StringPair> subPropertyAssertions;
 	} tAssertions;
 
 	std::for_each(triples->begin(), triples->end(),
 				  [&](auto &data) {
-					  bool isTaxonomic = isTaxonomicProperty(data->predicate().data());
-
-					  auto document = createTripleDocument(*data, fallbackOrigin, isTaxonomic);
-					  bulk->pushInsert(document);
-					  bson_free(document);
+					  MongoTriple mngTriple(vocabulary_, *data, fallbackOrigin,
+											vocabulary_->isTaxonomicProperty(data->predicate().data()));
+					  bulk->pushInsert(mngTriple.document().bson());
 
 					  if (semweb::isSubClassOfIRI(data->predicate())) {
 						  tAssertions.subClassAssertions.emplace_back(data->subject(), data->valueAsString());
@@ -278,15 +230,18 @@ bool MongoKnowledgeGraph::insertAll(const semweb::TripleContainerPtr &triples) {
 				  });
 	bulk->execute();
 
-	updateHierarchy(tAssertions.subClassAssertions, tAssertions.subPropertyAssertions);
+	taxonomy_->update(tAssertions.subClassAssertions, tAssertions.subPropertyAssertions);
 	for (auto &data: *triples) updateTimeInterval(*data);
 
 	return true;
 }
 
 bool MongoKnowledgeGraph::removeOne(const FramedTriple &triple) {
-	bool b_isTaxonomicProperty = isTaxonomicProperty(triple.predicate());
-	tripleCollection_->removeOne(Document(getSelector(triple, b_isTaxonomicProperty)));
+	MongoTriplePattern mngQuery(
+			FramedTriplePattern(triple),
+			vocabulary_->isTaxonomicProperty(triple.predicate()),
+			importHierarchy_);
+	tripleCollection_->removeOne(mngQuery.document());
 	return true;
 }
 
@@ -294,15 +249,23 @@ bool MongoKnowledgeGraph::removeAll(const semweb::TripleContainerPtr &triples) {
 	auto bulk = tripleCollection_->createBulkOperation();
 	std::for_each(triples->begin(), triples->end(),
 				  [this, bulk](auto &data) {
-					  bool isTaxonomic = isTaxonomicProperty(data->predicate());
-					  auto document = getSelector(*data, isTaxonomic);
-					  bulk->pushRemoveOne(document);
-					  bson_free(document);
+					  MongoTriplePattern mngQuery(
+							  FramedTriplePattern(*data),
+					  vocabulary_->isTaxonomicProperty(data->predicate()),
+							  importHierarchy_);
+					  bulk->pushRemoveOne(mngQuery.bson());
 				  });
 	bulk->execute();
 
-	// FIXME: handle hierarchy updates
+	// TODO: handle hierarchy updates
 
+	return true;
+}
+
+bool MongoKnowledgeGraph::dropOrigin(std::string_view graphName) {
+	KB_INFO("[mongodb] dropping triples with origin \"{}\".", graphName);
+	tripleCollection_->removeAll(Document(
+			BCON_NEW("graph", BCON_UTF8(graphName.data()))));
 	return true;
 }
 
@@ -310,107 +273,23 @@ bool MongoKnowledgeGraph::removeAllWithOrigin(std::string_view graphName) {
 	return dropOrigin(graphName);
 }
 
-BindingsCursorPtr MongoKnowledgeGraph::lookup(const FramedTriplePattern &tripleExpression) {
-	bson_t pipelineDoc = BSON_INITIALIZER;
-	bson_t pipelineArray;
-
-	BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
-	aggregation::Pipeline pipeline(&pipelineArray);
-	{
-		// append lookup stages to pipeline
-		aggregation::TripleLookupData lookupData(&tripleExpression);
-		// indicate that no variables in tripleExpression may have been instantiated
-		// by a previous step to allow for some optimizations.
-		lookupData.mayHasMoreGroundings = false;
-		aggregation::lookupTriple(pipeline, tripleCollection_->name(), vocabulary_, importHierarchy_, lookupData);
-	}
-	bson_append_array_end(&pipelineDoc, &pipelineArray);
-
-	auto cursor = std::make_shared<BindingsCursor>(oneCollection_);
-	cursor->aggregate(&pipelineDoc);
-	return cursor;
-}
-
-mongo::BindingsCursorPtr MongoKnowledgeGraph::lookup(const FramedTriple &tripleData) {
-	return lookup(FramedTriplePattern(tripleData));
-}
-
-mongo::BindingsCursorPtr
-MongoKnowledgeGraph::lookup(const std::vector<FramedTriplePatternPtr> &tripleExpressions, uint32_t limit) {
-	bson_t pipelineDoc = BSON_INITIALIZER;
-	bson_t pipelineArray;
-	BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
-	aggregation::Pipeline pipeline(&pipelineArray);
-	aggregation::lookupTriplePaths(pipeline,
-								   tripleCollection_->name(),
-								   vocabulary_,
-								   importHierarchy_,
-								   tripleExpressions);
-	if (limit > 0) {
-		pipeline.limit(limit);
-	}
-	bson_append_array_end(&pipelineDoc, &pipelineArray);
-
-	auto cursor = std::make_shared<BindingsCursor>(oneCollection_);
-	cursor->aggregate(&pipelineDoc);
-	return cursor;
-}
-
-mongo::BindingsCursorPtr
-MongoKnowledgeGraph::lookupSimpleSequence(const std::vector<std::shared_ptr<GraphTerm>> &graphTerms, uint32_t limit) {
-	std::vector<FramedTriplePatternPtr> simpleExpressions;
-	for (auto &term: graphTerms) {
-		if (term->isPattern()) {
-			simpleExpressions.push_back(std::static_pointer_cast<GraphPattern>(term)->value());
-		} else {
-			KB_WARN("term with unsupported type {} in sequence.", (int) term->termType());
-		}
-	}
-	return lookup(simpleExpressions, limit);
-}
-
-mongo::BindingsCursorPtr MongoKnowledgeGraph::lookupComplex(const GraphQueryPtr &graphQuery, uint32_t limit) {
-	KB_WARN("MongoKnowledgeGraph::lookupComplex not implemented yet.");
-	// TODO: here it can be assumed that graphQuery has a UNION operation in it, but there is no query
-	//       generator for this yet.
-	return nullptr;
-}
-
 void MongoKnowledgeGraph::count(const ResourceCounter &callback) const {
-	{
+	for (auto &filename: {PIPELINE_RELATION_COUNTER, PIPELINE_CLASS_COUNTER}) {
 		const bson_t *result;
 		Cursor cursor(tripleCollection_);
-		Document document(aggregation::Pipeline::loadFromJSON(
-				PIPELINE_RELATION_COUNTER, {
+		Document document(Pipeline::loadFromJSON(
+				filename, {
 						{"COLLECTION", tripleCollection_->name()}
 				}));
 		cursor.aggregate(document.bson());
 		while (cursor.next(&result)) {
 			bson_iter_t iter;
 			if (!bson_iter_init(&iter, result)) break;
-			if (!bson_iter_find(&iter, "property")) break;
+			if (!bson_iter_find(&iter, "resource")) break;
 			auto property = bson_iter_utf8(&iter, nullptr);
 			if (!bson_iter_find(&iter, "count")) break;
 			auto count = bson_iter_as_int64(&iter);
 			callback(property, count);
-		}
-	}
-	{
-		const bson_t *result;
-		Cursor cursor(tripleCollection_);
-		Document document(aggregation::Pipeline::loadFromJSON(
-				PIPELINE_CLASS_COUNTER, {
-						{"COLLECTION", tripleCollection_->name()}
-				}));
-		cursor.aggregate(document.bson());
-		while (cursor.next(&result)) {
-			bson_iter_t iter;
-			if (!bson_iter_init(&iter, result)) break;
-			if (!bson_iter_find(&iter, "class")) break;
-			auto cls = bson_iter_utf8(&iter, nullptr);
-			if (!bson_iter_find(&iter, "count")) break;
-			auto count = bson_iter_as_int64(&iter);
-			callback(cls, count);
 		}
 	}
 }
@@ -432,16 +311,18 @@ void MongoKnowledgeGraph::foreach(const semweb::TripleVisitor &visitor) const {
 }
 
 void MongoKnowledgeGraph::match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) {
-	bool b_isTaxonomicProperty = isTaxonomicProperty(query.propertyTerm());
+	bool b_isTaxonomicProperty;
+	if (query.propertyTerm()->termType() == TermType::ATOMIC) {
+		b_isTaxonomicProperty = vocabulary_->isTaxonomicProperty(((Atomic *) query.propertyTerm().get())->stringForm());
+	} else {
+		b_isTaxonomicProperty = false;
+	}
 	TripleCursor cursor(tripleCollection_);
+	// filter documents by triple pattern
+	MongoTriplePattern mngQuery(query, b_isTaxonomicProperty, importHierarchy_);
+	cursor.filter(mngQuery.bson());
+	// iterate over matching documents
 	FramedTripleView tripleData;
-	bson_t selectorDoc = BSON_INITIALIZER;
-	// filter triples by query
-	aggregation::appendTripleSelector(&selectorDoc,
-									  query,
-									  b_isTaxonomicProperty,
-									  importHierarchy_);
-	cursor.filter(&selectorDoc);
 	while (cursor.nextTriple(tripleData)) {
 		visitor(tripleData);
 	}
@@ -471,59 +352,40 @@ void MongoKnowledgeGraph::batch(const semweb::TripleHandler &callback) const {
 	}
 }
 
-void MongoKnowledgeGraph::query(const GraphQueryPtr &q, const FramedBindingsHandler &callback) {
-	uint32_t limit = (q->ctx()->queryFlags & QUERY_FLAG_ONE_SOLUTION) ? 1 : 0;
-	BindingsCursorPtr cursor;
+template<typename T>
+static inline BindingsCursorPtr doLookup(const T &query, const TripleStore &store) {
+	bson_t pipelineDoc = BSON_INITIALIZER;
+	bson_t pipelineArray;
+	BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
+	Pipeline pipeline(&pipelineArray);
+	pipeline.append(query, store);
+	bson_append_array_end(&pipelineDoc, &pipelineArray);
 
-	switch (q->term()->termType()) {
-		case GraphTermType::Pattern: {
-			auto &pattern = std::static_pointer_cast<GraphPattern>(q->term())->value();
-			cursor = lookup({pattern}, limit);
-			break;
-		}
-		case GraphTermType::Sequence: {
-			auto &terms = std::static_pointer_cast<GraphSequence>(q->term())->terms();
-			bool isSimple = true;
-			for (auto &term: terms) {
-				if (!term->isPattern() && !term->isBuiltin()) {
-					isSimple = false;
-					break;
-				}
-			}
-			if (isSimple) {
-				cursor = lookupSimpleSequence(terms, limit);
-			} else {
-				cursor = lookupComplex(q, limit);
-			}
-			break;
-		}
-		case GraphTermType::Union:
-			cursor = lookupComplex(q, limit);
-			break;
-		case GraphTermType::Builtin: {
-			auto sequence = std::make_shared<GraphSequence>();
-			sequence->addMember(q->term());
-			std::shared_ptr<GraphTerm> sequenceTerm = sequence;
-			return query(std::make_shared<GraphQuery>(sequenceTerm), callback);
-		}
-	}
+	auto cursor = std::make_shared<BindingsCursor>(store.oneCollection);
+	cursor->aggregate(&pipelineDoc);
+	return cursor;
+}
+
+BindingsCursorPtr MongoKnowledgeGraph::lookup(const FramedTriplePattern &query) {
+	return doLookup(query, mongo::TripleStore(tripleCollection_, oneCollection_, vocabulary_, importHierarchy_));
+}
+
+BindingsCursorPtr MongoKnowledgeGraph::lookup(const GraphTerm &query) {
+	return doLookup(query, mongo::TripleStore(tripleCollection_, oneCollection_, vocabulary_, importHierarchy_));
+}
+
+void MongoKnowledgeGraph::query(const GraphQueryPtr &q, const FramedBindingsHandler &callback) {
+	const bool onlyOneSol = (q->ctx()->queryFlags & QUERY_FLAG_ONE_SOLUTION);
+	BindingsCursorPtr cursor = lookup(*q->term());
 	// NOTE: for some reason below causes a cursor error. looks like a bug in libmongoc to me!
-	//       anyways, we add instead a $limit stage in the aggregation pipeline.
 	//if(query->flags() & QUERY_FLAG_ONE_SOLUTION) { cursor->limit(1); }
 
 	while (true) {
 		auto next = std::make_shared<FramedBindings>();
-		if (cursor->nextBindings(next)) {
-			callback(next);
-		} else {
-			break;
-		}
+		if (cursor->nextBindings(next)) callback(next);
+		else break;
+		if (onlyOneSol) break;
 	}
-}
-
-TokenBufferPtr MongoKnowledgeGraph::watchQuery(const GraphQueryPtr &literal) {
-	// TODO implement watchQuery in MongoKnowledgeGraph
-	return {};
 }
 
 void MongoKnowledgeGraph::updateTimeInterval(const FramedTriple &tripleData) {
@@ -536,8 +398,9 @@ void MongoKnowledgeGraph::updateTimeInterval(const FramedTriple &tripleData) {
 
 	FramedTriplePattern overlappingExpr(tripleData);
 	overlappingExpr.setIsOccasionalTerm(groundable(Numeric::trueAtom()));
-	aggregation::appendTripleSelector(&selectorDoc, overlappingExpr, b_isTaxonomicProperty, importHierarchy_);
-	cursor.filter(&selectorDoc);
+
+	MongoTriplePattern mngQuery(overlappingExpr, b_isTaxonomicProperty, importHierarchy_);
+	cursor.filter(mngQuery.bson());
 
 	// iterate overlapping triples, remember document ids and compute
 	// union of time intervals
@@ -582,225 +445,4 @@ void MongoKnowledgeGraph::updateTimeInterval(const FramedTriple &tripleData) {
 		auto it = documentIDs.begin();
 		for (it++; it != documentIDs.end(); it++) tripleCollection_->removeOne(*it);
 	}
-}
-
-void MongoKnowledgeGraph::updateHierarchy(
-		const std::vector<StringPair> &subClassAssertions,
-		const std::vector<StringPair> &subPropertyAssertions) {
-	// below performs the server-side data transformation for updating hierarchy relations
-	// such as rdf::type.
-	// However, there are many steps for large ontologies so this might consume some time.
-	// TODO: list of parents could be supplied as a constant in aggregation queries below.
-	//       currently parents are computed in the query, maybe it would be a bit faster using a constant
-	//       baked into the query.
-
-	bson_t pipelineDoc = BSON_INITIALIZER;
-
-	// update class hierarchy.
-	// unfortunately must be done step-by-step as it is undefined yet in mongo
-	// if it's possible to access $merge results in following pipeline iterations
-	// via e.g. $lookup.
-	for (auto &assertion: subClassAssertions) {
-		bson_reinit(&pipelineDoc);
-
-		bson_t pipelineArray;
-		BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
-		aggregation::Pipeline pipeline(&pipelineArray);
-		aggregation::updateHierarchyO(pipeline,
-									  tripleCollection_->name(),
-									  rdfs::subClassOf->stringForm(),
-									  assertion.first,
-									  assertion.second);
-		bson_append_array_end(&pipelineDoc, &pipelineArray);
-
-		oneCollection_->evalAggregation(&pipelineDoc);
-	}
-
-	// update property hierarchy.
-	// unfortunately must be done step-by-step as it is undefined yet in mongo
-	// if it's possible to access $merge results in following pipeline iterations
-	// via e.g. $lookup.
-	std::set<std::string_view> visited;
-	for (auto &assertion: subPropertyAssertions) {
-		visited.insert(assertion.first);
-		bson_reinit(&pipelineDoc);
-
-		bson_t pipelineArray;
-		BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
-		aggregation::Pipeline pipeline(&pipelineArray);
-		aggregation::updateHierarchyO(pipeline,
-									  tripleCollection_->name(),
-									  rdfs::subPropertyOf->stringForm(),
-									  assertion.first,
-									  assertion.second);
-		bson_append_array_end(&pipelineDoc, &pipelineArray);
-
-		oneCollection_->evalAggregation(&pipelineDoc);
-	}
-
-	// update property assertions
-	// TODO: below steps are independent, and could run in parallel.
-	//       could bake an array of properties into pipeline,
-	//       or rather use a bulk operation.
-	for (auto &newProperty: visited) {
-		bson_reinit(&pipelineDoc);
-
-		bson_t pipelineArray;
-		BSON_APPEND_ARRAY_BEGIN(&pipelineDoc, "pipeline", &pipelineArray);
-		aggregation::Pipeline pipeline(&pipelineArray);
-		aggregation::updateHierarchyP(pipeline,
-									  tripleCollection_->name(),
-									  rdfs::subPropertyOf->stringForm(),
-									  newProperty);
-		bson_append_array_end(&pipelineDoc, &pipelineArray);
-
-		oneCollection_->evalAggregation(&pipelineDoc);
-	}
-
-	bson_destroy(&pipelineDoc);
-}
-
-bool MongoKnowledgeGraph::isTaxonomicProperty(std::string_view property) {
-	return vocabulary_->isTaxonomicProperty(property);
-}
-
-bool MongoKnowledgeGraph::isTaxonomicProperty(const TermPtr &propertyTerm) {
-	if (propertyTerm->termType() == TermType::ATOMIC) {
-		return vocabulary_->isTaxonomicProperty(((Atomic *) propertyTerm.get())->stringForm());
-	} else {
-		return false;
-	}
-}
-
-static inline void appendXSDLiteral(bson_t *tripleDoc, const FramedTriple &tripleData) {
-	auto xsdType = tripleData.xsdType().has_value() ? tripleData.xsdType().value() : XSDType::STRING;
-	switch (xsdType) {
-		case XSDType::STRING:
-			BSON_APPEND_UTF8(tripleDoc, "o", tripleData.valueAsString().data());
-			break;
-		case XSDType::DOUBLE:
-			BSON_APPEND_DOUBLE(tripleDoc, "o", tripleData.valueAsDouble());
-			break;
-		case XSDType::FLOAT:
-			BSON_APPEND_DOUBLE(tripleDoc, "o", tripleData.valueAsFloat());
-			break;
-		case XSDType::LONG:
-			BSON_APPEND_INT64(tripleDoc, "o", tripleData.valueAsLong());
-			break;
-		case XSDType::NON_NEGATIVE_INTEGER:
-		case XSDType::INTEGER:
-			BSON_APPEND_INT32(tripleDoc, "o", tripleData.valueAsInt());
-			break;
-		case XSDType::SHORT:
-			BSON_APPEND_INT32(tripleDoc, "o", tripleData.valueAsShort());
-			break;
-		case XSDType::BOOLEAN:
-			BSON_APPEND_BOOL(tripleDoc, "o", tripleData.valueAsBoolean());
-			break;
-		case XSDType::UNSIGNED_INT:
-			BSON_APPEND_INT32(tripleDoc, "o", tripleData.valueAsUnsignedInt());
-			break;
-		case XSDType::UNSIGNED_SHORT:
-			BSON_APPEND_INT32(tripleDoc, "o", tripleData.valueAsUnsignedShort());
-			break;
-		case XSDType::UNSIGNED_LONG:
-			BSON_APPEND_INT64(tripleDoc, "o", tripleData.valueAsUnsignedLong());
-			break;
-		case XSDType::LAST:
-			break;
-	}
-}
-
-bson_t *MongoKnowledgeGraph::createTripleDocument(const FramedTriple &tripleData,
-												  const std::string &fallbackOrigin,
-												  bool isTaxonomic) {
-	bson_t parentsArray;
-	uint32_t arrIndex = 0;
-	auto counterPtr = &arrIndex;
-
-	bson_t *tripleDoc = bson_new();
-	BSON_APPEND_UTF8(tripleDoc, "s", tripleData.subject().data());
-	BSON_APPEND_UTF8(tripleDoc, "p", tripleData.predicate().data());
-
-	if (isTaxonomic) {
-		if (tripleData.isObjectIRI() || tripleData.isObjectBlank()) {
-			auto objectIRI = tripleData.valueAsString();
-			BSON_APPEND_UTF8(tripleDoc, "o", objectIRI.data());
-			// also create a field "o*" with the parents of the object
-			BSON_APPEND_ARRAY_BEGIN(tripleDoc, "o*", &parentsArray);
-			auto parentsPtr = &parentsArray;
-			if (vocabulary_->isDefinedProperty(objectIRI)) {
-				vocabulary_->getDefinedProperty(objectIRI)->forallParents(
-						[parentsPtr, counterPtr](const auto &parent) {
-							auto counterKey = std::to_string((*counterPtr)++);
-							BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().data());
-						});
-			} else if (vocabulary_->isDefinedClass(objectIRI)) {
-				// read parents array
-				vocabulary_->getDefinedClass(objectIRI)->forallParents(
-						[parentsPtr, counterPtr](const auto &parent) {
-							auto counterKey = std::to_string((*counterPtr)++);
-							BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().data());
-						});
-			} else {
-				BSON_APPEND_UTF8(&parentsArray, "0", objectIRI.data());
-			}
-			bson_append_array_end(tripleDoc, &parentsArray);
-		} else {
-			appendXSDLiteral(tripleDoc, tripleData);
-		}
-	} else {
-		if (tripleData.isObjectIRI() || tripleData.isObjectBlank()) {
-			BSON_APPEND_UTF8(tripleDoc, "o", tripleData.valueAsString().data());
-		} else {
-			appendXSDLiteral(tripleDoc, tripleData);
-		}
-		// read parents array
-		BSON_APPEND_ARRAY_BEGIN(tripleDoc, "p*", &parentsArray);
-		auto parentsPtr = &parentsArray;
-		vocabulary_->defineProperty(tripleData.predicate())->forallParents(
-				[parentsPtr, counterPtr](const auto &parent) {
-					auto counterKey = std::to_string((*counterPtr)++);
-					BSON_APPEND_UTF8(parentsPtr, counterKey.c_str(), parent.iri().data());
-				});
-		bson_append_array_end(tripleDoc, &parentsArray);
-	}
-
-	if (tripleData.graph()) {
-		BSON_APPEND_UTF8(tripleDoc, "graph", tripleData.graph().value().data());
-	} else {
-		BSON_APPEND_UTF8(tripleDoc, "graph", fallbackOrigin.c_str());
-	}
-
-	if (tripleData.agent())
-		BSON_APPEND_UTF8(tripleDoc, "agent", tripleData.agent().value().data());
-
-	bool isBelief;
-	if (tripleData.confidence().has_value()) {
-		BSON_APPEND_DOUBLE(tripleDoc, "confidence", tripleData.confidence().value());
-		isBelief = true;
-	} else {
-		isBelief = tripleData.isUncertain();
-	}
-	if (isBelief) {
-		// flag the statement as "uncertain"
-		BSON_APPEND_BOOL(tripleDoc, "uncertain", true);
-	}
-
-	if (tripleData.isOccasional()) {
-		// flag the statement as "occasional", meaning it is only known that it was true at some past instants
-		BSON_APPEND_BOOL(tripleDoc, "occasional", true);
-	}
-
-	if (tripleData.begin().has_value() || tripleData.end().has_value()) {
-		bson_t scopeDoc, timeDoc;
-		BSON_APPEND_DOCUMENT_BEGIN(tripleDoc, "scope", &scopeDoc);
-		BSON_APPEND_DOCUMENT_BEGIN(&scopeDoc, "time", &timeDoc);
-		if (tripleData.begin().has_value()) BSON_APPEND_DOUBLE(&timeDoc, "since", tripleData.begin().value());
-		if (tripleData.end().has_value()) BSON_APPEND_DOUBLE(&timeDoc, "until", tripleData.end().value());
-		bson_append_document_end(&scopeDoc, &timeDoc);
-		bson_append_document_end(tripleDoc, &scopeDoc);
-	}
-
-	return tripleDoc;
 }

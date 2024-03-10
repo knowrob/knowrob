@@ -30,38 +30,7 @@ namespace knowrob::mongo::aggregation {
 		bool forceTransitiveLookup;
 	};
 
-	void appendTripleSelector(
-			bson_t *selectorDoc,
-			const FramedTriplePattern &tripleExpression,
-			bool b_isTaxonomicProperty,
-			const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy);
-
-	void appendGraphSelector(
-			bson_t *selectorDoc,
-			const FramedTriplePattern &tripleExpression,
-			const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy);
-
-	void appendEpistemicSelector(
-			bson_t *selectorDoc,
-			const FramedTriplePattern &tripleExpression);
-
-	void appendTimeSelector(
-			bson_t *selectorDoc,
-			const FramedTriplePattern &tripleExpression);
-
-	void lookupTriple(
-			aggregation::Pipeline &pipeline,
-			const std::string_view &collection,
-			const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-			const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy,
-			const TripleLookupData &lookupData);
-
-	void lookupTriplePaths(
-			aggregation::Pipeline &pipeline,
-			const std::string_view &collection,
-			const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-			const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy,
-			const std::vector<FramedTriplePatternPtr> &tripleExpressions);
+	void lookupTriple(Pipeline &pipeline, const TripleStore &tripleStore, const TripleLookupData &lookupData);
 }
 
 #endif //KNOWROB_MONGO_AGGREGATION_TRIPLES_H

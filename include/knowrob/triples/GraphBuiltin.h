@@ -114,7 +114,7 @@ namespace knowrob {
 			return std::make_shared<GraphBuiltin>(
 					GraphBuiltinType::Bind,
 					graph::builtins::bindFunctor,
-					std::vector<TermPtr>{var, val},
+					std::vector<TermPtr>{val},
 					var);
 		}
 
@@ -129,7 +129,7 @@ namespace knowrob {
 			return std::make_shared<GraphBuiltin>(
 					GraphBuiltinType::Min,
 					graph::builtins::minFunctor,
-					std::vector<TermPtr>{var, a, b},
+					std::vector<TermPtr>{a, b},
 					var);
 		}
 
@@ -144,7 +144,7 @@ namespace knowrob {
 			return std::make_shared<GraphBuiltin>(
 					GraphBuiltinType::Max,
 					graph::builtins::maxFunctor,
-					std::vector<TermPtr>{var, a, b},
+					std::vector<TermPtr>{a, b},
 					var);
 		}
 

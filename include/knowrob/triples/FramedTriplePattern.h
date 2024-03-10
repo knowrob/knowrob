@@ -60,22 +60,22 @@ namespace knowrob {
 		/**
 		 * @return the subject term of this expression.
 		 */
-		auto subjectTerm() const { return subjectTerm_; }
+		auto &subjectTerm() const { return subjectTerm_; }
 
 		/**
 		 * @return the property term of this expression.
 		 */
-		auto propertyTerm() const { return propertyTerm_; }
+		auto &propertyTerm() const { return propertyTerm_; }
 
 		/**
 		 * @return the object term of this expression.
 		 */
-		auto objectTerm() const { return objectTerm_; }
+		auto &objectTerm() const { return objectTerm_; }
 
 		/**
 		 * @return the graph term of this expression.
 		 */
-		auto graphTerm() const { return graphTerm_; }
+		auto &graphTerm() const { return graphTerm_; }
 
 		/**
 		 * Set the graph term of this expression.
@@ -92,7 +92,7 @@ namespace knowrob {
 		/**
 		 * @return the agent term of this expression.
 		 */
-		auto agentTerm() const { return agentTerm_; }
+		auto &agentTerm() const { return agentTerm_; }
 
 		/**
 		 * Set the agent term of this expression.
@@ -103,7 +103,7 @@ namespace knowrob {
 		/**
 		 * @return the begin term of this expression.
 		 */
-		auto beginTerm() const { return beginTerm_; }
+		auto &beginTerm() const { return beginTerm_; }
 
 		/**
 		 * Set the begin term of this expression.
@@ -114,7 +114,7 @@ namespace knowrob {
 		/**
 		 * @return the end term of this expression.
 		 */
-		auto endTerm() const { return endTerm_; }
+		auto &endTerm() const { return endTerm_; }
 
 		/**
 		 * Set the end term of this expression.
@@ -125,7 +125,7 @@ namespace knowrob {
 		/**
 		 * @return the confidence term of this expression.
 		 */
-		auto confidenceTerm() const { return confidenceTerm_; }
+		auto &confidenceTerm() const { return confidenceTerm_; }
 
 		/**
 		 * Set the confidence term of this expression.
@@ -147,7 +147,7 @@ namespace knowrob {
 		/**
 		 * @return the isOccasional term of this expression.
 		 */
-		auto isOccasionalTerm() const { return isOccasional_; }
+		auto &isOccasionalTerm() const { return isOccasional_; }
 
 		/**
 		 * Set the isOccasional term of this expression.
@@ -158,7 +158,7 @@ namespace knowrob {
 		/**
 		 * @return the isUncertain term of this expression.
 		 */
-		auto isUncertainTerm() const { return isUncertain_; }
+		auto &isUncertainTerm() const { return isUncertain_; }
 
 		/**
 		 * Set the isUncertain term of this expression.
@@ -181,6 +181,11 @@ namespace knowrob {
 		 * @return the number of variables in this expression.
 		 */
 		uint32_t numVariables() const override;
+
+		/**
+		 * @return the variables in this expression.
+		 */
+		std::vector<VariablePtr> getVariables() const;
 
 		/**
 		 * Map the instantiation of this expression into a triple.

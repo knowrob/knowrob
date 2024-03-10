@@ -310,7 +310,7 @@ AnswerNoPtr PrologReasoner::no(const FramedTriplePatternPtr &rdfLiteral) {
 	negativeAnswer->setReasonerTerm(reasonerNameTerm());
 	// however, as Prolog cannot proof negations such an answer is always not well-founded
 	// and can be overruled by a well-founded one.
-	negativeAnswer->setIsUncertain(std::nullopt);
+	negativeAnswer->setIsUncertain(true, std::nullopt);
 	// as the query goal was only a single literal, we know that exactly this literal cannot be proven.
 	negativeAnswer->addUngrounded(
 			std::static_pointer_cast<Predicate>(rdfLiteral->predicate()),

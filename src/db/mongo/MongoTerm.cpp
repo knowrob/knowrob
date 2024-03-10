@@ -3,20 +3,20 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob/db/mongo/aggregation/terms.h"
+#include "knowrob/db/mongo/MongoTerm.h"
 #include "knowrob/terms/ListTerm.h"
-#include "knowrob/Logger.h"
 #include "knowrob/terms/Numeric.h"
+#include "knowrob/terms/Variable.h"
 
 using namespace knowrob;
-using namespace knowrob::mongo;
 
-void aggregation::appendTermQuery( //NOLINT
+void MongoTerm::append( //NOLINT
 		bson_t *doc,
 		const char *key,
 		const TermPtr &term,
 		const char *queryOperator,
-		bool matchNullValues) {
+		bool matchNullValues,
+		bool includeVariables) {
 	bson_t queryOperatorDoc;
 	bson_t orArray, orCase1, orCase2;
 	bson_t *valueDocument;
@@ -81,9 +81,12 @@ void aggregation::appendTermQuery( //NOLINT
 			}
 		}
 	} else if (term->termType() == TermType::FUNCTION) {
-
-		appendArrayQuery(valueDocument, valueKey,
-						 ((ListTerm *) term.get())->elements());
+		append(valueDocument, valueKey,
+			   ((ListTerm *) term.get())->elements());
+	} else if (includeVariables && term->termType() == TermType::VARIABLE) {
+		static const std::string varPrefix("$");
+		auto varKey = MongoTerm::variableKey(std::static_pointer_cast<Variable>(term)->name());
+		BSON_APPEND_UTF8(valueDocument, valueKey, (varPrefix + varKey).data());
 	}
 
 	if (queryOperator) {
@@ -95,7 +98,12 @@ void aggregation::appendTermQuery( //NOLINT
 	}
 }
 
-void aggregation::appendArrayQuery( // NOLINT
+void MongoTerm::appendWithVars(bson_t *doc, const char *key, const TermPtr &term, const char *queryOperator,
+							   bool matchNullValue) {
+	append(doc, key, term, queryOperator, matchNullValue, true);
+}
+
+void MongoTerm::append( // NOLINT
 		bson_t *doc,
 		const char *key,
 		const std::vector<TermPtr> &terms,
@@ -110,8 +118,14 @@ void aggregation::appendArrayQuery( // NOLINT
 	for (auto &term: terms) {
 		bson_uint32_to_string(arrIndex++,
 							  &arrIndexKey, arrIndexStr, sizeof arrIndexStr);
-		appendTermQuery(&orArray, arrIndexKey, term);
+		append(&orArray, arrIndexKey, term);
 	}
 	bson_append_array_end(&orOperator, &orArray);
 	bson_append_document_end(doc, &orOperator);
+}
+
+std::string MongoTerm::variableKey(const std::string_view &varName) {
+	std::stringstream ss;
+	ss << "v_VARS." << varName << ".val";
+	return ss.str();
 }

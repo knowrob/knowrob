@@ -135,8 +135,8 @@ std::shared_ptr<Predicate> FramedTriplePattern::getRDFPredicate(const FramedTrip
 	return std::make_shared<Predicate>("triple", std::vector<TermPtr>({s, p, o}));
 }
 
-uint32_t FramedTriplePattern::numVariables() const {
-	int varCounter = 0;
+std::vector<VariablePtr> FramedTriplePattern::getVariables() const {
+	std::vector<VariablePtr> vars;
 	for (auto &t: {
 			subjectTerm_,
 			propertyTerm_,
@@ -148,9 +148,13 @@ uint32_t FramedTriplePattern::numVariables() const {
 			*isUncertain_,
 			*isOccasional_,
 			*confidenceTerm_}) {
-		if (t && t->termType() == TermType::VARIABLE) varCounter += 1;
+		if (t && t->termType() == TermType::VARIABLE) vars.push_back(std::static_pointer_cast<Variable>(t));
 	}
-	return varCounter;
+	return vars;
+}
+
+uint32_t FramedTriplePattern::numVariables() const {
+	return getVariables().size();
 }
 
 bool
@@ -160,8 +164,8 @@ FramedTriplePattern::instantiateInto(FramedTriple &triple, const std::shared_ptr
 	// handle subject
 	if (subjectTerm_) {
 		auto &s = subjectTerm_->isVariable() ?
-				bindings->get(std::static_pointer_cast<Variable>(subjectTerm_)->name()) :
-				subjectTerm_;
+				  bindings->get(std::static_pointer_cast<Variable>(subjectTerm_)->name()) :
+				  subjectTerm_;
 		if (!s) {
 			hasMissingSPO = true;
 		} else if (s->isBlank()) {
@@ -177,8 +181,8 @@ FramedTriplePattern::instantiateInto(FramedTriple &triple, const std::shared_ptr
 	// handle property
 	if (propertyTerm_) {
 		auto &p = propertyTerm_->isVariable() ?
-				bindings->get(std::static_pointer_cast<Variable>(propertyTerm_)->name()) :
-				propertyTerm_;
+				  bindings->get(std::static_pointer_cast<Variable>(propertyTerm_)->name()) :
+				  propertyTerm_;
 		if (p && p->termType() == TermType::ATOMIC) {
 			triple.setPredicate(std::static_pointer_cast<Atomic>(p)->stringForm());
 		} else {
@@ -190,8 +194,8 @@ FramedTriplePattern::instantiateInto(FramedTriple &triple, const std::shared_ptr
 	// handle object
 	if (objectTerm_) {
 		auto &o = objectTerm_->isVariable() ?
-				bindings->get(std::static_pointer_cast<Variable>(objectTerm_)->name()) :
-				objectTerm_;
+				  bindings->get(std::static_pointer_cast<Variable>(objectTerm_)->name()) :
+				  objectTerm_;
 		if (!o) {
 			hasMissingSPO = true;
 		} else if (o->isNumeric()) {
@@ -215,56 +219,56 @@ FramedTriplePattern::instantiateInto(FramedTriple &triple, const std::shared_ptr
 	// handle optional properties
 	if (graphTerm_) {
 		auto &g = graphTerm_->isVariable() ?
-				bindings->get(std::static_pointer_cast<Variable>(*graphTerm_)->name()) :
-				*graphTerm_;
+				  bindings->get(std::static_pointer_cast<Variable>(*graphTerm_)->name()) :
+				  *graphTerm_;
 		if (g && g->termType() == TermType::ATOMIC) {
 			triple.setGraph(std::static_pointer_cast<Atomic>(g)->stringForm());
 		}
 	}
 	if (agentTerm_) {
 		auto &a = agentTerm_->isVariable() ?
-				bindings->get(std::static_pointer_cast<Variable>(*agentTerm_)->name()) :
-				*agentTerm_;
+				  bindings->get(std::static_pointer_cast<Variable>(*agentTerm_)->name()) :
+				  *agentTerm_;
 		if (a && a->termType() == TermType::ATOMIC) {
 			triple.setAgent(std::static_pointer_cast<Atomic>(a)->stringForm());
 		}
 	}
 	if (confidenceTerm_) {
 		auto &c = confidenceTerm_->isVariable() ?
-				bindings->get(std::static_pointer_cast<Variable>(*confidenceTerm_)->name()) :
-				*confidenceTerm_;
+				  bindings->get(std::static_pointer_cast<Variable>(*confidenceTerm_)->name()) :
+				  *confidenceTerm_;
 		if (c && c->isNumeric()) {
 			triple.setConfidence(std::static_pointer_cast<Numeric>(c)->asDouble());
 		}
 	}
 	if (beginTerm_) {
 		auto &b = beginTerm_->isVariable() ?
-				bindings->get(std::static_pointer_cast<Variable>(*beginTerm_)->name()) :
-				*beginTerm_;
+				  bindings->get(std::static_pointer_cast<Variable>(*beginTerm_)->name()) :
+				  *beginTerm_;
 		if (b && b->isNumeric()) {
 			triple.setBegin(std::static_pointer_cast<Numeric>(b)->asDouble());
 		}
 	}
 	if (endTerm_) {
 		auto &e = endTerm_->isVariable() ?
-				bindings->get(std::static_pointer_cast<Variable>(*endTerm_)->name()) :
-				*endTerm_;
+				  bindings->get(std::static_pointer_cast<Variable>(*endTerm_)->name()) :
+				  *endTerm_;
 		if (e && e->isNumeric()) {
 			triple.setEnd(std::static_pointer_cast<Numeric>(e)->asDouble());
 		}
 	}
 	if (isOccasional_) {
 		auto &o = isOccasional_->isVariable() ?
-				bindings->get(std::static_pointer_cast<Variable>(*isOccasional_)->name()) :
-				*isOccasional_;
+				  bindings->get(std::static_pointer_cast<Variable>(*isOccasional_)->name()) :
+				  *isOccasional_;
 		if (o && o->isNumeric()) {
 			triple.setIsOccasional(std::static_pointer_cast<Numeric>(o)->asBoolean());
 		}
 	}
 	if (isUncertain_) {
 		auto &u = isUncertain_->isVariable() ?
-				bindings->get(std::static_pointer_cast<Variable>(*isUncertain_)->name()) :
-				*isUncertain_;
+				  bindings->get(std::static_pointer_cast<Variable>(*isUncertain_)->name()) :
+				  *isUncertain_;
 		if (u && u->isNumeric()) {
 			triple.setIsUncertain(std::static_pointer_cast<Numeric>(u)->asBoolean());
 		}
@@ -354,17 +358,17 @@ namespace knowrob::py {
 		class_<FramedTriplePattern, std::shared_ptr<FramedTriplePattern>, bases<FirstOrderLiteral>>
 				("FramedTriplePattern", init<const FramedTriple &, bool>())
 				.def(init<const FramedTriple &>())
-				.def("subjectTerm", &FramedTriplePattern::subjectTerm)
-				.def("propertyTerm", &FramedTriplePattern::propertyTerm)
-				.def("objectTerm", &FramedTriplePattern::objectTerm)
-				.def("graphTerm", &FramedTriplePattern::graphTerm)
-				.def("agentTerm", &FramedTriplePattern::agentTerm)
-				.def("beginTerm", &FramedTriplePattern::beginTerm)
-				.def("endTerm", &FramedTriplePattern::endTerm)
-				.def("confidenceTerm", &FramedTriplePattern::confidenceTerm)
+				.def("subjectTerm", &FramedTriplePattern::subjectTerm, return_value_policy<return_by_value>())
+				.def("propertyTerm", &FramedTriplePattern::propertyTerm, return_value_policy<return_by_value>())
+				.def("objectTerm", &FramedTriplePattern::objectTerm, return_value_policy<return_by_value>())
+				.def("graphTerm", &FramedTriplePattern::graphTerm, return_value_policy<return_by_value>())
+				.def("agentTerm", &FramedTriplePattern::agentTerm, return_value_policy<return_by_value>())
+				.def("beginTerm", &FramedTriplePattern::beginTerm, return_value_policy<return_by_value>())
+				.def("endTerm", &FramedTriplePattern::endTerm, return_value_policy<return_by_value>())
+				.def("confidenceTerm", &FramedTriplePattern::confidenceTerm, return_value_policy<return_by_value>())
 				.def("objectOperator", &FramedTriplePattern::objectOperator)
-				.def("isOccasionalTerm", &FramedTriplePattern::isOccasionalTerm)
-				.def("isUncertainTerm", &FramedTriplePattern::isUncertainTerm)
+				.def("isOccasionalTerm", &FramedTriplePattern::isOccasionalTerm, return_value_policy<return_by_value>())
+				.def("isUncertainTerm", &FramedTriplePattern::isUncertainTerm, return_value_policy<return_by_value>())
 				.def("setGraphName", &FramedTriplePattern::setGraphName);
 	}
 }

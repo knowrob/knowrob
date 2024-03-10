@@ -5,34 +5,16 @@
 
 #include <sstream>
 #include "knowrob/db/mongo/aggregation/triples.h"
-#include "knowrob/db/mongo/aggregation/terms.h"
 #include "knowrob/semweb/ImportHierarchy.h"
 #include "knowrob/Logger.h"
-#include "knowrob/terms/ListTerm.h"
 #include "knowrob/terms/Numeric.h"
-
-#define MONGO_OPERATOR_LTE  "$lte"
-#define MONGO_OPERATOR_GTE  "$gte"
-#define MONGO_OPERATOR_LT   "$lt"
-#define MONGO_OPERATOR_GT   "$gt"
+#include "knowrob/db/mongo/MongoTriplePattern.h"
+#include "knowrob/db/mongo/MongoTerm.h"
 
 using namespace knowrob;
 using namespace knowrob::mongo;
 
-static inline void matchSinceBeforeUntil(aggregation::Pipeline &pipeline) {
-	// { $match: { $expr: { $lte: ["$v_scope.time.since", "$v_scope.time.until"] } } }
-	bson_t exprDoc, ltDoc;
-	auto matchStage = pipeline.appendStageBegin("$match");
-	BSON_APPEND_DOCUMENT_BEGIN(matchStage, "$expr", &exprDoc);
-	BSON_APPEND_ARRAY_BEGIN(&exprDoc, "$lte", &ltDoc);
-	BSON_APPEND_UTF8(&ltDoc, "0", "$v_scope.time.since");
-	BSON_APPEND_UTF8(&ltDoc, "1", "$v_scope.time.until");
-	bson_append_array_end(&exprDoc, &ltDoc);
-	bson_append_document_end(matchStage, &exprDoc);
-	pipeline.appendStageEnd(matchStage);
-}
-
-static inline void matchEmptyArray(aggregation::Pipeline &pipeline, const char *arrayKey) {
+static inline void matchEmptyArray(Pipeline &pipeline, const char *arrayKey) {
 	bson_t emptyArray;
 	auto matchStage = pipeline.appendStageBegin("$match");
 	BSON_APPEND_ARRAY_BEGIN(matchStage, arrayKey, &emptyArray);
@@ -40,56 +22,10 @@ static inline void matchEmptyArray(aggregation::Pipeline &pipeline, const char *
 	pipeline.appendStageEnd(matchStage);
 }
 
-static inline void intersectTimeInterval(aggregation::Pipeline &pipeline,
-										 const char *newSinceValue,
-										 const char *newUntilValue) {
-	bson_t sinceDoc, untilDoc, maxArray, minArray;
-	auto setStage = pipeline.appendStageBegin("$set");
-	{
-		// "v_scope.time.since", { $max: ["$v_scope.time.since", "$next.scope.time.since"] }
-		// note: $max [null,2] -> 2
-		BSON_APPEND_DOCUMENT_BEGIN(setStage, "v_scope.time.since", &sinceDoc);
-		BSON_APPEND_ARRAY_BEGIN(&sinceDoc, "$max", &maxArray);
-		BSON_APPEND_UTF8(&maxArray, "0", "$v_scope.time.since");
-		BSON_APPEND_UTF8(&maxArray, "1", newSinceValue);
-		bson_append_array_end(&sinceDoc, &maxArray);
-		bson_append_document_end(setStage, &sinceDoc);
-
-		// "v_scope.time.until", { $min: ["$v_scope.time.until", "$next.scope.time.until"] }
-		// note: $min [null,2] -> 2
-		BSON_APPEND_DOCUMENT_BEGIN(setStage, "v_scope.time.until", &untilDoc);
-		BSON_APPEND_ARRAY_BEGIN(&untilDoc, "$min", &minArray);
-		BSON_APPEND_UTF8(&minArray, "0", "$v_scope.time.until");
-		BSON_APPEND_UTF8(&minArray, "1", newUntilValue);
-		bson_append_array_end(&untilDoc, &minArray);
-		bson_append_document_end(setStage, &untilDoc);
-	}
-	pipeline.appendStageEnd(setStage);
-}
-
-static inline void updateUncertainFlag(aggregation::Pipeline &pipeline) {
-	// $set(v_scope.uncertain = ($v_scope.uncertain || $next.uncertain))
-	bson_t orDoc, orArray;
-	auto stage = pipeline.appendStageBegin("$set");
-	BSON_APPEND_DOCUMENT_BEGIN(stage, "v_scope.uncertain", &orDoc);
-	BSON_APPEND_ARRAY_BEGIN(&orDoc, "$or", &orArray);
-	BSON_APPEND_UTF8(&orArray, "0", "$v_scope.uncertain");
-	BSON_APPEND_UTF8(&orArray, "1", "$next.uncertain");
-	bson_append_array_end(&orDoc, &orArray);
-	bson_append_document_end(stage, &orDoc);
-	pipeline.appendStageEnd(stage);
-}
-
-static inline std::string getVariableKey(const std::string_view &varName) {
-	std::stringstream ss;
-	ss << "v_VARS." << varName;
-	return ss.str();
-}
-
 static inline void appendSetVariable(bson_t *doc,
 									 const std::string_view &varName,
 									 const std::string_view &newValue) {
-	const auto varKey = getVariableKey(varName) + ".val";
+	const auto varKey = MongoTerm::variableKey(varName);
 	const auto varValue = std::string("$") + varKey;
 	bson_t condDoc, condArray, notOperator, notArray;
 	// Only conditionally apply new value in case it has not been grounded before.
@@ -114,7 +50,7 @@ static inline void appendMatchVariable(bson_t *doc,
 									   const std::string_view &fieldValue,
 									   const std::string_view &varName,
 									   const aggregation::TripleLookupData &lookupData) {
-	const auto varKey = getVariableKey(varName) + ".val";
+	const auto varKey = MongoTerm::variableKey(varName);
 	const auto varLetValue = std::string("$$") + varKey;
 	const auto matchOperator = (fieldValue.back() == '*' ? "$in" : "$eq");
 	bson_t exprDoc, orArr, notDoc, notArr, matchDoc, matchArr;
@@ -153,17 +89,22 @@ static inline void appendMatchVariable(bson_t *doc,
 }
 
 static void setTripleVariables(
-		aggregation::Pipeline &pipeline,
+		Pipeline &pipeline,
 		const aggregation::TripleLookupData &lookupData) {
-	// TODO: consider storing the document id of the triple in which var is grounded.
-
 	std::list<std::pair<const char *, Variable *>> varList;
 	for (auto &it: {
 			std::make_pair("$next.s", lookupData.expr->subjectTerm()),
 			std::make_pair("$next.p", lookupData.expr->propertyTerm()),
-			std::make_pair("$next.o", lookupData.expr->objectTerm())
+			std::make_pair("$next.o", lookupData.expr->objectTerm()),
+			std::make_pair("$next.graph", lookupData.expr->graphTerm().get()),
+			std::make_pair("$next.confidence", lookupData.expr->confidenceTerm().get()),
+			std::make_pair("$next.agent", lookupData.expr->agentTerm().get()),
+			std::make_pair("$next.scope.time.begin", lookupData.expr->beginTerm().get()),
+			std::make_pair("$next.scope.time.end", lookupData.expr->endTerm().get()),
+			std::make_pair("$next.uncertain", lookupData.expr->isUncertainTerm().get()),
+			std::make_pair("$next.occasional", lookupData.expr->isOccasionalTerm().get())
 	}) {
-		if (it.second->termType() != TermType::VARIABLE) continue;
+		if (!it.second || it.second->termType() != TermType::VARIABLE) continue;
 		auto var = (Variable *) it.second.get();
 		// skip variables that were instantiated in previous steps
 		if (lookupData.knownGroundedVariables.count(var->name()) > 0) continue;
@@ -179,198 +120,13 @@ static void setTripleVariables(
 	}
 }
 
-static inline const char *getOperatorString(knowrob::FramedTriplePattern::OperatorType operatorType) {
-	switch (operatorType) {
-		case FramedTriplePattern::EQ:
-			return nullptr;
-		case FramedTriplePattern::LEQ:
-			return MONGO_OPERATOR_LTE;
-		case FramedTriplePattern::GEQ:
-			return MONGO_OPERATOR_GTE;
-		case FramedTriplePattern::LT:
-			return MONGO_OPERATOR_LT;
-		case FramedTriplePattern::GT:
-			return MONGO_OPERATOR_GT;
-	}
-	return nullptr;
-}
-
-void aggregation::appendGraphSelector(bson_t *selectorDoc,
-									  const FramedTriplePattern &tripleExpression,
-									  const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy) {
-	auto gt = tripleExpression.graphTerm();
-	if (!gt) return;
-
-	if (gt->termType() == TermType::ATOMIC) {
-		auto graphString = gt.grounded();
-		if (graphString->stringForm() == semweb::ImportHierarchy::ORIGIN_ANY || graphString->stringForm() == "*")
-			return;
-
-		std::vector<TermPtr> childrenNames;
-		for (auto &child: importHierarchy->getImports(graphString->stringForm())) {
-			childrenNames.push_back(Atom::Tabled(child->name()));
-		}
-		if (childrenNames.empty()) {
-			aggregation::appendTermQuery(selectorDoc, "graph", graphString);
-		} else {
-			childrenNames.push_back(graphString);
-			aggregation::appendArrayQuery(selectorDoc, "graph", childrenNames, "$in");
-		}
-	}
-		/*
-		else if (gt->termType() == TermType::FUNCTION) {
-			auto fn = (Function*) gt.get();
-			if (*fn->functor() == *ListTerm::listFunctor()) {
-				aggregation::appendArrayQuery(selectorDoc, "graph", fn->arguments(), "$in");
-			} else {
-				KB_WARN("graph term {} has unexpected function type", *gt);
-			}
-		}
-		 */
-	else {
-		KB_WARN("graph term {} has unexpected type", *gt);
-	}
-}
-
-void aggregation::appendEpistemicSelector(bson_t *selectorDoc, const FramedTriplePattern &tripleExpression) {
-	static const bool allowConfidenceNullValues = true;
-	auto ct = tripleExpression.confidenceTerm();
-	auto at = tripleExpression.agentTerm();
-	auto u = tripleExpression.isUncertainTerm();
-
-	if (!u || !u.grounded()->asBoolean()) {
-		// note: null value of "uncertain" field is seen as value "false"
-		aggregation::appendTermQuery(
-				selectorDoc,
-				"uncertain",
-				Numeric::falseAtom(),
-				nullptr,
-				true);
-	}
-
-	if (at) {
-		if (at->termType() == TermType::ATOMIC) {
-			aggregation::appendTermQuery(
-					selectorDoc,
-					"agent",
-					*at,
-					nullptr,
-					false);
-		} else {
-			KB_WARN("agent term {} has unexpected type", *at);
-		}
-	} else {
-		// make sure agent field is undefined: { agent: { $exists: false } }
-		// note: null value of agent field is seen as "self", i.e. the agent running the knowledge base
-		bson_t agentDoc;
-		BSON_APPEND_DOCUMENT_BEGIN(selectorDoc, "agent", &agentDoc);
-		BSON_APPEND_BOOL(&agentDoc, "$exists", false);
-		bson_append_document_end(selectorDoc, &agentDoc);
-	}
-
-	if (ct) {
-		if (ct->termType() == TermType::ATOMIC) {
-			// note: null value of confidence is seen as larger than the requested threshold
-			aggregation::appendTermQuery(
-					selectorDoc,
-					"confidence",
-					*ct,
-					MONGO_OPERATOR_GTE,
-					true);
-		} else {
-			KB_WARN("confidence term {} has unexpected type", *ct);
-		}
-	}
-}
-
-void aggregation::appendTimeSelector(bson_t *selectorDoc, const FramedTriplePattern &tripleExpression) {
-	static const bool allowNullValues = true;
-	static auto b_occasional = std::make_shared<Integer>(static_cast<int32_t>(true));
-	static auto b_always = std::make_shared<Integer>(static_cast<int32_t>(false));
-	auto bt = tripleExpression.beginTerm();
-	auto et = tripleExpression.endTerm();
-	auto o = tripleExpression.isOccasionalTerm();
-
-	// matching must be done depending on temporal operator:
-	// - H: bt >= since_H && et <= until_H
-	// - P: et >= since_H && bt <= until_H
-	// - TODO: there is another case for operator P: bt <= since_P && et >= until_P
-	if (o && o.grounded()->asBoolean()) {
-		// just swap bt/et (see above comment)
-		auto swap = bt;
-		bt = et;
-		et = swap;
-	}
-	// ensure that input document has *H* operator.
-	// null is also ok. in particular exclude documents with *P* operator here.
-	aggregation::appendTermQuery(
-			selectorDoc,
-			"occasional",
-			b_always,
-			nullptr,
-			allowNullValues);
-
-	if (bt) {
-		if (bt->termType() == TermType::ATOMIC) {
-			aggregation::appendTermQuery(
-					selectorDoc,
-					"scope.time.since",
-					*bt,
-					MONGO_OPERATOR_LTE,
-					allowNullValues);
-		} else {
-			KB_WARN("begin term {} has unexpected type", *bt);
-		}
-	}
-	if (et) {
-		if (et->termType() == TermType::ATOMIC) {
-			aggregation::appendTermQuery(
-					selectorDoc,
-					"scope.time.until",
-					*et,
-					MONGO_OPERATOR_GTE,
-					allowNullValues);
-		} else {
-			KB_WARN("end term {} has unexpected type", *et);
-		}
-	}
-}
-
-void aggregation::appendTripleSelector(
-		bson_t *selectorDoc,
-		const FramedTriplePattern &tripleExpression,
-		bool b_isTaxonomicProperty,
-		const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy) {
-	// "s"" field
-	aggregation::appendTermQuery(selectorDoc,
-								 "s", tripleExpression.subjectTerm());
-	// "p" field
-	aggregation::appendTermQuery(selectorDoc,
-								 (b_isTaxonomicProperty ? "p" : "p*"),
-								 tripleExpression.propertyTerm());
-	// "o" field
-	const char *objectOperator = getOperatorString(tripleExpression.objectOperator());
-	aggregation::appendTermQuery(selectorDoc,
-								 (b_isTaxonomicProperty ? "o*" : "o"),
-								 tripleExpression.objectTerm(),
-								 objectOperator);
-	// "g" field
-	appendGraphSelector(selectorDoc, tripleExpression, importHierarchy);
-	// epistemic fields
-	appendEpistemicSelector(selectorDoc, tripleExpression);
-	// temporal fields
-	appendTimeSelector(selectorDoc, tripleExpression);
-}
-
-static inline void lookupTriple_nontransitive_(
-		aggregation::Pipeline &pipeline,
-		const std::string_view &collection,
-		const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-		const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy,
+static void nonTransitiveLookup(
+		Pipeline &pipeline,
+		const TripleStore &tripleStore,
 		const aggregation::TripleLookupData &lookupData,
 		const semweb::PropertyPtr &definedProperty) {
 	bool b_isTaxonomicProperty = (definedProperty &&
-								  vocabulary->isTaxonomicProperty(definedProperty->iri()));
+								  tripleStore.vocabulary->isTaxonomicProperty(definedProperty->iri()));
 	bool b_isReflexiveProperty = (definedProperty &&
 								  definedProperty->hasFlag(semweb::PropertyFlag::REFLEXIVE_PROPERTY));
 	char arrIndexStr[16];
@@ -382,8 +138,7 @@ static inline void lookupTriple_nontransitive_(
 		// the triple expression has no variables
 		b_skipInputGroundings = true;
 	} else if (!lookupData.mayHasMoreGroundings) {
-		// all possible previous instantiations are known and stored
-		// in lookupData.knownGroundedVariables.
+		// all possible previous instantiations are known and stored in lookupData.knownGroundedVariables.
 		b_skipInputGroundings = true;
 		for (auto &exprTerm: {
 				lookupData.expr->subjectTerm(),
@@ -394,20 +149,18 @@ static inline void lookupTriple_nontransitive_(
 			auto var = (Variable *) exprTerm.get();
 			// skip if this variable cannot have a runtime grounding
 			if (lookupData.knownGroundedVariables.count(var->name()) > 0) {
-				// the expression contains a variable that is known to have received
-				// a grounding before
+				// the expression contains a variable that is known to have received a grounding before
 				b_skipInputGroundings = false;
 				break;
 			}
 		}
 	}
 
-	// filter out documents that do not match the triple pattern.
-	// this is done using $match or $lookup operators.
+	// filter out documents that do not match the triple pattern. this is done using $match or $lookup operators.
 	// first lookup matching documents and store them in the 'next' field
 	bson_t lookupArray, letDoc;
 	auto lookupStage = pipeline.appendStageBegin("$lookup");
-	BSON_APPEND_UTF8(lookupStage, "from", collection.data());
+	BSON_APPEND_UTF8(lookupStage, "from", tripleStore.tripleCollection->name().data());
 	BSON_APPEND_UTF8(lookupStage, "as", "next");
 	if (!b_skipInputGroundings) {
 		// pass "v_VARS" field to lookup pipeline
@@ -417,22 +170,20 @@ static inline void lookupTriple_nontransitive_(
 	}
 	BSON_APPEND_ARRAY_BEGIN(lookupStage, "pipeline", &lookupArray);
 	{
-		aggregation::Pipeline lookupPipeline(&lookupArray);
+		Pipeline lookupPipeline(&lookupArray);
 
 		auto matchStage = lookupPipeline.appendStageBegin("$match");
 		if (b_skipInputGroundings) {
-			aggregation::appendTripleSelector(matchStage,
-											  *lookupData.expr,
-											  b_isTaxonomicProperty,
-											  importHierarchy);
+			MongoTriplePattern::append(matchStage, *lookupData.expr, b_isTaxonomicProperty,
+									   tripleStore.importHierarchy);
 		} else {
-			// need to match with potential groundings of variables from previous steps
-			// these are stored in the "v_VARS" field.
+			// need to match with potential groundings of variables from previous steps these are stored in the "v_VARS" field.
 			bson_t andArray, tripleDoc, variablesDoc;
 			BSON_APPEND_ARRAY_BEGIN(matchStage, "$and", &andArray);
 			{
 				BSON_APPEND_DOCUMENT_BEGIN(&andArray, "0", &tripleDoc);
-				aggregation::appendTripleSelector(&tripleDoc, *lookupData.expr, b_isTaxonomicProperty, importHierarchy);
+				MongoTriplePattern::append(&tripleDoc, *lookupData.expr, b_isTaxonomicProperty,
+										   tripleStore.importHierarchy);
 				bson_append_document_end(&andArray, &tripleDoc);
 
 				// match triple values with previously grounded variables
@@ -452,10 +203,7 @@ static inline void lookupTriple_nontransitive_(
 					bson_uint32_to_string(arrIndex++,
 										  &arrIndexKey, arrIndexStr, sizeof arrIndexStr);
 					BSON_APPEND_DOCUMENT_BEGIN(&andArray, arrIndexKey, &variablesDoc);
-					appendMatchVariable(&variablesDoc,
-										it.first,
-										var->name(),
-										lookupData);
+					appendMatchVariable(&variablesDoc, it.first, var->name(), lookupData);
 					bson_append_document_end(&andArray, &variablesDoc);
 				}
 			}
@@ -509,13 +257,13 @@ static inline void lookupTriple_nontransitive_(
 		// compute the intersection of time interval so far with time interval of next triple.
 		// note that the operations works fine in case the time interval is undefined.
 		// TODO: below time interval computation is only ok assuming the statements are not "occasional"
-		intersectTimeInterval(pipeline,
-							  "$next.scope.time.since",
-							  "$next.scope.time.until");
+		//intersectTimeInterval(pipeline,
+		//					  "$next.scope.time.since",
+		//					  "$next.scope.time.until");
 		// then verify that the scope is non-empty.
-		matchSinceBeforeUntil(pipeline);
+		//matchSinceBeforeUntil(pipeline);
 		// remember if one of the statements used to draw the answer is uncertain
-		updateUncertainFlag(pipeline);
+		//updateUncertainFlag(pipeline);
 		// project new variable groundings
 		setTripleVariables(pipeline, lookupData);
 	}
@@ -524,17 +272,15 @@ static inline void lookupTriple_nontransitive_(
 	pipeline.unset("next");
 }
 
-static inline void lookupTriple_transitive_(
-		aggregation::Pipeline &pipeline,
-		const std::string_view &collection,
-		const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-		const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy,
+static void transitiveLookup(
+		Pipeline &pipeline,
+		const TripleStore &tripleStore,
 		const aggregation::TripleLookupData &lookupData,
 		const semweb::PropertyPtr &definedProperty) {
 	bool b_isReflexiveProperty = (definedProperty &&
 								  definedProperty->hasFlag(semweb::PropertyFlag::REFLEXIVE_PROPERTY));
 	bool b_isTaxonomicProperty = (definedProperty &&
-								  vocabulary->isTaxonomicProperty(definedProperty->iri()));
+								  tripleStore.vocabulary->isTaxonomicProperty(definedProperty->iri()));
 	// TODO: start with object in case it is known to be grounded before at runtime
 	bool b_startWithSubject = lookupData.expr->subjectTerm()->isGround() ||
 							  !lookupData.expr->objectTerm()->isGround();
@@ -547,13 +293,13 @@ static inline void lookupTriple_transitive_(
 	// recursive lookup
 	bson_t restrictSearchDoc;
 	auto lookupStage = pipeline.appendStageBegin("$graphLookup");
-	BSON_APPEND_UTF8(lookupStage, "from", collection.data());
+	BSON_APPEND_UTF8(lookupStage, "from", tripleStore.tripleCollection->name().data());
 	if (startTerm->termType() == TermType::ATOMIC) {
 		auto startString = (Atomic *) startTerm.get();
 		BSON_APPEND_UTF8(lookupStage, "startWith", startString->stringForm().data());
 	} else if (startTerm->termType() == TermType::VARIABLE) {
 		auto startVariable = (Variable *) startTerm.get();
-		auto startValue = std::string("$") + getVariableKey(startVariable->name()) + ".val";
+		auto startValue = std::string("$") + MongoTerm::variableKey(startVariable->name());
 		BSON_APPEND_UTF8(lookupStage, "startWith", startValue.c_str());
 	} else {
 		KB_WARN("Ignoring term {} with invalid type for graph lookup.", *startTerm);
@@ -565,12 +311,12 @@ static inline void lookupTriple_transitive_(
 	/* { restrictSearchWithMatch: { p*: Query_p, ... }" */
 	BSON_APPEND_DOCUMENT_BEGIN(lookupStage, "restrictSearchWithMatch", &restrictSearchDoc);
 	{
-		aggregation::appendTermQuery(&restrictSearchDoc,
-									 (b_isTaxonomicProperty ? "p" : "p*"),
-									 lookupData.expr->propertyTerm());
-		aggregation::appendGraphSelector(&restrictSearchDoc, *lookupData.expr, importHierarchy);
-		aggregation::appendEpistemicSelector(&restrictSearchDoc, *lookupData.expr);
-		aggregation::appendTimeSelector(&restrictSearchDoc, *lookupData.expr);
+		MongoTerm::append(&restrictSearchDoc,
+						  (b_isTaxonomicProperty ? "p" : "p*"),
+						  lookupData.expr->propertyTerm());
+		MongoTriplePattern::appendGraphSelector(&restrictSearchDoc, *lookupData.expr, tripleStore.importHierarchy);
+		MongoTriplePattern::appendEpistemicSelector(&restrictSearchDoc, *lookupData.expr);
+		MongoTriplePattern::appendTimeSelector(&restrictSearchDoc, *lookupData.expr);
 	}
 	bson_append_document_end(lookupStage, &restrictSearchDoc);
 	pipeline.appendStageEnd(lookupStage);
@@ -587,7 +333,7 @@ static inline void lookupTriple_transitive_(
 	bson_append_document_end(orderingStage, &letDoc);
 	BSON_APPEND_ARRAY_BEGIN(orderingStage, "pipeline", &orderingArray);
 	{
-		aggregation::Pipeline orderingPipeline(&orderingArray);
+		Pipeline orderingPipeline(&orderingArray);
 		// { $set: { t_paths: "$$t_paths") } }
 		auto setStage = orderingPipeline.appendStageBegin("$set");
 		BSON_APPEND_UTF8(orderingStage, "t_paths", "$$t_paths");
@@ -637,9 +383,9 @@ static inline void lookupTriple_transitive_(
 		bson_t matchEndVal;
 		auto matchEnd = pipeline.appendStageBegin("$match");
 		BSON_APPEND_DOCUMENT_BEGIN(matchEnd, "next.o", &matchEndVal);
-		aggregation::appendTermQuery(&restrictSearchDoc,
-									 (b_startWithSubject ? "next.o" : "next.s"),
-									 endTerm);
+		MongoTerm::append(&restrictSearchDoc,
+						  (b_startWithSubject ? "next.o" : "next.s"),
+						  endTerm);
 		bson_append_document_end(matchEnd, &matchEndVal);
 		pipeline.appendStageEnd(matchEnd);
 	}
@@ -647,65 +393,28 @@ static inline void lookupTriple_transitive_(
 	// compute the intersection of time interval so far with time interval of next triple.
 	// note that the operations work fine in case the time interval is undefined.
 	// FIXME: intersection need to be performed over all transitions in graph lookup
-	intersectTimeInterval(pipeline,
-						  "$next.scope.time.since",
-						  "$next.scope.time.until");
+	//intersectTimeInterval(pipeline,
+	//					  "$next.scope.time.since",
+	//					  "$next.scope.time.until");
 	// then verify that the scope is non-empty.
-	matchSinceBeforeUntil(pipeline);
+	//matchSinceBeforeUntil(pipeline);
 	// project new variable groundings
 	setTripleVariables(pipeline, lookupData);
 	// remove next field again: { $unset: "next" }
 	pipeline.unset("next");
 }
 
-void aggregation::lookupTriple(
-		aggregation::Pipeline &pipeline,
-		const std::string_view &collection,
-		const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-		const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy,
-		const TripleLookupData &lookupData) {
-	// lookup defined properties, there are some conditions in lookup on property
-	// semantics.
+void aggregation::lookupTriple(Pipeline &pipeline, const TripleStore &tripleStore, const TripleLookupData &lookupData) {
 	semweb::PropertyPtr definedProperty;
 	if (lookupData.expr->propertyTerm() && lookupData.expr->propertyTerm()->termType() == TermType::ATOMIC) {
 		auto propertyTerm = std::static_pointer_cast<Atomic>(lookupData.expr->propertyTerm());
-		definedProperty = vocabulary->getDefinedProperty(propertyTerm->stringForm());
+		definedProperty = tripleStore.vocabulary->getDefinedProperty(propertyTerm->stringForm());
 	}
 
 	bool b_isTransitiveProperty = (definedProperty && definedProperty->hasFlag(
 			semweb::PropertyFlag::TRANSITIVE_PROPERTY));
 	if (b_isTransitiveProperty || lookupData.forceTransitiveLookup)
-		lookupTriple_transitive_(pipeline, collection, vocabulary, importHierarchy, lookupData, definedProperty);
+		transitiveLookup(pipeline, tripleStore, lookupData, definedProperty);
 	else
-		lookupTriple_nontransitive_(pipeline, collection, vocabulary, importHierarchy, lookupData, definedProperty);
-}
-
-void aggregation::lookupTriplePaths(
-		aggregation::Pipeline &pipeline,
-		const std::string_view &collection,
-		const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-		const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy,
-		const std::vector<FramedTriplePatternPtr> &tripleExpressions) {
-	std::set<std::string_view> varsSoFar;
-
-	// FIXME: need to handle negative literals here
-	for (auto &expr: tripleExpressions) {
-		// append lookup stages to pipeline
-		aggregation::TripleLookupData lookupData(expr.get());
-
-		// indicate that all previous groundings of variables are known
-		lookupData.mayHasMoreGroundings = false;
-		lookupData.knownGroundedVariables = varsSoFar;
-		// remember variables in tripleExpression, they have a grounding in next step
-		for (auto &exprTerm: {expr->subjectTerm(), expr->propertyTerm(), expr->objectTerm()}) {
-			if (exprTerm->termType() == TermType::VARIABLE)
-				varsSoFar.insert(((Variable *) exprTerm.get())->name());
-		}
-
-		aggregation::lookupTriple(pipeline,
-								  collection,
-								  vocabulary,
-								  importHierarchy,
-								  lookupData);
-	}
+		nonTransitiveLookup(pipeline, tripleStore, lookupData, definedProperty);
 }
