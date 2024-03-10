@@ -143,12 +143,8 @@ std::string AnswerYes::toHumanReadableString() const {
 	} else {
 		os << "true";
 	}
-	if (frame_->temporalOperator.has_value()) {
-		if (frame_->temporalOperator.value() == TemporalOperator::SOMETIMES) {
-			os << " at some time ";
-		} else if (frame_->temporalOperator.value() == TemporalOperator::ALWAYS) {
-			os << " at any time " << frame_->end.value();
-		}
+	if (frame_->occasional) {
+		os << " at some time ";
 	}
 	if (frame_->begin.has_value() && frame_->end.has_value()) {
 		os << " during the time points " << frame_->begin.value() << " and " << frame_->end.value();
@@ -156,8 +152,6 @@ std::string AnswerYes::toHumanReadableString() const {
 		os << " since " << frame_->begin.value();
 	} else if (frame_->end.has_value()) {
 		os << " until " << frame_->end.value();
-	} else if (frame_->temporalOperator.has_value()) {
-		os << " in the past";
 	}
 	os << ".";
 	return os.str();

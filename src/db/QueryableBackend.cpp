@@ -160,8 +160,7 @@ GraphQueryPtr QueryableBackend::expand(ExpansionContext &ctx, const GraphPathQue
 
 	// If the query uses SOMETIMES operator, prepend initialization of the accumulated_begin and accumulated_end variables
 	// used to compute the intersection of triple time intervals.
-	if (ctx.query_ctx->selector.temporalOperator.has_value() &&
-		ctx.query_ctx->selector.temporalOperator.value() == TemporalOperator::SOMETIMES) {
+	if (ctx.query_ctx->selector.occasional) {
 		double b_min = ctx.query_ctx->selector.begin.value_or(0.0);
 		double e_max = ctx.query_ctx->selector.end.value_or(std::numeric_limits<double>::max());
 		auto set_b = GraphBuiltin::bind(var_begin, std::make_shared<Double>(b_min));
@@ -261,8 +260,7 @@ QueryableBackend::expandPattern(ExpansionContext &ctx, const std::shared_ptr<Gra
 
 	// Find out if begin/end variables must be added for the computation of the time interval.
 	// This is always the case if the query uses SOMETIMES operator.
-	bool needsIntervalComputation = (ctx.query_ctx->selector.temporalOperator.has_value() &&
-									 ctx.query_ctx->selector.temporalOperator.value() == TemporalOperator::SOMETIMES);
+	bool needsIntervalComputation = (ctx.query_ctx->selector.occasional);
 
 	bool needsRewrite = needsUncertainVar || needsOccasionalVar || needsIntervalComputation;
 	if (!needsRewrite) return q;

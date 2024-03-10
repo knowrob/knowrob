@@ -342,8 +342,7 @@ bool PrologReasoner::putQueryFrame(PrologTerm &frameTerm, const GraphSelector &f
 	static const auto knowledge_a = PL_new_atom("knowledge");
 	static const auto belief_a = PL_new_atom("belief");
 
-	bool isAboutBelief = (frame.epistemicOperator &&
-						  frame.epistemicOperator.value() == EpistemicOperator::BELIEF);
+	bool isAboutBelief = (frame.uncertain);
 	int keyIndex = 0;
 	scopeKeys[keyIndex] = epistemicMode_a;
 	if (!PL_put_atom(scopeValues, isAboutBelief ? belief_a : knowledge_a)) return false;
@@ -353,8 +352,7 @@ bool PrologReasoner::putQueryFrame(PrologTerm &frameTerm, const GraphSelector &f
 	static const auto sometimes_a = PL_new_atom("sometimes");
 	static const auto always_a = PL_new_atom("always");
 
-	bool isAboutSomePast = (frame.temporalOperator &&
-							frame.temporalOperator.value() == TemporalOperator::SOMETIMES);
+	bool isAboutSomePast = (frame.occasional);
 	scopeKeys[++keyIndex] = temporalMode_a;
 	if (!PL_put_atom(scopeValues + keyIndex, isAboutSomePast ? sometimes_a : always_a)) return false;
 
@@ -416,7 +414,7 @@ std::shared_ptr<GraphSelector> PrologReasoner::createAnswerFrame(const PrologTer
 			atom_t flagAtom;
 			if (PL_term_type(scope_val) == PL_ATOM && PL_get_atom(scope_val, &flagAtom)) {
 				if (flagAtom == PrologTerm::ATOM_true()) {
-					frame->epistemicOperator = EpistemicOperator::BELIEF;
+					frame->uncertain = true;
 				}
 			}
 		}
@@ -427,9 +425,9 @@ std::shared_ptr<GraphSelector> PrologReasoner::createAnswerFrame(const PrologTer
 			if (PL_term_type(scope_val) == PL_FLOAT && PL_get_float(scope_val, &confidenceValue)) {
 				frame->confidence = confidenceValue;
 				if (confidenceValue > 0.999) {
-					frame->epistemicOperator = EpistemicOperator::KNOWLEDGE;
+					frame->uncertain = false;
 				} else {
-					frame->epistemicOperator = EpistemicOperator::BELIEF;
+					frame->uncertain = true;
 				}
 			}
 		}
@@ -438,11 +436,7 @@ std::shared_ptr<GraphSelector> PrologReasoner::createAnswerFrame(const PrologTer
 		if (PL_get_dict_key(occasional_key, plTerm(), scope_val)) {
 			atom_t flagAtom;
 			if (PL_term_type(scope_val) == PL_ATOM && PL_get_atom(scope_val, &flagAtom)) {
-				if (flagAtom == PrologTerm::ATOM_true()) {
-					frame->temporalOperator = TemporalOperator::SOMETIMES;
-				} else {
-					frame->temporalOperator = TemporalOperator::ALWAYS;
-				}
+				frame->occasional =  (flagAtom == PrologTerm::ATOM_true());
 			}
 		}
 
@@ -450,9 +444,6 @@ std::shared_ptr<GraphSelector> PrologReasoner::createAnswerFrame(const PrologTer
 		if (PL_get_dict_key(agent_key, plTerm(), scope_val)) {
 			atom_t agentAtom;
 			if (PL_term_type(scope_val) == PL_ATOM && PL_get_atom(scope_val, &agentAtom)) {
-				if (!frame->epistemicOperator.has_value()) {
-					frame->epistemicOperator = EpistemicOperator::KNOWLEDGE;
-				}
 				frame->perspective = Perspective::get(PL_atom_chars(agentAtom));
 			}
 		}

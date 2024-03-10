@@ -42,9 +42,7 @@ ModalStage::ModalStage(
 								 *modalFormula_);
 			}
 
-			modalContext->selector.epistemicOperator = modalOperator->isModalNecessity() ?
-													   EpistemicOperator::KNOWLEDGE :
-													   EpistemicOperator::BELIEF;
+			modalContext->selector.uncertain = !modalOperator->isModalNecessity();
 			// TODO: handle confidence parameter of modality operator
 			modalContext->selector.confidence = std::nullopt;
 			if (em->agent().has_value()) {
@@ -58,9 +56,7 @@ ModalStage::ModalStage(
 		case ModalityType::Temporal_Past: {
 			auto *pm = (PastModality *) &modalOperator->modality();
 
-			modalContext->selector.temporalOperator = modalOperator->isModalNecessity() ?
-													  TemporalOperator::ALWAYS :
-													  TemporalOperator::SOMETIMES;
+			modalContext->selector.occasional = !modalOperator->isModalNecessity();
 
 			// TODO: any special treatment for time interval in nested context?
 			//		e.g. P(x & P(y)) could only be restricted in evaluation below not here.

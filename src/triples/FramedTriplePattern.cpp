@@ -80,10 +80,10 @@ void FramedTriplePattern::setTripleFrame(const GraphSelector &frame) {
 	if (frame.perspective) {
 		perspectiveTerm_ = Atom::Tabled(frame.perspective.value()->iri());
 	}
-	if (frame.epistemicOperator.has_value() && frame.epistemicOperator.value() == EpistemicOperator::BELIEF) {
+	if (frame.uncertain) {
 		isUncertain_ = Numeric::trueAtom();
 	}
-	if (frame.temporalOperator.has_value() && frame.temporalOperator.value() == TemporalOperator::SOMETIMES) {
+	if (frame.occasional) {
 		isOccasional_ = Numeric::trueAtom();
 	}
 }

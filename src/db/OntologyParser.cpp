@@ -137,10 +137,10 @@ void OntologyParser::applyFrame(FramedTriple *triple) {
 		if (frame_->perspective.has_value()) {
 			triple->setPerspective(frame_->perspective.value()->iri());
 		}
-		if (frame_->epistemicOperator.has_value() && frame_->epistemicOperator.value() == EpistemicOperator::BELIEF){
+		if (frame_->uncertain){
 			triple->setIsUncertain(true);
 		}
-		if (frame_->temporalOperator.has_value() && frame_->temporalOperator.value() == TemporalOperator::SOMETIMES) {
+		if (frame_->occasional){
 			triple->setIsOccasional(true);
 		}
 		if (frame_->begin.has_value()) {

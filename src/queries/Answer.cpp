@@ -17,46 +17,37 @@ void Answer::applyFrame(const GraphSelector &frame) {
 	frame_->confidence = std::nullopt;
 	frame_->begin = frame.begin;
 	frame_->end = frame.end;
-	if (frame.epistemicOperator && frame.epistemicOperator.value() == EpistemicOperator::BELIEF) {
-		frame_->epistemicOperator = frame.epistemicOperator;
-	}
-	if (frame.temporalOperator && frame.temporalOperator.value() == TemporalOperator::SOMETIMES) {
-		frame_->temporalOperator = frame.temporalOperator;
-	}
+	frame_->uncertain = frame.uncertain;
+	frame_->occasional = frame.occasional;
 }
 
 bool Answer::isUncertain() const {
 	if (frame_->confidence.has_value()) {
 		if (frame_->confidence.value() < 1.0) return true;
 	}
-	if (frame_->epistemicOperator == EpistemicOperator::BELIEF) {
+	if (frame_->uncertain) {
 		return true;
 	}
 	return false;
 }
 
 bool Answer::isOccasionallyTrue() const {
-	return frame_->temporalOperator == TemporalOperator::SOMETIMES;
+	return frame_->occasional;
 }
 
 void Answer::setIsUncertain(bool val, std::optional<double> confidence) {
+	frame_->uncertain = val;
 	if (val) {
-		frame_->epistemicOperator = EpistemicOperator::BELIEF;
 		if (confidence.has_value()) {
 			frame_->confidence = confidence;
 		}
 	} else {
-		frame_->epistemicOperator = EpistemicOperator::KNOWLEDGE;
 		frame_->confidence = 1.0;
 	}
 }
 
 void Answer::setIsOccasionallyTrue(bool val) {
-	if (val) {
-		frame_->temporalOperator = TemporalOperator::SOMETIMES;
-	} else {
-		frame_->temporalOperator = TemporalOperator::ALWAYS;
-	}
+	frame_->occasional = val;
 }
 
 size_t Answer::hash() const {

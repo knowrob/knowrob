@@ -14,6 +14,8 @@ bool GraphSelector::mergeWith(const GraphSelector &other) {
 	// TODO: not sure how this field should be handled
 	static const char *mergedGraph = "merged";
 	graph = mergedGraph;
+	uncertain = uncertain || other.uncertain;
+	occasional = occasional || other.occasional;
 
 	// agent cannot be changed in merge operation.
 	// So GraphSelector can only be merged within a modal in which both are embedded.
@@ -27,18 +29,6 @@ bool GraphSelector::mergeWith(const GraphSelector &other) {
 		}
 	} else if (other.perspective.has_value()) {
 		return false;
-	}
-
-	// "belief" is more restrictive than "knowledge"
-	if (other.epistemicOperator.has_value() && (!epistemicOperator.has_value() ||
-												other.epistemicOperator.value() == EpistemicOperator::BELIEF)) {
-		epistemicOperator = other.epistemicOperator;
-	}
-
-	// "sometimes" is more restrictive than "always"
-	if (other.temporalOperator.has_value() && (!temporalOperator.has_value() ||
-											   other.temporalOperator.value() == TemporalOperator::SOMETIMES)) {
-		temporalOperator = other.temporalOperator;
 	}
 
 	// later begin time is more restrictive
@@ -72,16 +62,8 @@ size_t GraphSelector::hash() const {
 	} else {
 		hashCombine(val, 0);
 	}
-	if (temporalOperator.has_value()) {
-		hashCombine(val, uint32_t(temporalOperator.value()));
-	} else {
-		hashCombine(val, 0);
-	}
-	if (epistemicOperator.has_value()) {
-		hashCombine(val, uint32_t(epistemicOperator.value()));
-	} else {
-		hashCombine(val, 0);
-	}
+	hashCombine(val, std::hash<bool>{}(occasional));
+	hashCombine(val, std::hash<bool>{}(uncertain));
 	hashCombine(val, std::hash<std::optional<double>>{}(end));
 	hashCombine(val, std::hash<std::optional<double>>{}(begin));
 	hashCombine(val, std::hash<std::optional<double>>{}(confidence));
@@ -96,16 +78,12 @@ std::ostream &GraphSelector::write(std::ostream &os) const {
 		hasEpistemicOperator = true;
 		if (confidence.value() > 0.999) {
 			os << 'K';
-		} else if (epistemicOperator.value() == EpistemicOperator::KNOWLEDGE) {
+		} else {
 			os << "B[" << confidence.value() << "]";
 		}
-	} else if (epistemicOperator.has_value()) {
+	} else if (uncertain) {
 		hasEpistemicOperator = true;
-		if (epistemicOperator.value() == EpistemicOperator::BELIEF) {
-			os << 'B';
-		} else if (epistemicOperator.value() == EpistemicOperator::KNOWLEDGE) {
-			os << 'K';
-		}
+		os << 'B';
 	}
 	if (perspective.has_value() && !Perspective::isEgoPerspective(perspective.value()->iri())) {
 		if (!hasEpistemicOperator) {
@@ -116,13 +94,9 @@ std::ostream &GraphSelector::write(std::ostream &os) const {
 	}
 
 	bool hasTemporalOperator = false;
-	if (temporalOperator.has_value()) {
+	if (occasional) {
 		hasTemporalOperator = true;
-		if (temporalOperator.value() == TemporalOperator::SOMETIMES) {
-			os << 'P';
-		} else if (temporalOperator.value() == TemporalOperator::ALWAYS) {
-			os << 'H';
-		}
+		os << 'P';
 	}
 	if (begin.has_value() || end.has_value()) {
 		if (!hasTemporalOperator) {
@@ -159,9 +133,9 @@ namespace knowrob::py {
 		class_<GraphSelector, std::shared_ptr<GraphSelector>>
 				("GraphSelector", init<>())
 				.def_readwrite("graph", &GraphSelector::graph)
-				.BOOST_PYTHON_ADD_OPTIONAL("agent", &GraphSelector::perspective)
-				.BOOST_PYTHON_ADD_OPTIONAL("temporalOperator", &GraphSelector::temporalOperator)
-				.BOOST_PYTHON_ADD_OPTIONAL("epistemicOperator", &GraphSelector::epistemicOperator)
+				.def_readwrite("uncertain", &GraphSelector::uncertain)
+				.def_readwrite("occasional", &GraphSelector::occasional)
+				.BOOST_PYTHON_ADD_OPTIONAL("perspective", &GraphSelector::perspective)
 				.BOOST_PYTHON_ADD_OPTIONAL("begin", &GraphSelector::begin)
 				.BOOST_PYTHON_ADD_OPTIONAL("end", &GraphSelector::end)
 				.BOOST_PYTHON_ADD_OPTIONAL("confidence", &GraphSelector::confidence);

@@ -19,7 +19,9 @@ namespace knowrob {
 	 * a query may only address a specific point in time, or time interval.
 	 */
 	struct GraphSelector {
-		GraphSelector() : graph(nullptr) {}
+		GraphSelector() : graph(nullptr),
+						  uncertain(false),
+						  occasional(false) {}
 
 		/**
 		 * The name of the graph, usually reflects the name of an ontology.
@@ -30,13 +32,13 @@ namespace knowrob {
 		 */
 		std::optional<PerspectivePtr> perspective;
 		/**
-		 * The temporal modality of consideration.
+		 * True if occasional triples are considered.
 		 */
-		std::optional<TemporalOperator> temporalOperator;
+		bool occasional;
 		/**
-		 * The epistemic modality of consideration.
+		 * True if uncertain triples are considered.
 		 */
-		std::optional<EpistemicOperator> epistemicOperator;
+		bool uncertain;
 		/**
 		 * The begin of the time interval of consideration.
 		 */
@@ -62,18 +64,6 @@ namespace knowrob {
 		 * @return true if the merge was successful.
 		 */
 		bool mergeWith(const GraphSelector &other);
-
-		/**
-		 * @return true if only certain triples are selected.
-		 */
-		bool isCertain() const {
-			return !epistemicOperator || epistemicOperator.value() == EpistemicOperator::KNOWLEDGE;
-		}
-
-		/**
-		 * @return true if also uncertain triples are selected.
-		 */
-		bool isUncertain() const { return !isCertain(); }
 
 		/**
 		 * Write this selector to a stream.
