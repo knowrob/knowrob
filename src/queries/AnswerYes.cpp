@@ -66,16 +66,18 @@ bool AnswerYes::addGrounding(const std::shared_ptr<Predicate> &predicate,
 }
 
 bool AnswerYes::mergeWith(const AnswerYes &other, bool ignoreInconsistencies) {
+	auto mergedBindings = std::make_shared<Bindings>(*substitution_);
 	if (ignoreInconsistencies) {
 		// insert all substitutions of other answer, possibly overwriting existing ones
-		*substitution_ += *other.substitution_;
+		*mergedBindings += *other.substitution_;
 	} else {
 		// unify substitutions
-		if (!substitution_->unifyWith(*other.substitution_)) {
+		if (!mergedBindings->unifyWith(*other.substitution_)) {
 			// unification failed -> results cannot be combined
 			return false;
 		}
 	}
+	substitution_ = mergedBindings;
 
 	if (!frame_->mergeWith(*other.frame_)) {
 		// merging frames failed -> results cannot be combined

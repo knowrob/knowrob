@@ -239,6 +239,12 @@ namespace knowrob {
 	 */
 	class TriplePatternContainer : public semweb::MutableTripleContainer {
 	public:
+		TriplePatternContainer() = default;
+
+		~TriplePatternContainer();
+
+		TriplePatternContainer(const TriplePatternContainer &other) = delete;
+
 		/**
 		 * @param triple a triple query.
 		 */
@@ -251,7 +257,7 @@ namespace knowrob {
 		MutableGenerator generator() override;
 
 	protected:
-		std::vector<FramedTriplePtr> data_;
+		std::vector<FramedTriplePtr*> data_;
 		std::vector<FramedTriplePatternPtr> statements_;
 	};
 } // knowrob

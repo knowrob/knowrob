@@ -65,8 +65,9 @@ namespace knowrob {
 		semweb::VocabularyPtr vocabulary_;
 		std::vector<FramedTriplePtr> reified_;
 		knowrob::IRIAtomPtr name_;
+		std::string generatedString_;
 
-		FramedTriplePtr &
+		FramedTriple*
 		create(std::string_view subject, const AtomPtr &property, const std::optional<std::string_view> &g);
 	};
 

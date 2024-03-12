@@ -32,6 +32,15 @@ namespace knowrob {
 		// This module provides storage via the SQLite relational database when available and supports SQLite V2 and V3.
 		SQLITE
 	};
+	/**
+	 * Redland hash types used by the "hashes" storage type.
+	 */
+	enum class RedlandHashType {
+		// The default hash type.
+		MEMORY,
+		// The Berkeley DB hash type.
+		BDB
+	};
 
 	/**
 	 * Interface for a Redland model.
@@ -55,6 +64,12 @@ namespace knowrob {
 		void setStorageType(RedlandStorageType storageType);
 
 		/**
+		 * Set the "hash-type" parameter of the storage.
+		 * @param hashType the hash type.
+		 */
+		void setStorageHashType(RedlandHashType hashType);
+
+		/**
 		 * @param host the host of the database.
 		 */
 		void setHost(std::string_view host);
@@ -73,6 +88,25 @@ namespace knowrob {
 		 * @param password the password for the database.
 		 */
 		void setPassword(std::string_view password);
+
+		/**
+		 * @param dir the directory for the storage.
+		 */
+		void setStorageDirectory(std::string_view dir = ".");
+
+		/**
+		 * Set the storage type to "hashes".
+		 * @param storageType the storage type.
+		 * @param dir the directory for the hashes storage.
+		 * @see https://librdf.org/docs/api/redland-storage-module-hashes.html
+		 */
+		void setHashesStorage(RedlandHashType hashType, std::string_view dir = ".");
+
+		/**
+		 * Set the storage type to "memory".
+		 * @see https://librdf.org/docs/api/redland-storage-module-memory.html
+		 */
+		void setMemoryStorage();
 
 		/**
 		 * If not set, the model will create its own.
@@ -188,6 +222,8 @@ namespace knowrob {
 		std::optional<std::string> database_;
 		std::optional<std::string> user_;
 		std::optional<std::string> password_;
+		std::optional<std::string> storageDir_;
+		std::optional<RedlandHashType> hashType_;
 		RedlandStorageType storageType_;
 		std::string storageOptions_;
 

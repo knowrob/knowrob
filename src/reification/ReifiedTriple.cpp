@@ -22,6 +22,16 @@ ReifiedTriple::ReifiedTriple(const FramedTriple &triple, const semweb::Vocabular
 	// set origin of the reified triples
 	auto g = triple.graph();
 
+	// need to avoid copy of FramedTriplePtr, so we reserve space in the vector to fit them exactly
+	uint32_t triple_count = 3;
+	if (triple.perspective()) triple_count += 1;
+	if (triple.isUncertain() || triple.confidence()) triple_count += 1;
+	if (triple.isOccasional()) triple_count += 1;
+	if (triple.confidence()) triple_count += 1;
+	if (triple.begin()) triple_count += 1;
+	if (triple.end()) triple_count += 1;
+	reified_.reserve(triple_count);
+
 	// create a rdf:type assertion for the relation individual
 	create(name, semweb::rdf::type, g)->setObjectIRI(relationType->iri());
 
@@ -39,8 +49,8 @@ ReifiedTriple::ReifiedTriple(const FramedTriple &triple, const semweb::Vocabular
 		if (triple.xsdType().value() == XSDType::STRING) {
 			create(name, reification::hasLiteral, g)->setXSDValue(triple.valueAsString(), XSDType::STRING);
 		} else {
-			auto str = triple.createStringValue();
-			create(name, reification::hasLiteral, g)->setXSDValue(str, triple.xsdType().value());
+			generatedString_ = triple.createStringValue();
+			create(name, reification::hasLiteral, g)->setXSDValue(generatedString_, triple.xsdType().value());
 		}
 	}
 
@@ -65,14 +75,15 @@ ReifiedTriple::ReifiedTriple(const FramedTriple &triple, const semweb::Vocabular
 	}
 }
 
-FramedTriplePtr &ReifiedTriple::create(std::string_view subject, const AtomPtr &property, const std::optional<std::string_view> &g) {
+FramedTriple *
+ReifiedTriple::create(std::string_view subject, const AtomPtr &property, const std::optional<std::string_view> &g) {
 	auto &reified = reified_.emplace_back(new FramedTripleView());
 	reified->setSubject(subject);
 	reified->setPredicate(property->stringForm());
-	if(g) {
+	if (g.has_value()) {
 		reified->setGraph(g.value());
 	}
-	return reified;
+	return reified.ptr;
 }
 
 bool ReifiedTriple::isPartOfReification(const FramedTriple &triple) {
@@ -83,8 +94,8 @@ bool ReifiedTriple::isPartOfReification(const FramedTriple &triple) {
 }
 
 bool ReifiedTriple::isReifiable(const FramedTriple &triple) {
-	// TODO: only reify triples if the agent is not the one running the KB
-	return triple.perspective() ||
+	bool hasNonEgoPerspective = triple.perspective() && !Perspective::isEgoPerspective(triple.perspective().value());
+	return hasNonEgoPerspective ||
 		   triple.isUncertain() ||
 		   triple.isOccasional() ||
 		   triple.confidence() ||

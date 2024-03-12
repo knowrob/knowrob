@@ -51,13 +51,6 @@ namespace knowrob {
 		auto &substitution() const { return substitution_; }
 
 		/**
-		 * Map a variable to a term.
-		 * @var a variable.
-		 * @term a term.
-		 */
-		void set(const std::shared_ptr<Variable> &var, const TermPtr &term) { substitution_->set(var, term); }
-
-		/**
 		 * @param var a variable.
 		 * @return true if the variable is mapped to a term.
 		 */

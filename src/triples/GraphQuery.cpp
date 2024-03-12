@@ -13,7 +13,7 @@
 
 using namespace knowrob;
 
-GraphQuery::GraphQuery(std::shared_ptr<GraphTerm> &queryTerm, const QueryContextPtr &ctx)
+GraphQuery::GraphQuery(const std::shared_ptr<GraphTerm> &queryTerm, const QueryContextPtr &ctx)
 		: Query(ctx),
 		  term_(queryTerm) {
 }

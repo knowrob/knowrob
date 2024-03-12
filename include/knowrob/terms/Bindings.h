@@ -30,6 +30,7 @@ namespace knowrob {
 		 * A mapping from variable names to terms.
 		 */
 		using Map = std::map<std::string_view, std::pair<std::shared_ptr<Variable>, TermPtr>>;
+		using VarMap = std::map<std::shared_ptr<Variable>, TermPtr>;
 
 		Bindings() = default;
 
@@ -128,7 +129,7 @@ namespace knowrob {
 	};
 
 	// alias declaration
-	using BindingsPtr = std::shared_ptr<Bindings>;
+	using BindingsPtr = std::shared_ptr<const Bindings>;
 	using BindingsHandler = std::function<void(const BindingsPtr &)>;
 
 	/**

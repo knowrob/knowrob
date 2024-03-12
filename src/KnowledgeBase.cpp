@@ -172,7 +172,7 @@ void KnowledgeBase::configurePrefixes(const boost::property_tree::ptree &config)
 			auto alias = pair.second.get("alias", "");
 			auto uri = pair.second.get("uri", "");
 			if (!alias.empty() && !uri.empty()) {
-				semweb::PrefixRegistry::get().registerPrefix(alias, uri);
+				semweb::PrefixRegistry::registerPrefix(alias, uri);
 			} else {
 				KB_WARN("Invalid entry in semantic-web::prefixes, 'alias' and 'uri' must be defined.");
 			}
@@ -220,12 +220,7 @@ void KnowledgeBase::configureDataSources(const boost::property_tree::ptree &conf
 
 			// TODO: read data source transformation setting here.
 			//       add key "transformation", with sub-keys "path", "language", "format", ...
-			// TODO: support data transformations for ontology languages
-			//       basically load into a separate raptor world, transform this raptor world, then push it into
-			//       all backends. Actually, some renaming transformations could be done in the event handler.
-			//       but often we would rather add additional triples for alignment, e.g. if the alignment language is
-			//       RDFS, then we can simply load the alignment ontology into the raptor world.
-			// TODO: create semweb::Transformation object based on "transformation" setting
+			//       create semweb::Transformation object based on "transformation" setting
 			//       and apply it to the data source loaded into a raptor world.
 
 			if (!dataSource) {
@@ -271,7 +266,9 @@ DataSourcePtr KnowledgeBase::createDataSource(const boost::property_tree::ptree 
 	auto o_dataSourceLanguage = subtree.get_optional<std::string>("language");
 	auto dataSourceType = getDataSourceType(dataSourceFormat, o_dataSourceLanguage,
 											subtree.get_optional<std::string>("type"));
-	// TODO: support graph selector specification in settings
+	// TODO: support graph selector specification in settings?
+	//          then a data transformer could be created based on the setting.
+	//          an idea would be e.g. to have a reasoner running for other perspectives.
 	//auto tripleFrame_ptree = subtree.get_child_optional("frame");
 	//auto tripleFrame = tripleFrame_ptree ?
 	//		std::make_shared<GraphSelector>(tripleFrame_ptree.value()) : nullptr;
@@ -437,7 +434,6 @@ void KnowledgeBase::createComputationPipeline(
 			idbStage >> stepOutput;
 			pipeline->addStage(idbStage);
 			// TODO: what about the materialization of the predicate in EDB?
-			//       there is also the QUERY_FLAG_PERSIST_SOLUTIONS flag
 		}
 
 		// add a stage that consolidates the results of the EDB and IDB stages.
@@ -974,10 +970,9 @@ bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
 	// wait for all transactions to finish
 	for (auto &transaction: transactions) transaction->join();
 
-	// TODO: update vocabulary, I guess we need to have an interface to select all terms
-	//       that are defined in a given origin, and then remove them from the vocabulary
-	//       if there is no other origin defining it.
-	// TODO: optionally drop all child imports of the origin
+	// update vocabulary: select all terms that are defined in a given origin,
+	// and then remove them from the vocabulary.
+	// TODO: only do this if no other backend defines the same origin?
 	// remove origin from import hierarchy
 	if (!importHierarchy_->isReservedOrigin(origin)) {
 		importHierarchy_->removeCurrentGraph(origin);

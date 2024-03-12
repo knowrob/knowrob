@@ -41,32 +41,50 @@ namespace knowrob {
 
 	protected:
 		uint32_t varCounter_;
+		std::map<std::string_view, std::string_view> aliases_;
 		std::string queryString_;
+		std::string lastVar_;
 
 		static void selectBegin(std::ostream &os);
 
 		static void selectEnd(std::ostream &os);
 
+		void appendPrefixes(std::ostream &os);
+
 		void add(std::ostream &os, const FramedTriplePattern &triplePattern);
 
-		static void add(std::ostream &os, const GraphBuiltin &builtin);
+		void add(std::ostream &os, const GraphBuiltin &builtin);
 
 		void add(std::ostream &os, const std::shared_ptr<GraphTerm> &graphTerm);
 
-		void filterNotExists(std::ostream &os, const FramedTriplePattern &triplePattern);
+		bool optional(std::ostream &os, const FramedTriplePattern &triplePattern);
 
-		void optional(std::ostream &os, const FramedTriplePattern &triplePattern);
+		void iri(std::ostream &os, std::string_view iri);
 
-		void where(std::ostream &os, const FramedTriplePattern &triplePattern);
+		void negationViaNotExists(std::ostream &os, const FramedTriplePattern &triplePattern);
 
-		static void where(std::ostream &os, const TermPtr &term);
+		void negationViaOptional(std::ostream &os, const FramedTriplePattern &triplePattern);
 
-		static void comparison(std::ostream &os, const GraphBuiltin &builtin, const char *comparisonOperator);
+		void negationViaMinus(std::ostream &os, const FramedTriplePattern &triplePattern);
 
-		static void bindOneOfIf(std::ostream &os, const GraphBuiltin &builtin, const char *comparisonOperator);
+		bool where(std::ostream &os, const FramedTriplePattern &triplePattern);
+
+		void where_with_filter(std::ostream &os, const FramedTriplePattern &triplePattern);
+
+		void where(std::ostream &os, const TermPtr &term);
+
+		void comparison(std::ostream &os, const GraphBuiltin &builtin, const char *comparisonOperator);
+
+		void bindOneOfIf(std::ostream &os, const GraphBuiltin &builtin, const char *comparisonOperator);
 
 		static void filter(std::ostream &os, std::string_view varName, const TermPtr &term,
 						   FramedTriplePattern::OperatorType operatorType);
+
+		static void filter_optional(std::ostream &os, std::string_view varName, const TermPtr &term,
+									FramedTriplePattern::OperatorType operatorType);
+
+		static void doFilter(std::ostream &os, std::string_view varName, const std::shared_ptr<Atomic> &atomic,
+							 FramedTriplePattern::OperatorType operatorType);
 	};
 
 } // knowrob

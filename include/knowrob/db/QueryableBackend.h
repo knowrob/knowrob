@@ -117,6 +117,16 @@ namespace knowrob {
 		 */
 		void setBatchSize(uint32_t batchSize) { batchSize_ = batchSize; }
 
+		/**
+		 * Expand a query with complex patterns into one with potentially more
+		 * but less complex patterns.
+		 * This is done to realize a backend-independent handling of some aspects
+		 * such as determining whether an answer is uncertain or not.
+		 * @param q a graph query.
+		 * @return the expanded graph query.
+		 */
+		static GraphQueryPtr expand(const GraphQueryPtr &q);
+
 	protected:
 		uint32_t batchSize_;
 
@@ -135,7 +145,7 @@ namespace knowrob {
 
 		static std::shared_ptr<AnswerYes> yes(const GraphPathQueryPtr &q, const BindingsPtr &bindings);
 
-		static GraphQueryPtr expand(ExpansionContext &ctx, const GraphPathQueryPtr &q);
+		static GraphQueryPtr expand(ExpansionContext &ctx, const GraphQueryPtr &q);
 
 		static std::shared_ptr<GraphTerm> expand(ExpansionContext &ctx, const std::shared_ptr<GraphTerm> &q);
 

@@ -423,9 +423,9 @@ public:
 	bool autoCompleteGlobal(const std::string &word) {
 		std::vector<std::string_view> aliases;
 		if (word.empty()) {
-			aliases = semweb::PrefixRegistry::get().getAliasesWithPrefix("");
+			aliases = semweb::PrefixRegistry::getAliasesWithPrefix("");
 		} else {
-			aliases = semweb::PrefixRegistry::get().getAliasesWithPrefix(word);
+			aliases = semweb::PrefixRegistry::getAliasesWithPrefix(word);
 		}
 
 		if (aliases.size() == 1) {
@@ -444,7 +444,7 @@ public:
 	}
 
 	bool autoCompleteLocal(const std::string &word, const std::string &nsAlias) {
-		auto uri = semweb::PrefixRegistry::get().aliasToUri(nsAlias);
+		auto uri = semweb::PrefixRegistry::aliasToUri(nsAlias);
 		if (uri.has_value()) {
 			auto partialIRI = uri.value().get() + "#" + word;
 			auto propertyOptions = kb_.vocabulary()->getDefinedPropertyNamesWithPrefix(partialIRI);

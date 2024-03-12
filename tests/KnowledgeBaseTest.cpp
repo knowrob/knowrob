@@ -57,7 +57,6 @@ public:
 	TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) override {
 		auto answerBuffer = std::make_shared<TokenBuffer>();
 		auto outputChannel = TokenStream::Channel::create(answerBuffer);
-		auto answer = std::make_shared<AnswerYes>();
 
 		bool succeed = true;
 		if(literal->propertyTerm()->isGround()) {
@@ -71,18 +70,20 @@ public:
 		}
 
 		if(succeed) {
+			auto bindings = std::make_shared<Bindings>();
 			if(!literal->propertyTerm()->isGround()) {
 				auto v = *literal->propertyTerm()->variables().begin();
-				answer->substitution()->set(std::make_shared<Variable>(v), IRIAtom::Tabled(p_));
+				bindings->set(std::make_shared<Variable>(v), IRIAtom::Tabled(p_));
 			}
 			if(!literal->subjectTerm()->isGround()) {
 				auto v = *literal->subjectTerm()->variables().begin();
-				answer->substitution()->set(std::make_shared<Variable>(v), IRIAtom::Tabled(s_));
+				bindings->set(std::make_shared<Variable>(v), IRIAtom::Tabled(s_));
 			}
 			if(!literal->objectTerm()->isGround()) {
 				auto v = *literal->objectTerm()->variables().begin();
-				answer->substitution()->set(std::make_shared<Variable>(v), IRIAtom::Tabled(o_));
+				bindings->set(std::make_shared<Variable>(v), IRIAtom::Tabled(o_));
 			}
+			auto answer = std::make_shared<AnswerYes>(bindings);
 			outputChannel->push(answer);
 		}
 

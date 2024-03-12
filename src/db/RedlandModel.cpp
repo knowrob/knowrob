@@ -54,10 +54,10 @@ static inline const char *getStorageTypeString(RedlandStorageType storageType) {
 	return "unknown";
 }
 
-static int logRedlandMessage(void *user_data, librdf_log_message *message) {
+static int logRedlandMessage([[maybe_unused]] void *user_data, librdf_log_message *message) {
 	switch (message->level) {
 		case LIBRDF_LOG_DEBUG:
-			KB_DEBUG("[redland] {}", librdf_log_message_message(message));
+			KB_INFO("[redland] {}", librdf_log_message_message(message));
 			break;
 		case LIBRDF_LOG_INFO:
 			KB_INFO("[redland] {}", librdf_log_message_message(message));
@@ -126,6 +126,10 @@ void RedlandModel::setStorageType(RedlandStorageType storageType) {
 	REDLAND_REQUIRE_UNINITIALIZED("storage-type", storageType_, storageType);
 }
 
+void RedlandModel::setStorageHashType(RedlandHashType hashType) {
+	REDLAND_REQUIRE_UNINITIALIZED("hash-type", hashType_, hashType);
+}
+
 void RedlandModel::setHost(std::string_view host) {
 	REDLAND_REQUIRE_UNINITIALIZED("host", host_, host);
 }
@@ -142,8 +146,24 @@ void RedlandModel::setPassword(std::string_view password) {
 	REDLAND_REQUIRE_UNINITIALIZED("password", password_, password);
 }
 
+void RedlandModel::setStorageDirectory(std::string_view dir) {
+	REDLAND_REQUIRE_UNINITIALIZED("dir", storageDir_, dir);
+}
+
 void RedlandModel::setRaptorWorld(librdf_world *world) {
 	REDLAND_REQUIRE_UNINITIALIZED("raptor-world", world_, world);
+}
+
+void RedlandModel::setHashesStorage(RedlandHashType hashType, std::string_view dir) {
+	setStorageType(RedlandStorageType::HASHES);
+	setStorageHashType(hashType);
+	if(hashType == RedlandHashType::BDB) {
+		setStorageDirectory(dir);
+	}
+}
+
+void RedlandModel::setMemoryStorage() {
+	setStorageType(RedlandStorageType::MEMORY);
 }
 
 bool RedlandModel::initializeBackend() {
@@ -167,7 +187,7 @@ bool RedlandModel::initializeBackend() {
 	const char *storageOptions = storageOptions_.empty() ? nullptr : storageOptions_.c_str();
 	const char *storageType = getStorageTypeString(storageType_);
 	const char *storageName = origin_.has_value() ? origin_.value().c_str() : "knowrob";
-	KB_WARN("Initializing Redland storage of type \"{}\" with name \"{}\" and options \"{}\".",
+	KB_INFO("[redland] using storage of type \"{}\" with name \"{}\" and options \"{}\".",
 			storageType, storageName, storageOptions);
 	storage_ = librdf_new_storage(world_,
 								  storageType,
@@ -235,22 +255,6 @@ bool RedlandModel::initializeBackend(const ReasonerConfig &config) {
 }
 
 std::string RedlandModel::getStorageOptions() const {
-
-	// TODO: support more options. This is needed for "hashes" storage type:
-	//		- "hash-type" (string) - the hash type to use
-	//		- "dir" (string) - the directory to use
-	//		- "new" (bool) - whether to create a new store
-/**
-  // A new BDB hashed persistent store in the current directory
-  storage=librdf_new_storage(world, "hashes", "db1", "new='yes',hash-type='bdb',dir='.'");
-  // Hashed in-memory store
-  storage=librdf_new_storage(world, "hashes", NULL, "hash-type='memory'");
-  // An existing BDB hashed persistent store in dir /somewhere
-  storage=librdf_new_storage(world, "hashes", "dv2", "hash-type='bdb',dir='/somewhere'");
-  // An existing BDB hashed store with contexts
-  storage=librdf_new_storage(world, "hashes", "db3", "hash-type='bdb',contexts='yes'");
- */
-
 	using OptPair_o = std::pair<std::string, std::optional<std::string>>;
 	std::vector<std::pair<std::string, std::string>> opts;
 	for (auto &option: {
@@ -258,9 +262,21 @@ std::string RedlandModel::getStorageOptions() const {
 			OptPair_o{"port", port_},
 			OptPair_o{"database", database_},
 			OptPair_o{"user", user_},
-			OptPair_o{"password", password_}}) {
+			OptPair_o{"password", password_},
+			OptPair_o{"dir", storageDir_}}) {
 		if (option.second.has_value()) {
 			opts.emplace_back(option.first, option.second.value());
+		}
+	}
+	// "hash-type" is required by "hashes" storage type
+	if(hashType_.has_value()) {
+		switch (hashType_.value()) {
+			case RedlandHashType::MEMORY:
+				opts.emplace_back("hash-type", "memory");
+				break;
+			case RedlandHashType::BDB:
+				opts.emplace_back("hash-type", "bdb");
+				break;
 		}
 	}
 	// context support currently is required which limits the storage types we can use.
@@ -337,8 +353,6 @@ bool RedlandModel::insertOne(const FramedTriple &knowrobTriple) {
 	// map the knowrob triple into a raptor triple
 	knowrobToRaptor(knowrobTriple, raptorTriple);
 	// add the triple together with a context node holding the origin literal
-	// FIXME: some storage types do not support contexts afaik. Does this mean we cannot use
-	//        librdf_model_context_* functions at all? If so, then this is a problem in quite a few functions below.
 	librdf_model_context_add_statement(model_, getContextNode(knowrobTriple), raptorTriple);
 	librdf_free_statement(raptorTriple);
 	return true;
@@ -362,20 +376,26 @@ bool RedlandModel::removeOne(const FramedTriple &knowrobTriple) {
 	auto raptorTriple = librdf_new_statement(world_);
 	// map the knowrob triple into a raptor triple
 	knowrobToRaptor(knowrobTriple, raptorTriple);
-	librdf_model_remove_statement(model_, raptorTriple);
+	// TODO: There maybe cases where the triple should be removed from all contexts, which I think
+	//       requires to iterate over contexts here and call remove for each one.
+	auto ret = librdf_model_context_remove_statement(model_, getContextNode(knowrobTriple), raptorTriple);
 	librdf_free_statement(raptorTriple);
-	return true;
+	return ret==0;
 }
 
 bool RedlandModel::removeAll(const semweb::TripleContainerPtr &triples) {
 	auto raptorTriple = librdf_new_statement(world_);
+	bool allRemoved = true;
 	for (auto &knowrobTriple: *triples) {
 		// map the knowrob triple into a raptor triple
 		knowrobToRaptor(*knowrobTriple, raptorTriple);
-		librdf_model_remove_statement(model_, raptorTriple);
+		auto ret = librdf_model_context_remove_statement(model_, getContextNode(*knowrobTriple), raptorTriple);
+		if (ret != 0) {
+			allRemoved = false;
+		}
 	}
 	librdf_free_statement(raptorTriple);
-	return true;
+	return allRemoved;
 }
 
 bool RedlandModel::removeAllWithOrigin(std::string_view origin) {
@@ -453,24 +473,57 @@ void RedlandModel::match(const FramedTriplePattern &query, const semweb::TripleV
 	auto stream = librdf_model_find_statements(model_, rdf_query);
 	while (!librdf_stream_end(stream)) {
 		auto rdf_statement = librdf_stream_get_object(stream);
-		// TODO: handle object operator
 		triples->add(rdf_statement->subject, rdf_statement->predicate, rdf_statement->object);
-		visitor(*triples->begin()->ptr);
+		if (query.objectOperator() != FramedTriplePattern::EQ) {
+			// TODO: handle object operator
+			KB_WARN("Object operator not yet supported in RedlandModel::match.");
+			visitor(*triples->begin()->ptr);
+		} else {
+			visitor(*triples->begin()->ptr);
+		}
 		triples->reset();
 		librdf_stream_next(stream);
 	}
 	librdf_free_stream(stream);
 }
 
-void RedlandModel::query(const GraphQueryPtr &q, const BindingsHandler &callback) {
-	SPARQLQuery sparqlQuery(q);
-	sparql(sparqlQuery(), callback);
+void RedlandModel::query(const GraphQueryPtr &q, const BindingsHandler &callback) { // NOLINT
+	std::shared_ptr<GraphPattern> negatedPattern;
+	if (q->term()->termType() == GraphTermType::Pattern) {
+		// Currently we cannot support negations where the object is grounded.
+		// This is because the SPARQL query would need to use NOT-EXISTS or MINUS, which is not supported by rasqal.
+		// Instead, we use OPTIONAL and !BOUND to simulate negation which requires that the object is not grounded
+		// when entering the negated pattern.
+		// But, on the other hand negations are handled separately by the KnowledgeBase anyway.
+		// So KnowRob will at the moment only call this interface with single negated patterns
+		// while evaluating sequences of negations in parallel and after any positive pattern that
+		// appears in the sequence.
+		auto pat = std::static_pointer_cast<GraphPattern>(q->term());
+		if (pat->value()->isNegated()) {
+			negatedPattern = pat;
+		}
+	}
+
+	if (negatedPattern) {
+		// negation-as-failure: Try positive query, if it has no solution, then the negated pattern is true.
+		auto positivePat = std::make_shared<FramedTriplePattern>(*negatedPattern->value());
+		positivePat->setIsNegated(false);
+		auto positiveQuery = std::make_shared<GraphQuery>(
+				std::make_shared<GraphPattern>(positivePat),
+				OneSolutionContext());
+		bool hasSolution = false;
+		query(positiveQuery, [&](const BindingsPtr &bindings) {
+			hasSolution = true;
+		});
+		if (!hasSolution) {
+			callback(Bindings::emptyBindings());
+		}
+	} else {
+		sparql(SPARQLQuery(q)(), callback);
+	}
 }
 
 bool RedlandModel::sparql(std::string_view queryString, const BindingsHandler &callback) const {
-	// TODO: add sparql interface to a common base class?
-	// NOTE: a more simple interface can also provide origin of triple, but we cannot provide this from sparql in a standard way.
-
 	auto queryObj = librdf_new_query(
 			world_,
 			QUERY_LANGUAGE_SPARQL.data(),
@@ -493,8 +546,22 @@ bool RedlandModel::sparql(std::string_view queryString, const BindingsHandler &c
 		// read bindings
 		int bindings_count = librdf_query_results_get_bindings_count(results);
 		for (int i = 0; i < bindings_count; ++i) {
-			auto name = librdf_query_results_get_binding_name(results, i);
+			auto name = std::string_view(librdf_query_results_get_binding_name(results, i));
+			if (name.empty() || name[0] == '_') {
+				// skip variables that start with '_'.
+				// afaik, there is no way to prevent these from being returned when "*" is
+				// used in select pattern.
+				continue;
+			}
+
 			auto node = librdf_query_results_get_binding_value(results, i);
+			if (!node) {
+				// this indicates that a variable appears in select pattern, but it was not grounded
+				// in the query. this is not an error, but rather means the grounding was OPTIONAL.
+				// we can just skip this variable.
+				continue;
+			}
+
 			auto knowrobTerm = termFromNode(node);
 			if (knowrobTerm) {
 				bindings->set(std::make_shared<Variable>(name), knowrobTerm);
@@ -536,11 +603,9 @@ librdf_node *RedlandModel::getContextNode(std::string_view origin) {
 	if (it != contextNodes_.end()) {
 		return it->second;
 	}
-	auto contextNode = librdf_new_node_from_literal(
+	auto contextNode = librdf_new_node_from_uri_string(
 			world_,
-			(const unsigned char *) origin.data(),
-			nullptr,
-			0);
+			(const unsigned char*)origin.data());
 	contextNodes_[std::string(origin)] = contextNode;
 	return contextNode;
 }

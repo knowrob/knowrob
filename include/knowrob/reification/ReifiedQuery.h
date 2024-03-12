@@ -50,6 +50,7 @@ namespace knowrob {
 
 	protected:
 		semweb::VocabularyPtr vocabulary_;
+		uint32_t varCounter_;
 
 		void setNonReified(const std::shared_ptr<GraphTerm> &nonReified);
 

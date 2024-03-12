@@ -59,7 +59,7 @@ void QueryableBackend::evaluateQuery(const GraphPathQueryPtr &q, const TokenBuff
 		query(expandedQuery, [&](const BindingsPtr &bindings) {
 			auto answer = yes(q, bindings);
 
-			// The answer is uncertain is any of the groundings is uncertain.
+			// The answer is uncertain if any of the groundings is uncertain.
 			answer->setIsUncertain(std::any_of(exp_ctx.u_vars.begin(), exp_ctx.u_vars.end(), [&](const VariablePtr &v) {
 				auto &u_v = bindings->get(v->name());
 				return (u_v && u_v->isNumeric() && std::static_pointer_cast<Numeric>(u_v)->asBoolean());
@@ -147,8 +147,13 @@ std::shared_ptr<AnswerNo> QueryableBackend::no(const GraphPathQueryPtr &q) {
 	return negativeAnswer;
 }
 
+GraphQueryPtr QueryableBackend::expand(const GraphQueryPtr &q) {
+	ExpansionContext exp_ctx;
+	exp_ctx.query_ctx = q->ctx();
+	return expand(exp_ctx, q);
+}
 
-GraphQueryPtr QueryableBackend::expand(ExpansionContext &ctx, const GraphPathQueryPtr &q) {
+GraphQueryPtr QueryableBackend::expand(ExpansionContext &ctx, const GraphQueryPtr &q) {
 	// Initialize begin/end variables for the computation of the time interval.
 	static const auto var_begin = std::make_shared<Variable>("_accumulatedBegin");
 	static const auto var_end = std::make_shared<Variable>("_accumulatedEnd");

@@ -15,13 +15,15 @@ using namespace knowrob;
 
 ReifiedQuery::ReifiedQuery(const std::shared_ptr<GraphQuery> &nonReified, semweb::VocabularyPtr vocabulary)
 		: GraphQuery(nonReified->ctx()),
-		  vocabulary_(std::move(vocabulary)) {
+		  vocabulary_(std::move(vocabulary)),
+		  varCounter_(0) {
 	setNonReified(nonReified->term());
 }
 
 ReifiedQuery::ReifiedQuery(const FramedTriplePattern &nonReified, semweb::VocabularyPtr vocabulary)
 		: GraphQuery(),
-		  vocabulary_(std::move(vocabulary)) {
+		  vocabulary_(std::move(vocabulary)),
+		  varCounter_(0) {
 	term_ = reifiedPatternSequence(nonReified);
 }
 
@@ -43,7 +45,7 @@ void ReifiedQuery::setNonReified(const std::shared_ptr<GraphTerm> &nonReified) {
 }
 
 void ReifiedQuery::reifyConnective(const std::shared_ptr<GraphConnective> &reifiedConnective, //NOLINT
-                                   const std::shared_ptr<GraphConnective> &originalConnective) {
+								   const std::shared_ptr<GraphConnective> &originalConnective) {
 	for (auto &t: originalConnective->terms()) {
 		switch (t->termType()) {
 			case GraphTermType::Pattern:
@@ -68,7 +70,8 @@ std::shared_ptr<GraphUnion> ReifiedQuery::reifyUnion(const std::shared_ptr<Graph
 	return reified;
 }
 
-std::shared_ptr<GraphSequence> ReifiedQuery::reifySequence(const std::shared_ptr<GraphSequence> &graphSequence) { //NOLINT
+std::shared_ptr<GraphSequence>
+ReifiedQuery::reifySequence(const std::shared_ptr<GraphSequence> &graphSequence) { //NOLINT
 	auto reified = std::make_shared<GraphSequence>();
 	reifyConnective(reified, graphSequence);
 	return reified;
@@ -96,7 +99,7 @@ std::shared_ptr<FramedTriplePattern> addPattern(
 		const TermPtr &o,
 		const groundable<Atom> &g) {
 	auto reified = std::make_shared<FramedTriplePattern>(s, p, o);
-	if(g.has_grounding()) {
+	if (g.has_grounding()) {
 		reified->setGraphName(g.grounded()->stringForm());
 	}
 	sequence->addPattern(reified);
@@ -106,10 +109,10 @@ std::shared_ptr<FramedTriplePattern> addPattern(
 std::shared_ptr<GraphTerm> ReifiedQuery::reifiedPatternSequence(const FramedTriplePattern &nonReified) {
 	static auto b_true = Numeric::trueAtom();
 	static auto b_false = Numeric::falseAtom();
-	static auto b_var = std::make_shared<Variable>("v_reified_b");
-	static auto e_var = std::make_shared<Variable>("v_reified_e");
 	static auto fullyConfident = std::make_shared<Double>(1.0);
 	static auto egoPerspective = Perspective::getEgoPerspective()->atom();
+	static auto b_var = std::make_shared<Variable>("_reified_b");
+	static auto e_var = std::make_shared<Variable>("_reified_e");
 
 	if (!nonReified.propertyTerm() || !nonReified.propertyTerm()->isAtom()) {
 		throw QueryError("non-reified triple does not have a property term");
@@ -119,12 +122,11 @@ std::shared_ptr<GraphTerm> ReifiedQuery::reifiedPatternSequence(const FramedTrip
 	auto property = vocabulary_->defineProperty(p_atom->stringForm());
 	// map the property to a Relation concept
 	auto relationType = property->reification();
-	// generate a unique individual name
-	auto name = semweb::Resource::unique_iri(
-			reification::individualPrefix->stringForm(),
-			semweb::Resource::iri_name(relationType->iri()));
+	// generate a unique individual variable.
+	// note that we are actually not interested in its instantiation.
+	auto name = std::make_shared<Variable>("_reified" + std::to_string(varCounter_++));
 	// optionally set origin of reified queries if term is grounded
-	auto g = nonReified.graphTerm();
+	auto &g = nonReified.graphTerm();
 
 	// create a type assertion
 	addPattern(seq, name, semweb::rdf::type, relationType->iriAtom(), g);
@@ -239,16 +241,16 @@ std::shared_ptr<GraphTerm> ReifiedQuery::reifiedPatternSequence(const FramedTrip
 bool ReifiedQuery::hasReifiablePattern(const GraphTerm *term) { //NOLINT
 	switch (term->termType()) {
 		case GraphTermType::Pattern:
-			return getReificationFlags(*((const GraphPattern*)term)->value()) & IncludeReified;
+			return getReificationFlags(*((const GraphPattern *) term)->value()) & IncludeReified;
 		case GraphTermType::Union:
-			for (auto &t: ((const GraphUnion*)term)->terms()) {
+			for (auto &t: ((const GraphUnion *) term)->terms()) {
 				if (hasReifiablePattern(t.get())) {
 					return true;
 				}
 			}
 			return false;
 		case GraphTermType::Sequence:
-			for (auto &t: ((const GraphSequence*)term)->terms()) {
+			for (auto &t: ((const GraphSequence *) term)->terms()) {
 				if (hasReifiablePattern(t.get())) {
 					return true;
 				}
@@ -268,7 +270,8 @@ int ReifiedQuery::getReificationFlags(const FramedTriplePattern &q) {
 	bool includeOriginal = true;
 	bool includeReified = false;
 	// include reified if isUncertain is true or a variable in the query
-	if ((q.isUncertainTerm().has_grounding() && q.isUncertainTerm().grounded()->asBoolean()) || q.isUncertainTerm().has_variable()) {
+	if ((q.isUncertainTerm().has_grounding() && q.isUncertainTerm().grounded()->asBoolean()) ||
+		q.isUncertainTerm().has_variable()) {
 		includeReified = true;
 	}
 	// include reified if confidence has a value or is a variable
@@ -299,7 +302,7 @@ int ReifiedQuery::getReificationFlags(const FramedTriplePattern &q) {
 	}
 	// include reified if begin or end is a variable or has a grounding.
 	if (q.beginTerm().has_grounding() || q.beginTerm().has_variable() ||
-	    q.endTerm().has_grounding() || q.endTerm().has_variable()) {
+		q.endTerm().has_grounding() || q.endTerm().has_variable()) {
 		includeReified = true;
 	}
 	int flags = 0;

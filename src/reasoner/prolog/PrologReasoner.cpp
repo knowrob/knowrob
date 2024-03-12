@@ -269,8 +269,18 @@ AnswerYesPtr PrologReasoner::yes(const FramedTriplePatternPtr &literal,
 								 const PrologTerm &rdfGoal,
 								 const PrologTerm &answerFrameTerm) {
 	KB_DEBUG("Prolog has a next solution.");
-	// create an empty solution
-	auto yes = std::make_shared<AnswerYes>();
+
+	// create bindings object
+	auto bindings = std::make_shared<Bindings>();
+	for (const auto &kv: rdfGoal.vars()) {
+		auto grounding = PrologTerm::toKnowRobTerm(kv.second);
+		if (grounding && grounding->termType() != TermType::VARIABLE) {
+			bindings->set(std::make_shared<Variable>(kv.first), PrologTerm::toKnowRobTerm(kv.second));
+		}
+	}
+
+	// create an answer object given the bindings
+	auto yes = std::make_shared<AnswerYes>(bindings);
 	yes->setReasonerTerm(reasonerNameTerm());
 
 	// TODO: set flag to indicate if answer is well-founded or not.
@@ -285,14 +295,6 @@ AnswerYesPtr PrologReasoner::yes(const FramedTriplePatternPtr &literal,
 		answerFrame_ro = answerFrame_rw;
 	} else {
 		answerFrame_ro = DefaultGraphSelector();
-	}
-
-	// add substitutions
-	for (const auto &kv: rdfGoal.vars()) {
-		auto grounding = PrologTerm::toKnowRobTerm(kv.second);
-		if (grounding && grounding->termType() != TermType::VARIABLE) {
-			yes->set(std::make_shared<Variable>(kv.first), PrologTerm::toKnowRobTerm(kv.second));
-		}
 	}
 
 	// store instantiation of literal

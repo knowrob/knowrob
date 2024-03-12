@@ -21,7 +21,8 @@ namespace knowrob {
 		 * @param query an ordered sequence of graph terms.
 		 * @param ctx the query context.
 		 */
-		explicit GraphQuery(std::shared_ptr<GraphTerm> &query, const QueryContextPtr &ctx = DefaultQueryContext());
+		explicit GraphQuery(const std::shared_ptr<GraphTerm> &query,
+							const QueryContextPtr &ctx = DefaultQueryContext());
 
 		/**
 		 * @param query an ordered sequence of triple patterns.

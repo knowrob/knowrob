@@ -12,11 +12,16 @@
 #include "knowrob/triples/FramedTriplePattern.h"
 
 namespace knowrob::mongo {
+	/**
+	 * A cursor that iterates over bindings computed through an aggregation
+	 * pipeline which uses a special field in documents to store variable
+	 * bindings throughout the pipeline.
+	 */
 	class BindingsCursor : public Cursor {
 	public:
 		explicit BindingsCursor(const std::shared_ptr<Collection> &collection);
 
-		bool nextBindings(const BindingsPtr &bindings);
+		bool nextBindings(const std::shared_ptr<Bindings> &bindings);
 
 	protected:
 		const bson_t *resultDocument_;
@@ -26,7 +31,7 @@ namespace knowrob::mongo {
 		bson_iter_t scopeIter_;
 		bson_iter_t timeIter_;
 
-		void setSubstitution(const BindingsPtr &bindings);
+		void setSubstitution(const std::shared_ptr<Bindings> &bindings);
 	};
 
 	using BindingsCursorPtr = std::shared_ptr<BindingsCursor>;

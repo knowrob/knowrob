@@ -31,7 +31,7 @@ static void procesNamespace([[maybe_unused]] void *userData, raptor_namespace *n
 	if(!r_uri) return;
 	auto r_uriString = raptor_uri_as_string(r_uri);
 
-	semweb::PrefixRegistry::get().registerPrefix(
+	semweb::PrefixRegistry::registerPrefix(
 			std::string_view((const char *) r_prefix),
 			std::string_view((const char *) r_uriString));
 }

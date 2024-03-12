@@ -580,4 +580,8 @@ namespace knowrob {
 	};
 }
 
+namespace std {
+	std::ostream &operator<<(std::ostream &os, const knowrob::FramedTriple &triple);
+}
+
 #endif //KNOWROB_FRAMED_TRIPLE_H

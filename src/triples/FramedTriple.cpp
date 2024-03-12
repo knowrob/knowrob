@@ -280,6 +280,40 @@ bool FramedTriple::operator==(const FramedTriple &other) const {
 	return true;
 }
 
+namespace std {
+	std::ostream &operator<<(std::ostream &os, const knowrob::FramedTriple &triple) //NOLINT
+	{
+		os << '(';
+		os << triple.subject() << ',' << ' ';
+		os << triple.predicate() << ',' << ' ';
+		if (triple.isObjectIRI() || triple.isObjectBlank()) {
+			os << triple.valueAsString();
+		} else {
+			os << triple.createStringValue();
+		}
+		if (triple.graph()) {
+			os << ',' << " g=" << triple.graph().value();
+		}
+		if (triple.perspective()) {
+			os << ',' << " p=" << triple.perspective().value();
+		}
+		if (triple.isOccasional()) {
+			os << ',' << " o";
+		}
+		if (triple.isUncertain()) {
+			os << ',' << " u";
+		}
+		if (triple.begin()) {
+			os << ',' << " b=" << triple.begin().value();
+		}
+		if (triple.end()) {
+			os << ',' << " e=" << triple.end().value();
+		}
+		os << ')';
+		return os;
+	}
+}
+
 namespace knowrob::py {
 	// this struct is needed because FramedTriple has pure virtual methods
 	struct FramedTripleWrap : public FramedTriple, boost::python::wrapper<FramedTriple> {

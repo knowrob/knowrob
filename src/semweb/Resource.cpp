@@ -9,6 +9,7 @@
 #include "knowrob/Logger.h"
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <iomanip>
 
 using namespace knowrob::semweb;
 
@@ -27,30 +28,37 @@ Resource::Resource(std::string_view iri) {
 	}
 }
 
-knowrob::IRIAtomPtr Resource::unique_iri(std::string_view ns, std::string_view name) {
+static inline void write_unique(std::ostream &os) {
 	static boost::uuids::random_generator generator;
+	std::hash<std::string> str_hash;
+	os << ' ';
+	os << std::setfill('0') << std::setw(8) << std::hex <<
+	   str_hash(to_string(generator()));
+}
+
+knowrob::IRIAtomPtr Resource::unique_iri(std::string_view ns, std::string_view name) {
 	std::stringstream ss;
 	ss << ns;
 	if (!ns.empty() && ns.back() != '#') {
 		ss << "#";
 	}
-	ss << name << "_" << to_string(generator());
+	write_unique(ss);
 	return IRIAtom::Tabled(ss.str());
 }
 
 knowrob::IRIAtomPtr Resource::unique_iri(std::string_view type_iri) {
-	static boost::uuids::random_generator generator;
 	std::stringstream ss;
-	ss << type_iri << "_" << to_string(generator());
+	ss << type_iri;
+	write_unique(ss);
 	return IRIAtom::Tabled(ss.str());
 }
 
 std::string_view Resource::iri_name(std::string_view iri) {
-    auto pos = iri.find('#');
-    if (pos != std::string::npos) {
-        return iri.substr(pos + 1);
-    }
-    return {iri.data()};
+	auto pos = iri.find('#');
+	if (pos != std::string::npos) {
+		return iri.substr(pos + 1);
+	}
+	return {iri.data()};
 }
 
 std::string_view Resource::name() const {

@@ -36,7 +36,7 @@ FramedTriplePattern::FramedTriplePattern(const FramedTriple &triple, bool isNega
 		graphTerm_ = getGraphTerm(triple.graph().value());
 	}
 	if (triple.perspective()) {
-		perspectiveTerm_ = Atom::Tabled(triple.perspective().value());
+		perspectiveTerm_ = IRIAtom::Tabled(triple.perspective().value());
 	}
 	if (triple.isOccasional()) {
 		isOccasional_ = Numeric::trueAtom();
@@ -277,26 +277,33 @@ FramedTriplePattern::instantiateInto(FramedTriple &triple, const std::shared_ptr
 	return !hasMissingSPO;
 }
 
+TriplePatternContainer::~TriplePatternContainer() {
+	for (auto d: data_) {
+		delete d;
+	}
+}
+
 void TriplePatternContainer::push_back(const FramedTriplePatternPtr &q) {
 	statements_.emplace_back(q);
-	auto &data = data_.emplace_back();
-	data.ptr = new FramedTripleView();
-	data.owned = true;
-	if (!q->instantiateInto(*data.ptr)) {
+	auto data = new FramedTriplePtr;
+	data_.push_back(data);
+	data->ptr = new FramedTripleView();
+	data->owned = true;
+	if (!q->instantiateInto(*data->ptr)) {
 		data_.pop_back();
 	}
 }
 
 semweb::TripleContainer::ConstGenerator TriplePatternContainer::cgenerator() const {
 	return [this, i = 0]() mutable -> const FramedTriplePtr * {
-		if (i < data_.size()) return &data_[i++];
+		if (i < data_.size()) return data_[i++];
 		return nullptr;
 	};
 }
 
 semweb::MutableTripleContainer::MutableGenerator TriplePatternContainer::generator() {
 	return [this, i = 0]() mutable -> FramedTriplePtr * {
-		if (i < data_.size()) return &data_[i++];
+		if (i < data_.size()) return data_[i++];
 		return nullptr;
 	};
 }

@@ -13,6 +13,8 @@
 namespace knowrob {
 	QueryContextPtr DefaultQueryContext();
 
+	QueryContextPtr OneSolutionContext();
+
 	/**
 	 * A baseclass for queries. The only commitment is that queries are evaluated
 	 * within a certain context. The context defines additional parameters for the evaluation.

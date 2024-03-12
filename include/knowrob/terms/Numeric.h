@@ -154,7 +154,7 @@ namespace knowrob {
 		std::string_view stringForm() const override {
 			if (!stringForm_) {
 				std::ostringstream oss;
-				oss << std::fixed <<  *numericForm_;
+				oss << std::fixed << *numericForm_;
 				stringForm_ = oss.str();
 			}
 			return *stringForm_;
@@ -181,7 +181,7 @@ namespace knowrob {
 		mutable std::optional<T1> numericForm_;
 
 		// override Term
-		void write(std::ostream &os) const override { os << std::defaultfloat << numericForm(); }
+		void write(std::ostream &os) const override { os << std::defaultfloat << std::boolalpha << numericForm(); }
 	};
 
 	/**

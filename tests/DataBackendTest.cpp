@@ -10,6 +10,8 @@
 #include "knowrob/semweb/rdfs.h"
 #include "knowrob/db/RedlandModel.h"
 #include "knowrob/semweb/PrefixRegistry.h"
+#include "knowrob/reification/ReifiedBackend.h"
+#include "knowrob/reification/ReifiedTriple.h"
 
 using namespace knowrob;
 using namespace knowrob::mongo;
@@ -32,7 +34,9 @@ template<> std::shared_ptr<MongoKnowledgeGraph> createBackend<MongoKnowledgeGrap
 
 template<> std::shared_ptr<RedlandModel> createBackend<RedlandModel>() {
 	auto kg = std::make_shared<RedlandModel>();
-	//kg->setStorageType(RedlandStorageType::HASHES);
+	kg->setVocabulary(std::make_shared<semweb::Vocabulary>());
+	kg->setImportHierarchy(std::make_shared<semweb::ImportHierarchy>());
+	kg->setHashesStorage(RedlandHashType::MEMORY);
 	kg->initializeBackend();
 	return kg;
 }
@@ -48,8 +52,14 @@ public:
 	static void SetUpTestSuite() {
 		vocabulary_ = std::make_shared<semweb::Vocabulary>();
 		kg_ = createBackend<BackendType>();
-		queryable_ = kg_;
-		semweb::PrefixRegistry::get().registerPrefix("swrl_test", "http://knowrob.org/kb/swrl_test#");
+		if (kg_->canStoreTripleContext()) {
+			queryable_ = kg_;
+		} else {
+			queryable_ = std::make_shared<ReifiedBackend>(kg_);
+			queryable_->setVocabulary(kg_->vocabulary());
+			queryable_->setImportHierarchy(kg_->importHierarchy());
+		}
+		semweb::PrefixRegistry::registerPrefix("swrl_test", "http://knowrob.org/kb/swrl_test#");
 	}
 
 	// void TearDown() override {}
@@ -58,10 +68,27 @@ public:
 		std::list<BindingsPtr> out;
 		auto pattern = std::make_shared<FramedTriplePattern>(data);
 		auto pattern_q = std::make_shared<GraphPathQuery>(pattern);
-		queryable_->query(pattern_q, [&out](const BindingsPtr &next) {
+		// only queries that go through submitQuery are auto-expanded, so we
+		// do the expansion here manually.
+		auto expanded_q = QueryableBackend::expand(pattern_q);
+		queryable_->query(expanded_q, [&out](const BindingsPtr &next) {
 			out.push_back(next);
 		});
 		return out;
+	}
+
+	static bool insertOne(const FramedTriple &triple) {
+		// FIXME: redundant with KnowledgeBase
+		if (!kg_->canStoreTripleContext() && ReifiedTriple::isReifiable(triple)) {
+			ReifiedTriple reification(triple, vocabulary_);
+			bool allSuccess = true;
+			for (auto &reified : reification) {
+				allSuccess = kg_->insertOne(*reified.ptr) && allSuccess;
+			}
+			return allSuccess;
+		} else {
+			return kg_->insertOne(triple);
+		}
 	}
 
 	bool loadOntology(std::string_view path) {
@@ -76,7 +103,7 @@ public:
 		// define a prefix for naming blank nodes
 		parser.setBlankPrefix(std::string("_") + origin);
 		auto result = parser.run([this](const semweb::TripleContainerPtr &tripleContainer) {
-			kg_->insertAll(tripleContainer);
+			queryable_->insertAll(tripleContainer);
 		});
 		if (result) {
 			return true;
@@ -100,7 +127,7 @@ using TestableBackends = ::testing::Types<RedlandModel, MongoKnowledgeGraph>;
 TYPED_TEST_SUITE(DataBackendTest, TestableBackends);
 
 #define TEST_LOOKUP(x) DataBackendTest<TypeParam>::lookup(x)
-#define TEST_INSERT_ONE(x) DataBackendTest<TypeParam>::kg_->insertOne(x)
+#define TEST_INSERT_ONE(x) DataBackendTest<TypeParam>::insertOne(x)
 
 #define swrl_test_ "http://knowrob.org/kb/swrl_test#"
 
@@ -124,7 +151,7 @@ TYPED_TEST(DataBackendTest, LoadSOMAandDUL) {
 	EXPECT_NO_THROW(DataBackendTest<TypeParam>::loadOntology("owl/test/datatype_test.owl"));
 }
 
-TYPED_TEST(DataBackendTest, QueryTriple) {
+TYPED_TEST(DataBackendTest, QuerySubclassOf) {
 	FramedTripleCopy triple(
 			swrl_test_"Adult",
 			rdfs::subClassOf->stringForm().data(),
@@ -132,21 +159,12 @@ TYPED_TEST(DataBackendTest, QueryTriple) {
 	EXPECT_EQ(TEST_LOOKUP(triple).size(), 1);
 }
 
-TYPED_TEST(DataBackendTest, QueryNegatedTriple) {
-	auto negated = std::make_shared<FramedTriplePattern>(
-			QueryParser::parsePredicate("triple(swrl_test:x, swrl_test:p, swrl_test:y)"), true);
-	EXPECT_EQ(TEST_LOOKUP(*negated).size(), 1);
-	FramedTripleCopy statement(swrl_test_"x", swrl_test_"p", swrl_test_"y");
-	EXPECT_NO_THROW(TEST_INSERT_ONE(statement));
-	EXPECT_EQ(TEST_LOOKUP(*negated).size(), 0);
-}
-
 TYPED_TEST(DataBackendTest, DeleteSubclassOf) {
 	FramedTripleCopy triple(
 			swrl_test_"Adult",
 			rdfs::subClassOf->stringForm().data(),
 			swrl_test_"TestThing");
-	EXPECT_NO_THROW(DataBackendTest<TypeParam>::kg_->removeOne(triple));
+	EXPECT_NO_THROW(DataBackendTest<TypeParam>::queryable_->removeOne(triple));
 	EXPECT_EQ(TEST_LOOKUP(triple).size(), 0);
 }
 
@@ -164,8 +182,18 @@ TYPED_TEST(DataBackendTest, AssertSubclassOf) {
 	EXPECT_EQ(TEST_LOOKUP(not_existing).size(), 0);
 }
 
+TYPED_TEST(DataBackendTest, QueryNegatedTriple) {
+	auto negated = std::make_shared<FramedTriplePattern>(
+			QueryParser::parsePredicate("triple(swrl_test:x, swrl_test:p, swrl_test:y)"), true);
+	EXPECT_EQ(TEST_LOOKUP(*negated).size(), 1);
+	FramedTripleCopy statement(swrl_test_"x", swrl_test_"p", swrl_test_"y");
+	EXPECT_NO_THROW(TEST_INSERT_ONE(statement));
+	EXPECT_EQ(TEST_LOOKUP(*negated).size(), 0);
+}
+
 TYPED_TEST(DataBackendTest, Knowledge) {
-	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "X");
+	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "Lea's name");
+	statement.setStringValue("Lea's name");
 	statement.setIsUncertain(false);
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 0);
 	EXPECT_NO_THROW(TEST_INSERT_ONE(statement));
@@ -176,20 +204,22 @@ TYPED_TEST(DataBackendTest, Knowledge) {
 
 TYPED_TEST(DataBackendTest, KnowledgeOfAgent) {
 	// assert knowledge of a named agent
-	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "Y");
+	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "Lea's name");
+	statement.setStringValue("Lea's name");
 	statement.setIsUncertain(false);
-	statement.setPerspective(swrl_test_"agent_a");
+	statement.setPerspective(swrl_test_"Lea");
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 0);
 	EXPECT_NO_THROW(TEST_INSERT_ONE(statement));
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 1);
 	// the statement is not known to be true for other agents
-	statement.setPerspective(swrl_test_"agent_b");
+	statement.setPerspective(swrl_test_"Fred");
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 0);
 }
 
 TYPED_TEST(DataBackendTest, Belief) {
 	// assert uncertain statement
-	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "Lea");
+	FramedTripleCopy statement(swrl_test_"Fred", swrl_test_"hasName", "Fred");
+	statement.setStringValue("Fred");
 	statement.setIsUncertain(true);
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 0);
 	EXPECT_NO_THROW(TEST_INSERT_ONE(statement));
@@ -201,7 +231,8 @@ TYPED_TEST(DataBackendTest, Belief) {
 
 TYPED_TEST(DataBackendTest, WithConfidence) {
 	// assert uncertain statement with confidence=0.5
-	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "A");
+	FramedTripleCopy statement(swrl_test_"Bob", swrl_test_"hasName", "Bob");
+	statement.setStringValue("Bob");
 	statement.setIsUncertain(true);
 	statement.setConfidence(0.5);
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 0);
@@ -217,7 +248,8 @@ TYPED_TEST(DataBackendTest, WithConfidence) {
 
 TYPED_TEST(DataBackendTest, WithTimeInterval) {
 	// assert a statement with time interval [5,10]
-	FramedTripleCopy statement(swrl_test_"Rex", swrl_test_"hasName", "Rex");
+	FramedTripleCopy statement(swrl_test_"Alice", swrl_test_"hasName", "Alice");
+	statement.setStringValue("Alice");
 	statement.setBegin(5.0);
 	statement.setEnd(10.0);
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 0);
@@ -233,7 +265,8 @@ TYPED_TEST(DataBackendTest, WithTimeInterval) {
 
 TYPED_TEST(DataBackendTest, ExtendsTimeInterval) {
 	// assert a statement with time interval [10,20]
-	FramedTripleCopy statement(swrl_test_"Rex", swrl_test_"hasName", "Rex");
+	FramedTripleCopy statement(swrl_test_"Alice", swrl_test_"hasName", "Alice");
+	statement.setStringValue("Alice");
 	statement.setBegin(10.0);
 	statement.setEnd(20.0);
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 0);
