@@ -352,12 +352,20 @@ namespace knowrob {
 		FramedTripleTemplate()
 				: FramedTriple() {}
 
-		FramedTripleTemplate(std::string_view subject, std::string_view predicate, std::string_view object)
+		FramedTripleTemplate(std::string_view subject_iri, std::string_view predicate_iri, std::string_view object_iri)
+				: FramedTriple(),
+				  subject_(subject_iri),
+				  predicate_(predicate_iri) {
+			object_ = StringType(object_iri);
+			xsdType_ = std::nullopt;
+		}
+
+		template<typename ValT>
+		FramedTripleTemplate(std::string_view subject, std::string_view predicate, const ValT &object, XSDType type)
 				: FramedTriple(),
 				  subject_(subject),
 				  predicate_(predicate) {
-			object_ = StringType(object);
-			xsdType_ = std::nullopt;
+			set(object, type);
 		}
 
 		explicit FramedTripleTemplate(const FramedTriple &other)

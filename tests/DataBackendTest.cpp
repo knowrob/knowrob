@@ -192,8 +192,7 @@ TYPED_TEST(DataBackendTest, QueryNegatedTriple) {
 }
 
 TYPED_TEST(DataBackendTest, Knowledge) {
-	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "Lea's name");
-	statement.setStringValue("Lea's name");
+	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "Lea", knowrob::XSDType::STRING);
 	statement.setIsUncertain(false);
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 0);
 	EXPECT_NO_THROW(TEST_INSERT_ONE(statement));
@@ -204,8 +203,7 @@ TYPED_TEST(DataBackendTest, Knowledge) {
 
 TYPED_TEST(DataBackendTest, KnowledgeOfAgent) {
 	// assert knowledge of a named agent
-	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "Lea's name");
-	statement.setStringValue("Lea's name");
+	FramedTripleCopy statement(swrl_test_"Lea", swrl_test_"hasName", "Lea", knowrob::XSDType::STRING);
 	statement.setIsUncertain(false);
 	statement.setPerspective(swrl_test_"Lea");
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 0);
@@ -218,8 +216,7 @@ TYPED_TEST(DataBackendTest, KnowledgeOfAgent) {
 
 TYPED_TEST(DataBackendTest, Belief) {
 	// assert uncertain statement
-	FramedTripleCopy statement(swrl_test_"Fred", swrl_test_"hasName", "Fred");
-	statement.setStringValue("Fred");
+	FramedTripleCopy statement(swrl_test_"Fred", swrl_test_"hasName", "Fred", knowrob::XSDType::STRING);
 	statement.setIsUncertain(true);
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 0);
 	EXPECT_NO_THROW(TEST_INSERT_ONE(statement));
@@ -231,8 +228,7 @@ TYPED_TEST(DataBackendTest, Belief) {
 
 TYPED_TEST(DataBackendTest, WithConfidence) {
 	// assert uncertain statement with confidence=0.5
-	FramedTripleCopy statement(swrl_test_"Bob", swrl_test_"hasName", "Bob");
-	statement.setStringValue("Bob");
+	FramedTripleCopy statement(swrl_test_"Bob", swrl_test_"hasName", "Bob", knowrob::XSDType::STRING);
 	statement.setIsUncertain(true);
 	statement.setConfidence(0.5);
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 0);
@@ -248,8 +244,7 @@ TYPED_TEST(DataBackendTest, WithConfidence) {
 
 TYPED_TEST(DataBackendTest, WithTimeInterval) {
 	// assert a statement with time interval [5,10]
-	FramedTripleCopy statement(swrl_test_"Alice", swrl_test_"hasName", "Alice");
-	statement.setStringValue("Alice");
+	FramedTripleCopy statement(swrl_test_"Alice", swrl_test_"hasName", "Alice", knowrob::XSDType::STRING);
 	statement.setBegin(5.0);
 	statement.setEnd(10.0);
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 0);
@@ -266,8 +261,7 @@ TYPED_TEST(DataBackendTest, WithTimeInterval) {
 TYPED_TEST(DataBackendTest, ExtendsTimeInterval) {
 	GTEST_SKIP() << "the data backend interface currently does not support extending time intervals.";
 	// assert a statement with time interval [10,20]
-	FramedTripleCopy statement(swrl_test_"Alice", swrl_test_"hasName", "Alice");
-	statement.setStringValue("Alice");
+	FramedTripleCopy statement(swrl_test_"Alice", swrl_test_"hasName", "Alice", knowrob::XSDType::STRING);
 	statement.setBegin(10.0);
 	statement.setEnd(20.0);
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 0);
