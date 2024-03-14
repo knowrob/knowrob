@@ -161,6 +161,7 @@ std::shared_ptr<GraphTerm> ReifiedQuery::reifiedPatternSequence(const FramedTrip
 	if (nonReified.confidenceTerm().has_grounding()) {
 		auto x = addPattern(seq, name, reification::hasConfidence, nonReified.confidenceTerm().grounded(), g);
 		x->setObjectOperator(FramedTriplePattern::GEQ);
+		x->setIsOptional(true);
 	} else if (nonReified.confidenceTerm().has_variable()) {
 		auto x = addPattern(seq, name, reification::hasConfidence, nonReified.confidenceTerm().variable(), g);
 		x->setIsOptional(true);
