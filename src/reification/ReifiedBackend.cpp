@@ -152,6 +152,6 @@ void ReifiedBackend::query(const GraphQueryPtr &q, const BindingsHandler &callba
 }
 
 void ReifiedBackend::count(const ResourceCounter &callback) const {
-	// TODO: implement
+	// nothing to do here
 	originalBackend_->count(callback);
 }

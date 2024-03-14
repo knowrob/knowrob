@@ -141,9 +141,16 @@ void KnowledgeBase::initVocabulary() {
 
 		// query number of assertions of each property/class.
 		// this is useful information for optimizing the query planner.
-		backend->count([this](std::string_view resource, uint64_t count) {
+		std::vector<semweb::PropertyPtr> reifiedProperties;
+		backend->count([this,&reifiedProperties](std::string_view resource, uint64_t count) {
+			// special handling for reified relations: they are concepts, but do also increase the relation counter
+			auto reifiedProperty = vocabulary_->getDefinedReification(resource);
+			if (reifiedProperty) reifiedProperties.push_back(reifiedProperty);
 			vocabulary_->setFrequency(resource, count);
 		});
+		for (auto &p: reifiedProperties) {
+			vocabulary_->increaseFrequency(p->iri());
+		}
 	}
 }
 
