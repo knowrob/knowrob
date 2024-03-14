@@ -365,7 +365,12 @@ namespace knowrob {
 				: FramedTriple(),
 				  subject_(subject),
 				  predicate_(predicate) {
-			set(object, type);
+			if (type == XSDType::STRING) {
+				object_ = StringType(object);
+				xsdType_ = type;
+			} else {
+				set(object, type);
+			}
 		}
 
 		explicit FramedTripleTemplate(const FramedTriple &other)
