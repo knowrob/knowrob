@@ -150,24 +150,19 @@ void MongoTriplePattern::appendTimeSelector(bson_t *selectorDoc, const FramedTri
 	auto et = &tripleExpression.endTerm();
 	auto &o = tripleExpression.isOccasionalTerm();
 
-	// matching must be done depending on temporal operator:
-	// - H: bt >= since_H && et <= until_H
-	// - P: et >= since_H && bt <= until_H
-	// - TODO: there is another case for operator P: bt <= since_P && et >= until_P
-	if (o.has_grounding() && o.grounded()->asBoolean()) {
-		// just swap bt/et (see above comment)
+	if (!((o.has_grounding() && o.grounded()->asBoolean()) || o.has_variable())) {
+		// note: null value of "occasional" field is seen as value "false"
+		MongoTerm::append(
+				selectorDoc,
+				"occasional",
+				Numeric::falseAtom(),
+				nullptr,
+				true);
+	} else {
 		auto swap = bt;
 		bt = et;
 		et = swap;
 	}
-	// ensure that input document has *H* operator.
-	// null is also ok. in particular exclude documents with *P* operator here.
-	MongoTerm::append(
-			selectorDoc,
-			"occasional",
-			b_always,
-			nullptr,
-			allowNullValues);
 
 	if (bt->has_grounding()) {
 		MongoTerm::append(
