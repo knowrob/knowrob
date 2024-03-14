@@ -10,5 +10,5 @@ EDBStage::EDBStage(QueryableBackendPtr edb, const FramedTriplePatternPtr &litera
 }
 
 TokenBufferPtr EDBStage::submitQuery(const FramedTriplePatternPtr &literal) {
-	return edb_->submitQuery(std::make_shared<ConjunctiveQuery>(literal, ctx_));
+	return edb_->submitQuery(std::make_shared<GraphPathQuery>(literal, ctx_));
 }

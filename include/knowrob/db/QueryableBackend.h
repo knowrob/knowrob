@@ -6,14 +6,16 @@
 #ifndef KNOWROB_QUERYABLE_BACKEND_H
 #define KNOWROB_QUERYABLE_BACKEND_H
 
-#include "knowrob/queries/ConjunctiveQuery.h"
 #include "knowrob/queries/TokenBuffer.h"
-#include "knowrob/queries/FramedBindings.h"
 #include "DataBackend.h"
 #include "knowrob/queries/Answer.h"
+#include "knowrob/triples/GraphPathQuery.h"
+#include "knowrob/queries/AnswerYes.h"
+#include "knowrob/queries/AnswerNo.h"
+#include "knowrob/triples/GraphConnective.h"
 
 namespace knowrob {
-	using ResourceCounter = std::function<void(std::string_view,uint64_t)>;
+	using ResourceCounter = std::function<void(std::string_view, uint64_t)>;
 
 	/**
 	 * A backend that can be queried.
@@ -21,6 +23,8 @@ namespace knowrob {
 	class QueryableBackend : public DataBackend {
 	public:
 		static AtomPtr versionProperty;
+
+		QueryableBackend();
 
 		/**
 		 * @return true if the backend is persistent.
@@ -58,7 +62,7 @@ namespace knowrob {
 		 * @param query a graph query
 		 * @param callback a function that is called for each answer to the query.
 		 */
-		virtual void query(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback) = 0;
+		virtual void query(const GraphQueryPtr &query, const BindingsHandler &callback) = 0;
 
 		/**
 		 * @param callback a function that is called for each resource and its count.
@@ -74,7 +78,7 @@ namespace knowrob {
 		 * @param query a graph query
 		 * @return a stream with answers to the query
 		 */
-		TokenBufferPtr submitQuery(const ConjunctiveQueryPtr &query);
+		TokenBufferPtr submitQuery(const GraphPathQueryPtr &query);
 
 		/**
 		 * Evaluates a query and may block until evaluation completed.
@@ -82,7 +86,7 @@ namespace knowrob {
 		 * @param query a query.
 		 * @param resultStream a stream of answers.
 		 */
-		void evaluateQuery(const ConjunctiveQueryPtr &query, const TokenBufferPtr &resultStream);
+		void evaluateQuery(const GraphPathQueryPtr &query, const TokenBufferPtr &resultStream);
 
 		/**
 		 * @return a list of all origins that have been persisted.
@@ -102,10 +106,58 @@ namespace knowrob {
 		 */
 		void setVersionOfOrigin(std::string_view origin, std::string_view version);
 
-	protected:
-		static AnswerPtr no(const ConjunctiveQueryPtr &q);
+		/**
+		 * @return the batch size.
+		 */
+		uint32_t batchSize() const { return batchSize_; }
 
-		static AnswerPtr yes(const ConjunctiveQueryPtr &q, const FramedBindingsPtr &bindings);
+		/**
+		 * The size of the container used when triples are processed in batches.
+		 * @param batchSize the batch size for the backend.
+		 */
+		void setBatchSize(uint32_t batchSize) { batchSize_ = batchSize; }
+
+		/**
+		 * @return true if the backend supports re-assignment of variables within query pipelines.
+		 */
+		virtual bool supportsReAssignment() const { return false; }
+
+		/**
+		 * Expand a query with complex patterns into one with potentially more
+		 * but less complex patterns.
+		 * This is done to realize a backend-independent handling of some aspects
+		 * such as determining whether an answer is uncertain or not.
+		 * @param q a graph query.
+		 * @return the expanded graph query.
+		 */
+		GraphQueryPtr expand(const GraphQueryPtr &q);
+
+	protected:
+		uint32_t batchSize_;
+
+		struct ExpansionContext {
+			ExpansionContext() : counter(0) {}
+
+			std::vector<VariablePtr> o_vars;
+			std::vector<VariablePtr> u_vars;
+			VariablePtr accumulated_begin;
+			VariablePtr accumulated_end;
+			QueryContextPtr query_ctx;
+			uint32_t counter;
+		};
+
+		static std::shared_ptr<AnswerNo> no(const GraphPathQueryPtr &q);
+
+		static std::shared_ptr<AnswerYes> yes(const GraphPathQueryPtr &q, const BindingsPtr &bindings);
+
+		GraphQueryPtr expand(ExpansionContext &ctx, const GraphQueryPtr &q);
+
+		std::shared_ptr<GraphTerm> expand(ExpansionContext &ctx, const std::shared_ptr<GraphTerm> &q);
+
+		std::shared_ptr<GraphTerm> expandPattern(ExpansionContext &ctx, const std::shared_ptr<GraphPattern> &q);
+
+		bool expandAll(ExpansionContext &ctx, const std::shared_ptr<GraphConnective> &q,
+							  std::vector<std::shared_ptr<GraphTerm>> &expandedTerms);
 	};
 
 	using QueryableBackendPtr = std::shared_ptr<QueryableBackend>;

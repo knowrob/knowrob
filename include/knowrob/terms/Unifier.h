@@ -9,13 +9,13 @@
 #ifndef KNOWROB_UNIFIER_H_
 #define KNOWROB_UNIFIER_H_
 
-#include "Substitution.h"
+#include "Bindings.h"
 
 namespace knowrob {
 	/**
 	 * A substitution that unifies some terms.
 	 */
-	class Unifier : public Substitution {
+	class Unifier : public Bindings {
 	public:
 		/**
 		 * Compute a unifier of two terms.

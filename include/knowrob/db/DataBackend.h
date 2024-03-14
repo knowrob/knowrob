@@ -7,9 +7,9 @@
 #define KNOWROB_DATA_BACKEND_H
 
 #include <boost/property_tree/ptree.hpp>
-#include "knowrob/semweb/FramedTriplePattern.h"
-#include "knowrob/semweb/FramedTriple.h"
-#include "knowrob/semweb/TripleContainer.h"
+#include "knowrob/triples/FramedTriplePattern.h"
+#include "knowrob/triples/FramedTriple.h"
+#include "knowrob/triples/TripleContainer.h"
 #include "knowrob/semweb/Vocabulary.h"
 #include "knowrob/semweb/ImportHierarchy.h"
 #include "knowrob/reasoner/ReasonerConfig.h"
@@ -53,6 +53,15 @@ namespace knowrob {
 		 * @param origin the origin of the statements to be deleted.
 		 */
 		virtual bool removeAllWithOrigin(std::string_view origin) = 0;
+
+		/**
+		 * Check if a triple may have additional context information that can be
+		 * stored in this backend without the use of reified statements.
+		 * If this is not the case, statements with additional context information
+		 * first need to be reified before they can be handled by this backend.
+		 * @return true if this backend can store triple context directly
+		 */
+		virtual bool canStoreTripleContext() const { return false; }
 	};
 
 	/**

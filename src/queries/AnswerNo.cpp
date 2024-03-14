@@ -16,13 +16,11 @@ namespace knowrob {
 using namespace knowrob;
 
 AnswerNo::AnswerNo()
-		: Answer(),
-		  isUncertain_(false) {
+		: Answer() {
 }
 
 AnswerNo::AnswerNo(const AnswerNo &other)
-		: Answer(other),
-		  isUncertain_(other.isUncertain_) {
+		: Answer(other) {
 }
 
 void AnswerNo::addUngrounded(const std::shared_ptr<Predicate> &predicate, bool isNegated) {
@@ -33,28 +31,19 @@ void AnswerNo::addUngrounded(const std::shared_ptr<Predicate> &predicate, bool i
 	}
 }
 
-bool AnswerNo::isUncertain() const {
-	return isUncertain_;
-}
-
-void AnswerNo::setIsUncertain(std::optional<double> confidence) {
-	isUncertain_ = true;
-	if (confidence.has_value()) {
-		confidence_ = confidence;
-	}
-}
-
 size_t AnswerNo::hash() const {
 	size_t val = Answer::hash();
-	hashCombine(val, isUncertain_);
-	hashCombine(val, std::hash<std::optional<double>>{}(confidence_));
+	hashCombine(val, frame_->hash());
 	// FIXME: must include predicates in hash. best to keep them in a sorted container.
 	return val;
 }
 
 bool AnswerNo::mergeWith(const AnswerNo &other) {
 	reasonerTerm_ = {};
-	isUncertain_ = isUncertain_ || other.isUncertain_;
+	if (!frame_->mergeWith(*other.frame_)) {
+		// merging frames failed -> results cannot be combined
+		return false;
+	}
 	// insert groundings of other answer
 	positiveUngrounded_.insert(positiveUngrounded_.end(),
 							   other.positiveUngrounded_.begin(), other.positiveUngrounded_.end());
@@ -64,25 +53,25 @@ bool AnswerNo::mergeWith(const AnswerNo &other) {
 }
 
 std::ostream &AnswerNo::write(std::ostream &os) const {
-	if(reasonerTerm_) {
+	if (reasonerTerm_) {
 		os << "[" << *reasonerTerm_ << "] ";
 	}
-	if(isUncertain()) {
+	if (isUncertain()) {
 		os << "probably ";
 	}
 	os << "no";
-	if(!positiveUngrounded_.empty() || !negativeUngrounded_.empty()) {
+	if (!positiveUngrounded_.empty() || !negativeUngrounded_.empty()) {
 		os << ", because:\n";
-		for(auto &x : positiveUngrounded_) {
+		for (auto &x: positiveUngrounded_) {
 			os << '\t' << *x.graphSelector() << ' ' << '~' << *x.predicate();
-			if(x.reasonerTerm() && x.reasonerTerm() != reasonerTerm_) {
+			if (x.reasonerTerm() && x.reasonerTerm() != reasonerTerm_) {
 				os << ' ' << '[' << *x.reasonerTerm() << "]";
 			}
 			os << '\n';
 		}
-		for(auto &x : negativeUngrounded_) {
+		for (auto &x: negativeUngrounded_) {
 			os << '\t' << *x.graphSelector() << *x.predicate();
-			if(x.reasonerTerm() && x.reasonerTerm() != reasonerTerm_) {
+			if (x.reasonerTerm() && x.reasonerTerm() != reasonerTerm_) {
 				os << ' ' << '[' << *x.reasonerTerm() << "]";
 			}
 			os << '\n';

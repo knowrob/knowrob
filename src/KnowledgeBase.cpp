@@ -24,10 +24,12 @@
 #include "knowrob/queries/RedundantAnswerFilter.h"
 #include "knowrob/queries/DisjunctiveBroadcaster.h"
 #include "knowrob/queries/AnswerYes.h"
-#include "knowrob/semweb/TripleFormat.h"
+#include "knowrob/triples/TripleFormat.h"
 #include "knowrob/db/OntologyFile.h"
 #include "knowrob/db/SPARQLService.h"
-#include "knowrob/semweb/TripleContainer.h"
+#include "knowrob/reification/ReifiedTriple.h"
+#include "knowrob/reification/ReificationContainer.h"
+#include "knowrob/triples/TripleContainer.h"
 #include "knowrob/semweb/rdf.h"
 #include "knowrob/semweb/owl.h"
 #include "knowrob/semweb/rdfs.h"
@@ -112,7 +114,7 @@ void KnowledgeBase::initVocabulary() {
 		auto backend = it.second;
 
 		// initialize the import hierarchy
-		for (auto &origin : backend->getOrigins()) {
+		for (auto &origin: backend->getOrigins()) {
 			importHierarchy_->addDirectImport(importHierarchy_->ORIGIN_SYSTEM, origin);
 		}
 
@@ -139,9 +141,16 @@ void KnowledgeBase::initVocabulary() {
 
 		// query number of assertions of each property/class.
 		// this is useful information for optimizing the query planner.
-		backend->count([this](std::string_view resource, uint64_t count) {
+		std::vector<semweb::PropertyPtr> reifiedProperties;
+		backend->count([this,&reifiedProperties](std::string_view resource, uint64_t count) {
+			// special handling for reified relations: they are concepts, but do also increase the relation counter
+			auto reifiedProperty = vocabulary_->getDefinedReification(resource);
+			if (reifiedProperty) reifiedProperties.push_back(reifiedProperty);
 			vocabulary_->setFrequency(resource, count);
 		});
+		for (auto &p: reifiedProperties) {
+			vocabulary_->increaseFrequency(p->iri());
+		}
 	}
 }
 
@@ -170,7 +179,7 @@ void KnowledgeBase::configurePrefixes(const boost::property_tree::ptree &config)
 			auto alias = pair.second.get("alias", "");
 			auto uri = pair.second.get("uri", "");
 			if (!alias.empty() && !uri.empty()) {
-				semweb::PrefixRegistry::get().registerPrefix(alias, uri);
+				semweb::PrefixRegistry::registerPrefix(alias, uri);
 			} else {
 				KB_WARN("Invalid entry in semantic-web::prefixes, 'alias' and 'uri' must be defined.");
 			}
@@ -218,12 +227,7 @@ void KnowledgeBase::configureDataSources(const boost::property_tree::ptree &conf
 
 			// TODO: read data source transformation setting here.
 			//       add key "transformation", with sub-keys "path", "language", "format", ...
-			// TODO: support data transformations for ontology languages
-			//       basically load into a separate raptor world, transform this raptor world, then push it into
-			//       all backends. Actually, some renaming transformations could be done in the event handler.
-			//       but often we would rather add additional triples for alignment, e.g. if the alignment language is
-			//       RDFS, then we can simply load the alignment ontology into the raptor world.
-			// TODO: create semweb::Transformation object based on "transformation" setting
+			//       create semweb::Transformation object based on "transformation" setting
 			//       and apply it to the data source loaded into a raptor world.
 
 			if (!dataSource) {
@@ -269,7 +273,9 @@ DataSourcePtr KnowledgeBase::createDataSource(const boost::property_tree::ptree 
 	auto o_dataSourceLanguage = subtree.get_optional<std::string>("language");
 	auto dataSourceType = getDataSourceType(dataSourceFormat, o_dataSourceLanguage,
 											subtree.get_optional<std::string>("type"));
-	// TODO: support graph selector specification in settings
+	// TODO: support graph selector specification in settings?
+	//          then a data transformer could be created based on the setting.
+	//          an idea would be e.g. to have a reasoner running for other perspectives.
 	//auto tripleFrame_ptree = subtree.get_child_optional("frame");
 	//auto tripleFrame = tripleFrame_ptree ?
 	//		std::make_shared<GraphSelector>(tripleFrame_ptree.value()) : nullptr;
@@ -435,7 +441,6 @@ void KnowledgeBase::createComputationPipeline(
 			idbStage >> stepOutput;
 			pipeline->addStage(idbStage);
 			// TODO: what about the materialization of the predicate in EDB?
-			//       there is also the QUERY_FLAG_PERSIST_SOLUTIONS flag
 		}
 
 		// add a stage that consolidates the results of the EDB and IDB stages.
@@ -463,8 +468,8 @@ void KnowledgeBase::createComputationPipeline(
 	lastOut >> pipelineOutput;
 }
 
-TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery) {
-	auto allLiterals = graphQuery->literals();
+TokenBufferPtr KnowledgeBase::submitQuery(const GraphPathQueryPtr &graphQuery) {
+	auto &allLiterals = graphQuery->path();
 
 	// --------------------------------------
 	// Construct a pipeline that holds references to stages.
@@ -533,7 +538,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const ConjunctiveQueryPtr &graphQuery)
 	} else {
 		auto edb = getBackendForQuery(edbOnlyLiterals, graphQuery->ctx());
 		edbOut = edb->submitQuery(
-				std::make_shared<ConjunctiveQuery>(edbOnlyLiterals, graphQuery->ctx()));
+				std::make_shared<GraphPathQuery>(edbOnlyLiterals, graphQuery->ctx()));
 	}
 	pipeline->addStage(edbOut);
 
@@ -609,8 +614,8 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FirstOrderLiteralPtr &literal, c
 	auto rdfLiteral = std::make_shared<FramedTriplePattern>(
 			literal->predicate(), literal->isNegated());
 	rdfLiteral->setTripleFrame(ctx->selector);
-	return submitQuery(std::make_shared<ConjunctiveQuery>(
-			ConjunctiveQuery({rdfLiteral}, ctx)));
+	return submitQuery(std::make_shared<GraphPathQuery>(
+			GraphPathQuery({rdfLiteral}, ctx)));
 }
 
 TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryContextPtr &ctx) {
@@ -683,7 +688,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 			channel->push(EndOfEvaluation::get());
 			pipeline->addStage(lastStage);
 		} else {
-			auto pathQuery = std::make_shared<ConjunctiveQuery>(posLiterals, ctx);
+			auto pathQuery = std::make_shared<GraphPathQuery>(posLiterals, ctx);
 			firstBuffer = submitQuery(pathQuery);
 			lastStage = firstBuffer;
 			pipeline->addStage(lastStage);
@@ -777,6 +782,20 @@ DataBackendPtr KnowledgeBase::findSourceBackend(const FramedTriple &triple) {
 	return {};
 }
 
+static inline std::shared_ptr<ThreadPool::Runner> pushPerTripleWork(
+		const semweb::TripleContainerPtr &triples,
+		const std::function<void(const FramedTriplePtr &)> &fn) {
+	auto perTripleWorker =
+			std::make_shared<ThreadPool::LambdaRunner>([fn, triples](const ThreadPool::LambdaRunner::StopChecker &) {
+				std::for_each(triples->begin(), triples->end(), fn);
+			});
+	DefaultThreadPool()->pushWork(perTripleWorker,
+								  [](const std::exception &exc) {
+									  KB_ERROR("failed to update vocabulary: {}", exc.what());
+								  });
+	return perTripleWorker;
+}
+
 template<typename T>
 static inline std::shared_ptr<T> createTransaction(
 		const std::shared_ptr<DefinedBackend> &definedBackend,
@@ -794,30 +813,53 @@ static inline std::shared_ptr<T> createTransaction(
 	return transaction;
 }
 
-static inline std::shared_ptr<ThreadPool::Runner> pushPerTripleWork(
-		const semweb::TripleContainerPtr &triples,
-		const std::function<void(const FramedTriplePtr &)> &fn) {
-	auto perTripleWorker =
-			std::make_shared<ThreadPool::LambdaRunner>([fn, triples](const ThreadPool::LambdaRunner::StopChecker &) {
-				std::for_each(triples->begin(), triples->end(), fn);
-			});
-	DefaultThreadPool()->pushWork(perTripleWorker,
-								  [](const std::exception &exc) {
-									  KB_ERROR("failed to update vocabulary: {}", exc.what());
-								  });
-	return perTripleWorker;
+template<typename T, typename U>
+bool transaction(const semweb::TripleContainerPtr &triples,
+				 const U &backends,
+				 const std::shared_ptr<semweb::Vocabulary> &vocabulary,
+				 const std::shared_ptr<DataBackend> &sourceBackend) {
+	semweb::TripleContainerPtr reified;
+	std::vector<std::shared_ptr<DataTransaction>> transactions;
+	for (auto &definedBackend: backends) {
+		auto &backend = definedBackend->backend();
+		if (backend == sourceBackend) continue;
+
+		semweb::TripleContainerPtr backendTriples;
+		if (!backend->canStoreTripleContext()) {
+			if (!reified) reified = std::make_shared<ReificationContainer>(triples, vocabulary);
+			backendTriples = reified;
+		} else {
+			backendTriples = triples;
+		}
+		transactions.push_back(createTransaction<T>(definedBackend, backendTriples));
+	}
+	// wait for all transactions to finish
+	for (auto &transaction: transactions) transaction->join();
+	return true;
 }
 
 bool KnowledgeBase::insertOne(const FramedTriple &triple) {
+	// TODO: redundant with below
+	ReifiedTriplePtr reification;
 	// find the source backend, if any
 	auto sourceBackend = findSourceBackend(triple);
 	// insert into all other backends
 	for (auto &definedBackend: backendManager_->backendPool()) {
+		auto &backend = definedBackend.second->backend();
 		// skip the source backend
-		if (definedBackend.second->backend() == sourceBackend) continue;
+		if (backend == sourceBackend) continue;
 
-		if (!definedBackend.second->backend()->insertOne(triple)) {
-			KB_WARN("assertion of triple into backend '{}' failed!", definedBackend.first);
+		if (!backend->canStoreTripleContext()) {
+			if (!reification) reification = std::make_shared<ReifiedTriple>(triple, vocabulary());
+			for (auto &reified: *reification) {
+				if (!backend->insertOne(*reified.ptr)) {
+					KB_WARN("assertion of triple into backend '{}' failed!", definedBackend.first);
+				}
+			}
+		} else {
+			if (!backend->insertOne(triple)) {
+				KB_WARN("assertion of triple into backend '{}' failed!", definedBackend.first);
+			}
 		}
 	}
 	updateVocabularyInsert(triple);
@@ -825,15 +867,26 @@ bool KnowledgeBase::insertOne(const FramedTriple &triple) {
 }
 
 bool KnowledgeBase::removeOne(const FramedTriple &triple) {
+	ReifiedTriplePtr reification;
 	// find the source backend, if any
 	auto sourceBackend = findSourceBackend(triple);
 	// insert into all other backends
 	for (auto &definedBackend: backendManager_->backendPool()) {
+		auto &backend = definedBackend.second->backend();
 		// skip the source backend
-		if (definedBackend.second->backend() == sourceBackend) continue;
+		if (backend == sourceBackend) continue;
 
-		if (!definedBackend.second->backend()->removeOne(triple)) {
-			KB_WARN("deletion of triple from backend '{}' failed!", definedBackend.first);
+		if (!backend->canStoreTripleContext()) {
+			if (!reification) reification = std::make_shared<ReifiedTriple>(triple, vocabulary());
+			for (auto &reified: *reification) {
+				if (!backend->removeOne(*reified.ptr)) {
+					KB_WARN("deletion of triple from backend '{}' failed!", definedBackend.first);
+				}
+			}
+		} else {
+			if (!backend->removeOne(triple)) {
+				KB_WARN("deletion of triple from backend '{}' failed!", definedBackend.first);
+			}
 		}
 	}
 	updateVocabularyRemove(triple);
@@ -842,41 +895,12 @@ bool KnowledgeBase::removeOne(const FramedTriple &triple) {
 
 bool KnowledgeBase::insertAllInto(const semweb::TripleContainerPtr &triples,
 								  const std::vector<std::shared_ptr<DefinedBackend>> &backends) {
-	// TODO: apply filter before inserting into backends. each backend should be able to specify GraphSelector
-	//       used for the filtering. e.g. historic triples should not be inserted into backends that do not support time.
-	if (triples->empty()) return true;
-
-	// find the source backend, if any.
-	auto sourceBackend = findSourceBackend(**triples->begin());
-	// push a worker goal that updates the vocabulary
-	auto vocabWorker = pushPerTripleWork(triples,
-										 [this](const FramedTriplePtr &triple) {
-											 updateVocabularyInsert(*triple);
-										 });
-
-	// insert into all other backends. currently only a warning is printed if insertion fails for a backend.
-	std::vector<std::shared_ptr<DataTransaction>> transactions;
-	for (auto &definedBackend: backends) {
-		// skip the source backend
-		if (definedBackend->backend() == sourceBackend) continue;
-		transactions.push_back(createTransaction<DataInsertion>(definedBackend, triples));
-	}
-
-	// wait for all transactions to finish
-	vocabWorker->join();
-	for (auto &transaction: transactions) transaction->join();
-
-	return true;
-}
-
-bool KnowledgeBase::insertAll(const semweb::TripleContainerPtr &triples) {
 	// TODO: maybe it would be best to at least enforce that transactions succeed in the central
 	//       backend, and if not, rollback the transaction in the other backends. For this,
 	//       all backends should be able to rollback the transactions.
 	// TODO: apply filter before inserting into backends. each backend should be able to specify GraphSelector
 	//       used for the filtering. e.g. historic triples should not be inserted into backends that do not support time.
 	if (triples->empty()) return true;
-
 	// find the source backend, if any.
 	auto sourceBackend = findSourceBackend(**triples->begin());
 	// push a worker goal that updates the vocabulary
@@ -884,45 +908,36 @@ bool KnowledgeBase::insertAll(const semweb::TripleContainerPtr &triples) {
 										 [this](const FramedTriplePtr &triple) {
 											 updateVocabularyInsert(*triple);
 										 });
-
-	// insert into all other backends. currently only a warning is printed if insertion fails for a backend.
-	std::vector<std::shared_ptr<DataTransaction>> transactions;
-	for (auto &definedBackend: backendManager_->backendPool()) {
-		// skip the source backend
-		if (definedBackend.second->backend() == sourceBackend) continue;
-		transactions.push_back(createTransaction<DataInsertion>(definedBackend.second, triples));
-	}
-
-	// wait for all transactions to finish
+	bool success = transaction<DataInsertion>(triples, backends, vocabulary(), sourceBackend);
 	vocabWorker->join();
-	for (auto &transaction: transactions) transaction->join();
+	return success;
+}
 
-	return true;
+bool KnowledgeBase::insertAll(const semweb::TripleContainerPtr &triples) {
+	if (triples->empty()) return true;
+	std::vector<std::shared_ptr<DefinedBackend>> backends;
+	for (auto &it: backendManager_->backendPool()) {
+		backends.push_back(it.second);
+	}
+	return insertAllInto(triples, backends);
 }
 
 bool KnowledgeBase::removeAll(const semweb::TripleContainerPtr &triples) {
 	if (triples->empty()) return true;
-
 	// find the source backend, if any.
 	auto sourceBackend = findSourceBackend(**triples->begin());
+	std::vector<std::shared_ptr<DefinedBackend>> backends;
+	for (auto &it: backendManager_->backendPool()) {
+		backends.push_back(it.second);
+	}
 	// push a worker goal that updates the vocabulary
 	auto vocabWorker = pushPerTripleWork(triples,
 										 [this](const FramedTriplePtr &triple) {
 											 updateVocabularyRemove(*triple);
 										 });
-
-	// remove from all backends. currently only a warning is printed if removal fails for a backend.
-	std::vector<std::shared_ptr<DataTransaction>> transactions;
-	for (auto &definedBackend: backendManager_->backendPool()) {
-		if (definedBackend.second->backend() == sourceBackend) continue;
-		transactions.push_back(createTransaction<DataRemoval>(definedBackend.second, triples));
-	}
-
-	// wait for all transactions to finish
+	bool success = transaction<DataRemoval>(triples, backends, vocabulary_, sourceBackend);
 	vocabWorker->join();
-	for (auto &transaction: transactions) transaction->join();
-
-	return true;
+	return success;
 }
 
 bool KnowledgeBase::insertAll(const std::vector<FramedTriplePtr> &triples) {
@@ -962,10 +977,9 @@ bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
 	// wait for all transactions to finish
 	for (auto &transaction: transactions) transaction->join();
 
-	// TODO: update vocabulary, I guess we need to have an interface to select all terms
-	//       that are defined in a given origin, and then remove them from the vocabulary
-	//       if there is no other origin defining it.
-	// TODO: optionally drop all child imports of the origin
+	// update vocabulary: select all terms that are defined in a given origin,
+	// and then remove them from the vocabulary.
+	// TODO: only do this if no other backend defines the same origin?
 	// remove origin from import hierarchy
 	if (!importHierarchy_->isReservedOrigin(origin)) {
 		importHierarchy_->removeCurrentGraph(origin);
@@ -1077,12 +1091,12 @@ KnowledgeBase::prepareLoad(std::string_view origin, std::string_view newVersion)
 		auto currentVersion = getVersionOfOrigin(definedBackend, origin);
 		if (currentVersion.has_value()) {
 			if (currentVersion.value() != newVersion) {
-				backendsToLoad.push_back(definedBackend);
+				backendsToLoad.emplace_back(it.second);
 				// TODO: rather include this operation as part of the transaction below
 				definedBackend->backend()->removeAllWithOrigin(origin);
 			}
 		} else {
-			backendsToLoad.push_back(definedBackend);
+			backendsToLoad.emplace_back(it.second);
 		}
 	}
 	return backendsToLoad;
@@ -1119,7 +1133,7 @@ bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source
 		auto newVersion = DataSource::getVersionFromURI(resolved);
 
 		// check which backends need to load the ontology.
-		std::vector<std::shared_ptr<DefinedBackend>> backendsToLoad = prepareLoad(origin, newVersion);
+		auto backendsToLoad = prepareLoad(origin, newVersion);
 		if (backendsToLoad.empty()) continue;
 
 		// some OWL files are downloaded compile-time via CMake,
@@ -1172,7 +1186,7 @@ bool KnowledgeBase::loadSPARQLDataSource(const std::shared_ptr<DataSource> &sour
 	service->setBatchSize(tripleBatchSize_);
 
 	// get all backends that do not have the data loaded yet
-	std::vector<std::shared_ptr<DefinedBackend>> backendsToLoad = prepareLoad(origin, newVersion);
+	auto backendsToLoad = prepareLoad(origin, newVersion);
 	if (backendsToLoad.empty()) {
 		// data is already loaded
 		return true;

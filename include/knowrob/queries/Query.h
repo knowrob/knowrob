@@ -6,49 +6,25 @@
 #ifndef KNOWROB_QUERY_H_
 #define KNOWROB_QUERY_H_
 
-#include <memory>
 #include <ostream>
-#include <optional>
-#include <utility>
-#include "knowrob/formulas/Predicate.h"
 #include <knowrob/formulas/Formula.h>
-#include "knowrob/modalities/TimeInterval.h"
-#include "knowrob/modalities/ConfidenceInterval.h"
 #include "QueryContext.h"
 
 namespace knowrob {
-	/**
-	 * The type of a query.
-	 */
-	enum class QueryType : uint8_t {
-		CONJUNCTIVE = 0,
-		FORMULA
-	};
+	QueryContextPtr DefaultQueryContext();
+
+	QueryContextPtr OneSolutionContext();
 
 	/**
-	 * A query is a question that can be asked to the knowledge base.
+	 * A baseclass for queries. The only commitment is that queries are evaluated
+	 * within a certain context. The context defines additional parameters for the evaluation.
 	 */
 	class Query {
 	public:
 		/**
-		 * @formula the formula associated to this query.
+		 * @param ctx the query context.
 		 */
-		explicit Query(QueryContextPtr ctx) : ctx_(std::move(ctx)) {}
-
-		/**
-		 * @return the type of this query.
-		 */
-		virtual QueryType type() const = 0;
-
-		/**
-		 * @return the default flags associated to queries.
-		 */
-		static int defaultFlags();
-
-		/**
-		 * @return the flags associated to this query.
-		 */
-		int flags() const { return ctx_->queryFlags; }
+		explicit Query(QueryContextPtr ctx = DefaultQueryContext()) : ctx_(std::move(ctx)) {}
 
 		/**
 		 * @return the query context.
@@ -56,17 +32,23 @@ namespace knowrob {
 		auto &ctx() const { return ctx_; }
 
 		/**
-		 * Prints the query to the output stream.
+		 * @param ctx the query context.
 		 */
-		virtual std::ostream &print(std::ostream &os) const = 0;
-
-		/**
-		 * @return the formula associated to this query.
-		 */
-		virtual const FormulaPtr &formula() const = 0;
+		void setContext(QueryContextPtr ctx) { ctx_ = std::move(ctx); }
 
 	protected:
 		QueryContextPtr ctx_;
+
+		virtual void write(std::ostream &os) const = 0;
+
+		friend struct QueryWriter;
+	};
+
+	/**
+	 * Writes a term into an ostream.
+	 */
+	struct QueryWriter {
+		QueryWriter(const Query &q, std::ostream &os) { q.write(os); }
 	};
 }
 

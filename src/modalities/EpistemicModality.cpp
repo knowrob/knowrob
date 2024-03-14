@@ -1,6 +1,7 @@
-//
-// Created by danielb on 01.08.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #define EPISTEMIC_MODALITY_AGENT_KEY "agent"
 
@@ -12,16 +13,13 @@ using namespace knowrob;
 EpistemicModality::EpistemicModality() : agent_(std::nullopt), Modality() {}
 
 EpistemicModality::EpistemicModality(const std::string_view &agent)
-		: agent_(Agent::get(agent)), Modality() {
-	if (agent_.value() != Agent::getEgo()) {
-		// TODO: could use a StringTerm with a sting_view (i.e. without copying).
-		//       but that's not supported by StringTerm as of now...
-		//       also agent could provide the term to avoid duplicates.
+		: agent_(Perspective::get(agent)), Modality() {
+	if (Perspective::isEgoPerspective(agent_.value()->iri())) {
 		parameters_[EPISTEMIC_MODALITY_AGENT_KEY] = Atom::Tabled(agent_.value()->iri());
 	}
 }
 
-const std::optional<AgentPtr> &EpistemicModality::agent() const { return agent_; }
+const std::optional<PerspectivePtr> &EpistemicModality::agent() const { return agent_; }
 
 ModalityType EpistemicModality::modalityType() const { return ModalityType::Epistemic; }
 

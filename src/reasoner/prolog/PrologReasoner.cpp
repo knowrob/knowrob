@@ -269,8 +269,18 @@ AnswerYesPtr PrologReasoner::yes(const FramedTriplePatternPtr &literal,
 								 const PrologTerm &rdfGoal,
 								 const PrologTerm &answerFrameTerm) {
 	KB_DEBUG("Prolog has a next solution.");
-	// create an empty solution
-	auto yes = std::make_shared<AnswerYes>();
+
+	// create bindings object
+	auto bindings = std::make_shared<Bindings>();
+	for (const auto &kv: rdfGoal.vars()) {
+		auto grounding = PrologTerm::toKnowRobTerm(kv.second);
+		if (grounding && grounding->termType() != TermType::VARIABLE) {
+			bindings->set(std::make_shared<Variable>(kv.first), PrologTerm::toKnowRobTerm(kv.second));
+		}
+	}
+
+	// create an answer object given the bindings
+	auto yes = std::make_shared<AnswerYes>(bindings);
 	yes->setReasonerTerm(reasonerNameTerm());
 
 	// TODO: set flag to indicate if answer is well-founded or not.
@@ -285,14 +295,6 @@ AnswerYesPtr PrologReasoner::yes(const FramedTriplePatternPtr &literal,
 		answerFrame_ro = answerFrame_rw;
 	} else {
 		answerFrame_ro = DefaultGraphSelector();
-	}
-
-	// add substitutions
-	for (const auto &kv: rdfGoal.vars()) {
-		auto grounding = PrologTerm::toKnowRobTerm(kv.second);
-		if (grounding && grounding->termType() != TermType::VARIABLE) {
-			yes->set(std::make_shared<Variable>(kv.first), PrologTerm::toKnowRobTerm(kv.second));
-		}
 	}
 
 	// store instantiation of literal
@@ -310,7 +312,7 @@ AnswerNoPtr PrologReasoner::no(const FramedTriplePatternPtr &rdfLiteral) {
 	negativeAnswer->setReasonerTerm(reasonerNameTerm());
 	// however, as Prolog cannot proof negations such an answer is always not well-founded
 	// and can be overruled by a well-founded one.
-	negativeAnswer->setIsUncertain(std::nullopt);
+	negativeAnswer->setIsUncertain(true, std::nullopt);
 	// as the query goal was only a single literal, we know that exactly this literal cannot be proven.
 	negativeAnswer->addUngrounded(
 			std::static_pointer_cast<Predicate>(rdfLiteral->predicate()),
@@ -329,7 +331,7 @@ bool PrologReasoner::putQueryFrame(PrologTerm &frameTerm, const GraphSelector &f
 	//   [until: $time] }
 
 	int numFrameKeys = 2;
-	if (frame.agent.has_value()) numFrameKeys += 1;
+	if (frame.perspective.has_value()) numFrameKeys += 1;
 	if (frame.begin.has_value()) numFrameKeys += 1;
 	if (frame.end.has_value()) numFrameKeys += 1;
 
@@ -342,8 +344,7 @@ bool PrologReasoner::putQueryFrame(PrologTerm &frameTerm, const GraphSelector &f
 	static const auto knowledge_a = PL_new_atom("knowledge");
 	static const auto belief_a = PL_new_atom("belief");
 
-	bool isAboutBelief = (frame.epistemicOperator &&
-						  frame.epistemicOperator.value() == EpistemicOperator::BELIEF);
+	bool isAboutBelief = (frame.uncertain);
 	int keyIndex = 0;
 	scopeKeys[keyIndex] = epistemicMode_a;
 	if (!PL_put_atom(scopeValues, isAboutBelief ? belief_a : knowledge_a)) return false;
@@ -353,16 +354,15 @@ bool PrologReasoner::putQueryFrame(PrologTerm &frameTerm, const GraphSelector &f
 	static const auto sometimes_a = PL_new_atom("sometimes");
 	static const auto always_a = PL_new_atom("always");
 
-	bool isAboutSomePast = (frame.temporalOperator &&
-							frame.temporalOperator.value() == TemporalOperator::SOMETIMES);
+	bool isAboutSomePast = (frame.occasional);
 	scopeKeys[++keyIndex] = temporalMode_a;
 	if (!PL_put_atom(scopeValues + keyIndex, isAboutSomePast ? sometimes_a : always_a)) return false;
 
 	// agent: $name
-	if (frame.agent.has_value()) {
+	if (frame.perspective.has_value()) {
 		static const auto agent_a = PL_new_atom("agent");
 		scopeKeys[++keyIndex] = agent_a;
-		auto agent_iri = frame.agent.value()->iri();
+		auto agent_iri = frame.perspective.value()->iri();
 		if (!PL_put_atom_chars(scopeValues + keyIndex, agent_iri.data())) return false;
 	}
 
@@ -416,7 +416,7 @@ std::shared_ptr<GraphSelector> PrologReasoner::createAnswerFrame(const PrologTer
 			atom_t flagAtom;
 			if (PL_term_type(scope_val) == PL_ATOM && PL_get_atom(scope_val, &flagAtom)) {
 				if (flagAtom == PrologTerm::ATOM_true()) {
-					frame->epistemicOperator = EpistemicOperator::BELIEF;
+					frame->uncertain = true;
 				}
 			}
 		}
@@ -427,9 +427,9 @@ std::shared_ptr<GraphSelector> PrologReasoner::createAnswerFrame(const PrologTer
 			if (PL_term_type(scope_val) == PL_FLOAT && PL_get_float(scope_val, &confidenceValue)) {
 				frame->confidence = confidenceValue;
 				if (confidenceValue > 0.999) {
-					frame->epistemicOperator = EpistemicOperator::KNOWLEDGE;
+					frame->uncertain = false;
 				} else {
-					frame->epistemicOperator = EpistemicOperator::BELIEF;
+					frame->uncertain = true;
 				}
 			}
 		}
@@ -438,11 +438,7 @@ std::shared_ptr<GraphSelector> PrologReasoner::createAnswerFrame(const PrologTer
 		if (PL_get_dict_key(occasional_key, plTerm(), scope_val)) {
 			atom_t flagAtom;
 			if (PL_term_type(scope_val) == PL_ATOM && PL_get_atom(scope_val, &flagAtom)) {
-				if (flagAtom == PrologTerm::ATOM_true()) {
-					frame->temporalOperator = TemporalOperator::SOMETIMES;
-				} else {
-					frame->temporalOperator = TemporalOperator::ALWAYS;
-				}
+				frame->occasional =  (flagAtom == PrologTerm::ATOM_true());
 			}
 		}
 
@@ -450,10 +446,7 @@ std::shared_ptr<GraphSelector> PrologReasoner::createAnswerFrame(const PrologTer
 		if (PL_get_dict_key(agent_key, plTerm(), scope_val)) {
 			atom_t agentAtom;
 			if (PL_term_type(scope_val) == PL_ATOM && PL_get_atom(scope_val, &agentAtom)) {
-				if (!frame->epistemicOperator.has_value()) {
-					frame->epistemicOperator = EpistemicOperator::KNOWLEDGE;
-				}
-				frame->agent = Agent::get(PL_atom_chars(agentAtom));
+				frame->perspective = Perspective::get(PL_atom_chars(agentAtom));
 			}
 		}
 

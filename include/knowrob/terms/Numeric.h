@@ -71,6 +71,16 @@ namespace knowrob {
 		virtual bool asBoolean() const = 0;
 
 		/**
+		 * @return a boolean typed numeric with value true
+		 */
+		static std::shared_ptr<Numeric> trueAtom();
+
+		/**
+		 * @return a boolean typed numeric with value false
+		 */
+		static std::shared_ptr<Numeric> falseAtom();
+
+		/**
 		 * @return true if the numeric is a floating number
 		 */
 		bool isFloatingNumber() const;
@@ -144,7 +154,7 @@ namespace knowrob {
 		std::string_view stringForm() const override {
 			if (!stringForm_) {
 				std::ostringstream oss;
-				oss << std::fixed <<  *numericForm_;
+				oss << std::fixed << *numericForm_;
 				stringForm_ = oss.str();
 			}
 			return *stringForm_;
@@ -171,7 +181,7 @@ namespace knowrob {
 		mutable std::optional<T1> numericForm_;
 
 		// override Term
-		void write(std::ostream &os) const override { os << std::defaultfloat << numericForm(); }
+		void write(std::ostream &os) const override { os << std::defaultfloat << std::boolalpha << numericForm(); }
 	};
 
 	/**

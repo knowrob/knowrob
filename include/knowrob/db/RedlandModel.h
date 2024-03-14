@@ -7,11 +7,11 @@
 #define KNOWROB_REDLAND_MODEL_H
 
 #include <redland.h>
-#include "knowrob/semweb/TripleContainer.h"
+#include "knowrob/triples/TripleContainer.h"
 #include "knowrob/URI.h"
-#include "knowrob/semweb/TripleFormat.h"
+#include "knowrob/triples/TripleFormat.h"
 #include "DataBackend.h"
-#include "knowrob/queries/SPARQLQuery.h"
+#include "knowrob/triples/SPARQLQuery.h"
 #include "RedlandURI.h"
 #include "QueryableBackend.h"
 
@@ -31,6 +31,15 @@ namespace knowrob {
 		POSTGRESQL,
 		// This module provides storage via the SQLite relational database when available and supports SQLite V2 and V3.
 		SQLITE
+	};
+	/**
+	 * Redland hash types used by the "hashes" storage type.
+	 */
+	enum class RedlandHashType {
+		// The default hash type.
+		MEMORY,
+		// The Berkeley DB hash type.
+		BDB
 	};
 
 	/**
@@ -55,6 +64,12 @@ namespace knowrob {
 		void setStorageType(RedlandStorageType storageType);
 
 		/**
+		 * Set the "hash-type" parameter of the storage.
+		 * @param hashType the hash type.
+		 */
+		void setStorageHashType(RedlandHashType hashType);
+
+		/**
 		 * @param host the host of the database.
 		 */
 		void setHost(std::string_view host);
@@ -75,6 +90,25 @@ namespace knowrob {
 		void setPassword(std::string_view password);
 
 		/**
+		 * @param dir the directory for the storage.
+		 */
+		void setStorageDirectory(std::string_view dir = ".");
+
+		/**
+		 * Set the storage type to "hashes".
+		 * @param storageType the storage type.
+		 * @param dir the directory for the hashes storage.
+		 * @see https://librdf.org/docs/api/redland-storage-module-hashes.html
+		 */
+		void setHashesStorage(RedlandHashType hashType, std::string_view dir = ".");
+
+		/**
+		 * Set the storage type to "memory".
+		 * @see https://librdf.org/docs/api/redland-storage-module-memory.html
+		 */
+		void setMemoryStorage();
+
+		/**
 		 * If not set, the model will create its own.
 		 * @param world a redland world.
 		 */
@@ -85,12 +119,6 @@ namespace knowrob {
 		 * @param origin the origin of the triples.
 		 */
 		void setOrigin(std::string_view origin) { origin_ = origin; }
-
-		/**
-		 * The size of the container used when triples are processed in batches.
-		 * @param batchSize the batch size for the backend.
-		 */
-		void setBatchSize(uint32_t batchSize) { batchSize_ = batchSize; }
 
 		/**
 		 * @return the redland storage type of the model.
@@ -120,7 +148,13 @@ namespace knowrob {
 		 */
 		bool load(const URI &uri, semweb::TripleFormat tripleFormat);
 
-		bool sparql(std::string_view queryString, const FramedBindingsHandler &callback) const;
+		/**
+		 * Run a SPARQL query on the model.
+		 * @param queryString the query to run.
+		 * @param callback the callback to handle the results.
+		 * @return true if the query was successful.
+		 */
+		bool sparql(std::string_view queryString, const BindingsHandler &callback) const;
 
 		/**
 		 * Run a SPARQL query on the model.
@@ -128,7 +162,7 @@ namespace knowrob {
 		 * @param callback the callback to handle the results.
 		 * @return true if the query was successful.
 		 */
-		bool query(const SPARQLQuery &query, const FramedBindingsHandler &callback) const;
+		bool query(const SPARQLQuery &query, const BindingsHandler &callback) const;
 
 		// override DataBackend
 		bool insertOne(const FramedTriple &triple) override;
@@ -161,7 +195,7 @@ namespace knowrob {
 		void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
 
 		// Override QueryableBackend
-		void query(const ConjunctiveQueryPtr &query, const FramedBindingsHandler &callback) override;
+		void query(const GraphQueryPtr &query, const BindingsHandler &callback) override;
 
 		// Override QueryableBackend
 		void count(const ResourceCounter &callback) const override;
@@ -175,7 +209,8 @@ namespace knowrob {
 		// the uris are created within the context of a librdf_world, so
 		// they cannot be defined statically.
 		RedlandURI xsdURIs_[static_cast<int>(XSDType::LAST)];
-		RedlandURI& xsdURI(XSDType xsdType);
+
+		RedlandURI &xsdURI(XSDType xsdType);
 
 		std::map<std::string, librdf_node *, std::less<>> contextNodes_;
 
@@ -187,7 +222,8 @@ namespace knowrob {
 		std::optional<std::string> database_;
 		std::optional<std::string> user_;
 		std::optional<std::string> password_;
-		std::optional<uint32_t> batchSize_;
+		std::optional<std::string> storageDir_;
+		std::optional<RedlandHashType> hashType_;
 		RedlandStorageType storageType_;
 		std::string storageOptions_;
 
@@ -197,7 +233,7 @@ namespace knowrob {
 
 		void knowrobToRaptor(const FramedTriplePattern &pat, raptor_statement *raptorTriple);
 
-		raptor_term* knowrobToRaptor(const TermPtr &term);
+		raptor_term *knowrobToRaptor(const TermPtr &term);
 
 		librdf_node *getContextNode(std::string_view origin);
 

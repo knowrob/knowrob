@@ -13,22 +13,19 @@ using namespace knowrob;
 
 AnswerYes::AnswerYes()
 		: Answer(),
-		  frame_(std::make_shared<GraphSelector>()),
-		  substitution_(std::make_shared<Substitution>()) {
+		  substitution_(std::make_shared<Bindings>()) {
 }
 
-AnswerYes::AnswerYes(SubstitutionPtr substitution)
+AnswerYes::AnswerYes(BindingsPtr substitution)
 		: Answer(),
-		  frame_(std::make_shared<GraphSelector>()),
 		  substitution_(std::move(substitution)) {
 }
 
 AnswerYes::AnswerYes(const AnswerYes &other)
 		: Answer(other),
-		  substitution_(std::make_shared<Substitution>(*other.substitution_)),
+		  substitution_(std::make_shared<Bindings>(*other.substitution_)),
 		  positiveGroundings_(other.positiveGroundings_),
-		  negativeGroundings_(other.negativeGroundings_),
-		  frame_(other.frame_) {
+		  negativeGroundings_(other.negativeGroundings_) {
 }
 
 bool AnswerYes::isRicherThan(const AnswerYes &other) const {
@@ -53,26 +50,9 @@ bool AnswerYes::isGenericYes() const {
 	return substitution_->empty();
 }
 
-bool AnswerYes::isUncertain() const {
-	if (frame_->confidence.has_value()) {
-		if (frame_->confidence.value() < 1.0) return true;
-	}
-	if (frame_->epistemicOperator == EpistemicOperator::BELIEF) {
-		return true;
-	}
-	return false;
-}
-
-void AnswerYes::setIsUncertain(std::optional<double> confidence) {
-	frame_->epistemicOperator = EpistemicOperator::BELIEF;
-	if (confidence.has_value()) {
-		frame_->confidence = confidence;
-	}
-}
-
 bool AnswerYes::addGrounding(const std::shared_ptr<Predicate> &predicate,
-                             const GraphSelectorPtr &frame,
-                             bool isNegated) {
+							 const GraphSelectorPtr &frame,
+							 bool isNegated) {
 	if (!frame_->mergeWith(*frame)) {
 		KB_WARN("Failed to frame \"{}\" with \"{}\".", *frame_, *frame);
 		return false;
@@ -86,16 +66,18 @@ bool AnswerYes::addGrounding(const std::shared_ptr<Predicate> &predicate,
 }
 
 bool AnswerYes::mergeWith(const AnswerYes &other, bool ignoreInconsistencies) {
+	auto mergedBindings = std::make_shared<Bindings>(*substitution_);
 	if (ignoreInconsistencies) {
 		// insert all substitutions of other answer, possibly overwriting existing ones
-		*substitution_ += *other.substitution_;
+		*mergedBindings += *other.substitution_;
 	} else {
 		// unify substitutions
-		if (!substitution_->unifyWith(*other.substitution_)) {
+		if (!mergedBindings->unifyWith(*other.substitution_)) {
 			// unification failed -> results cannot be combined
 			return false;
 		}
 	}
+	substitution_ = mergedBindings;
 
 	if (!frame_->mergeWith(*other.frame_)) {
 		// merging frames failed -> results cannot be combined
@@ -121,31 +103,30 @@ size_t AnswerYes::hash() const {
 }
 
 std::ostream &AnswerYes::write(std::ostream &os) const {
-	if(reasonerTerm_) {
+	if (reasonerTerm_) {
 		os << "[" << *reasonerTerm_ << "] ";
 	}
-	if(isUncertain()) {
+	if (isUncertain()) {
 		os << "probably ";
 	}
 	os << "yes";
-	if(!positiveGroundings_.empty() || !negativeGroundings_.empty()) {
+	if (!positiveGroundings_.empty() || !negativeGroundings_.empty()) {
 		os << ", because:\n";
-		for(auto &x : positiveGroundings_) {
+		for (auto &x: positiveGroundings_) {
 			os << '\t' << *x.graphSelector() << ' ' << *x.predicate();
-			if(x.reasonerTerm() && x.reasonerTerm() != reasonerTerm_) {
+			if (x.reasonerTerm() && x.reasonerTerm() != reasonerTerm_) {
 				os << ' ' << '[' << *x.reasonerTerm() << "]";
 			}
 			os << '\n';
 		}
-		for(auto &x : negativeGroundings_) {
+		for (auto &x: negativeGroundings_) {
 			os << '\t' << *x.graphSelector() << '~' << *x.predicate();
-			if(x.reasonerTerm() && x.reasonerTerm() != reasonerTerm_) {
+			if (x.reasonerTerm() && x.reasonerTerm() != reasonerTerm_) {
 				os << ' ' << '[' << *x.reasonerTerm() << "]";
 			}
 			os << '\n';
 		}
-	}
-	else {
+	} else {
 		os << '\n';
 	}
 	return os;
@@ -155,35 +136,24 @@ std::string AnswerYes::toHumanReadableString() const {
 	std::stringstream os;
 	os << std::setprecision(4);
 	os << "the query is ";
-	if(isUncertain()) {
-		if(frame_->confidence.has_value()) {
+	if (isUncertain()) {
+		if (frame_->confidence.has_value()) {
 			os << "true with a confidence of " << std::setprecision(4) << frame_->confidence.value();
-		}
-		else {
+		} else {
 			os << "probably true";
 		}
 	} else {
 		os << "true";
 	}
-	if(frame_->temporalOperator.has_value()) {
-		if(frame_->temporalOperator.value() == TemporalOperator::SOMETIMES) {
-			os << " at some time ";
-		}
-		else if(frame_->temporalOperator.value() == TemporalOperator::ALWAYS) {
-			os << " at any time " << frame_->end.value();
-		}
+	if (frame_->occasional) {
+		os << " at some time ";
 	}
-	if(frame_->begin.has_value() && frame_->end.has_value()) {
+	if (frame_->begin.has_value() && frame_->end.has_value()) {
 		os << " during the time points " << frame_->begin.value() << " and " << frame_->end.value();
-	}
-	else if(frame_->begin.has_value()) {
+	} else if (frame_->begin.has_value()) {
 		os << " since " << frame_->begin.value();
-	}
-	else if(frame_->end.has_value()) {
+	} else if (frame_->end.has_value()) {
 		os << " until " << frame_->end.value();
-	}
-	else if (frame_->temporalOperator.has_value()) {
-		os << " in the past";
 	}
 	os << ".";
 	return os.str();

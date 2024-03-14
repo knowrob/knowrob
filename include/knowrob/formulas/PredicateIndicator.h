@@ -14,7 +14,7 @@
 #include <string>
 #include "Formula.h"
 #include "knowrob/terms/Term.h"
-#include "knowrob/terms/Substitution.h"
+#include "knowrob/terms/Bindings.h"
 
 namespace knowrob {
 	/**

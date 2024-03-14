@@ -83,9 +83,21 @@ namespace knowrob::semweb {
 
 		/**
 		 * @param iri a IRI
+		 * @return true if IRI is a defined reification
+		 */
+		bool isDefinedReification(const std::string_view &iri);
+
+		/**
+		 * @param iri a IRI
 		 * @return the property defined for the IRI or a null reference
 		 */
 		PropertyPtr getDefinedProperty(const std::string_view &iri) const;
+
+		/**
+		 * @param iri a IRI
+		 * @return the property reified by the IRI or a null reference
+		 */
+		PropertyPtr getDefinedReification(const std::string_view &iri) const;
 
 		/**
 		 * @param prefix a IRI prefix
@@ -190,7 +202,10 @@ namespace knowrob::semweb {
 	protected:
 		std::map<std::string_view, ClassPtr, std::less<>> definedClasses_;
 		std::map<std::string_view, PropertyPtr, std::less<>> definedProperties_;
+		std::map<std::string_view, PropertyPtr, std::less<>> definedReifications_;
 		std::map<std::string_view, uint64_t> frequency_;
+
+		PropertyPtr defineProperty(const std::shared_ptr<Property> &p);
 	};
 
 	using VocabularyPtr = std::shared_ptr<Vocabulary>;

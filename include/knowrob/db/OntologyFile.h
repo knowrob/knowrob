@@ -8,8 +8,8 @@
 
 #include "knowrob/db/DataFile.h"
 #include "knowrob/db/OntologySource.h"
-#include "knowrob/semweb/TripleContainer.h"
-#include "knowrob/semweb/TripleFormat.h"
+#include "knowrob/triples/TripleContainer.h"
+#include "knowrob/triples/TripleFormat.h"
 #include "knowrob/semweb/OntologyLanguage.h"
 
 namespace knowrob {

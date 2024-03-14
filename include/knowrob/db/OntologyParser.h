@@ -9,10 +9,10 @@
 #include <functional>
 #include <string>
 #include <raptor.h>
-#include "knowrob/semweb/TripleContainer.h"
-#include "knowrob/semweb/TripleFormat.h"
-#include "knowrob/semweb/FramedTriple.h"
-#include "knowrob/semweb/GraphSelector.h"
+#include "knowrob/triples/TripleContainer.h"
+#include "knowrob/triples/TripleFormat.h"
+#include "knowrob/triples/FramedTriple.h"
+#include "knowrob/triples/GraphSelector.h"
 #include "RaptorContainer.h"
 
 namespace knowrob {
@@ -80,7 +80,7 @@ namespace knowrob {
 		 */
 		auto &imports() const { return imports_; }
 
-		static const char* mimeType(knowrob::semweb::TripleFormat format);
+		static const char *mimeType(knowrob::semweb::TripleFormat format);
 
 	protected:
 		raptor_uri *uri_;

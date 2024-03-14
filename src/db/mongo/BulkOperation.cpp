@@ -30,7 +30,7 @@ void BulkOperation::validateBulkHandle() {
 	}
 }
 
-void BulkOperation::pushInsert(bson_t *document) {
+void BulkOperation::pushInsert(const bson_t *document) {
 	validateBulkHandle();
 
 	bson_error_t err;
@@ -43,7 +43,7 @@ void BulkOperation::pushInsert(bson_t *document) {
 	}
 }
 
-void BulkOperation::pushRemoveOne(bson_t *document) {
+void BulkOperation::pushRemoveOne(const bson_t *document) {
 	validateBulkHandle();
 
 	bson_error_t err;
@@ -56,7 +56,7 @@ void BulkOperation::pushRemoveOne(bson_t *document) {
 	}
 }
 
-void BulkOperation::pushRemoveAll(bson_t *document) {
+void BulkOperation::pushRemoveAll(const bson_t *document) {
 	validateBulkHandle();
 
 	bson_error_t err;

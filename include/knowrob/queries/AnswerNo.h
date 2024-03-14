@@ -70,18 +70,9 @@ namespace knowrob {
 		// override Answer
 		bool isPositive() const override { return false; }
 
-		// override Answer
-		bool isUncertain() const override;
-
-		// override Answer
-		void setIsUncertain(std::optional<double> confidence) override;
-
 	protected:
 		std::vector<FramedPredicate> positiveUngrounded_;
 		std::vector<FramedPredicate> negativeUngrounded_;
-
-		bool isUncertain_;
-		std::optional<double> confidence_;
 	};
 
 	// alias

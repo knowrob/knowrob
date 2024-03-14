@@ -31,7 +31,7 @@ static void procesNamespace([[maybe_unused]] void *userData, raptor_namespace *n
 	if(!r_uri) return;
 	auto r_uriString = raptor_uri_as_string(r_uri);
 
-	semweb::PrefixRegistry::get().registerPrefix(
+	semweb::PrefixRegistry::registerPrefix(
 			std::string_view((const char *) r_prefix),
 			std::string_view((const char *) r_uriString));
 }
@@ -132,15 +132,16 @@ void OntologyParser::applyFrame(FramedTriple *triple) {
 	if (frame_) {
 		if (frame_->confidence.has_value()) {
 			triple->setConfidence(frame_->confidence.value());
+			triple->setIsUncertain(true);
 		}
-		if (frame_->agent.has_value()) {
-			triple->setAgent(frame_->agent.value()->iri());
+		if (frame_->perspective.has_value()) {
+			triple->setPerspective(frame_->perspective.value()->iri());
 		}
-		if (frame_->epistemicOperator.has_value()) {
-			triple->setEpistemicOperator(frame_->epistemicOperator.value());
+		if (frame_->uncertain){
+			triple->setIsUncertain(true);
 		}
-		if (frame_->temporalOperator.has_value()) {
-			triple->setTemporalOperator(frame_->temporalOperator.value());
+		if (frame_->occasional){
+			triple->setIsOccasional(true);
 		}
 		if (frame_->begin.has_value()) {
 			triple->setBegin(frame_->begin.value());

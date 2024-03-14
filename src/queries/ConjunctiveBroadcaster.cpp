@@ -138,12 +138,15 @@ TEST_F(AnswerCombinerTest, CombineMany_DifferentVariables) {
 	auto input1 = TokenStream::Channel::create(combiner);
 	auto input2 = TokenStream::Channel::create(combiner);
 	// construct partial answers
-	auto answer11 = std::make_shared<AnswerYes>();
-	auto answer21 = std::make_shared<AnswerYes>();
-	auto answer22 = std::make_shared<AnswerYes>();
-	answer11->set(std::make_shared<Variable>("a"), std::make_shared<Integer>(4));
-	answer21->set(std::make_shared<Variable>("b"), std::make_shared<Integer>(6));
-	answer22->set(std::make_shared<Variable>("b"), std::make_shared<Integer>(7));
+	auto answer11 = std::make_shared<AnswerYes>(std::make_shared<Bindings>(Bindings::VarMap{
+		{std::make_shared<Variable>("a"), std::make_shared<Integer>(4)}
+	}));
+	auto answer21 = std::make_shared<AnswerYes>(std::make_shared<Bindings>(Bindings::VarMap{
+		{std::make_shared<Variable>("b"), std::make_shared<Integer>(6)}
+	}));
+	auto answer22 = std::make_shared<AnswerYes>(std::make_shared<Bindings>(Bindings::VarMap{
+		{std::make_shared<Variable>("b"), std::make_shared<Integer>(7)}
+	}));
 	// push a partial answer via input1
 	EXPECT_EQ(output->size(), 0);
 	input1->push(answer11);
@@ -164,13 +167,16 @@ TEST_F(AnswerCombinerTest, CombineMany_Unification) {
 	auto input1 = TokenStream::Channel::create(combiner);
 	auto input2 = TokenStream::Channel::create(combiner);
 	// construct partial answers
-	auto answer11 = std::make_shared<AnswerYes>();
-	auto answer21 = std::make_shared<AnswerYes>();
-	auto answer22 = std::make_shared<AnswerYes>();
+	auto answer11 = std::make_shared<AnswerYes>(std::make_shared<Bindings>(Bindings::VarMap{
+		{std::make_shared<Variable>("a"), QueryParser::parseFunction("p(X,1)")}
+	}));
+	auto answer21 = std::make_shared<AnswerYes>(std::make_shared<Bindings>(Bindings::VarMap{
+		{std::make_shared<Variable>("a"), QueryParser::parseFunction("p(2,Y)")}
+	}));
+	auto answer22 = std::make_shared<AnswerYes>(std::make_shared<Bindings>(Bindings::VarMap{
+		{std::make_shared<Variable>("a"), QueryParser::parseFunction("p(2,2)")}
+	}));
 	// push "a=p(X,1)" and "a=p(2,Y)" into combiner via two channels
-	answer11->set(std::make_shared<Variable>("a"), QueryParser::parseFunction("p(X,1)"));
-	answer21->set(std::make_shared<Variable>("a"), QueryParser::parseFunction("p(2,Y)"));
-	answer22->set(std::make_shared<Variable>("a"), QueryParser::parseFunction("p(2,2)"));
 	input1->push(answer11);
 	input2->push(answer21);
 	// expect that the combiner has one output "a=p(2,1)" unifying both inputs.

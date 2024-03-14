@@ -57,7 +57,6 @@ public:
 	TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) override {
 		auto answerBuffer = std::make_shared<TokenBuffer>();
 		auto outputChannel = TokenStream::Channel::create(answerBuffer);
-		auto answer = std::make_shared<AnswerYes>();
 
 		bool succeed = true;
 		if(literal->propertyTerm()->isGround()) {
@@ -71,18 +70,20 @@ public:
 		}
 
 		if(succeed) {
+			auto bindings = std::make_shared<Bindings>();
 			if(!literal->propertyTerm()->isGround()) {
 				auto v = *literal->propertyTerm()->variables().begin();
-				answer->substitution()->set(std::make_shared<Variable>(v), IRIAtom::Tabled(p_));
+				bindings->set(std::make_shared<Variable>(v), IRIAtom::Tabled(p_));
 			}
 			if(!literal->subjectTerm()->isGround()) {
 				auto v = *literal->subjectTerm()->variables().begin();
-				answer->substitution()->set(std::make_shared<Variable>(v), IRIAtom::Tabled(s_));
+				bindings->set(std::make_shared<Variable>(v), IRIAtom::Tabled(s_));
 			}
 			if(!literal->objectTerm()->isGround()) {
 				auto v = *literal->objectTerm()->variables().begin();
-				answer->substitution()->set(std::make_shared<Variable>(v), IRIAtom::Tabled(o_));
+				bindings->set(std::make_shared<Variable>(v), IRIAtom::Tabled(o_));
 			}
+			auto answer = std::make_shared<AnswerYes>(bindings);
 			outputChannel->push(answer);
 		}
 
@@ -115,10 +116,10 @@ void KnowledgeBaseTest::SetUpTestSuite() {
 		"r2", std::make_shared<TestReasoner>("q", "x", "y"));
 }
 
-static std::vector<SubstitutionPtr> lookup(const FormulaPtr &formula, const QueryContextPtr &ctx) {
+static std::vector<BindingsPtr> lookup(const FormulaPtr &formula, const QueryContextPtr &ctx) {
 	auto answerStream = KnowledgeBaseTest::kb_->submitQuery(formula, ctx);
 	auto answerQueue = answerStream->createQueue();
-	std::vector<SubstitutionPtr> out;
+	std::vector<BindingsPtr> out;
 	while(true) {
 		auto solution = answerQueue->pop_front();
 		if(solution->indicatesEndOfEvaluation()) break;
@@ -133,22 +134,22 @@ static std::vector<SubstitutionPtr> lookup(const FormulaPtr &formula, const Quer
 	return out;
 }
 
-static std::vector<SubstitutionPtr> lookupAll(const std::string &queryString) {
+static std::vector<BindingsPtr> lookupAll(const std::string &queryString) {
 	auto ctx = std::make_shared<QueryContext>(QUERY_FLAG_ALL_SOLUTIONS);
     return lookup(QueryParser::parse(queryString), ctx);
 }
 
-static std::vector<SubstitutionPtr> lookupAll(const FormulaPtr &p) {
+static std::vector<BindingsPtr> lookupAll(const FormulaPtr &p) {
 	auto ctx = std::make_shared<QueryContext>(QUERY_FLAG_ALL_SOLUTIONS);
     return lookup(p, ctx);
 }
 
-static std::vector<SubstitutionPtr> lookupOne(const std::string &queryString) {
+static std::vector<BindingsPtr> lookupOne(const std::string &queryString) {
 	auto ctx = std::make_shared<QueryContext>(QUERY_FLAG_ONE_SOLUTION);
     return lookup(QueryParser::parse(queryString), ctx);
 }
 
-static SubstitutionPtr lookupOne(const FormulaPtr &p) {
+static BindingsPtr lookupOne(const FormulaPtr &p) {
 	auto ctx = std::make_shared<QueryContext>(QUERY_FLAG_ONE_SOLUTION);
     auto substitutions = lookup(p, ctx);
     if(substitutions.empty()) {
@@ -159,7 +160,7 @@ static SubstitutionPtr lookupOne(const FormulaPtr &p) {
     }
 }
 
-static bool containsAnswer(const std::vector<SubstitutionPtr> &answers, const std::string &key, const TermPtr &value) {
+static bool containsAnswer(const std::vector<BindingsPtr> &answers, const std::string &key, const TermPtr &value) {
 	for (auto &x: answers) {
 		if (x->contains(key)) {
 			auto actual = x->get(key);
@@ -188,21 +189,21 @@ TEST_F(KnowledgeBaseTest, atomic_EDB) {
 		// the query formula:
 		(*hasSibling_)(Fred_, varX_),
 		// the expected solution as substitution mapping:
-		Substitution({{varX_, Ernest_}}))
+		Bindings({{varX_, Ernest_}}))
 	EXPECT_ONLY_SOLUTION(
-		(*hasSibling_)(varX_, Ernest_),
-		Substitution({{varX_, Fred_}}))
+			(*hasSibling_)(varX_, Ernest_),
+			Bindings({{varX_, Fred_}}))
 	EXPECT_ONLY_SOLUTION(
-		(*hasSibling_)(Fred_, Ernest_),
-		Substitution())
+			(*hasSibling_)(Fred_, Ernest_),
+			Bindings())
 	// negative case without any solution:
 	EXPECT_NO_SOLUTION((*hasSibling_)(Lea_, varX_));
 }
 
 TEST_F(KnowledgeBaseTest, conjunctive_EDB) {
 	EXPECT_ONLY_SOLUTION(
-		(*hasSibling_)(Fred_, varX_) & (*hasNumber_)(varX_, varNum_),
-		Substitution({
+	(*hasSibling_)(Fred_, varX_) & (*hasNumber_)(varX_, varNum_),
+	Bindings({
 			{varNum_, std::make_shared<String>("123456")},
 			{varX_, Ernest_}
 		}))
@@ -219,8 +220,8 @@ TEST_F(KnowledgeBaseTest, disjunctive_EDB) {
 
 TEST_F(KnowledgeBaseTest, complex_EDB) {
 	EXPECT_ONLY_SOLUTION(
-		((*hasSibling_)(Fred_, varX_) | (*hasAncestor_)(Fred_, varX_)) & (*hasSibling_)(varX_, varY_),
-		Substitution({
+	((*hasSibling_)(Fred_, varX_) | (*hasAncestor_)(Fred_, varX_)) & (*hasSibling_)(varX_, varY_),
+	Bindings({
 			{varX_, Ernest_},
 			{varY_, Fred_}
 		}))
@@ -228,15 +229,15 @@ TEST_F(KnowledgeBaseTest, complex_EDB) {
 
 TEST_F(KnowledgeBaseTest, negated_EDB) {
 	EXPECT_ONLY_SOLUTION(
-		~(*hasSibling_)(Lea_, varX_),
-		Substitution())
+			~(*hasSibling_)(Lea_, varX_),
+			Bindings())
 	EXPECT_NO_SOLUTION(~(*hasSibling_)(Fred_, varX_));
 }
 
 TEST_F(KnowledgeBaseTest, negated_IDB) {
 	EXPECT_ONLY_SOLUTION(
-		~(*p_)(Lea_, varX_),
-		Substitution())
+			~(*p_)(Lea_, varX_),
+			Bindings())
 	EXPECT_NO_SOLUTION(~(*p_)(Ernest_, varX_));
 }
 
@@ -244,23 +245,23 @@ TEST_F(KnowledgeBaseTest, negatedComplex_EDB) {
 	// Rex is an ancestor of Fred who does not have a sibling
 	EXPECT_ONLY_SOLUTION(
 		(*hasAncestor_)(Fred_, varX_) & ~(*hasSibling_)(varX_, varY_),
-		Substitution({{varX_, Rex_}}))
+		Bindings({{varX_, Rex_}}))
 }
 
 TEST_F(KnowledgeBaseTest, atomic_IDB) {
 	EXPECT_ONLY_SOLUTION(
-		(*p_)(Ernest_, varX_),
-		Substitution({{varX_, IRIAtom::Tabled("x")}}))
+			(*p_)(Ernest_, varX_),
+			Bindings({{varX_, IRIAtom::Tabled("x")}}))
 	EXPECT_ONLY_SOLUTION(
-		(*q_)(IRIAtom::Tabled("x"), varX_),
-		Substitution({{varX_, IRIAtom::Tabled("y")}}))
+			(*q_)(IRIAtom::Tabled("x"), varX_),
+			Bindings({{varX_, IRIAtom::Tabled("y")}}))
 	EXPECT_NO_SOLUTION((*p_)(IRIAtom::Tabled("x"), varX_));
 }
 
 TEST_F(KnowledgeBaseTest, mixed_EDB_IDB) {
 	EXPECT_ONLY_SOLUTION(
-		(*hasSibling_)(Fred_, varX_) & (*p_)(varX_, varY_),
-		Substitution({
+	(*hasSibling_)(Fred_, varX_) & (*p_)(varX_, varY_),
+	Bindings({
 			{varX_, Ernest_},
 			{varY_, IRIAtom::Tabled("x")}
 		}))
@@ -268,19 +269,22 @@ TEST_F(KnowledgeBaseTest, mixed_EDB_IDB) {
 
 TEST_F(KnowledgeBaseTest, IDB_interaction) {
 	EXPECT_ONLY_SOLUTION(
-		(*p_)(varX_, varY_) & (*q_)(varY_, varZ_),
-		Substitution({
+	(*p_)(varX_, varY_) & (*q_)(varY_, varZ_),
+	Bindings({
 			{varX_, Ernest_},
 			{varY_, IRIAtom::Tabled("x")},
 			{varZ_, IRIAtom::Tabled("y")}
 		}))
 }
 
-TEST_F(KnowledgeBaseTest, modal_EDB) {
+TEST_F(KnowledgeBaseTest, modal_EDB_K) {
 	EXPECT_ONLY_SOLUTION(
-		K((*hasSibling_)(Fred_, varX_)),
-		Substitution({{varX_, Ernest_}}))
+			K((*hasSibling_)(Fred_, varX_)),
+			Bindings({{varX_, Ernest_}}))
+}
+
+TEST_F(KnowledgeBaseTest, modal_EDB_B) {
 	EXPECT_ONLY_SOLUTION(
-		B((*hasSibling_)(Fred_, varX_)),
-		Substitution({{varX_, Ernest_}}))
+			B((*hasSibling_)(Fred_, varX_)),
+			Bindings({{varX_, Ernest_}}))
 }

@@ -222,6 +222,26 @@ void Collection::createIndex(const std::vector<IndexKey> &keys) {
 	createIndex_internal(b_keys);
 }
 
+void Collection::createTripleIndex() {
+	// TODO: shouldn't fields "graph", "agent", "scope.time.since", "scope.time.until", "confidence",
+	//  "uncertain", "occasional" be included in each index?
+	createAscendingIndex({"s"});
+	createAscendingIndex({"p"});
+	createAscendingIndex({"o"});
+	createAscendingIndex({"p*"});
+	createAscendingIndex({"o*"});
+	createAscendingIndex({"s", "p"});
+	createAscendingIndex({"s", "p*"});
+	createAscendingIndex({"s", "o"});
+	createAscendingIndex({"s", "o*"});
+	createAscendingIndex({"o", "p"});
+	createAscendingIndex({"o", "p*"});
+	createAscendingIndex({"p", "o*"});
+	createAscendingIndex({"s", "o", "p"});
+	createAscendingIndex({"s", "o", "p*"});
+	createAscendingIndex({"s", "o*", "p"});
+}
+
 bool Collection::empty() {
 	bson_t *opts = BCON_NEW("limit", BCON_INT64(1));
 	bson_t filter = BSON_INITIALIZER;

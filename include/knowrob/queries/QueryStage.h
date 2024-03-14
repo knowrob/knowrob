@@ -47,7 +47,7 @@ namespace knowrob {
 		 * @param substitution a mapping from variables to terms.
 		 * @return an answer buffer.
 		 */
-		virtual TokenBufferPtr submitQuery(const Substitution &substitution) = 0;
+		virtual TokenBufferPtr submitQuery(const Bindings &substitution) = 0;
 
 	protected:
 		std::atomic<bool> isQueryOpened_;

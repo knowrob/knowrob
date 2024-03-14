@@ -22,16 +22,12 @@ AnswerDontKnow::AnswerDontKnow(const AnswerDontKnow &other)
 		: Answer(other) {
 }
 
-void AnswerDontKnow::setIsUncertain(std::optional<double> confidence) {
-	confidence_ = confidence;
-}
-
 size_t AnswerDontKnow::hash() const {
 	return Answer::hash();
 }
 
 std::ostream &AnswerDontKnow::write(std::ostream &os) const {
-	if(reasonerTerm_) {
+	if (reasonerTerm_) {
 		os << "[" << *reasonerTerm_ << "] ";
 	}
 	return os << "don't know\n";

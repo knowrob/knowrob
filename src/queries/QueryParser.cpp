@@ -1,6 +1,7 @@
-//
-// Created by daniel on 21.03.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include <gtest/gtest.h>
 
@@ -118,7 +119,7 @@ namespace {
 }
 
 static std::string createIRI(const std::string &prefix, const std::string &name) {
-    auto uri = semweb::PrefixRegistry::get().createIRI(prefix, name);
+    auto uri = semweb::PrefixRegistry::createIRI(prefix, name);
     if (uri.has_value()) {
         return uri.value();
     } else {

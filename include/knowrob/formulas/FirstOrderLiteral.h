@@ -8,7 +8,7 @@
 
 #include <memory>
 #include "Predicate.h"
-#include "knowrob/semweb/FramedTriple.h"
+#include "knowrob/triples/FramedTriple.h"
 
 namespace knowrob {
 	/**

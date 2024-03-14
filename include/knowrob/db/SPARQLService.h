@@ -8,8 +8,8 @@
 
 #include <redland.h>
 #include "knowrob/db/DataService.h"
-#include "knowrob/semweb/TripleFormat.h"
-#include "knowrob/semweb/TripleContainer.h"
+#include "knowrob/triples/TripleFormat.h"
+#include "knowrob/triples/TripleContainer.h"
 #include "OntologySource.h"
 #include "RedlandModel.h"
 

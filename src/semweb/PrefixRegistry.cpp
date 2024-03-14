@@ -1,6 +1,7 @@
-//
-// Created by daniel on 11.02.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/semweb/PrefixProbe.h"
@@ -9,11 +10,12 @@
 using namespace knowrob::semweb;
 
 PrefixRegistry::PrefixRegistry() {
-	registerPrefix("owl", "http://www.w3.org/2002/07/owl");
-	registerPrefix("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns");
-	registerPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema");
-	registerPrefix("xsd", "http://www.w3.org/2001/XMLSchema");
-	registerPrefix("dul", "http://www.ontologydesignpatterns.org/ont/dul/DUL.owl");
+	registerPrefix_("owl", "http://www.w3.org/2002/07/owl");
+	registerPrefix_("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns");
+	registerPrefix_("rdfs", "http://www.w3.org/2000/01/rdf-schema");
+	registerPrefix_("xsd", "http://www.w3.org/2001/XMLSchema");
+	registerPrefix_("dul", "http://www.ontologydesignpatterns.org/ont/dul/DUL.owl");
+	registerPrefix_("knowrob", "http://knowrob.org/kb/knowrob.owl");
 }
 
 PrefixRegistry &PrefixRegistry::get() {
@@ -21,7 +23,7 @@ PrefixRegistry &PrefixRegistry::get() {
 	return singleton;
 }
 
-void PrefixRegistry::registerPrefix(std::string_view prefix, std::string_view uri) {
+void PrefixRegistry::registerPrefix_(std::string_view prefix, std::string_view uri) {
 	auto s_prefix = std::string(prefix.data());
 	auto s_uri = std::string(uri.data());
 	if (s_uri[s_uri.size() - 1] == '#') {
@@ -31,34 +33,38 @@ void PrefixRegistry::registerPrefix(std::string_view prefix, std::string_view ur
 	aliasToURI_[s_prefix] = s_uri;
 }
 
-OptionalStringRef PrefixRegistry::uriToAlias(const std::string &uri) const {
+void PrefixRegistry::registerPrefix(std::string_view prefix, std::string_view uri) {
+	get().registerPrefix_(prefix, uri);
+}
+
+OptionalStringRef PrefixRegistry::uriToAlias(std::string_view uri) {
 	if (uri[uri.size() - 1] == '#') {
-		auto x = uri;
-		x.pop_back();
-		auto it = uriToAlias_.find(x);
-		return it == uriToAlias_.end() ? std::nullopt : OptionalStringRef(it->second);
+		auto it = get().uriToAlias_.find(uri.substr(0, uri.size() - 1));
+		return it == get().uriToAlias_.end() ? std::nullopt : OptionalStringRef(it->second);
 	} else {
-		auto it = uriToAlias_.find(uri);
-		return it == uriToAlias_.end() ? std::nullopt : OptionalStringRef(it->second);
+		auto it = get().uriToAlias_.find(uri);
+		return it == get().uriToAlias_.end() ? std::nullopt : OptionalStringRef(it->second);
 	}
 }
 
-OptionalStringRef PrefixRegistry::aliasToUri(const std::string &alias) const {
-	auto it = aliasToURI_.find(alias);
-	return it == aliasToURI_.end() ? std::nullopt : OptionalStringRef(it->second);
+OptionalStringRef PrefixRegistry::aliasToUri(std::string_view alias) {
+	auto it = get().aliasToURI_.find(alias);
+	return it == get().aliasToURI_.end() ? std::nullopt : OptionalStringRef(it->second);
 }
 
-std::optional<std::string> PrefixRegistry::createIRI(const std::string &alias, const std::string &entityName) const {
+std::optional<std::string> PrefixRegistry::createIRI(std::string_view alias, std::string_view entityName) {
 	auto uri = aliasToUri(alias);
 	if (uri.has_value()) {
-		return uri.value().get() + "#" + entityName;
+		std::stringstream os;
+		os << uri.value().get() << '#' << entityName;
+		return os.str();
 	} else {
 		return uri;
 	}
 }
 
-std::vector<std::string_view> PrefixRegistry::getAliasesWithPrefix(const std::string &prefix) const {
-	auto range_it = aliasToURI_.equal_range(PrefixProbe{prefix});
+std::vector<std::string_view> PrefixRegistry::getAliasesWithPrefix(std::string_view prefix) {
+	auto range_it = get().aliasToURI_.equal_range(PrefixProbe{prefix});
 	std::vector<std::string_view> result;
 	for (auto it = range_it.first; it != range_it.second; ++it) {
 		result.emplace_back(it->first.c_str());

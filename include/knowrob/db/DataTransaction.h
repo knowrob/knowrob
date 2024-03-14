@@ -9,7 +9,7 @@
 #include "memory"
 #include "knowrob/ThreadPool.h"
 #include "knowrob/db/DataBackend.h"
-#include "knowrob/semweb/TripleContainer.h"
+#include "knowrob/triples/TripleContainer.h"
 #include "DefinedBackend.h"
 
 namespace knowrob {

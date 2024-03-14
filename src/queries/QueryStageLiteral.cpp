@@ -12,7 +12,7 @@ QueryStageLiteral::QueryStageLiteral(FramedTriplePatternPtr literal, const Query
 		  literal_(std::move(literal)) {
 }
 
-TokenBufferPtr QueryStageLiteral::submitQuery(const Substitution &substitution) {
+TokenBufferPtr QueryStageLiteral::submitQuery(const Bindings &substitution) {
 	// apply the substitution mapping
 	auto literalInstance = applyBindings(literal_, substitution);
 	// submit a query

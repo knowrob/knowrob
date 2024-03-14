@@ -8,8 +8,8 @@
 
 #include <raptor.h>
 #include <librdf.h>
-#include "knowrob/semweb/TripleContainer.h"
-#include "knowrob/semweb/FramedTriple.h"
+#include "knowrob/triples/TripleContainer.h"
+#include "knowrob/triples/FramedTriple.h"
 
 namespace knowrob {
 	/**
@@ -67,10 +67,10 @@ namespace knowrob {
 		auto size() const { return actualSize_; }
 
 		// override TripleContainer
-		const std::vector<FramedTriplePtr> &asImmutableVector() const override { return mappedData_; }
+		ConstGenerator cgenerator() const override;
 
-		// override TripleContainer
-		std::vector<FramedTriplePtr> &asMutableVector() override { return mappedData_; }
+		// override MutableTripleContainer
+		MutableGenerator generator() override;
 
 	protected:
 		struct mapped_statement {

@@ -32,20 +32,6 @@ namespace knowrob {
 
 		// override Answer
 		bool isPositive() const override { return false; }
-
-		// override Answer
-		bool isUncertain() const override { return true; }
-
-		// override Answer
-		void setIsUncertain(std::optional<double> confidence) override;
-
-		/**
-		 * @return the optional confidence of this answer.
-		 */
-		auto &confidence() const { return confidence_; }
-
-	protected:
-		std::optional<double> confidence_;
 	};
 
 	// alias

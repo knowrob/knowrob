@@ -6,7 +6,7 @@
 #ifndef KNOWROB_ONTOLOGY_SOURCE_H
 #define KNOWROB_ONTOLOGY_SOURCE_H
 
-#include "knowrob/semweb/GraphSelector.h"
+#include "knowrob/triples/GraphSelector.h"
 
 namespace knowrob {
 

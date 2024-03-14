@@ -180,7 +180,7 @@ add_library(knowrob SHARED
 		src/terms/Variable.cpp
 		src/terms/ListTerm.cpp
 		src/terms/OptionList.cpp
-		src/terms/Substitution.cpp
+        src/terms/Bindings.cpp
 		src/terms/Unifier.cpp
 		src/formulas/Formula.cpp
 		src/formulas/CompoundFormula.cpp
@@ -193,7 +193,6 @@ add_library(knowrob SHARED
 		src/formulas/Top.cpp
 		src/formulas/ModalFormula.cpp
         src/formulas/FirstOrderLiteral.cpp
-		src/queries/FormulaQuery.cpp
 		src/queries/QueryError.cpp
 		src/queries/Answer.cpp
 		src/queries/TokenStream.cpp
@@ -204,7 +203,7 @@ add_library(knowrob SHARED
 		src/queries/QueryParser.cpp
 		src/queries/QueryTree.cpp
 		src/queries/TokenBuffer.cpp
-		src/queries/ConjunctiveQuery.cpp
+        src/triples/GraphQuery.cpp
 		src/queries/Query.cpp
 		src/queries/RedundantAnswerFilter.cpp
 		src/queries/EDBStage.cpp
@@ -221,7 +220,7 @@ add_library(knowrob SHARED
 		src/semweb/rdf.cpp
 		src/semweb/Property.cpp
 		src/semweb/Class.cpp
-        src/semweb/FramedTriplePattern.cpp
+        src/triples/FramedTriplePattern.cpp
 		src/semweb/ImportHierarchy.cpp
 		src/reasoner/DefinedPredicate.cpp
 		src/reasoner/ReasonerPlugin.cpp
@@ -254,36 +253,30 @@ add_library(knowrob SHARED
         src/db/mongo/QueryWatch.cpp
         src/db/mongo/MongoKnowledgeGraph.cpp
         src/db/mongo/BulkOperation.cpp
-        src/db/mongo/aggregation/graph.cpp
         src/db/mongo/Pipeline.cpp
         src/db/mongo/TripleCursor.cpp
         src/db/mongo/BindingsCursor.cpp
-        src/db/mongo/aggregation/terms.cpp
         src/db/mongo/aggregation/triples.cpp
         src/db/mongo/Connection.cpp
         src/db/mongo/bson-helper.cpp
 		src/queries/ModalStage.cpp
-		src/semweb/Agent.cpp
-		include/knowrob/semweb/Agent.h
+        src/triples/Perspective.cpp
 		src/formulas/PredicateIndicator.cpp
 		src/formulas/PredicateDescription.cpp
 		src/reasoner/ReasonerModule.cpp
 		src/queries/AnswerYes.cpp
-		include/knowrob/queries/AnswerYes.h
 		src/queries/AnswerNo.cpp
-		include/knowrob/queries/AnswerNo.h
 		src/queries/AnswerDontKnow.cpp
-		include/knowrob/queries/AnswerDontKnow.h
 		src/queries/DisjunctiveBroadcaster.cpp
 		src/queries/Token.cpp
-		src/semweb/GraphSelector.cpp
+		src/triples/GraphSelector.cpp
 		src/queries/AnswerMerger.cpp
 		src/queries/QueryStageLiteral.cpp
 		src/queries/QueryStageFormula.cpp
 		src/py/utils.cpp
-        src/semweb/FramedTriple.cpp
+        src/triples/FramedTriple.cpp
         src/semweb/Transformation.cpp
-        src/semweb/TripleFormat.cpp
+        src/triples/TripleFormat.cpp
         src/semweb/OntologyLanguage.cpp
         src/db/DataService.cpp
         src/reasoner/prolog/semweb.cpp
@@ -295,7 +288,6 @@ add_library(knowrob SHARED
         src/db/GraphRestructuring.cpp
         src/db/RedlandModel.cpp
         src/db/GraphTransformation.cpp
-        src/queries/SPARQLQuery.cpp
         src/terms/Atom.cpp
         src/terms/Atomic.cpp
         src/terms/Function.cpp
@@ -309,9 +301,22 @@ add_library(knowrob SHARED
         src/db/DataBackend.cpp
         src/queries/QueryContext.cpp
         src/modalities/Modality.cpp
-        src/semweb/TripleContainer.cpp
+        src/triples/SPARQLQuery.cpp
+        src/triples/TripleContainer.cpp
         src/KnowRobError.cpp
-        src/py/PythonError.cpp)
+        src/py/PythonError.cpp
+        src/reification/ReifiedTriple.cpp
+        src/reification/ReifiedQuery.cpp
+        src/reification/ReificationContainer.cpp
+        src/reification/UnReificationContainer.cpp
+        src/reification/ReifiedBackend.cpp
+        src/triples/GraphUnion.cpp
+        src/triples/GraphSequence.cpp
+        src/triples/GraphTerm.cpp
+        src/db/mongo/MongoTriple.cpp
+        src/db/mongo/MongoTriplePattern.cpp
+        src/db/mongo/MongoTerm.cpp
+        src/db/mongo/MongoTaxonomy.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}
@@ -426,8 +431,8 @@ endif()
 add_executable(all_gtests
 		tests/gtests.cpp
 		src/neems/test.cpp
-        tests/mongodb/MongoKnowledgeGraphTest.cpp
 		tests/KnowledgeBaseTest.cpp
+        tests/DataBackendTest.cpp
 		tests/py/test-module.cpp)
 add_dependencies(all_gtests knowrob_py)
 target_link_libraries(all_gtests

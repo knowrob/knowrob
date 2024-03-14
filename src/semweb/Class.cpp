@@ -12,6 +12,9 @@ using namespace knowrob::semweb;
 Class::Class(std::string_view iri)
 		: Resource(iri) {}
 
+Class::Class(const IRIAtomPtr &iri)
+		: Resource(iri) {}
+
 bool Class::Comparator::operator()(const std::shared_ptr<Class> &lhs, const std::shared_ptr<Class> &rhs) const {
 	return lhs->iri() < rhs->iri();
 }

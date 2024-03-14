@@ -11,6 +11,45 @@
 
 using namespace knowrob;
 
+void Answer::applyFrame(const GraphSelector &frame) {
+	frame_->graph = frame.graph;
+	frame_->perspective = frame.perspective;
+	frame_->confidence = std::nullopt;
+	frame_->begin = frame.begin;
+	frame_->end = frame.end;
+	frame_->uncertain = frame.uncertain;
+	frame_->occasional = frame.occasional;
+}
+
+bool Answer::isUncertain() const {
+	if (frame_->confidence.has_value()) {
+		if (frame_->confidence.value() < 1.0) return true;
+	}
+	if (frame_->uncertain) {
+		return true;
+	}
+	return false;
+}
+
+bool Answer::isOccasionallyTrue() const {
+	return frame_->occasional;
+}
+
+void Answer::setIsUncertain(bool val, std::optional<double> confidence) {
+	frame_->uncertain = val;
+	if (val) {
+		if (confidence.has_value()) {
+			frame_->confidence = confidence;
+		}
+	} else {
+		frame_->confidence = 1.0;
+	}
+}
+
+void Answer::setIsOccasionallyTrue(bool val) {
+	frame_->occasional = val;
+}
+
 size_t Answer::hash() const {
 	size_t val = Token::hash();
 	if (isNegative()) {
@@ -27,7 +66,7 @@ namespace knowrob {
 	AnswerPtr mergeAnswers(const AnswerPtr &a, const AnswerPtr &b, bool ignoreInconsistencies) {
 		// also for the moment we do not combine two negative answers
 		if (a->isNegative()) {
-			if(b->isNegative()) {
+			if (b->isNegative()) {
 				// both are on
 				auto a_negative = std::static_pointer_cast<const AnswerNo>(a);
 				auto b_negative = std::static_pointer_cast<const AnswerNo>(b);
