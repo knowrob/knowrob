@@ -263,8 +263,8 @@ TYPED_TEST(DataBackendTest, WithTimeInterval) {
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 1);
 }
 
-/*
 TYPED_TEST(DataBackendTest, ExtendsTimeInterval) {
+	GTEST_SKIP() << "the data backend interface currently does not support extending time intervals.";
 	// assert a statement with time interval [10,20]
 	FramedTripleCopy statement(swrl_test_"Alice", swrl_test_"hasName", "Alice");
 	statement.setStringValue("Alice");
@@ -283,4 +283,3 @@ TYPED_TEST(DataBackendTest, ExtendsTimeInterval) {
 	statement.setIsOccasional(true);
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 1);
 }
-*/

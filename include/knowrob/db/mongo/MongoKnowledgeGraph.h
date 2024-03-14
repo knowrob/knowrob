@@ -88,6 +88,22 @@ namespace knowrob {
 		 */
 		mongo::BindingsCursorPtr lookup(const GraphTerm &query);
 
+		/**
+		 * Same as insertOne/1 but with an additional merge flag.
+		 * @param triple a triple
+		 * @param merge if true, the triple is merged with existing triples if possible
+		 * @return true on success
+		 */
+		bool insertOne(const FramedTriple &triple, bool merge);
+
+		/**
+		 * Same as insertAll/1 but with an additional merge flag.
+		 * @param triples a set of triples
+		 * @param merge if true, the triples are merged with existing triples if possible
+		 * @return true on success
+		 */
+		bool insertAll(const semweb::TripleContainerPtr &triples, bool merge);
+
 		// Override DataBackend
 		bool insertOne(const FramedTriple &triple) override;
 

@@ -192,6 +192,10 @@ void MongoKnowledgeGraph::drop() {
 }
 
 bool MongoKnowledgeGraph::insertOne(const FramedTriple &tripleData) {
+	return insertOne(tripleData, false);
+}
+
+bool MongoKnowledgeGraph::insertOne(const FramedTriple &tripleData, bool merge) {
 	auto &fallbackOrigin = importHierarchy_->defaultGraph();
 	bool isTaxonomic = vocabulary_->isTaxonomicProperty(tripleData.predicate());
 	MongoTriple mngTriple(vocabulary_, tripleData, fallbackOrigin, isTaxonomic);
@@ -202,12 +206,25 @@ bool MongoKnowledgeGraph::insertOne(const FramedTriple &tripleData) {
 	} else if (semweb::isSubPropertyOfIRI(tripleData.predicate())) {
 		taxonomy_->update({}, {{tripleData.subject(), tripleData.valueAsString()}});
 	}
-	// TODO: It is questionable if this should be handled here, if it should be done at all, or if it rather should be done centrally.
-	updateTimeInterval(tripleData);
+	if (merge) {
+		// TODO: Consider how merging of triples could be supported via the data backend interface.
+		//       One of the problems is that triple querying is needed for this operation, but the
+		//       DataBackend interface does not provide a way to do this (to make it easier for reasoner to
+		//       implement the backend). But if the merging is not done centrally for all backends, then
+		//       the backends would potentially diverge in their behavior which could lead to unexpected results.
+		//       So it does not seem to be a good idea to do merging only in some backends.
+		//       Also the merging should be done before triples are reified, which would also require changes.
+		updateTimeInterval(tripleData);
+	}
+
 	return true;
 }
 
 bool MongoKnowledgeGraph::insertAll(const semweb::TripleContainerPtr &triples) {
+	return insertAll(triples, false);
+}
+
+bool MongoKnowledgeGraph::insertAll(const semweb::TripleContainerPtr &triples, bool merge) {
 	// only used in case triples do not specify origin field
 	auto &fallbackOrigin = importHierarchy_->defaultGraph();
 	auto bulk = tripleCollection_->createBulkOperation();
@@ -231,7 +248,9 @@ bool MongoKnowledgeGraph::insertAll(const semweb::TripleContainerPtr &triples) {
 	bulk->execute();
 
 	taxonomy_->update(tAssertions.subClassAssertions, tAssertions.subPropertyAssertions);
-	for (auto &data: *triples) updateTimeInterval(*data);
+	if (merge) {
+		for (auto &data: *triples) updateTimeInterval(*data);
+	}
 
 	return true;
 }
