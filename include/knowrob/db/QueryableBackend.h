@@ -118,6 +118,11 @@ namespace knowrob {
 		void setBatchSize(uint32_t batchSize) { batchSize_ = batchSize; }
 
 		/**
+		 * @return true if the backend supports re-assignment of variables within query pipelines.
+		 */
+		virtual bool supportsReAssignment() const { return false; }
+
+		/**
 		 * Expand a query with complex patterns into one with potentially more
 		 * but less complex patterns.
 		 * This is done to realize a backend-independent handling of some aspects
@@ -125,7 +130,7 @@ namespace knowrob {
 		 * @param q a graph query.
 		 * @return the expanded graph query.
 		 */
-		static GraphQueryPtr expand(const GraphQueryPtr &q);
+		GraphQueryPtr expand(const GraphQueryPtr &q);
 
 	protected:
 		uint32_t batchSize_;
@@ -145,13 +150,13 @@ namespace knowrob {
 
 		static std::shared_ptr<AnswerYes> yes(const GraphPathQueryPtr &q, const BindingsPtr &bindings);
 
-		static GraphQueryPtr expand(ExpansionContext &ctx, const GraphQueryPtr &q);
+		GraphQueryPtr expand(ExpansionContext &ctx, const GraphQueryPtr &q);
 
-		static std::shared_ptr<GraphTerm> expand(ExpansionContext &ctx, const std::shared_ptr<GraphTerm> &q);
+		std::shared_ptr<GraphTerm> expand(ExpansionContext &ctx, const std::shared_ptr<GraphTerm> &q);
 
-		static std::shared_ptr<GraphTerm> expandPattern(ExpansionContext &ctx, const std::shared_ptr<GraphPattern> &q);
+		std::shared_ptr<GraphTerm> expandPattern(ExpansionContext &ctx, const std::shared_ptr<GraphPattern> &q);
 
-		static bool expandAll(ExpansionContext &ctx, const std::shared_ptr<GraphConnective> &q,
+		bool expandAll(ExpansionContext &ctx, const std::shared_ptr<GraphConnective> &q,
 							  std::vector<std::shared_ptr<GraphTerm>> &expandedTerms);
 	};
 

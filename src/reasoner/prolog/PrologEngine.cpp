@@ -5,6 +5,8 @@
 
 #include <SWI-Prolog.h>
 #include <filesystem>
+#include <clocale>
+#include <cstdlib>
 
 #include "knowrob/Logger.h"
 #include "knowrob/reasoner/prolog/PrologEngine.h"
@@ -40,6 +42,12 @@ void PrologEngine::initializeProlog() {
 	// toggle on flag
 	isPrologInitialized_ = true;
 
+	// PL_initialise changes the locale. This can have bad consequences.
+	// I experienced unit tests for Redland failing because of this!
+	// Seems like it is related to parsing of numbers. Setting
+	// LC_NUMERIC to "C" before PL_initialise seems to fix the problem.
+    setenv("LC_NUMERIC", "C", 1);
+
 	static int pl_ac = 0;
 	static char *pl_av[5];
 	pl_av[pl_ac++] = getNameOfExecutable();
@@ -50,6 +58,7 @@ void PrologEngine::initializeProlog() {
 	pl_av[pl_ac++] = (char *) "--signals=false";
 	pl_av[pl_ac] = nullptr;
 	PL_initialise(pl_ac, pl_av);
+
 	KB_DEBUG("Prolog has been initialized.");
 }
 

@@ -33,10 +33,14 @@ namespace knowrob {
 
 		/**
 		 * @param query a single triple pattern.
+		 */
+		explicit GraphQuery(const FramedTriplePatternPtr &query);
+
+		/**
+		 * @param query a single triple pattern.
 		 * @param ctx the query context.
 		 */
-		explicit GraphQuery(const FramedTriplePatternPtr &query,
-							const QueryContextPtr &ctx = DefaultQueryContext());
+		explicit GraphQuery(const FramedTriplePatternPtr &query, const QueryContextPtr &ctx);
 
 		/**
 		 * @return the GraphTerm's of the query, which are considered to be in a conjunction.

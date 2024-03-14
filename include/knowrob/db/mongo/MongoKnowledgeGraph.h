@@ -127,6 +127,9 @@ namespace knowrob {
 		// Override QueryableBackend
 		void count(const ResourceCounter &callback) const override;
 
+		// Override QueryableBackend
+		bool supportsReAssignment() const override { return true; }
+
 	protected:
 		std::shared_ptr<mongo::Collection> tripleCollection_;
 		std::shared_ptr<mongo::Collection> oneCollection_;

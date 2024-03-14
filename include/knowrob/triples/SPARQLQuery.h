@@ -77,13 +77,13 @@ namespace knowrob {
 
 		void bindOneOfIf(std::ostream &os, const GraphBuiltin &builtin, const char *comparisonOperator);
 
-		static void filter(std::ostream &os, std::string_view varName, const TermPtr &term,
+		void filter(std::ostream &os, std::string_view varName, const TermPtr &term,
 						   FramedTriplePattern::OperatorType operatorType);
 
-		static void filter_optional(std::ostream &os, std::string_view varName, const TermPtr &term,
+		void filter_optional(std::ostream &os, std::string_view varName, const TermPtr &term,
 									FramedTriplePattern::OperatorType operatorType);
 
-		static void doFilter(std::ostream &os, std::string_view varName, const std::shared_ptr<Atomic> &atomic,
+		void doFilter(std::ostream &os, std::string_view varName, const std::shared_ptr<Atomic> &atomic,
 							 FramedTriplePattern::OperatorType operatorType);
 	};
 

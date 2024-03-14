@@ -24,10 +24,15 @@ namespace knowrob {
 
 		/**
 		 * @param query a single triple pattern.
+		 */
+		explicit GraphPathQuery(const FramedTriplePatternPtr &query)
+				: GraphQuery(query), path_({query}) {}
+
+		/**
+		 * @param query a single triple pattern.
 		 * @param ctx the query context.
 		 */
-		explicit GraphPathQuery(const FramedTriplePatternPtr &query,
-								const QueryContextPtr &ctx = DefaultQueryContext())
+		explicit GraphPathQuery(const FramedTriplePatternPtr &query, const QueryContextPtr &ctx)
 				: GraphQuery(query, ctx), path_({query}) {}
 
 		/**

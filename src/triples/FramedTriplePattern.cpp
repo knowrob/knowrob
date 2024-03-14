@@ -88,6 +88,30 @@ void FramedTriplePattern::setTripleFrame(const GraphSelector &frame) {
 	}
 }
 
+void FramedTriplePattern::getTripleFrame(GraphSelector &frame) const {
+	if (beginTerm().has_grounding() && beginTerm().grounded()->isNumeric()) {
+		frame.begin = std::static_pointer_cast<Numeric>(beginTerm().grounded())->asDouble();
+	}
+	if (endTerm().has_grounding() && endTerm().grounded()->isNumeric()) {
+		frame.end = std::static_pointer_cast<Numeric>(endTerm().grounded())->asDouble();
+	}
+	if (confidenceTerm().has_grounding() && confidenceTerm().grounded()->isNumeric()) {
+		frame.confidence = std::static_pointer_cast<Numeric>(confidenceTerm().grounded())->asDouble();
+	}
+	if (isUncertainTerm().has_grounding() && isUncertainTerm().grounded()->isNumeric()) {
+		frame.uncertain = std::static_pointer_cast<Numeric>(isUncertainTerm().grounded())->asBoolean();
+	}
+	if (isOccasionalTerm().has_grounding() && isOccasionalTerm().grounded()->isNumeric()) {
+		frame.occasional = std::static_pointer_cast<Numeric>(isOccasionalTerm().grounded())->asBoolean();
+	}
+	if (graphTerm().has_grounding() && graphTerm().grounded()->isAtomic()) {
+		frame.graph = std::static_pointer_cast<Atomic>(graphTerm().grounded())->stringForm().data();
+	}
+	if (perspectiveTerm().has_grounding() && perspectiveTerm().grounded()->isAtomic()) {
+		frame.perspective = Perspective::get((perspectiveTerm().grounded())->stringForm());
+	}
+}
+
 std::shared_ptr<Atom> FramedTriplePattern::getGraphTerm(const std::string_view &graphName) {
 	static std::map<std::string, AtomPtr, std::less<>> graphTerms;
 	if (!graphName.empty()) {

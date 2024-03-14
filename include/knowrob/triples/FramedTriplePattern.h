@@ -53,9 +53,16 @@ namespace knowrob {
 		FramedTriplePattern(const TermPtr &s, const TermPtr &p, const TermPtr &o, bool isNegated = false);
 
 		/**
-		 * @param frame the graph, agent, begin, end and confidence.
+		 * Apply a frame to this pattern.
+		 * @param frame a triple frame.
 		 */
 		void setTripleFrame(const GraphSelector &frame);
+
+		/**
+		 * Apply this pattern to a frame.
+		 * @param frame a triple frame.
+		 */
+		void getTripleFrame(GraphSelector &frame) const;
 
 		/**
 		 * @return the subject term of this expression.

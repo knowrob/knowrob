@@ -155,8 +155,8 @@ GraphQueryPtr QueryableBackend::expand(const GraphQueryPtr &q) {
 
 GraphQueryPtr QueryableBackend::expand(ExpansionContext &ctx, const GraphQueryPtr &q) {
 	// Initialize begin/end variables for the computation of the time interval.
-	static const auto var_begin = std::make_shared<Variable>("_accumulatedBegin");
-	static const auto var_end = std::make_shared<Variable>("_accumulatedEnd");
+	static const auto var_begin = std::make_shared<Variable>("_begin");
+	static const auto var_end = std::make_shared<Variable>("_end");
 	ctx.accumulated_begin = var_begin;
 	ctx.accumulated_end = var_end;
 
@@ -273,7 +273,7 @@ QueryableBackend::expandPattern(ExpansionContext &ctx, const std::shared_ptr<Gra
 	auto pat_expanded = std::make_shared<FramedTriplePattern>(*p);
 
 	if (needsUncertainVar) {
-		static const std::string varPrefix = "_isUncertain";
+		static const std::string varPrefix = "_uncertain";
 		// insert a fresh variable for the isUncertain flag
 		auto u_var = std::make_shared<Variable>(varPrefix + std::to_string(ctx.counter));
 		pat_expanded->setIsUncertainTerm(groundable<Numeric>(u_var));
@@ -282,7 +282,7 @@ QueryableBackend::expandPattern(ExpansionContext &ctx, const std::shared_ptr<Gra
 	}
 
 	if (needsOccasionalVar) {
-		static const std::string varPrefix = "_isOccasional";
+		static const std::string varPrefix = "_occasional";
 		// insert a fresh variable for the isOccasional flag
 		auto o_var = std::make_shared<Variable>(varPrefix + std::to_string(ctx.counter));
 		pat_expanded->setIsOccasionalTerm(groundable<Numeric>(o_var));
@@ -328,16 +328,30 @@ QueryableBackend::expandPattern(ExpansionContext &ctx, const std::shared_ptr<Gra
 		// FILTER all triples that do not intersect with begin/end of query frame
 		if (ctx.query_ctx->selector.begin) {
 			auto ctx_begin = std::make_shared<Double>(ctx.query_ctx->selector.begin.value());
-			seq->addMember(GraphBuiltin::less(ctx_begin, triple_end));
+			seq->addMember(GraphBuiltin::lessOrEqual(ctx_begin, triple_end));
 		}
 		if (ctx.query_ctx->selector.end) {
 			auto ctx_end = std::make_shared<Double>(ctx.query_ctx->selector.end.value());
-			seq->addMember(GraphBuiltin::greater(ctx_end, triple_begin));
+			seq->addMember(GraphBuiltin::greaterOrEqual(ctx_end, triple_begin));
 		}
 
 		// Set accumulated begin and end time.
-		seq->addMember(GraphBuiltin::max(ctx.accumulated_begin, ctx.accumulated_begin, triple_begin));
-		seq->addMember(GraphBuiltin::min(ctx.accumulated_end, ctx.accumulated_end, triple_end));
+		// But not all backends support variable re-assignment.
+		// For the ones that don't support it like (SPARQL), we need to introduce a new variable for each intersection computed.
+		VariablePtr next_i_begin, next_i_end;
+		if (supportsReAssignment()) {
+			next_i_begin = ctx.accumulated_begin;
+			next_i_end = ctx.accumulated_end;
+		} else {
+			static const std::string varPrefix_begin = "_i_begin";
+			static const std::string varPrefix_end = "_i_end";
+			next_i_begin = std::make_shared<Variable>(varPrefix_begin + std::to_string(ctx.counter));
+			next_i_end = std::make_shared<Variable>(varPrefix_end + std::to_string(ctx.counter));
+		}
+		seq->addMember(GraphBuiltin::max(next_i_begin, ctx.accumulated_begin, triple_begin));
+		seq->addMember(GraphBuiltin::min(next_i_end, ctx.accumulated_end, triple_end));
+		ctx.accumulated_begin = next_i_begin;
+		ctx.accumulated_end = next_i_end;
 
 		// Ensure that begin < end
 		seq->addMember(GraphBuiltin::less(ctx.accumulated_begin, ctx.accumulated_end));

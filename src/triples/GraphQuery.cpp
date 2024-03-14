@@ -13,9 +13,21 @@
 
 using namespace knowrob;
 
+static QueryContextPtr createQueryContext(const FramedTriplePatternPtr &query) {
+	auto ctx = std::make_shared<QueryContext>();
+	ctx->queryFlags = QUERY_FLAG_ALL_SOLUTIONS;
+	query->getTripleFrame(ctx->selector);
+	return ctx;
+}
+
 GraphQuery::GraphQuery(const std::shared_ptr<GraphTerm> &queryTerm, const QueryContextPtr &ctx)
 		: Query(ctx),
 		  term_(queryTerm) {
+}
+
+GraphQuery::GraphQuery(const FramedTriplePatternPtr &query)
+		: Query(createQueryContext(query)),
+		  term_(std::make_shared<GraphPattern>(query)) {
 }
 
 GraphQuery::GraphQuery(const FramedTriplePatternPtr &query, const QueryContextPtr &ctx)
