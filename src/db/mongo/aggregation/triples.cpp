@@ -99,8 +99,8 @@ static void setTripleVariables(
 			std::make_pair("$next.graph", lookupData.expr->graphTerm().get()),
 			std::make_pair("$next.confidence", lookupData.expr->confidenceTerm().get()),
 			std::make_pair("$next.agent", lookupData.expr->perspectiveTerm().get()),
-			std::make_pair("$next.scope.time.begin", lookupData.expr->beginTerm().get()),
-			std::make_pair("$next.scope.time.end", lookupData.expr->endTerm().get()),
+			std::make_pair("$next.scope.time.since", lookupData.expr->beginTerm().get()),
+			std::make_pair("$next.scope.time.until", lookupData.expr->endTerm().get()),
 			std::make_pair("$next.uncertain", lookupData.expr->isUncertainTerm().get()),
 			std::make_pair("$next.occasional", lookupData.expr->isOccasionalTerm().get())
 	}) {
