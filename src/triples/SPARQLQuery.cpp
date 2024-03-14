@@ -14,7 +14,14 @@ using namespace knowrob;
 
 // TODO: build a SELECT pattern rather then using "*" to return all variables.
 
-SPARQLQuery::SPARQLQuery(const FramedTriplePattern &triplePattern) : varCounter_(0) {
+SPARQLFlag knowrob::operator|(SPARQLFlag a, SPARQLFlag b)
+{ return static_cast<SPARQLFlag>(static_cast<std::uint8_t>(a) | static_cast<std::uint8_t>(b)); }
+
+bool knowrob::operator&(SPARQLFlag a, SPARQLFlag b)
+{ return static_cast<std::uint8_t>(a) & static_cast<std::uint8_t>(b); }
+
+SPARQLQuery::SPARQLQuery(const FramedTriplePattern &triplePattern, SPARQLFlag flags)
+		: varCounter_(0), flags_(flags) {
 	std::stringstream os, os_query;
 	selectBegin(os_query);
 	add(os_query, triplePattern);
@@ -25,7 +32,8 @@ SPARQLQuery::SPARQLQuery(const FramedTriplePattern &triplePattern) : varCounter_
 	queryString_ = os.str();
 }
 
-SPARQLQuery::SPARQLQuery(const std::shared_ptr<GraphQuery> &query) : varCounter_(0) {
+SPARQLQuery::SPARQLQuery(const std::shared_ptr<GraphQuery> &query, SPARQLFlag flags)
+		: varCounter_(0), flags_(flags) {
 	std::stringstream os_query;
 	selectBegin(os_query);
 	add(os_query, query->term());
@@ -34,10 +42,7 @@ SPARQLQuery::SPARQLQuery(const std::shared_ptr<GraphQuery> &query) : varCounter_
 	std::stringstream os;
 	appendPrefixes(os);
 	os << os_query.str();
-
-	if (query->ctx()->queryFlags & QUERY_FLAG_ONE_SOLUTION) {
-		os << "\nLIMIT 1";
-	}
+	if (query->ctx()->queryFlags & QUERY_FLAG_ONE_SOLUTION) os << "\nLIMIT 1";
 
 	queryString_ = os.str();
 }
@@ -97,10 +102,12 @@ void SPARQLQuery::add(std::ostream &os, const FramedTriplePattern &triplePattern
 		// as far as I understand because both can only be used to "eliminate" solutions that were produced before.
 		// Which is actually fine as the KB does order positive/negative literals in the query,
 		// However queries with only negated patterns will not work with this code!
-		// NOTE: redland does not support NOT-EXISTS or MINUS.
-		// TODO: support different ways of stating negation depending on engine capabilities.
-		//negationViaMinus(os, triplePattern);
-		negationViaOptional(os, triplePattern);
+		if (flags_ & SPARQLFlag::NOT_EXISTS_UNSUPPORTED) {
+			// NOTE: redland does not support NOT-EXISTS or MINUS.
+			negationViaOptional(os, triplePattern);
+		} else {
+			negationViaNotExists(os, triplePattern);
+		}
 	} else if (triplePattern.isOptional()) {
 		if (optional(os, triplePattern)) {
 			filter_optional(os, lastVar_, triplePattern.objectTerm(), triplePattern.objectOperator());
@@ -242,12 +249,6 @@ void SPARQLQuery::doFilter(std::ostream &os, std::string_view varName, const std
 
 void SPARQLQuery::negationViaNotExists(std::ostream &os, const FramedTriplePattern &triplePattern) {
 	os << "FILTER NOT EXISTS { ";
-	where_with_filter(os, triplePattern);
-	os << "} ";
-}
-
-void SPARQLQuery::negationViaMinus(std::ostream &os, const FramedTriplePattern &triplePattern) {
-	os << "MINUS { ";
 	where_with_filter(os, triplePattern);
 	os << "} ";
 }

@@ -12,8 +12,18 @@
 #include "GraphBuiltin.h"
 
 namespace knowrob {
+	enum class SPARQLFlag : std::uint8_t {
+		NOTHING = 1ul << 0,
+		NOT_EXISTS_UNSUPPORTED = 1ul << 1
+	};
+	using SPARQLFlags = SPARQLFlag;
+	SPARQLFlag operator|(SPARQLFlag a, SPARQLFlag b);
+	bool operator&(SPARQLFlag a, SPARQLFlag b);
+
 	/**
-	 * A SPARQL query.
+	 * A SPARQL query using 1.1 syntax.
+	 * But since some backends do not support all features, this class allows to
+	 * specify some features that cannot be used.
 	 */
 	class SPARQLQuery {
 	public:
@@ -21,12 +31,12 @@ namespace knowrob {
 		 * Create a SPARQL query that selects all triples matching the given pattern.
 		 * @param triplePattern the pattern to match.
 		 */
-		explicit SPARQLQuery(const FramedTriplePattern &triplePattern);
+		explicit SPARQLQuery(const FramedTriplePattern &triplePattern, SPARQLFlags flags = SPARQLFlag::NOTHING);
 
 		/**
 		 * @param triplePatterns the patterns to match.
 		 */
-		explicit SPARQLQuery(const std::shared_ptr<GraphQuery> &query);
+		explicit SPARQLQuery(const std::shared_ptr<GraphQuery> &query, SPARQLFlags flags = SPARQLFlag::NOTHING);
 
 		/**
 		 * @return the query string.
@@ -40,6 +50,7 @@ namespace knowrob {
 		asUnsignedString() const { return reinterpret_cast<const unsigned char *>(queryString_.c_str()); }
 
 	protected:
+		SPARQLFlags flags_;
 		uint32_t varCounter_;
 		std::map<std::string_view, std::string_view> aliases_;
 		std::string queryString_;
@@ -64,8 +75,6 @@ namespace knowrob {
 		void negationViaNotExists(std::ostream &os, const FramedTriplePattern &triplePattern);
 
 		void negationViaOptional(std::ostream &os, const FramedTriplePattern &triplePattern);
-
-		void negationViaMinus(std::ostream &os, const FramedTriplePattern &triplePattern);
 
 		bool where(std::ostream &os, const FramedTriplePattern &triplePattern);
 

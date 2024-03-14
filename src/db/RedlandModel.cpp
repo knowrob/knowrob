@@ -519,7 +519,8 @@ void RedlandModel::query(const GraphQueryPtr &q, const BindingsHandler &callback
 			callback(Bindings::emptyBindings());
 		}
 	} else {
-		sparql(SPARQLQuery(q)(), callback);
+		static const SPARQLFlags sparql_flags = SPARQLFlag::NOT_EXISTS_UNSUPPORTED;
+		sparql(SPARQLQuery(q, sparql_flags)(), callback);
 	}
 }
 
