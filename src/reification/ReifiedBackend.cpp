@@ -144,20 +144,6 @@ void ReifiedBackend::query(const GraphQueryPtr &q, const BindingsHandler &callba
 		// and run the reified query on the original backend.
 		auto reified = std::make_shared<ReifiedQuery>(q, vocabulary());
 		originalBackend_->query(reified, [&](const BindingsPtr &bindings) {
-			// TODO: do we need special handling for the frame here at all? there is also some code in QueryableBackend.
-			// TODO: computation of frame would need to be implemented here.
-			//       for this we can iterate over literals and apply bindings to them to consolidate
-			//       an overall frame.
-			//       but would also be good if the process can be constrained e.g. like in mongolog
-			//       where solutions are skipped if time intervals are not overlapping.
-			//       but this is difficult, e.g. in sparql this might be possible with FILTER.
-			//       but well post processing of the results is also possible more easily.
-			//       is this really feasible? e.g. when only temporal operator is used then no variables would
-			//       exist to be bound to the time interval. but well they could be added in the reification step.
-			//       but what if we have a temporal operator plus a fixed time interval? well we could just
-			//       return the fixed interval as solution without specializing it, that would be simple.
-			//       but we could also use a mechanism like in mongolog `<(4)->Var` where terms can have a value
-			//       and a variable part in this case. That way sparql could be able to handle this.
 			callback(bindings);
 		});
 	} else {
