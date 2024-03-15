@@ -280,6 +280,57 @@ bool FramedTriple::operator==(const FramedTriple &other) const {
 	return true;
 }
 
+bool FramedTriple::mergeFrame(const FramedTriple &other) {
+	bool sameBegin = begin() == other.begin();
+	bool sameEnd = end() == other.end();
+	bool sameTime = sameBegin && sameEnd;
+
+	if (sameTime) {
+		// occasional can switch to always if both triples have the same time
+		setIsOccasional(isOccasional() && other.isOccasional());
+		// same for uncertain vs. certain
+		setIsUncertain(isUncertain() && other.isUncertain());
+		// plus we can take the max confidence
+		if (other.confidence().has_value() && confidence().has_value()) {
+			setConfidence(std::max(confidence().value(), other.confidence().value()));
+		} else if (!other.confidence().has_value()) {
+			confidence_ = std::nullopt;
+		}
+	} else {
+		// either both triples must be occasional or neither
+		if (isOccasional() != other.isOccasional()) return false;
+		// same for uncertain vs. certain
+		if (isUncertain() != other.isUncertain()) return false;
+		// also confidence must match in order to merge different time frames
+		if (confidence() != other.confidence()) return false;
+		// finally we can merge time frame
+		if (isOccasional()) {
+			if (begin() && other.begin()) {
+				setBegin(std::max(begin().value(), other.begin().value()));
+			} else if (other.begin()) {
+				setBegin(other.begin().value());
+			}
+			if (end() && other.end()) {
+				setEnd(std::min(end().value(), other.end().value()));
+			} else if (other.end()) {
+				setEnd(other.end().value());
+			}
+		} else {
+			if (begin() && other.begin()) {
+				setBegin(std::min(begin().value(), other.begin().value()));
+			} else if (!other.begin().has_value()) {
+				begin_ = std::nullopt;
+			}
+			if (end() && other.end()) {
+				setEnd(std::max(end().value(), other.end().value()));
+			} else if (!other.end().has_value()) {
+				end_ = std::nullopt;
+			}
+		}
+	}
+	return true;
+}
+
 namespace std {
 	std::ostream &operator<<(std::ostream &os, const knowrob::FramedTriple &triple) //NOLINT
 	{

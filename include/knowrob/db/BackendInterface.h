@@ -68,6 +68,15 @@ namespace knowrob {
 		bool removeAllWithOrigin(std::string_view origin);
 
 		/**
+		 * Inserts a triple into the extensional database and merges it with existing ones
+		 * if possible.
+		 * @param backend the backend to modify.
+		 * @param triple the triple to insert.
+		 * @return true if the triple was inserted, false otherwise.
+		 */
+		bool mergeInsert(const QueryableBackendPtr &backend, const FramedTriple &triple);
+
+		/**
 		 * Checks if a triple is contained in the extensional database.
 		 * @param backend the backend to query.
 		 * @param triple the triple to check.

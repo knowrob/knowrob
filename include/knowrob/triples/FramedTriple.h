@@ -29,6 +29,12 @@ namespace knowrob {
 		virtual ~FramedTriple() = default;
 
 		/**
+		 * Merge the frame of the triple with another triple.
+		 * @param other another triple.
+		 */
+		bool mergeFrame(const FramedTriple &other);
+
+		/**
 		 * @return true if the object of the triple is a XSD literal.
 		 */
 		bool isXSDLiteral() const { return xsdType_.has_value(); }

@@ -198,10 +198,6 @@ void MongoKnowledgeGraph::drop() {
 }
 
 bool MongoKnowledgeGraph::insertOne(const FramedTriple &tripleData) {
-	return insertOne(tripleData, false);
-}
-
-bool MongoKnowledgeGraph::insertOne(const FramedTriple &tripleData, bool merge) {
 	auto &fallbackOrigin = importHierarchy_->defaultGraph();
 	bool isTaxonomic = vocabulary_->isTaxonomicProperty(tripleData.predicate());
 	MongoTriple mngTriple(vocabulary_, tripleData, fallbackOrigin, isTaxonomic);
@@ -212,25 +208,11 @@ bool MongoKnowledgeGraph::insertOne(const FramedTriple &tripleData, bool merge) 
 	} else if (semweb::isSubPropertyOfIRI(tripleData.predicate())) {
 		taxonomy_->update({}, {{tripleData.subject(), tripleData.valueAsString()}});
 	}
-	if (merge) {
-		// TODO: Consider how merging of triples could be supported via the data backend interface.
-		//       One of the problems is that triple querying is needed for this operation, but the
-		//       DataBackend interface does not provide a way to do this (to make it easier for reasoner to
-		//       implement the backend). But if the merging is not done centrally for all backends, then
-		//       the backends would potentially diverge in their behavior which could lead to unexpected results.
-		//       So it does not seem to be a good idea to do merging only in some backends.
-		//       Also the merging should be done before triples are reified, which would also require changes.
-		updateTimeInterval(tripleData);
-	}
 
 	return true;
 }
 
 bool MongoKnowledgeGraph::insertAll(const semweb::TripleContainerPtr &triples) {
-	return insertAll(triples, false);
-}
-
-bool MongoKnowledgeGraph::insertAll(const semweb::TripleContainerPtr &triples, bool merge) {
 	// only used in case triples do not specify origin field
 	auto &fallbackOrigin = importHierarchy_->defaultGraph();
 	auto bulk = tripleCollection_->createBulkOperation();
@@ -254,9 +236,6 @@ bool MongoKnowledgeGraph::insertAll(const semweb::TripleContainerPtr &triples, b
 	bulk->execute();
 
 	taxonomy_->update(tAssertions.subClassAssertions, tAssertions.subPropertyAssertions);
-	if (merge) {
-		for (auto &data: *triples) updateTimeInterval(*data);
-	}
 
 	return true;
 }
@@ -273,7 +252,7 @@ bool MongoKnowledgeGraph::removeOne(const FramedTriple &triple) {
 bool MongoKnowledgeGraph::removeAll(const semweb::TripleContainerPtr &triples) {
 	auto bulk = tripleCollection_->createBulkOperation();
 	std::for_each(triples->begin(), triples->end(),
-				  [this, bulk](auto &data) {
+				  [&](auto &data) {
 					  MongoTriplePattern mngQuery(
 							  FramedTriplePattern(*data),
 					  vocabulary_->isTaxonomicProperty(data->predicate()),
@@ -409,64 +388,5 @@ void MongoKnowledgeGraph::query(const GraphQueryPtr &q, const BindingsHandler &c
 		if (cursor->nextBindings(next)) callback(next);
 		else break;
 		if (onlyOneSol) break;
-	}
-}
-
-void MongoKnowledgeGraph::updateTimeInterval(const FramedTriple &tripleData) {
-	if (!tripleData.begin().has_value() && !tripleData.end().has_value()) return;
-	bool b_isTaxonomicProperty = vocabulary_->isTaxonomicProperty(tripleData.predicate());
-
-	// filter overlapping triples
-	TripleCursor cursor(tripleCollection_);
-	bson_t selectorDoc = BSON_INITIALIZER;
-
-	FramedTriplePattern overlappingExpr(tripleData);
-	overlappingExpr.setIsOccasionalTerm(groundable(Numeric::trueAtom()));
-
-	MongoTriplePattern mngQuery(overlappingExpr, b_isTaxonomicProperty, importHierarchy_);
-	cursor.filter(mngQuery.bson());
-
-	// iterate overlapping triples, remember document ids and compute
-	// union of time intervals
-	FramedTripleView overlappingTriple;
-	std::list<bson_oid_t> documentIDs;
-	std::optional<double> begin = tripleData.begin();
-	std::optional<double> end = tripleData.end();
-	const bson_oid_t *overlappingOID = nullptr;
-	while (cursor.nextTriple(overlappingTriple, &overlappingOID)) {
-		// remember the ID of overlapping documents
-		auto &oid = documentIDs.emplace_back();
-		bson_oid_init(&oid, nullptr);
-		bson_oid_copy(overlappingOID, &oid);
-		// compute intersection of time interval
-		if (overlappingTriple.begin().has_value()) {
-			if (begin.has_value()) begin = std::min(begin.value(), overlappingTriple.begin().value());
-			else begin = overlappingTriple.begin();
-		}
-		if (overlappingTriple.end().has_value()) {
-			if (end.has_value()) end = std::max(end.value(), overlappingTriple.end().value());
-			else end = overlappingTriple.end();
-		}
-	}
-
-	if (documentIDs.size() > 1) {
-		auto &firstOID = documentIDs.front();
-		// update time interval of first document ID
-		Document updateDoc(bson_new());
-		bson_t setDoc, scopeDoc, timeDoc;
-		BSON_APPEND_DOCUMENT_BEGIN(updateDoc.bson(), "$set", &setDoc);
-		{
-			BSON_APPEND_DOCUMENT_BEGIN(&setDoc, "scope", &scopeDoc);
-			BSON_APPEND_DOCUMENT_BEGIN(&scopeDoc, "time", &timeDoc);
-			if (begin.has_value()) BSON_APPEND_DOUBLE(&timeDoc, "since", begin.value());
-			if (end.has_value()) BSON_APPEND_DOUBLE(&timeDoc, "until", end.value());
-			bson_append_document_end(&scopeDoc, &timeDoc);
-			bson_append_document_end(&setDoc, &scopeDoc);
-		}
-		bson_append_document_end(updateDoc.bson(), &setDoc);
-		tripleCollection_->update(Document(BCON_NEW("_id", BCON_OID(&firstOID))), updateDoc);
-		// remove all other documents
-		auto it = documentIDs.begin();
-		for (it++; it != documentIDs.end(); it++) tripleCollection_->removeOne(*it);
 	}
 }

@@ -80,6 +80,10 @@ public:
 		return backend_->createTransaction(BackendInterface::Insert)->commit(triple);
 	}
 
+	static bool mergeOne(const FramedTriple &triple) {
+		return backend_->mergeInsert(queryable_, triple);
+	}
+
 	bool loadOntology(std::string_view path) {
 		auto resolved = URI::resolve(path);
 		auto origin = DataSource::getNameFromURI(resolved);
@@ -117,6 +121,7 @@ TYPED_TEST_SUITE(DataBackendTest, TestableBackends);
 
 #define TEST_LOOKUP(x) DataBackendTest<TypeParam>::lookup(x)
 #define TEST_INSERT_ONE(x) DataBackendTest<TypeParam>::insertOne(x)
+#define TEST_MERGE_ONE(x) DataBackendTest<TypeParam>::mergeOne(x)
 
 #define swrl_test_ "http://knowrob.org/kb/swrl_test#"
 
@@ -248,13 +253,12 @@ TYPED_TEST(DataBackendTest, WithTimeInterval) {
 }
 
 TYPED_TEST(DataBackendTest, ExtendsTimeInterval) {
-	GTEST_SKIP() << "the data backend interface currently does not support extending time intervals.";
 	// assert a statement with time interval [10,20]
 	FramedTripleCopy statement(swrl_test_"Alice", swrl_test_"hasName", "Alice", knowrob::XSDType::STRING);
 	statement.setBegin(10.0);
 	statement.setEnd(20.0);
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 0);
-	EXPECT_NO_THROW(TEST_INSERT_ONE(statement));
+	EXPECT_NO_THROW(TEST_MERGE_ONE(statement));
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 1);
 	// time interval was merged with existing one into [5,20]
 	statement.setBegin(5.0);

@@ -86,6 +86,31 @@ bool BackendInterface::removeAllWithOrigin(std::string_view origin) {
 	return true;
 }
 
+bool BackendInterface::mergeInsert(const QueryableBackendPtr &backend, const FramedTriple &triple) {
+	auto pat = std::make_shared<FramedTriplePattern>(triple);
+	// Match triples where interval intersection is not empty
+	pat->setIsOccasionalTerm(groundable(Numeric::trueAtom()));
+	// Construct a merged triple
+	FramedTripleView mergedTriple(triple);
+	// TODO: copy of original triples can be avoided by switching to FramedTriplePtr and taking over ownership in the loop.
+	std::vector<FramedTriplePtr> overlappingTriples;
+	match(backend, *pat, [&](const FramedTriple &triple) {
+		if (mergedTriple.mergeFrame(triple)) {
+			auto &x = overlappingTriples.emplace_back();
+			x.ptr = new FramedTripleCopy(triple);
+			x.owned = true;
+		}
+	});
+	if (!overlappingTriples.empty()) {
+		// remove overlapping triples if any
+		auto container = std::make_shared<semweb::ProxyTripleContainer>(&overlappingTriples);
+		createTransaction(Remove)->commit(container);
+	}
+	// Insert the triple after merging with overlapping existing ones
+	createTransaction(Insert)->commit(mergedTriple);
+	return true;
+}
+
 bool BackendInterface::contains(const QueryableBackendPtr &backend, const FramedTriple &triple) const {
 	if (backend->supports(BackendFeature::TripleContext)) {
 		return backend->contains(triple);

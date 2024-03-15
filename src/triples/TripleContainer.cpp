@@ -13,7 +13,7 @@ ProxyTripleContainer::ProxyTripleContainer(const std::vector<FramedTriplePtr> *t
 }
 
 TripleContainer::ConstGenerator ProxyTripleContainer::cgenerator() const {
-	return [it = triples_->begin(), end = triples_->begin()]()
+	return [it = triples_->begin(), end = triples_->end()]()
 			mutable -> const FramedTriplePtr * {
 		if (it == end) {
 			return nullptr;
