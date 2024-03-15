@@ -38,12 +38,6 @@ namespace knowrob {
 		 */
 		bool load(const semweb::TripleHandler &callback);
 
-		/**
-		 * Set the batch size for the SPARQL query.
-		 * @param batchSize the batch size
-		 */
-		void setBatchSize(uint32_t batchSize) { model_.setBatchSize(batchSize); }
-
 		// Override OntologySource
 		std::string_view origin() const override { return origin_; }
 

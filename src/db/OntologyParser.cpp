@@ -9,6 +9,7 @@
 #include "knowrob/semweb/owl.h"
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/semweb/ImportHierarchy.h"
+#include "knowrob/knowrob.h"
 
 namespace fs = std::filesystem;
 using namespace knowrob;
@@ -63,9 +64,7 @@ const std::string OntologyParser::NAME_RDFXML = "rdfxml";
 const std::string OntologyParser::NAME_RDFA = "rdfa";
 const std::string OntologyParser::NAME_RSS_TAG_SOUP = "rss-tag-soup";
 
-OntologyParser::OntologyParser(const std::string_view &fileURI, knowrob::semweb::TripleFormat format,
-							   uint32_t batchSize)
-		: batchSize_(batchSize) {
+OntologyParser::OntologyParser(const std::string_view &fileURI, knowrob::semweb::TripleFormat format) {
 	world_ = createWorld();
 	parser_ = createParser(format);
 	// raptor can report namespaces
@@ -153,12 +152,13 @@ void OntologyParser::applyFrame(FramedTriple *triple) {
 }
 
 void OntologyParser::add(raptor_statement *statement, const semweb::TripleHandler &callback) {
+	auto batchSize = GlobalSettings::batchSize();
 	if (!currentBatch_) {
 		if(origin_.empty()) {
 			KB_WARN("No origin set for ontology parser, falling back to \"user\" origin.");
-			currentBatch_ = std::make_shared<RaptorContainer>(batchSize_, semweb::ImportHierarchy::ORIGIN_USER);
+			currentBatch_ = std::make_shared<RaptorContainer>(batchSize, semweb::ImportHierarchy::ORIGIN_USER);
 		} else {
-			currentBatch_ = std::make_shared<RaptorContainer>(batchSize_, origin_);
+			currentBatch_ = std::make_shared<RaptorContainer>(batchSize, origin_);
 		}
 	}
 	// add to batch, map into knowrob data structures
@@ -173,7 +173,7 @@ void OntologyParser::add(raptor_statement *statement, const semweb::TripleHandle
 		imports_.emplace_back(triple->valueAsString());
 	}
 	// flush if batch is full
-	if (currentBatch_->size() >= batchSize_) {
+	if (currentBatch_->size() >= batchSize) {
 		flush(callback);
 	}
 }

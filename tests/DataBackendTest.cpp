@@ -84,7 +84,7 @@ public:
 		auto resolved = URI::resolve(path);
 		auto origin = DataSource::getNameFromURI(resolved);
 		auto vocab = backend_->vocabulary();
-		OntologyParser parser(resolved, semweb::TripleFormat::RDF_XML, 100);
+		OntologyParser parser(resolved, semweb::TripleFormat::RDF_XML);
 		// filter is called for each triple, if it returns false, the triple is skipped
 		parser.setFilter([vocab](const FramedTriple &triple) {
 			return !vocab->isAnnotationProperty(triple.predicate());

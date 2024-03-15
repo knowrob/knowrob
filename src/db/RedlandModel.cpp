@@ -3,6 +3,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+#include "knowrob/knowrob.h"
 #include "knowrob/db/RedlandModel.h"
 #include "knowrob/db/BackendError.h"
 #include "knowrob/db/BackendManager.h"
@@ -22,7 +23,6 @@
 #define REDLAND_SETTING_DB "db"
 #define REDLAND_SETTING_STORAGE "storage"
 #define REDLAND_SETTING_ORIGIN "origin"
-#define REDLAND_SETTING_BATCH_SIZE "batch-size"
 
 using namespace knowrob;
 
@@ -227,7 +227,6 @@ bool RedlandModel::initializeBackend(const ReasonerConfig &config) {
 	auto o_db = ptree->get_optional<std::string>(REDLAND_SETTING_DB);
 	auto o_origin = ptree->get_optional<std::string>(REDLAND_SETTING_ORIGIN);
 	auto o_storage = ptree->get_optional<std::string>(REDLAND_SETTING_STORAGE);
-	auto o_batchSize = ptree->get_optional<uint32_t>(REDLAND_SETTING_BATCH_SIZE);
 
 	if (o_host) host_ = o_host.value();
 	if (o_port) port_ = o_port.value();
@@ -235,7 +234,6 @@ bool RedlandModel::initializeBackend(const ReasonerConfig &config) {
 	if (o_password) password_ = o_password.value();
 	if (o_db) database_ = o_db.value();
 	if (o_origin) origin_ = o_origin.value();
-	if (o_batchSize) batchSize_ = o_batchSize.value();
 	if (o_storage) {
 		storageType_ = RedlandStorageType::MEMORY;
 		if (o_storage.value() == "hashes") {
@@ -419,16 +417,14 @@ bool RedlandModel::removeAllWithOrigin(std::string_view origin) {
 
 void RedlandModel::foreach(const semweb::TripleVisitor &visitor) const {
 	batch([&](const semweb::TripleContainerPtr &container) {
-		visitor(*container->begin()->ptr);
-	}, 1);
+		for (auto &triple: *container) {
+			visitor(*triple);
+		}
+	});
 }
 
 void RedlandModel::batch(const semweb::TripleHandler &callback) const {
-	batch(callback, batchSize_);
-}
-
-void RedlandModel::batch(const semweb::TripleHandler &callback, uint32_t batchSize) const {
-	auto triples = std::make_shared<RaptorContainer>(batchSize);
+	auto triples = std::make_shared<RaptorContainer>(GlobalSettings::batchSize());
 	auto contexts = librdf_model_get_contexts(model_);
 
 	while (!librdf_iterator_end(contexts)) {
@@ -439,7 +435,7 @@ void RedlandModel::batch(const semweb::TripleHandler &callback, uint32_t batchSi
 		while (!librdf_stream_end(stream)) {
 			auto statement = librdf_stream_get_object(stream);
 			triples->add(statement->subject, statement->predicate, statement->object, context);
-			if (triples->size() >= batchSize) {
+			if (triples->size() >= GlobalSettings::batchSize()) {
 				triples->shrink();
 				callback(triples);
 				triples->reset();

@@ -38,8 +38,6 @@
 #include "knowrob/KnowRobError.h"
 #include "knowrob/py/PythonError.h"
 
-#define KB_DEFAULT_TRIPLE_BATCH_SIZE 1000
-
 using namespace std::chrono_literals;
 using namespace knowrob;
 
@@ -55,8 +53,7 @@ namespace knowrob {
 }
 
 KnowledgeBase::KnowledgeBase()
-		: isInitialized_(false),
-		  tripleBatchSize_(KB_DEFAULT_TRIPLE_BATCH_SIZE) {
+		: isInitialized_(false) {
 	vocabulary_ = std::make_shared<semweb::Vocabulary>();
 	importHierarchy_ = std::make_shared<semweb::ImportHierarchy>();
 	// use "system" as default origin until initialization completed
@@ -938,7 +935,7 @@ bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source
 		KB_INFO("Loading ontology at '{}' with version "
 				"\"{}\" and origin \"{}\".", *importURI, newVersion, origin);
 
-		OntologyParser parser(*importURI, source->tripleFormat(), tripleBatchSize_);
+		OntologyParser parser(*importURI, source->tripleFormat());
 		parser.setOrigin(origin);
 		parser.setFrame(source->frame());
 		// filter is called for each triple, if it returns false, the triple is skipped
@@ -977,7 +974,6 @@ bool KnowledgeBase::loadSPARQLDataSource(const std::shared_ptr<DataSource> &sour
 	// but this is not standardized. Some may encode version in the URI which we try to extract
 	// below. Otherwise, we just use the current day as version causing a re-load every day.
 	auto newVersion = DataSource::getVersionFromURI(serviceURI);
-	service->setBatchSize(tripleBatchSize_);
 
 	// get all backends that do not have the data loaded yet
 	auto backendsToLoad = prepareLoad(origin, newVersion);

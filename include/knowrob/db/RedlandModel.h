@@ -239,8 +239,6 @@ namespace knowrob {
 
 		librdf_node *getContextNode(const FramedTriple &triple);
 
-		void batch(const semweb::TripleHandler &callback, uint32_t batchSize) const;
-
 	private:
 		void finalize();
 	};

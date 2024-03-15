@@ -38,11 +38,32 @@ namespace knowrob {
 	 * @param obj the object to read.
 	 * @return a string representation of the object.
 	 */
-	template <typename T> std::string readString(const T& obj) {
+	template<typename T>
+	std::string readString(const T &obj) {
 		std::ostringstream oss;
 		oss << obj;
 		return oss.str();
 	}
+
+	/**
+	 * Global settings for the knowledge base.
+	 */
+	class GlobalSettings {
+	public:
+		/**
+		 * @return the batch size.
+		 */
+		static uint32_t batchSize() { return batchSize_; }
+
+		/**
+		 * The size of the container used when triples are processed in batches.
+		 * @param batchSize the batch size for the backend.
+		 */
+		static void setBatchSize(uint32_t batchSize) { batchSize_ = batchSize; }
+
+	protected:
+		static uint32_t batchSize_;
+	};
 }
 
 #endif //KNOWROB_H_

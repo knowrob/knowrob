@@ -106,17 +106,6 @@ namespace knowrob {
 		GraphQueryExpansionPtr expand(const GraphPathQueryPtr &q);
 
 		/**
-		 * @return the batch size.
-		 */
-		uint32_t batchSize() const { return batchSize_; }
-
-		/**
-		 * The size of the container used when triples are processed in batches.
-		 * @param batchSize the batch size for the backend.
-		 */
-		void setBatchSize(uint32_t batchSize) { batchSize_ = batchSize; }
-
-		/**
 		 * @param q a graph path query.
 		 * @return a negative answer to the query.
 		 */
@@ -130,8 +119,6 @@ namespace knowrob {
 		static std::shared_ptr<AnswerYes> yes(const GraphQueryExpansionPtr &expansion, const BindingsPtr &bindings);
 
 	protected:
-		uint32_t batchSize_;
-
 		GraphQueryPtr expand(const GraphQueryPtr &q, GraphQueryExpansion &ctx);
 
 		std::shared_ptr<GraphTerm> expand(const std::shared_ptr<GraphTerm> &q, GraphQueryExpansion &ctx);

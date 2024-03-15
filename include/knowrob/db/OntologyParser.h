@@ -34,7 +34,7 @@ namespace knowrob {
 		 * @param format the format of the file.
 		 * @param batchSize the max size of each batch to use for parsing.
 		 */
-		OntologyParser(const std::string_view &fileURI, semweb::TripleFormat format, uint32_t batchSize = 1000);
+		OntologyParser(const std::string_view &fileURI, semweb::TripleFormat format);
 
 		~OntologyParser();
 
@@ -101,7 +101,6 @@ namespace knowrob {
 		void applyFrame(FramedTriple *triple);
 
 		std::shared_ptr<RaptorContainer> currentBatch_;
-		uint32_t batchSize_;
 	};
 
 } // knowrob

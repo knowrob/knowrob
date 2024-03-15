@@ -11,6 +11,7 @@
 #include "knowrob/db/BackendManager.h"
 #include "knowrob/triples/GraphSequence.h"
 #include "knowrob/semweb/rdfs.h"
+#include "knowrob/knowrob.h"
 #include <boost/foreach.hpp>
 
 #define MONGO_KG_ONE_COLLECTION "one"
@@ -353,9 +354,8 @@ void MongoKnowledgeGraph::match(const FramedTriplePattern &query, const semweb::
 }
 
 void MongoKnowledgeGraph::batch(const semweb::TripleHandler &callback) const {
-	auto batchSize = (batchSize_.has_value() ? batchSize_.value() : 1000);
 	TripleCursor cursor(tripleCollection_);
-	std::vector<FramedTriplePtr> batchData(batchSize);
+	std::vector<FramedTriplePtr> batchData(GlobalSettings::batchSize());
 	uint32_t currentSize = 0;
 
 	while (true) {
@@ -363,7 +363,7 @@ void MongoKnowledgeGraph::batch(const semweb::TripleHandler &callback) const {
 			break;
 		}
 		currentSize++;
-		if (currentSize == batchSize) {
+		if (currentSize == GlobalSettings::batchSize()) {
 			auto batch = std::make_shared<ProxyTripleContainer>(&batchData);
 			callback(batch);
 			currentSize = 0;

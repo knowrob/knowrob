@@ -132,7 +132,6 @@ namespace knowrob {
 		std::shared_ptr<BackendManager> backendManager_;
 		std::shared_ptr<semweb::Vocabulary> vocabulary_;
 		std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
-		uint32_t tripleBatchSize_;
 		bool isInitialized_;
 
 		// used to sort dependency nodes in a priority queue.

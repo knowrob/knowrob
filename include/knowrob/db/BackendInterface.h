@@ -31,8 +31,7 @@ namespace knowrob {
 		};
 
 		explicit BackendInterface(const std::shared_ptr<BackendManager> &backendManager)
-				: backendManager_(backendManager),
-				  batchSize_(500) {}
+				: backendManager_(backendManager) {}
 
 		/**
 		 * @return the vocabulary.
@@ -48,17 +47,6 @@ namespace knowrob {
 		 * @return the backend manager.
 		 */
 		auto &backendManager() const { return backendManager_; }
-
-		/**
-		 * @return the batch size.
-		 */
-		uint32_t batchSize() const { return batchSize_; }
-
-		/**
-		 * The size of the container used when triples are processed in batches.
-		 * @param batchSize the batch size for the backend.
-		 */
-		void setBatchSize(uint32_t batchSize) { batchSize_ = batchSize; }
 
 		/**
 		 * Creates a new transaction.
@@ -131,7 +119,6 @@ namespace knowrob {
 
 	protected:
 		std::shared_ptr<BackendManager> backendManager_;
-		uint32_t batchSize_;
 
 		void pushIntoCursor(const QueryableBackendPtr &backend, const GraphPathQueryPtr &query,
 							const TokenBufferPtr &resultStream) const;

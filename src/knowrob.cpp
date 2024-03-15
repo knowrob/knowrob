@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2023, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -13,6 +10,8 @@
 #include <iostream>
 #include <locale>
 #include "knowrob/py/PythonError.h"
+
+uint32_t knowrob::GlobalSettings::batchSize_ = 500;
 
 namespace knowrob {
 	// stores the name of the executable as provided in argv[0]
@@ -33,15 +32,15 @@ namespace knowrob {
 	}
 
 	void InitPythonPath() {
-	    std::stringstream pythonPath;
-	    auto oldPath = std::getenv("PYTHONPATH");
-	    if (oldPath) {
-	        pythonPath << oldPath << ":";
-	    }
-	    pythonPath <<
-			(std::filesystem::path(KNOWROB_INSTALL_PREFIX) / "knowrob").string() << ":"
-			<< KNOWROB_SOURCE_DIR << ":"
-			<< KNOWROB_BUILD_DIR;
+		std::stringstream pythonPath;
+		auto oldPath = std::getenv("PYTHONPATH");
+		if (oldPath) {
+			pythonPath << oldPath << ":";
+		}
+		pythonPath <<
+				   (std::filesystem::path(KNOWROB_INSTALL_PREFIX) / "knowrob").string() << ":"
+				   << KNOWROB_SOURCE_DIR << ":"
+				   << KNOWROB_BUILD_DIR;
 		auto pythonPathStr = pythonPath.str();
 		KB_DEBUG("[KnowRob] using python path: {}", pythonPathStr);
 		setenv("PYTHONPATH", pythonPathStr.c_str(), 1);

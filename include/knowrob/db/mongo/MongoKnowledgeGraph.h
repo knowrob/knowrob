@@ -144,7 +144,6 @@ namespace knowrob {
 		std::shared_ptr<mongo::Collection> tripleCollection_;
 		std::shared_ptr<mongo::Collection> oneCollection_;
 		std::shared_ptr<MongoTaxonomy> taxonomy_;
-		std::optional<uint32_t> batchSize_;
 		bool isReadOnly_;
 
 		void initializeMongo();

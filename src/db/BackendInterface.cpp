@@ -9,6 +9,7 @@
 #include "knowrob/reification/ReifiedQuery.h"
 #include "knowrob/db/BackendTransaction.h"
 #include "knowrob/triples/GraphBuiltin.h"
+#include "knowrob/knowrob.h"
 
 using namespace knowrob;
 
@@ -135,6 +136,7 @@ void BackendInterface::batch(const QueryableBackendPtr &backend, const semweb::T
 		return;
 	}
 
+	auto batchSize = GlobalSettings::batchSize();
 	// fill a container that reverses a reification.
 	UnReificationContainer unReifiedTriples;
 	// take over ownership of triples in batches that need to be reified.
@@ -144,7 +146,7 @@ void BackendInterface::batch(const QueryableBackendPtr &backend, const semweb::T
 	// while taking over ownership of the reified triples to avoid copies and allow
 	// the use of views in the UnReificationContainer.
 	std::vector<FramedTriplePtr> reificationTriples;
-	auto batch = std::make_shared<semweb::TripleViewBatch>(batchSize_);
+	auto batch = std::make_shared<semweb::TripleViewBatch>(batchSize);
 	backend->batch([&](const semweb::TripleContainerPtr &triples) {
 		for (auto &triple: *triples) {
 			if (ReifiedTriple::isPartOfReification(*triple.ptr)) {
@@ -159,7 +161,7 @@ void BackendInterface::batch(const QueryableBackendPtr &backend, const semweb::T
 				}
 			} else {
 				batch->add(triple);
-				if (batch->size() >= batchSize_) {
+				if (batch->size() >= batchSize) {
 					callback(batch);
 					batch->reset();
 				}
@@ -168,7 +170,7 @@ void BackendInterface::batch(const QueryableBackendPtr &backend, const semweb::T
 	});
 	for (auto &triple: unReifiedTriples) {
 		batch->add(triple);
-		if (batch->size() >= batchSize_) {
+		if (batch->size() >= batchSize) {
 			callback(batch);
 			batch->reset();
 		}

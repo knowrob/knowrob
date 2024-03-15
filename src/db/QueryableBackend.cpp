@@ -16,8 +16,7 @@ using namespace knowrob;
 AtomPtr QueryableBackend::versionProperty = IRIAtom::Tabled("http://knowrob.org/kb/knowrob.owl#hasVersionOfOrigin");
 
 QueryableBackend::QueryableBackend(BackendFeatures features)
-		: DataBackend(features),
-		  batchSize_(500) {
+		: DataBackend(features) {
 }
 
 std::vector<std::string> QueryableBackend::getOrigins() {
