@@ -18,6 +18,37 @@
 
 namespace knowrob {
 	/**
+	 * A flag that indicates whether a SPARQL feature is supported or not.
+	 */
+	enum class BackendFeature : std::uint8_t {
+		// A flag that indicates that nothing special is supported.
+		NothingSpecial = 1ul << 0,
+		// A flag that indicates that re-assignment of variables within query pipelines is supported.
+		ReAssignment = 1ul << 2,
+		// A flag that indicates that triple context is supported.
+		// If this flag is not set, statements with additional context information first will be reified
+		// before they can be handled by this backend.
+		TripleContext = 1ul << 3
+	};
+	using BackendFeatures = BackendFeature;
+
+	/**
+	 * Compute the bitwise OR of two SPARQL flags.
+	 * @param a a flag.
+	 * @param b a flag.
+	 * @return the bitwise OR of a and b.
+	 */
+	BackendFeature operator|(BackendFeature a, BackendFeature b);
+
+	/**
+	 * Compute the bitwise AND of two SPARQL flags.
+	 * @param a a flag.
+	 * @param b a flag.
+	 * @return the bitwise AND of a and b.
+	 */
+	bool operator&(BackendFeature a, BackendFeature b);
+
+	/**
 	 * A data backend is a component that stores extensional data.
 	 * Note that data backends do not do reification internally --
 	 * reification is only handled via the transaction controller.
@@ -26,7 +57,12 @@ namespace knowrob {
 	 */
 	class DataBackend : public DataSourceHandler {
 	public:
-		DataBackend() = default;
+		explicit DataBackend(BackendFeatures features = BackendFeature::NothingSpecial) : features_(features) {}
+
+		/**
+		 * @return true if the backend supports re-assignment of variables within query pipelines.
+		 */
+		bool supports(BackendFeature feature) const { return features_ & feature; }
 
 		/**
 		 * Add an assertion to this backend.
@@ -61,15 +97,6 @@ namespace knowrob {
 		virtual bool removeAllWithOrigin(std::string_view origin) = 0;
 
 		/**
-		 * Check if a triple may have additional context information that can be
-		 * stored in this backend without the use of reified statements.
-		 * If this is not the case, statements with additional context information
-		 * first need to be reified before they can be handled by this backend.
-		 * @return true if this backend can store triple context directly
-		 */
-		virtual bool canStoreTripleContext() const { return false; }
-
-		/**
 		 * Initialize this backend from a property tree.
 		 * @param config a property tree.
 		 * @return true on success
@@ -95,6 +122,9 @@ namespace knowrob {
 	protected:
 		std::shared_ptr<semweb::Vocabulary> vocabulary_;
 		std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
+		BackendFeatures features_;
+
+		void enableFeature(BackendFeature feature) { features_ = features_ | feature; }
 	};
 
 	using DataBackendPtr = std::shared_ptr<DataBackend>;

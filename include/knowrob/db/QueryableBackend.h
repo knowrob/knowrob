@@ -40,17 +40,12 @@ namespace knowrob {
 	public:
 		static AtomPtr versionProperty;
 
-		QueryableBackend();
+		explicit QueryableBackend(BackendFeatures features = BackendFeature::NothingSpecial);
 
 		/**
 		 * @return true if the backend is persistent.
 		 */
 		virtual bool isPersistent() const = 0;
-
-		/**
-		 * @return true if the backend supports re-assignment of variables within query pipelines.
-		 */
-		virtual bool supportsReAssignment() const { return false; }
 
 		/**
 		 * @param triple a framed triple.

@@ -47,8 +47,13 @@ const std::string MongoKnowledgeGraph::DB_NAME_TESTS = "knowrob_test";
 const std::string MongoKnowledgeGraph::COLL_NAME_TRIPLES = "triples";
 const std::string MongoKnowledgeGraph::COLL_NAME_TESTS = "triples_test";
 
+static inline BackendFeatures mongoBackendFeatures() {
+	return BackendFeature::ReAssignment |
+	       BackendFeature::TripleContext;
+}
+
 MongoKnowledgeGraph::MongoKnowledgeGraph()
-		: QueryableBackend(),
+		: QueryableBackend(mongoBackendFeatures()),
 		  isReadOnly_(false) {
 }
 

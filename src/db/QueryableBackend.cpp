@@ -15,7 +15,9 @@ using namespace knowrob;
 
 AtomPtr QueryableBackend::versionProperty = IRIAtom::Tabled("http://knowrob.org/kb/knowrob.owl#hasVersionOfOrigin");
 
-QueryableBackend::QueryableBackend() : batchSize_(500) {
+QueryableBackend::QueryableBackend(BackendFeatures features)
+		: DataBackend(features),
+		  batchSize_(500) {
 }
 
 std::vector<std::string> QueryableBackend::getOrigins() {
@@ -110,7 +112,7 @@ GraphQueryExpansionPtr QueryableBackend::expand(const GraphPathQueryPtr &q) {
 	auto exp_ctx = std::make_shared<GraphQueryExpansion>();
 	exp_ctx->original = q;
 	exp_ctx->query_ctx = q->ctx();
-	exp_ctx->with_reassignment = supportsReAssignment();
+	exp_ctx->with_reassignment = supports(BackendFeature::ReAssignment);
 	exp_ctx->expanded = expand(q, *exp_ctx);
 	return exp_ctx;
 }

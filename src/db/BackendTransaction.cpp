@@ -18,7 +18,7 @@ bool Transaction::commit(const FramedTriple &triple) {
 	bool success = true;
 	for (auto &definedBackend: backends_) {
 		auto &backend = definedBackend->backend();
-		if (!backend->canStoreTripleContext() && ReifiedTriple::isReifiable(triple)) {
+		if (!backend->supports(BackendFeature::TripleContext) && ReifiedTriple::isReifiable(triple)) {
 			if (!reification) reification = std::make_shared<ReifiedTriple>(triple, vocabulary_);
 			for (auto &reified: *reification) {
 				success = success && commit(*reified.ptr, backend);
@@ -45,7 +45,7 @@ bool Transaction::commit(const semweb::TripleContainerPtr &triples) {
 	for (auto &definedBackend: backends_) {
 		auto &backend = definedBackend->backend();
 		const semweb::TripleContainerPtr *backendTriples;
-		if (!backend->canStoreTripleContext()) {
+		if (!backend->supports(BackendFeature::TripleContext)) {
 			if (!reified) reified = std::make_shared<ReificationContainer>(triples, vocabulary_);
 			backendTriples = &reified;
 		} else {

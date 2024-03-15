@@ -86,7 +86,7 @@ bool BackendInterface::removeAllWithOrigin(std::string_view origin) {
 }
 
 bool BackendInterface::contains(const QueryableBackendPtr &backend, const FramedTriple &triple) const {
-	if (backend->canStoreTripleContext()) {
+	if (backend->supports(BackendFeature::TripleContext)) {
 		return backend->contains(triple);
 	}
 
@@ -102,7 +102,7 @@ bool BackendInterface::contains(const QueryableBackendPtr &backend, const Framed
 }
 
 void BackendInterface::foreach(const QueryableBackendPtr &backend, const semweb::TripleVisitor &visitor) const {
-	if (backend->canStoreTripleContext()) {
+	if (backend->supports(BackendFeature::TripleContext)) {
 		backend->foreach(visitor);
 		return;
 	}
@@ -130,7 +130,7 @@ void BackendInterface::foreach(const QueryableBackendPtr &backend, const semweb:
 }
 
 void BackendInterface::batch(const QueryableBackendPtr &backend, const semweb::TripleHandler &callback) const {
-	if (backend->canStoreTripleContext()) {
+	if (backend->supports(BackendFeature::TripleContext)) {
 		backend->batch(callback);
 		return;
 	}
@@ -181,7 +181,7 @@ void BackendInterface::batch(const QueryableBackendPtr &backend, const semweb::T
 void BackendInterface::match(const QueryableBackendPtr &backend, const FramedTriplePattern &q,
 							 const semweb::TripleVisitor &visitor) const {
 	static auto ctx = std::make_shared<QueryContext>();
-	if (backend->canStoreTripleContext()) {
+	if (backend->supports(BackendFeature::TripleContext)) {
 		backend->match(q, visitor);
 	} else {
 		auto flags = ReifiedQuery::getReificationFlags(q);
@@ -202,7 +202,7 @@ void BackendInterface::match(const QueryableBackendPtr &backend, const FramedTri
 
 void BackendInterface::query(const QueryableBackendPtr &backend, const GraphQueryPtr &q,
 							 const BindingsHandler &callback) const {
-	if (!backend->canStoreTripleContext() && ReifiedQuery::hasReifiablePattern(q)) {
+	if (!backend->supports(BackendFeature::TripleContext) && ReifiedQuery::hasReifiablePattern(q)) {
 		// if there is at least one reifiable pattern, we need to reify the query entirely,
 		// and run the reified query on the original backend.
 		auto reified = std::make_shared<ReifiedQuery>(q, vocabulary());

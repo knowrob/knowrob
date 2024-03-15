@@ -119,9 +119,6 @@ namespace knowrob {
 		// Override DataBackend
 		bool removeAllWithOrigin(std::string_view origin) override;
 
-		// Override DataBackend
-		bool canStoreTripleContext() const override { return true; }
-
 		// Override QueryableBackend
 		bool isPersistent() const override { return true; }
 
@@ -142,9 +139,6 @@ namespace knowrob {
 
 		// Override QueryableBackend
 		void count(const ResourceCounter &callback) const override;
-
-		// Override QueryableBackend
-		bool supportsReAssignment() const override { return true; }
 
 	protected:
 		std::shared_ptr<mongo::Collection> tripleCollection_;

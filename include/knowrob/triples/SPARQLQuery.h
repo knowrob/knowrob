@@ -12,12 +12,29 @@
 #include "GraphBuiltin.h"
 
 namespace knowrob {
+	/**
+	 * A flag that indicates whether a SPARQL feature is supported or not.
+	 */
 	enum class SPARQLFlag : std::uint8_t {
 		NOTHING = 1ul << 0,
 		NOT_EXISTS_UNSUPPORTED = 1ul << 1
 	};
 	using SPARQLFlags = SPARQLFlag;
+
+	/**
+	 * Compute the bitwise OR of two SPARQL flags.
+	 * @param a a flag.
+	 * @param b a flag.
+	 * @return the bitwise OR of a and b.
+	 */
 	SPARQLFlag operator|(SPARQLFlag a, SPARQLFlag b);
+
+	/**
+	 * Compute the bitwise AND of two SPARQL flags.
+	 * @param a a flag.
+	 * @param b a flag.
+	 * @return the bitwise AND of a and b.
+	 */
 	bool operator&(SPARQLFlag a, SPARQLFlag b);
 
 	/**

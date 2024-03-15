@@ -3,6 +3,14 @@
 
 using namespace knowrob;
 
+BackendFeature knowrob::operator|(BackendFeature a, BackendFeature b) {
+	return static_cast<BackendFeature>(static_cast<std::uint8_t>(a) | static_cast<std::uint8_t>(b));
+}
+
+bool knowrob::operator&(BackendFeature a, BackendFeature b) {
+	return static_cast<std::uint8_t>(a) & static_cast<std::uint8_t>(b);
+}
+
 namespace knowrob::py {
 	struct DataBackendWrap : public DataBackend, boost::python::wrapper<DataBackend> {
 		explicit DataBackendWrap(PyObject *p) : self(p), DataBackend() {}
