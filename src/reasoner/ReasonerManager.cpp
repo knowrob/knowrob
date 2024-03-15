@@ -194,8 +194,8 @@ std::shared_ptr<DefinedReasoner> ReasonerManager::addReasoner(
 	reasoner->setReasonerManager(this);
 	reasoner->setReasonerName(reasonerID);
 	// indicate that the origin `reasonerID` is a reasoner, and thus belongs to the session
-	kb_->importHierarchy()->addDirectImport(
-			kb_->importHierarchy()->ORIGIN_REASONER, reasonerID);
+	backendManager_->importHierarchy()->addDirectImport(
+			backendManager_->importHierarchy()->ORIGIN_REASONER, reasonerID);
 
 	// check if reasoner implements DataBackend interface
 	auto backend = std::dynamic_pointer_cast<DataBackend>(reasoner);

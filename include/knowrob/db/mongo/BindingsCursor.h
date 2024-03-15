@@ -7,13 +7,11 @@
 #define KNOWROB_MONGO_BINDINGS_CURSOR_H
 
 #include "Cursor.h"
-#include "knowrob/queries/Answer.h"
-#include "knowrob/queries/AnswerYes.h"
-#include "knowrob/triples/FramedTriplePattern.h"
+#include "knowrob/terms/Bindings.h"
 
 namespace knowrob::mongo {
 	/**
-	 * A cursor that iterates over bindings computed through an aggregation
+	 * A getAnswerCursor that iterates over bindings computed through an aggregation
 	 * pipeline which uses a special field in documents to store variable
 	 * bindings throughout the pipeline.
 	 */
@@ -28,8 +26,6 @@ namespace knowrob::mongo {
 		bson_iter_t resultIter_;
 		bson_iter_t varIter_;
 		bson_iter_t valIter_;
-		bson_iter_t scopeIter_;
-		bson_iter_t timeIter_;
 
 		void setSubstitution(const std::shared_ptr<Bindings> &bindings);
 	};

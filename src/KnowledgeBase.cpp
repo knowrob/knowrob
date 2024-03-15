@@ -27,15 +27,14 @@
 #include "knowrob/triples/TripleFormat.h"
 #include "knowrob/db/OntologyFile.h"
 #include "knowrob/db/SPARQLService.h"
-#include "knowrob/reification/ReifiedTriple.h"
-#include "knowrob/reification/ReificationContainer.h"
 #include "knowrob/triples/TripleContainer.h"
 #include "knowrob/semweb/rdf.h"
 #include "knowrob/semweb/owl.h"
 #include "knowrob/semweb/rdfs.h"
-#include "knowrob/db/DataTransaction.h"
+#include "knowrob/db/BackendTransaction.h"
 #include "knowrob/semweb/OntologyLanguage.h"
 #include "knowrob/db/OntologyParser.h"
+#include "knowrob/db/BackendInterface.h"
 #include "knowrob/KnowRobError.h"
 #include "knowrob/py/PythonError.h"
 
@@ -59,11 +58,12 @@ KnowledgeBase::KnowledgeBase()
 		: isInitialized_(false),
 		  tripleBatchSize_(KB_DEFAULT_TRIPLE_BATCH_SIZE) {
 	vocabulary_ = std::make_shared<semweb::Vocabulary>();
-	importHierarchy_ = std::make_unique<semweb::ImportHierarchy>();
+	importHierarchy_ = std::make_shared<semweb::ImportHierarchy>();
 	// use "system" as default origin until initialization completed
 	importHierarchy_->setDefaultGraph(importHierarchy_->ORIGIN_SYSTEM);
-	backendManager_ = std::make_unique<BackendManager>(this);
-	reasonerManager_ = std::make_unique<ReasonerManager>(this, backendManager_);
+	backendManager_ = std::make_shared<BackendManager>(vocabulary_, importHierarchy_);
+	reasonerManager_ = std::make_shared<ReasonerManager>(this, backendManager_);
+	edb_ = std::make_shared<BackendInterface>(backendManager_);
 }
 
 KnowledgeBase::KnowledgeBase(const boost::property_tree::ptree &config) : KnowledgeBase() {
@@ -423,7 +423,7 @@ void KnowledgeBase::createComputationPipeline(
 		}
 		if (isEDBStageNeeded) {
 			auto edb = getBackendForQuery(lit, ctx);
-			auto edbStage = std::make_shared<EDBStage>(edb, lit, ctx);
+			auto edbStage = std::make_shared<EDBStage>(edb_, edb, lit, ctx);
 			edbStage->selfWeakRef_ = edbStage;
 			stepInput >> edbStage;
 			edbStage >> stepOutput;
@@ -537,7 +537,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const GraphPathQueryPtr &graphQuery) {
 		channel->push(EndOfEvaluation::get());
 	} else {
 		auto edb = getBackendForQuery(edbOnlyLiterals, graphQuery->ctx());
-		edbOut = edb->submitQuery(
+		edbOut = edb_->getAnswerCursor(edb,
 				std::make_shared<GraphPathQuery>(edbOnlyLiterals, graphQuery->ctx()));
 	}
 	pipeline->addStage(edbOut);
@@ -768,176 +768,32 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 	return out;
 }
 
-DataBackendPtr KnowledgeBase::findSourceBackend(const FramedTriple &triple) {
-	if (!triple.graph()) return {};
-
-	auto definedBackend = backendManager_->getBackendWithID(triple.graph().value());
-	if (definedBackend) return definedBackend->backend();
-
-	auto definedReasoner = reasonerManager_->getReasonerWithID(triple.graph().value());
-	if (definedReasoner) {
-		return reasonerManager_->getReasonerBackend(definedReasoner);
-	}
-
-	return {};
-}
-
-static inline std::shared_ptr<ThreadPool::Runner> pushPerTripleWork(
-		const semweb::TripleContainerPtr &triples,
-		const std::function<void(const FramedTriplePtr &)> &fn) {
-	auto perTripleWorker =
-			std::make_shared<ThreadPool::LambdaRunner>([fn, triples](const ThreadPool::LambdaRunner::StopChecker &) {
-				std::for_each(triples->begin(), triples->end(), fn);
-			});
-	DefaultThreadPool()->pushWork(perTripleWorker,
-								  [](const std::exception &exc) {
-									  KB_ERROR("failed to update vocabulary: {}", exc.what());
-								  });
-	return perTripleWorker;
-}
-
-template<typename T>
-static inline std::shared_ptr<T> createTransaction(
-		const std::shared_ptr<DefinedBackend> &definedBackend,
-		const semweb::TripleContainerPtr &triples) {
-	auto backend = definedBackend->backend();
-	auto backendID = definedBackend->name();
-
-	// create a worker goal that performs the transaction
-	auto transaction = std::make_shared<T>(backend, backendID.c_str(), triples);
-	// push goal to thread pool
-	DefaultThreadPool()->pushWork(transaction,
-								  [backendID](const std::exception &exc) {
-									  KB_ERROR("transaction failed for backend '{}': {}", backendID, exc.what());
-								  });
-	return transaction;
-}
-
-template<typename T, typename U>
-bool transaction(const semweb::TripleContainerPtr &triples,
-				 const U &backends,
-				 const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-				 const std::shared_ptr<DataBackend> &sourceBackend) {
-	semweb::TripleContainerPtr reified;
-	std::vector<std::shared_ptr<DataTransaction>> transactions;
-	for (auto &definedBackend: backends) {
-		auto &backend = definedBackend->backend();
-		if (backend == sourceBackend) continue;
-
-		semweb::TripleContainerPtr backendTriples;
-		if (!backend->canStoreTripleContext()) {
-			if (!reified) reified = std::make_shared<ReificationContainer>(triples, vocabulary);
-			backendTriples = reified;
-		} else {
-			backendTriples = triples;
-		}
-		transactions.push_back(createTransaction<T>(definedBackend, backendTriples));
-	}
-	// wait for all transactions to finish
-	for (auto &transaction: transactions) transaction->join();
-	return true;
-}
-
 bool KnowledgeBase::insertOne(const FramedTriple &triple) {
-	// TODO: redundant with below
-	ReifiedTriplePtr reification;
-	// find the source backend, if any
 	auto sourceBackend = findSourceBackend(triple);
-	// insert into all other backends
-	for (auto &definedBackend: backendManager_->backendPool()) {
-		auto &backend = definedBackend.second->backend();
-		// skip the source backend
-		if (backend == sourceBackend) continue;
-
-		if (!backend->canStoreTripleContext()) {
-			if (!reification) reification = std::make_shared<ReifiedTriple>(triple, vocabulary());
-			for (auto &reified: *reification) {
-				if (!backend->insertOne(*reified.ptr)) {
-					KB_WARN("assertion of triple into backend '{}' failed!", definedBackend.first);
-				}
-			}
-		} else {
-			if (!backend->insertOne(triple)) {
-				KB_WARN("assertion of triple into backend '{}' failed!", definedBackend.first);
-			}
-		}
-	}
-	updateVocabularyInsert(triple);
-	return true;
-}
-
-bool KnowledgeBase::removeOne(const FramedTriple &triple) {
-	ReifiedTriplePtr reification;
-	// find the source backend, if any
-	auto sourceBackend = findSourceBackend(triple);
-	// insert into all other backends
-	for (auto &definedBackend: backendManager_->backendPool()) {
-		auto &backend = definedBackend.second->backend();
-		// skip the source backend
-		if (backend == sourceBackend) continue;
-
-		if (!backend->canStoreTripleContext()) {
-			if (!reification) reification = std::make_shared<ReifiedTriple>(triple, vocabulary());
-			for (auto &reified: *reification) {
-				if (!backend->removeOne(*reified.ptr)) {
-					KB_WARN("deletion of triple from backend '{}' failed!", definedBackend.first);
-				}
-			}
-		} else {
-			if (!backend->removeOne(triple)) {
-				KB_WARN("deletion of triple from backend '{}' failed!", definedBackend.first);
-			}
-		}
-	}
-	updateVocabularyRemove(triple);
-	return true;
-}
-
-bool KnowledgeBase::insertAllInto(const semweb::TripleContainerPtr &triples,
-								  const std::vector<std::shared_ptr<DefinedBackend>> &backends) {
-	// TODO: maybe it would be best to at least enforce that transactions succeed in the central
-	//       backend, and if not, rollback the transaction in the other backends. For this,
-	//       all backends should be able to rollback the transactions.
-	// TODO: apply filter before inserting into backends. each backend should be able to specify GraphSelector
-	//       used for the filtering. e.g. historic triples should not be inserted into backends that do not support time.
-	if (triples->empty()) return true;
-	// find the source backend, if any.
-	auto sourceBackend = findSourceBackend(**triples->begin());
-	// push a worker goal that updates the vocabulary
-	auto vocabWorker = pushPerTripleWork(triples,
-										 [this](const FramedTriplePtr &triple) {
-											 updateVocabularyInsert(*triple);
-										 });
-	bool success = transaction<DataInsertion>(triples, backends, vocabulary(), sourceBackend);
-	vocabWorker->join();
-	return success;
+	auto transaction = edb_->createTransaction(
+		BackendInterface::Insert, BackendInterface::Excluding, {sourceBackend});
+	return transaction->commit(triple);
 }
 
 bool KnowledgeBase::insertAll(const semweb::TripleContainerPtr &triples) {
-	if (triples->empty()) return true;
-	std::vector<std::shared_ptr<DefinedBackend>> backends;
-	for (auto &it: backendManager_->backendPool()) {
-		backends.push_back(it.second);
-	}
-	return insertAllInto(triples, backends);
+	auto sourceBackend = findSourceBackend(**triples->begin());
+	auto transaction = edb_->createTransaction(
+		BackendInterface::Insert, BackendInterface::Excluding, {sourceBackend});
+	return transaction->commit(triples);
+}
+
+bool KnowledgeBase::removeOne(const FramedTriple &triple) {
+	auto sourceBackend = findSourceBackend(triple);
+	auto transaction = edb_->createTransaction(
+			BackendInterface::Remove, BackendInterface::Excluding, {sourceBackend});
+	return transaction->commit(triple);
 }
 
 bool KnowledgeBase::removeAll(const semweb::TripleContainerPtr &triples) {
-	if (triples->empty()) return true;
-	// find the source backend, if any.
 	auto sourceBackend = findSourceBackend(**triples->begin());
-	std::vector<std::shared_ptr<DefinedBackend>> backends;
-	for (auto &it: backendManager_->backendPool()) {
-		backends.push_back(it.second);
-	}
-	// push a worker goal that updates the vocabulary
-	auto vocabWorker = pushPerTripleWork(triples,
-										 [this](const FramedTriplePtr &triple) {
-											 updateVocabularyRemove(*triple);
-										 });
-	bool success = transaction<DataRemoval>(triples, backends, vocabulary_, sourceBackend);
-	vocabWorker->join();
-	return success;
+	auto transaction = edb_->createTransaction(
+			BackendInterface::Remove, BackendInterface::Excluding, {sourceBackend});
+	return transaction->commit(triples);
 }
 
 bool KnowledgeBase::insertAll(const std::vector<FramedTriplePtr> &triples) {
@@ -950,93 +806,29 @@ bool KnowledgeBase::removeAll(const std::vector<FramedTriplePtr> &triples) {
 }
 
 bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
-	// remove all triples with a given origin from all backends.
-	std::vector<std::shared_ptr<ThreadPool::Runner>> transactions;
-	for (auto &it: backendManager_->backendPool()) {
-		auto definedBackend = it.second;
-		// create a worker goal that performs the transaction
-		auto transaction = std::make_shared<ThreadPool::LambdaRunner>(
-				[definedBackend, origin](const ThreadPool::LambdaRunner::StopChecker &) {
-					if (definedBackend->backend()->removeAllWithOrigin(origin)) {
-						// unset version of origin in backend
-						definedBackend->setVersionOfOrigin(origin, std::nullopt);
-					} else {
-						KB_WARN("removal of triples with origin '{}' from backend '{}' failed!", origin,
-								definedBackend->name());
-					}
-				});
-		// push goal to thread pool
-		DefaultThreadPool()->pushWork(
-				transaction,
-				[definedBackend](const std::exception &exc) {
-					KB_ERROR("transaction failed for backend '{}': {}", definedBackend->name(), exc.what());
-				});
-		transactions.push_back(transaction);
-	}
-
-	// wait for all transactions to finish
-	for (auto &transaction: transactions) transaction->join();
-
-	// update vocabulary: select all terms that are defined in a given origin,
-	// and then remove them from the vocabulary.
-	// TODO: only do this if no other backend defines the same origin?
-	// remove origin from import hierarchy
-	if (!importHierarchy_->isReservedOrigin(origin)) {
-		importHierarchy_->removeCurrentGraph(origin);
-	}
-
-	return true;
+	return edb_->removeAllWithOrigin(origin);
 }
 
-void KnowledgeBase::updateVocabularyInsert(const FramedTriple &tripleData) {
-	// keep track of imports, subclasses, and subproperties
-	if (semweb::isSubClassOfIRI(tripleData.predicate())) {
-		auto sub = vocabulary_->defineClass(tripleData.subject());
-		auto sup = vocabulary_->defineClass(tripleData.valueAsString());
-		sub->addDirectParent(sup);
-	} else if (semweb::isSubPropertyOfIRI(tripleData.predicate())) {
-		auto sub = vocabulary_->defineProperty(tripleData.subject());
-		auto sup = vocabulary_->defineProperty(tripleData.valueAsString());
-		sub->addDirectParent(sup);
-	} else if (semweb::isTypeIRI(tripleData.predicate())) {
-		vocabulary_->addResourceType(tripleData.subject(), tripleData.valueAsString());
-		// increase frequency in vocabulary
-		static std::set<std::string_view> skippedTypes = {
-				semweb::owl::Class->stringForm(),
-				semweb::owl::Restriction->stringForm(),
-				semweb::owl::NamedIndividual->stringForm(),
-				semweb::owl::AnnotationProperty->stringForm(),
-				semweb::owl::ObjectProperty->stringForm(),
-				semweb::owl::DatatypeProperty->stringForm(),
-				semweb::rdfs::Class->stringForm(),
-				semweb::rdf::Property->stringForm()
-		};
-		if (vocabulary_->isDefinedClass(tripleData.valueAsString()) &&
-			!skippedTypes.count(tripleData.valueAsString())) {
-			vocabulary_->increaseFrequency(tripleData.valueAsString());
-		}
-	} else if (semweb::isInverseOfIRI(tripleData.predicate())) {
-		auto p = vocabulary_->defineProperty(tripleData.subject());
-		auto q = vocabulary_->defineProperty(tripleData.valueAsString());
-		p->setInverse(q);
-		q->setInverse(p);
-	} else if (semweb::owl::imports->stringForm() == tripleData.predicate()) {
-		auto resolvedImport = URI::resolve(tripleData.valueAsString());
-		auto importedGraph = DataSource::getNameFromURI(resolvedImport);
-		if (tripleData.graph()) {
-			importHierarchy_->addDirectImport(tripleData.graph().value(), importedGraph);
-		} else {
-			KB_WARN("import statement without graph");
-		}
-	} else if (vocabulary_->isObjectProperty(tripleData.predicate()) ||
-			   vocabulary_->isDatatypeProperty(tripleData.predicate())) {
-		// increase frequency of property in vocabulary
-		vocabulary_->increaseFrequency(tripleData.predicate());
-	}
-}
+std::shared_ptr<DefinedBackend> KnowledgeBase::findSourceBackend(const FramedTriple &triple) {
+	if (!triple.graph()) return {};
 
-void KnowledgeBase::updateVocabularyRemove(const FramedTriple &tripleData) {
-	// TODO: implement
+	auto definedBackend_withID = backendManager_->getBackendWithID(triple.graph().value());
+	if (definedBackend_withID) return definedBackend_withID;
+
+	auto definedReasoner = reasonerManager_->getReasonerWithID(triple.graph().value());
+	if (definedReasoner) {
+		auto reasonerBackend = reasonerManager_->getReasonerBackend(definedReasoner);
+		if (reasonerBackend) {
+			for (auto &it: backendManager_->backendPool()) {
+				auto &definedBackend_ofReasoner = it.second;
+				if (definedBackend_ofReasoner->backend() == reasonerBackend) {
+					return definedBackend_ofReasoner;
+				}
+			}
+		}
+	}
+
+	return {};
 }
 
 /**************************************************/
@@ -1156,7 +948,9 @@ bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source
 		// define a prefix for naming blank nodes
 		parser.setBlankPrefix(std::string("_") + origin);
 		auto result = parser.run([this, &backendsToLoad](const semweb::TripleContainerPtr &triples) {
-			insertAllInto(triples, backendsToLoad);
+			auto transaction = edb_->createTransaction(
+				BackendInterface::Insert, BackendInterface::Including, backendsToLoad);
+			transaction->commit(triples);
 		});
 		if (!result) {
 			KB_WARN("Failed to parse ontology {} ({})", *importURI, source->uri());
@@ -1195,7 +989,9 @@ bool KnowledgeBase::loadSPARQLDataSource(const std::shared_ptr<DataSource> &sour
 			"\"{}\" and origin \"{}\".", serviceURI, newVersion, origin);
 
 	auto result = service->load([this, &backendsToLoad](const semweb::TripleContainerPtr &triples) {
-		insertAllInto(triples, backendsToLoad);
+		auto transaction = edb_->createTransaction(
+			BackendInterface::Insert, BackendInterface::Including, backendsToLoad);
+		transaction->commit(triples);
 	});
 	if (!result) {
 		KB_WARN("Failed to load data from SPARQL service at {}.", serviceURI);

@@ -75,7 +75,7 @@ namespace knowrob {
 		/**
 		 * Lookup up all matching triples.
 		 * @param tripleExpression a triple expression
-		 * @return a cursor over matching triples
+		 * @return a getAnswerCursor over matching triples
 		 */
 		mongo::BindingsCursorPtr lookup(const FramedTriplePattern &query);
 
@@ -84,7 +84,7 @@ namespace knowrob {
 		 * The lookup pipeline includes a step for each expression in the vector
 		 * in the same order as the expressions are ordered in the vector.
 		 * @param tripleExpressions a vector of triple expressions
-		 * @return a cursor over matching triples
+		 * @return a getAnswerCursor over matching triples
 		 */
 		mongo::BindingsCursorPtr lookup(const GraphTerm &query);
 

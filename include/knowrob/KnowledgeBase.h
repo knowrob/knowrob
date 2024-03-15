@@ -18,20 +18,19 @@
 #include "knowrob/db/OntologyFile.h"
 #include "knowrob/db/QueryableBackend.h"
 #include "knowrob/db/DefinedBackend.h"
+#include "knowrob/db/BackendManager.h"
 #include "knowrob/triples/GraphPathQuery.h"
+#include "knowrob/db/BackendInterface.h"
 
 namespace knowrob {
 	// forward declaration
 	class ReasonerManager;
 
-	// forward declaration
-	class BackendManager;
-
 	/**
 	 * The main interface to the knowledge base system implementing
 	 * its 'tell' and 'ask' interface.
 	 */
-	class KnowledgeBase : public IDataBackend {
+	class KnowledgeBase {
 	public:
 		/**
 		 * @param config a property tree used to configure this.
@@ -69,7 +68,7 @@ namespace knowrob {
 		/**
 		 * @return the vocabulary of this knowledge base, i.e. all known properties and classes
 		 */
-		auto vocabulary() const { return vocabulary_; }
+		auto &vocabulary() const { return vocabulary_; }
 
 		/**
 		 * @param property a property IRI
@@ -80,7 +79,7 @@ namespace knowrob {
 		/**
 		 * @return import hierarchy of named graphs
 		 */
-		auto importHierarchy() const { return importHierarchy_; }
+		auto &importHierarchy() const { return importHierarchy_; }
 
 		/**
 		 * Evaluate a query represented as a vector of literals.
@@ -111,26 +110,24 @@ namespace knowrob {
 
 		auto &backendManager() const { return backendManager_; }
 
-		// override IDataBackend
-		bool insertOne(const FramedTriple &triple) override;
+		bool insertOne(const FramedTriple &triple);
 
-		// override IDataBackend
-		bool insertAll(const semweb::TripleContainerPtr &triples) override;
+		bool insertAll(const semweb::TripleContainerPtr &triples);
 
 		bool insertAll(const std::vector<FramedTriplePtr> &triples);
 
-		// override IDataBackend
-		bool removeOne(const FramedTriple &triple) override;
+		bool removeOne(const FramedTriple &triple);
 
-		// override IDataBackend
-		bool removeAll(const semweb::TripleContainerPtr &triples) override;
+		bool removeAll(const semweb::TripleContainerPtr &triples);
 
 		bool removeAll(const std::vector<FramedTriplePtr> &triples);
 
-		// override IDataBackend
-		bool removeAllWithOrigin(std::string_view origin) override;
+		bool removeAllWithOrigin(std::string_view origin);
+
+		auto &edb() const { return edb_; }
 
 	protected:
+		std::shared_ptr<BackendInterface> edb_;
 		std::shared_ptr<ReasonerManager> reasonerManager_;
 		std::shared_ptr<BackendManager> backendManager_;
 		std::shared_ptr<semweb::Vocabulary> vocabulary_;
@@ -187,13 +184,13 @@ namespace knowrob {
 
 		void synchronizeBackends();
 
+		std::shared_ptr<DefinedBackend> findSourceBackend(const FramedTriple &triple);
+
 		static DataSourcePtr createDataSource(const boost::property_tree::ptree &subtree);
 
 		void startReasoner();
 
 		void stopReasoner();
-
-		DataBackendPtr findSourceBackend(const FramedTriple &triple);
 
 		std::vector<std::shared_ptr<DefinedBackend>>
 		prepareLoad(std::string_view origin, std::string_view newVersion) const;
@@ -207,15 +204,8 @@ namespace knowrob {
 
 		bool loadSPARQLDataSource(const std::shared_ptr<DataSource> &source);
 
-		bool insertAllInto(const semweb::TripleContainerPtr &triples,
-						   const std::vector<std::shared_ptr<DefinedBackend>> &backends);
-
 		static DataSourceType getDataSourceType(const std::string &format, const boost::optional<std::string> &language,
 												const boost::optional<std::string> &type);
-
-		void updateVocabularyInsert(const FramedTriple &tripleData);
-
-		void updateVocabularyRemove(const FramedTriple &tripleData);
 
 		std::optional<std::string> getVersionOfOrigin(const std::shared_ptr<DefinedBackend> &definedBackend,
 													  std::string_view origin) const;

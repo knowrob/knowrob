@@ -17,6 +17,22 @@
 namespace knowrob {
 	using ResourceCounter = std::function<void(std::string_view, uint64_t)>;
 
+	struct GraphQueryExpansion {
+		GraphQueryExpansion() : counter(0), with_reassignment(false) {}
+
+		GraphPathQueryPtr original;
+		GraphQueryPtr expanded;
+		std::vector<VariablePtr> o_vars;
+		std::vector<VariablePtr> u_vars;
+		VariablePtr accumulated_begin;
+		VariablePtr accumulated_end;
+		QueryContextPtr query_ctx;
+		uint32_t counter;
+		bool with_reassignment;
+	};
+
+	using GraphQueryExpansionPtr = std::shared_ptr<GraphQueryExpansion>;
+
 	/**
 	 * A backend that can be queried.
 	 */
@@ -30,6 +46,11 @@ namespace knowrob {
 		 * @return true if the backend is persistent.
 		 */
 		virtual bool isPersistent() const = 0;
+
+		/**
+		 * @return true if the backend supports re-assignment of variables within query pipelines.
+		 */
+		virtual bool supportsReAssignment() const { return false; }
 
 		/**
 		 * @param triple a framed triple.
@@ -70,25 +91,6 @@ namespace knowrob {
 		virtual void count(const ResourceCounter &callback) const = 0;
 
 		/**
-		 * Submits a graph query to this knowledge graph.
-		 * The query is evaluated concurrently, and evaluation may still be active
-		 * when this function returns.
-		 * The function returns a stream of solutions, the end of the stream is indicated
-		 * by an EOS message.
-		 * @param query a graph query
-		 * @return a stream with answers to the query
-		 */
-		TokenBufferPtr submitQuery(const GraphPathQueryPtr &query);
-
-		/**
-		 * Evaluates a query and may block until evaluation completed.
-		 * All results will be written into the provided stream object.
-		 * @param query a query.
-		 * @param resultStream a stream of answers.
-		 */
-		void evaluateQuery(const GraphPathQueryPtr &query, const TokenBufferPtr &resultStream);
-
-		/**
 		 * @return a list of all origins that have been persisted.
 		 */
 		std::vector<std::string> getOrigins();
@@ -106,6 +108,8 @@ namespace knowrob {
 		 */
 		void setVersionOfOrigin(std::string_view origin, std::string_view version);
 
+		GraphQueryExpansionPtr expand(const GraphPathQueryPtr &q);
+
 		/**
 		 * @return the batch size.
 		 */
@@ -118,46 +122,30 @@ namespace knowrob {
 		void setBatchSize(uint32_t batchSize) { batchSize_ = batchSize; }
 
 		/**
-		 * @return true if the backend supports re-assignment of variables within query pipelines.
+		 * @param q a graph path query.
+		 * @return a negative answer to the query.
 		 */
-		virtual bool supportsReAssignment() const { return false; }
+		static std::shared_ptr<AnswerNo> no(const GraphPathQueryPtr &q);
 
 		/**
-		 * Expand a query with complex patterns into one with potentially more
-		 * but less complex patterns.
-		 * This is done to realize a backend-independent handling of some aspects
-		 * such as determining whether an answer is uncertain or not.
-		 * @param q a graph query.
-		 * @return the expanded graph query.
+		 * @param q a graph path query.
+		 * @param bindings a set of bindings.
+		 * @return a positive answer to the query.
 		 */
-		GraphQueryPtr expand(const GraphQueryPtr &q);
+		static std::shared_ptr<AnswerYes> yes(const GraphQueryExpansionPtr &expansion, const BindingsPtr &bindings);
 
 	protected:
 		uint32_t batchSize_;
 
-		struct ExpansionContext {
-			ExpansionContext() : counter(0) {}
+		GraphQueryPtr expand(const GraphQueryPtr &q, GraphQueryExpansion &ctx);
 
-			std::vector<VariablePtr> o_vars;
-			std::vector<VariablePtr> u_vars;
-			VariablePtr accumulated_begin;
-			VariablePtr accumulated_end;
-			QueryContextPtr query_ctx;
-			uint32_t counter;
-		};
+		std::shared_ptr<GraphTerm> expand(const std::shared_ptr<GraphTerm> &q, GraphQueryExpansion &ctx);
 
-		static std::shared_ptr<AnswerNo> no(const GraphPathQueryPtr &q);
+		std::shared_ptr<GraphTerm> expandPattern(const std::shared_ptr<GraphPattern> &q, GraphQueryExpansion &ctx);
 
-		static std::shared_ptr<AnswerYes> yes(const GraphPathQueryPtr &q, const BindingsPtr &bindings);
-
-		GraphQueryPtr expand(ExpansionContext &ctx, const GraphQueryPtr &q);
-
-		std::shared_ptr<GraphTerm> expand(ExpansionContext &ctx, const std::shared_ptr<GraphTerm> &q);
-
-		std::shared_ptr<GraphTerm> expandPattern(ExpansionContext &ctx, const std::shared_ptr<GraphPattern> &q);
-
-		bool expandAll(ExpansionContext &ctx, const std::shared_ptr<GraphConnective> &q,
-							  std::vector<std::shared_ptr<GraphTerm>> &expandedTerms);
+		bool expandAll(const std::shared_ptr<GraphConnective> &q,
+					   std::vector<std::shared_ptr<GraphTerm>> &expandedTerms,
+					   GraphQueryExpansion &ctx);
 	};
 
 	using QueryableBackendPtr = std::shared_ptr<QueryableBackend>;

@@ -45,9 +45,9 @@ in case of tf) -- however, *it is advised to avoid generating indices over array
 For tf, this means that it might be best to store each tranform in an individual document.
 
 ### Querying mongo
-Documents in mongo DB can be retrieved by first creating a cursor on
+Documents in mongo DB can be retrieved by first creating a getAnswerCursor on
 a named collection, and then reading individual documents until
-the cursor has reached the last document matching the query.
+the getAnswerCursor has reached the last document matching the query.
 Cursors can limit the results, sort them, and filter them
 according to a pattern given in the query.
 The query is generally given as Prolog list holding two elements:
@@ -55,7 +55,7 @@ the value (or operator) and the value.
 However, to avoid conversion problems, the value must be wrapped in an atom indicating its type.
 
 As an example, below is a query that retrieves documents from a collection named *triples*.
-The cursor only retrieves documents where the *subject* value has the value "Obj1",
+The getAnswerCursor only retrieves documents where the *subject* value has the value "Obj1",
 and where the *begin* field has a date value smaller then the Unix timestamp *1579888948.52*.
 
 ```Prolog
@@ -66,7 +66,7 @@ mng_cursor_next(Cursor,Doc),
 mng_cursor_destroy(Cursor).
 ```
 
-`Note` Make sure to destroy a cursor once you are done with it. Usually you would want to wrap the cursor operation into a call of *setup_call_cleanup/3*.
+`Note` Make sure to destroy a getAnswerCursor once you are done with it. Usually you would want to wrap the getAnswerCursor operation into a call of *setup_call_cleanup/3*.
 
 More complex filters may use, e.g., disjunction as in:
 

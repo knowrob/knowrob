@@ -8,6 +8,7 @@
 #include <memory>
 #include "knowrob/db/QueryableBackend.h"
 #include "QueryStageLiteral.h"
+#include "knowrob/db/BackendInterface.h"
 
 namespace knowrob {
 	/**
@@ -16,11 +17,13 @@ namespace knowrob {
 	 */
 	class EDBStage : public QueryStageLiteral {
 	public:
-		EDBStage(QueryableBackendPtr edb,
+		EDBStage(TransactionCtrlPtr transactionCtrl,
+				 QueryableBackendPtr edb,
 				 const FramedTriplePatternPtr &literal,
 				 const QueryContextPtr &ctx);
 
 	protected:
+		TransactionCtrlPtr transactionCtrl_;
 		QueryableBackendPtr edb_;
 
 		TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal) override;

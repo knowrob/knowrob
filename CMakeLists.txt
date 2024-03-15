@@ -244,7 +244,7 @@ add_library(knowrob SHARED
         src/db/OntologyFile.cpp
         src/db/OntologyParser.cpp
         src/db/DataFile.cpp
-        src/db/DataTransaction.cpp
+        src/db/BackendTransaction.cpp
         src/db/mongo/MongoInterface.cpp
         src/db/mongo/Database.cpp
         src/db/mongo/Collection.cpp
@@ -309,7 +309,7 @@ add_library(knowrob SHARED
         src/reification/ReifiedQuery.cpp
         src/reification/ReificationContainer.cpp
         src/reification/UnReificationContainer.cpp
-        src/reification/ReifiedBackend.cpp
+        src/db/BackendInterface.cpp
         src/triples/GraphUnion.cpp
         src/triples/GraphSequence.cpp
         src/triples/GraphTerm.cpp

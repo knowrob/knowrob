@@ -9,7 +9,8 @@
 #include <map>
 #include <mutex>
 #include <boost/property_tree/ptree.hpp>
-#include "knowrob/KnowledgeBase.h"
+#include "knowrob/semweb/Vocabulary.h"
+#include "knowrob/semweb/ImportHierarchy.h"
 #include "TypedBackendFactory.h"
 #include "BackendPlugin.h"
 #include "DefinedBackend.h"
@@ -24,7 +25,8 @@ namespace knowrob {
 		/**
 		 * @param kb the knowledge base this manager is associated with.
 		 */
-		explicit BackendManager(KnowledgeBase *kb);
+		explicit BackendManager(const std::shared_ptr<semweb::Vocabulary> &vocabulary,
+								const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy);
 
 		~BackendManager();
 
@@ -105,8 +107,19 @@ namespace knowrob {
 		 */
 		auto managerID() const { return managerID_; }
 
+		/**
+		 * @return the vocabulary associated with this manager.
+		 */
+		auto &vocabulary() const { return vocabulary_; }
+
+		/**
+		 * @return the import hierarchy associated with this manager.
+		 */
+		auto &importHierarchy() const { return importHierarchy_; }
+
 	private:
-		KnowledgeBase *kb_;
+		std::shared_ptr<semweb::Vocabulary> vocabulary_;
+		std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
 		// maps backend id to manager
 		static std::map<uint32_t, BackendManager *> backendManagers_;
 		// counts number of initialized managers
@@ -135,12 +148,12 @@ namespace knowrob {
 
 		void initBackend(const std::shared_ptr<DefinedBackend> &definedKG);
 	};
+}
 
 	// a macro for static registration of a knowledge graph type.
 	// knowledge graph types registered with this macro are builtin knowledge graphs that are not
 	// loaded from a plugin.
 #define KNOWROB_BUILTIN_BACKEND(Name, Type) class Type ## _Registration{ static bool isRegistered; }; \
-        bool Type ## _Registration::isRegistered = BackendManager::addFactory<Type>(Name);
-}
+        bool Type ## _Registration::isRegistered = knowrob::BackendManager::addFactory<Type>(Name);
 
 #endif //KNOWROB_BACKEND_MANAGER_H_

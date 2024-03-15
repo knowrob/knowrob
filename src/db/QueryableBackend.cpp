@@ -3,12 +3,10 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob/Logger.h"
 #include "knowrob/db/QueryableBackend.h"
 #include "knowrob/ThreadPool.h"
 #include "knowrob/queries/AnswerNo.h"
 #include "knowrob/queries/AnswerYes.h"
-#include "knowrob/reification/ReifiedTriple.h"
 #include "knowrob/reification/UnReificationContainer.h"
 #include "knowrob/reification/ReifiedQuery.h"
 #include "knowrob/triples/GraphBuiltin.h"
@@ -17,7 +15,7 @@ using namespace knowrob;
 
 AtomPtr QueryableBackend::versionProperty = IRIAtom::Tabled("http://knowrob.org/kb/knowrob.owl#hasVersionOfOrigin");
 
-QueryableBackend::QueryableBackend() : batchSize_(1000) {
+QueryableBackend::QueryableBackend() : batchSize_(500) {
 }
 
 std::vector<std::string> QueryableBackend::getOrigins() {
@@ -46,72 +44,17 @@ std::optional<std::string> QueryableBackend::getVersionOfOrigin(std::string_view
 	return version;
 }
 
-void QueryableBackend::evaluateQuery(const GraphPathQueryPtr &q, const TokenBufferPtr &resultStream) {
-	// Expand the query. Currently, this is mainly used to compute the answer frame here.
-	// But also to insert some builtins for occasional triples.
-	ExpansionContext exp_ctx;
-	exp_ctx.query_ctx = q->ctx();
-	auto expandedQuery = expand(exp_ctx, q);
-
-	auto channel = TokenStream::Channel::create(resultStream);
-	try {
-		bool hasPositiveAnswer = false;
-		query(expandedQuery, [&](const BindingsPtr &bindings) {
-			auto answer = yes(q, bindings);
-
-			// The answer is uncertain if any of the groundings is uncertain.
-			answer->setIsUncertain(std::any_of(exp_ctx.u_vars.begin(), exp_ctx.u_vars.end(), [&](const VariablePtr &v) {
-				auto &u_v = bindings->get(v->name());
-				return (u_v && u_v->isNumeric() && std::static_pointer_cast<Numeric>(u_v)->asBoolean());
-			}), std::nullopt);
-
-			// The answer is occasional if any of the groundings has occasional=true flag
-			answer->setIsOccasionallyTrue(
-					std::any_of(exp_ctx.o_vars.begin(), exp_ctx.o_vars.end(), [&](const VariablePtr &v) {
-						auto &o_v = bindings->get(v->name());
-						return (o_v && o_v->isNumeric() && std::static_pointer_cast<Numeric>(o_v)->asBoolean());
-					}));
-
-			channel->push(yes(q, bindings));
-			hasPositiveAnswer = true;
-		});
-		if (!hasPositiveAnswer) {
-			channel->push(no(q));
-		}
-		channel->push(EndOfEvaluation::get());
-	}
-	catch (const std::exception &e) {
-		// make sure EOS is pushed to the stream
-		channel->push(EndOfEvaluation::get());
-		throw;
-	}
-}
-
-TokenBufferPtr QueryableBackend::submitQuery(const GraphPathQueryPtr &q) {
-	std::shared_ptr<TokenBuffer> result = std::make_shared<TokenBuffer>();
-	auto runner =
-			std::make_shared<ThreadPool::LambdaRunner>(
-					[this, q, result](const ThreadPool::LambdaRunner::StopChecker &) {
-						evaluateQuery(q, result);
-					});
-	DefaultThreadPool()->pushWork(runner, [result, q](const std::exception &e) {
-		KB_WARN("an exception occurred for graph query ({}): {}.", *q, e.what());
-		result->close();
-	});
-	return result;
-}
-
-std::shared_ptr<AnswerYes> QueryableBackend::yes(const GraphPathQueryPtr &q, const BindingsPtr &bindings) {
+std::shared_ptr<AnswerYes> QueryableBackend::yes(const GraphQueryExpansionPtr &expanded, const BindingsPtr &bindings) {
 	static const auto edbTerm = Atom::Tabled("EDB");
 
 	auto positiveAnswer = std::make_shared<AnswerYes>(bindings);
 	// Indicate that EDB has computed the grounding.
 	positiveAnswer->setReasonerTerm(edbTerm);
 	// Apply query context to the answer for some parameters.
-	positiveAnswer->applyFrame(q->ctx()->selector);
+	positiveAnswer->applyFrame(expanded->original->ctx()->selector);
 
 	// Add predicate groundings to the answer
-	for (auto &rdfLiteral: q->path()) {
+	for (auto &rdfLiteral: expanded->original->path()) {
 		auto p = rdfLiteral->predicate();
 		auto p_instance = applyBindings(p, *positiveAnswer->substitution());
 		positiveAnswer->addGrounding(
@@ -119,6 +62,20 @@ std::shared_ptr<AnswerYes> QueryableBackend::yes(const GraphPathQueryPtr &q, con
 				positiveAnswer->frame(),
 				rdfLiteral->isNegated());
 	}
+
+	// The answer is uncertain if any of the groundings is uncertain.
+	positiveAnswer->setIsUncertain(
+			std::any_of(expanded->u_vars.begin(), expanded->u_vars.end(), [&](const VariablePtr &v) {
+				auto &u_v = bindings->get(v->name());
+				return (u_v && u_v->isNumeric() && std::static_pointer_cast<Numeric>(u_v)->asBoolean());
+			}), std::nullopt);
+
+	// The answer is occasional if any of the groundings has occasional=true flag
+	positiveAnswer->setIsOccasionallyTrue(
+			std::any_of(expanded->o_vars.begin(), expanded->o_vars.end(), [&](const VariablePtr &v) {
+				auto &o_v = bindings->get(v->name());
+				return (o_v && o_v->isNumeric() && std::static_pointer_cast<Numeric>(o_v)->asBoolean());
+			}));
 
 	return positiveAnswer;
 }
@@ -147,13 +104,18 @@ std::shared_ptr<AnswerNo> QueryableBackend::no(const GraphPathQueryPtr &q) {
 	return negativeAnswer;
 }
 
-GraphQueryPtr QueryableBackend::expand(const GraphQueryPtr &q) {
-	ExpansionContext exp_ctx;
-	exp_ctx.query_ctx = q->ctx();
-	return expand(exp_ctx, q);
+GraphQueryExpansionPtr QueryableBackend::expand(const GraphPathQueryPtr &q) {
+	// Expand the query. Currently, this is mainly used to compute the answer frame here.
+	// But also to insert some builtins for occasional triples.
+	auto exp_ctx = std::make_shared<GraphQueryExpansion>();
+	exp_ctx->original = q;
+	exp_ctx->query_ctx = q->ctx();
+	exp_ctx->with_reassignment = supportsReAssignment();
+	exp_ctx->expanded = expand(q, *exp_ctx);
+	return exp_ctx;
 }
 
-GraphQueryPtr QueryableBackend::expand(ExpansionContext &ctx, const GraphQueryPtr &q) {
+GraphQueryPtr QueryableBackend::expand(const GraphQueryPtr &q, GraphQueryExpansion &ctx) {
 	// Initialize begin/end variables for the computation of the time interval.
 	static const auto var_begin = std::make_shared<Variable>("_begin");
 	static const auto var_end = std::make_shared<Variable>("_end");
@@ -161,7 +123,7 @@ GraphQueryPtr QueryableBackend::expand(ExpansionContext &ctx, const GraphQueryPt
 	ctx.accumulated_end = var_end;
 
 	// Expand the query
-	auto expandedTerm = expand(ctx, q->term());
+	auto expandedTerm = expand(q->term(), ctx);
 
 	// If the query uses SOMETIMES operator, prepend initialization of the accumulated_begin and accumulated_end variables
 	// used to compute the intersection of triple time intervals.
@@ -195,14 +157,14 @@ GraphQueryPtr QueryableBackend::expand(ExpansionContext &ctx, const GraphQueryPt
 }
 
 std::shared_ptr<GraphTerm>
-QueryableBackend::expand(ExpansionContext &ctx, const std::shared_ptr<GraphTerm> &q) { // NOLINT
+QueryableBackend::expand(const std::shared_ptr<GraphTerm> &q, GraphQueryExpansion &ctx) { // NOLINT
 	switch (q->termType()) {
 		case GraphTermType::Pattern:
-			return expandPattern(ctx, std::static_pointer_cast<GraphPattern>(q));
+			return expandPattern(std::static_pointer_cast<GraphPattern>(q), ctx);
 		case GraphTermType::Sequence: {
 			auto seq = std::static_pointer_cast<GraphSequence>(q);
 			std::vector<std::shared_ptr<GraphTerm>> expandedTerms(seq->terms().size());
-			if (expandAll(ctx, seq, expandedTerms)) {
+			if (expandAll(seq, expandedTerms, ctx)) {
 				return std::make_shared<GraphSequence>(expandedTerms);
 			}
 			break;
@@ -210,7 +172,7 @@ QueryableBackend::expand(ExpansionContext &ctx, const std::shared_ptr<GraphTerm>
 		case GraphTermType::Union: {
 			auto unionTerm = std::static_pointer_cast<GraphUnion>(q);
 			std::vector<std::shared_ptr<GraphTerm>> expandedTerms(unionTerm->terms().size());
-			if (expandAll(ctx, unionTerm, expandedTerms)) {
+			if (expandAll(unionTerm, expandedTerms, ctx)) {
 				return std::make_shared<GraphUnion>(expandedTerms);
 			}
 			break;
@@ -221,11 +183,12 @@ QueryableBackend::expand(ExpansionContext &ctx, const std::shared_ptr<GraphTerm>
 	return q;
 }
 
-bool QueryableBackend::expandAll(ExpansionContext &ctx, const std::shared_ptr<GraphConnective> &q, // NOLINT
-								 std::vector<std::shared_ptr<GraphTerm>> &expandedTerms) {
+bool QueryableBackend::expandAll(const std::shared_ptr<GraphConnective> &q, // NOLINT
+								 std::vector<std::shared_ptr<GraphTerm>> &expandedTerms,
+								 GraphQueryExpansion &ctx) {
 	bool hasExpansion = false;
 	for (size_t i = 0; i < q->terms().size(); ++i) {
-		auto expandedTerm = expand(ctx, q->terms()[i]);
+		auto expandedTerm = expand(q->terms()[i], ctx);
 		expandedTerms[i] = expandedTerm;
 		hasExpansion = hasExpansion || (expandedTerm != q->terms()[i]);
 	}
@@ -233,7 +196,7 @@ bool QueryableBackend::expandAll(ExpansionContext &ctx, const std::shared_ptr<Gr
 }
 
 std::shared_ptr<GraphTerm>
-QueryableBackend::expandPattern(ExpansionContext &ctx, const std::shared_ptr<GraphPattern> &q) {
+QueryableBackend::expandPattern(const std::shared_ptr<GraphPattern> &q, GraphQueryExpansion &ctx) {
 	const auto &p = q->value();
 	ctx.counter += 1;
 
@@ -339,7 +302,7 @@ QueryableBackend::expandPattern(ExpansionContext &ctx, const std::shared_ptr<Gra
 		// But not all backends support variable re-assignment.
 		// For the ones that don't support it like (SPARQL), we need to introduce a new variable for each intersection computed.
 		VariablePtr next_i_begin, next_i_end;
-		if (supportsReAssignment()) {
+		if (ctx.with_reassignment) {
 			next_i_begin = ctx.accumulated_begin;
 			next_i_end = ctx.accumulated_end;
 		} else {

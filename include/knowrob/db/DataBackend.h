@@ -18,10 +18,16 @@
 
 namespace knowrob {
 	/**
-	 * Interface for data backends that can store triple data.
+	 * A data backend is a component that stores extensional data.
+	 * Note that data backends do not do reification internally --
+	 * reification is only handled via the transaction controller.
+	 * Meaning that data backends without support for triple context
+	 * might just ignore any contextual parameters handed to them.
 	 */
-	class IDataBackend {
+	class DataBackend : public DataSourceHandler {
 	public:
+		DataBackend() = default;
+
 		/**
 		 * Add an assertion to this backend.
 		 * @param triple a triple.
@@ -62,18 +68,6 @@ namespace knowrob {
 		 * @return true if this backend can store triple context directly
 		 */
 		virtual bool canStoreTripleContext() const { return false; }
-	};
-
-	/**
-	 * A data backend is a component that stores extensional data.
-	 * The knowledge base employs a central data backend that is used
-	 * to store all extensional data.
-	 * However, reasoners may use their own data backend to store
-	 * extensional data that is used to evaluate axioms and rules.
-	 */
-	class DataBackend : public IDataBackend, public DataSourceHandler {
-	public:
-		DataBackend() = default;
 
 		/**
 		 * Initialize this backend from a property tree.

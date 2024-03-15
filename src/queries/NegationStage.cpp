@@ -8,6 +8,7 @@
 #include "knowrob/KnowledgeBase.h"
 #include "knowrob/formulas/ModalFormula.h"
 #include "knowrob/reasoner/ReasonerManager.h"
+#include "knowrob/db/BackendInterface.h"
 
 using namespace knowrob;
 
@@ -61,8 +62,8 @@ bool LiteralNegationStage::succeeds(const AnswerYesPtr &answer) {
 		instance->setIsNegated(false);
 
 		// check if the EDB contains positive lit, if so negation cannot be true
-		results.push_back(kg->submitQuery(
-				std::make_shared<GraphPathQuery>(instance, ctx_)));
+		results.push_back(kb_->edb()->getAnswerCursor(kg,
+													  std::make_shared<GraphPathQuery>(instance, ctx_)));
 
 		// next check if positive lit is an IDB predicate, if so negation cannot be true.
 		// get list of reasoner that define the literal

@@ -11,7 +11,7 @@
 
 namespace knowrob::mongo {
 	/**
-	 * A cursor that iterates over different results of a query,
+	 * A getAnswerCursor that iterates over different results of a query,
 	 * and fills a StatementData structure with the data.
 	 */
 	class TripleCursor : public Cursor {
@@ -21,14 +21,14 @@ namespace knowrob::mongo {
 		bool nextTriple(FramedTriple &tripleData, const bson_oid_t **tripleOID);
 
 		/**
-		 * Get the next triple from this cursor if any.
+		 * Get the next triple from this getAnswerCursor if any.
 		 * @param tripleData a triple data structure
 		 * @return true on success
 		 */
 		bool nextTriple(FramedTriple &tripleData);
 
 		/**
-		 * @return the last document fetched by this cursor, or null if no document was fetched before.
+		 * @return the last document fetched by this getAnswerCursor, or null if no document was fetched before.
 		 */
 		auto tripleDocument() { return tripleDocument_; }
 

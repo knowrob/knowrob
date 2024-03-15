@@ -10,7 +10,6 @@
 #include "knowrob/db/BackendManager.h"
 #include "knowrob/db/BackendError.h"
 #include "knowrob/db/QueryableBackend.h"
-#include "knowrob/reification/ReifiedBackend.h"
 
 using namespace knowrob;
 
@@ -22,8 +21,11 @@ auto &getBackendFactories() {
 	return x;
 }
 
-BackendManager::BackendManager(KnowledgeBase *kb)
-		: kb_(kb), backendIndex_(0) {
+BackendManager::BackendManager(const std::shared_ptr<semweb::Vocabulary> &vocabulary,
+							   const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy)
+		: vocabulary_(vocabulary),
+		  importHierarchy_(importHierarchy),
+		  backendIndex_(0) {
 	std::lock_guard<std::mutex> scoped_lock(staticMutex_);
 	managerID_ = (managerIDCounter_++);
 	backendManagers_[managerID_] = this;
@@ -80,8 +82,8 @@ DataBackendPtr BackendManager::loadBackend(const boost::property_tree::ptree &co
 
 	// create a new DataBackend instance
 	auto definedBackend = factory->createBackend(backendID);
-	definedBackend->backend()->setImportHierarchy(kb_->importHierarchy());
-	definedBackend->backend()->setVocabulary(kb_->vocabulary());
+	definedBackend->backend()->setImportHierarchy(importHierarchy());
+	definedBackend->backend()->setVocabulary(vocabulary());
 
 	ReasonerConfig reasonerConfig(&config);
 	if (!definedBackend->backend()->initializeBackend(reasonerConfig)) {
@@ -141,20 +143,12 @@ void BackendManager::addBackend(const std::shared_ptr<DefinedBackend> &definedKG
 }
 
 void BackendManager::initBackend(const std::shared_ptr<DefinedBackend> &definedKG) {
-	definedKG->backend()->setImportHierarchy(kb_->importHierarchy());
-	definedKG->backend()->setVocabulary(kb_->vocabulary());
+	definedKG->backend()->setImportHierarchy(importHierarchy());
+	definedKG->backend()->setVocabulary(vocabulary());
 	// check if the backend is a QueryableBackend, if so store it in the queryable_ map
 	auto queryable = std::dynamic_pointer_cast<QueryableBackend>(definedKG->backend());
 	if (queryable) {
-		if (!queryable->canStoreTripleContext()) {
-			KB_INFO("adding reified backend with id '{}'.", definedKG->name());
-			queryable = std::make_shared<ReifiedBackend>(queryable);
-			queryable->setImportHierarchy(kb_->importHierarchy());
-			queryable->setVocabulary(kb_->vocabulary());
-			definedKG->backend_ = queryable;
-		} else {
-			KB_INFO("adding queryable backend with id '{}'.", definedKG->name());
-		}
+		KB_INFO("adding queryable backend with id '{}'.", definedKG->name());
 		queryable_[definedKG->name()] = queryable;
 	}
 	// check if the backend is a PersistentBackend, if so store it in the persistent_ map

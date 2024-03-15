@@ -9,6 +9,7 @@
 #include "knowrob/terms/IRIAtom.h"
 #include "knowrob/terms/Blank.h"
 #include "knowrob/db/mongo/bson-helper.h"
+#include "knowrob/terms/String.h"
 
 using namespace knowrob;
 using namespace knowrob::mongo;
@@ -17,10 +18,8 @@ BindingsCursor::BindingsCursor(const std::shared_ptr<Collection> &collection)
 		: Cursor(collection),
 		  resultDocument_(nullptr),
 		  resultIter_(),
-		  timeIter_(),
 		  varIter_(),
-		  valIter_(),
-		  scopeIter_() {
+		  valIter_() {
 }
 
 void BindingsCursor::setSubstitution(const std::shared_ptr<Bindings> &bindings) {

@@ -10,9 +10,9 @@
 #include "knowrob/semweb/rdfs.h"
 #include "knowrob/db/RedlandModel.h"
 #include "knowrob/semweb/PrefixRegistry.h"
-#include "knowrob/reification/ReifiedBackend.h"
 #include "knowrob/reification/ReifiedTriple.h"
 #include "knowrob/reasoner/prolog/PrologEngine.h"
+#include "knowrob/db/BackendInterface.h"
 
 using namespace knowrob;
 using namespace knowrob::mongo;
@@ -48,18 +48,16 @@ class DataBackendTest : public ::testing::Test {
 public:
 	static std::shared_ptr<BackendType> kg_;
 	static std::shared_ptr<QueryableBackend> queryable_;
-	static std::shared_ptr<semweb::Vocabulary> vocabulary_;
+	static std::shared_ptr<BackendInterface> backend_;
 
 	static void SetUpTestSuite() {
-		vocabulary_ = std::make_shared<semweb::Vocabulary>();
+		auto vocabulary = std::make_shared<semweb::Vocabulary>();
+		auto importHierarchy = std::make_shared<semweb::ImportHierarchy>();
+		auto backendManager = std::make_shared<BackendManager>(vocabulary, importHierarchy);
+		backend_ = std::make_shared<BackendInterface>(backendManager);
 		kg_ = createBackend<BackendType>();
-		if (kg_->canStoreTripleContext()) {
-			queryable_ = kg_;
-		} else {
-			queryable_ = std::make_shared<ReifiedBackend>(kg_);
-			queryable_->setVocabulary(kg_->vocabulary());
-			queryable_->setImportHierarchy(kg_->importHierarchy());
-		}
+		backendManager->addBackend("test", kg_);
+		queryable_ = kg_;
 		semweb::PrefixRegistry::registerPrefix("swrl_test", "http://knowrob.org/kb/swrl_test#");
 	}
 
@@ -72,29 +70,20 @@ public:
 		// only queries that go through submitQuery are auto-expanded, so we
 		// do the expansion here manually.
 		auto expanded_q = queryable_->expand(pattern_q);
-		queryable_->query(expanded_q, [&out](const BindingsPtr &next) {
+		backend_->query(queryable_, expanded_q->expanded, [&out](const BindingsPtr &next) {
 			out.push_back(next);
 		});
 		return out;
 	}
 
 	static bool insertOne(const FramedTriple &triple) {
-		if (!kg_->canStoreTripleContext() && ReifiedTriple::isReifiable(triple)) {
-			ReifiedTriple reification(triple, vocabulary_);
-			bool allSuccess = true;
-			for (auto &reified : reification) {
-				allSuccess = kg_->insertOne(*reified.ptr) && allSuccess;
-			}
-			return allSuccess;
-		} else {
-			return kg_->insertOne(triple);
-		}
+		return backend_->createTransaction(BackendInterface::Insert)->commit(triple);
 	}
 
 	bool loadOntology(std::string_view path) {
 		auto resolved = URI::resolve(path);
 		auto origin = DataSource::getNameFromURI(resolved);
-		auto vocab = vocabulary_;
+		auto vocab = backend_->vocabulary();
 		OntologyParser parser(resolved, semweb::TripleFormat::RDF_XML, 100);
 		// filter is called for each triple, if it returns false, the triple is skipped
 		parser.setFilter([vocab](const FramedTriple &triple) {
@@ -116,7 +105,7 @@ public:
 
 template <typename T> std::shared_ptr<T> DataBackendTest<T>::kg_;
 template <typename T> std::shared_ptr<QueryableBackend> DataBackendTest<T>::queryable_;
-template <typename T> std::shared_ptr<semweb::Vocabulary> DataBackendTest<T>::vocabulary_;
+template <typename T> std::shared_ptr<BackendInterface> DataBackendTest<T>::backend_;
 
 static FramedTriplePattern parse(const std::string &str) {
 	auto p = QueryParser::parsePredicate(str);
