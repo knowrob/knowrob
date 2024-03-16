@@ -25,6 +25,8 @@ namespace knowrob::semweb {
 
 	std::string_view tripleFormatToString(TripleFormat format);
 
+	std::string_view tripleFormatMimeType(TripleFormat format);
+
 	bool isTripleFormatString(std::string_view format);
 }
 

@@ -66,4 +66,22 @@ namespace knowrob::semweb {
 		}
 		return "RDF/XML";
 	}
+
+	std::string_view tripleFormatMimeType(knowrob::semweb::TripleFormat format) {
+		switch (format) {
+			case semweb::RDF_XML:
+				return "rdfxml";
+			case semweb::TURTLE:
+				return "turtle";
+			case semweb::N_TRIPLES:
+				return "ntriples";
+			case semweb::RDFA:
+				return "rdfa";
+			case semweb::TRIG:
+				return "trig";
+			case semweb::GRDDL:
+				return "grddl";
+		}
+		return "rdfxml";
+	}
 }

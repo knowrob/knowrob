@@ -45,6 +45,26 @@ std::optional<std::string> QueryableBackend::getVersionOfOrigin(std::string_view
 	return version;
 }
 
+void QueryableBackend::match(const FramedTriplePattern &q, const semweb::TripleVisitor &visitor) {
+	auto graph_query = std::make_shared<GraphQuery>(
+			std::make_shared<GraphPattern>(std::make_shared<FramedTriplePattern>(q)),
+			DefaultQueryContext());
+	query(graph_query, [&](const BindingsPtr &bindings) {
+		FramedTripleView triple;
+		q.instantiateInto(triple, bindings);
+		visitor(triple);
+	});
+}
+
+bool QueryableBackend::contains(const FramedTriple &triple) {
+	auto pattern = std::make_shared<FramedTriplePattern>(triple);
+	bool hasResult = false;
+	match(*pattern, [&](const FramedTriple &t) {
+		hasResult = true;
+	});
+	return hasResult;
+}
+
 std::shared_ptr<AnswerYes> QueryableBackend::yes(const GraphQueryExpansionPtr &expanded, const BindingsPtr &bindings) {
 	static const auto edbTerm = Atom::Tabled("EDB");
 
@@ -96,8 +116,6 @@ std::shared_ptr<AnswerNo> QueryableBackend::no(const GraphPathQueryPtr &q) {
 	// Add ungrounded literals to negative answer.
 	// But at the moment the information is not provided by EDBs, would be difficult to implement e.g. in MongoDB.
 	// Well at least we know if the query is only a single triple pattern.
-	// TODO: It would be great if we could report the failing triple pattern.
-	//       It could be queried here, but that seems a bit costly just to have this info.
 	if (q->path().size() == 1) {
 		negativeAnswer->addUngrounded(q->path().front()->predicate(),
 									  q->path().front()->isNegated());
@@ -105,99 +123,8 @@ std::shared_ptr<AnswerNo> QueryableBackend::no(const GraphPathQueryPtr &q) {
 	return negativeAnswer;
 }
 
-GraphQueryExpansionPtr QueryableBackend::expand(const GraphPathQueryPtr &q) {
-	// Expand the query. Currently, this is mainly used to compute the answer frame here.
-	// But also to insert some builtins for occasional triples.
-	auto exp_ctx = std::make_shared<GraphQueryExpansion>();
-	exp_ctx->original = q;
-	exp_ctx->query_ctx = q->ctx();
-	exp_ctx->with_reassignment = supports(BackendFeature::ReAssignment);
-	exp_ctx->expanded = expand(q, *exp_ctx);
-	return exp_ctx;
-}
-
-GraphQueryPtr QueryableBackend::expand(const GraphQueryPtr &q, GraphQueryExpansion &ctx) {
-	// Initialize begin/end variables for the computation of the time interval.
-	static const auto var_begin = std::make_shared<Variable>("_begin");
-	static const auto var_end = std::make_shared<Variable>("_end");
-	ctx.accumulated_begin = var_begin;
-	ctx.accumulated_end = var_end;
-
-	// Expand the query
-	auto expandedTerm = expand(q->term(), ctx);
-
-	// If the query uses SOMETIMES operator, prepend initialization of the accumulated_begin and accumulated_end variables
-	// used to compute the intersection of triple time intervals.
-	if (ctx.query_ctx->selector.occasional) {
-		double b_min = ctx.query_ctx->selector.begin.value_or(0.0);
-		double e_max = ctx.query_ctx->selector.end.value_or(std::numeric_limits<double>::max());
-		auto set_b = GraphBuiltin::bind(var_begin, std::make_shared<Double>(b_min));
-		auto set_e = GraphBuiltin::bind(var_end, std::make_shared<Double>(e_max));
-
-		if (expandedTerm->termType() == GraphTermType::Sequence) {
-			// Prepend to existing sequence
-			auto seq_terms = std::static_pointer_cast<GraphSequence>(expandedTerm)->terms();
-			seq_terms.insert(seq_terms.begin(), set_e);
-			seq_terms.insert(seq_terms.begin(), set_b);
-			expandedTerm = std::make_shared<GraphSequence>(seq_terms);
-		} else {
-			// Create a new sequence
-			auto seq = std::make_shared<GraphSequence>();
-			seq->addMember(set_b);
-			seq->addMember(set_e);
-			seq->addMember(expandedTerm);
-			expandedTerm = seq;
-		}
-	}
-
-	if (expandedTerm == q->term()) {
-		return q;
-	} else {
-		return std::make_shared<GraphQuery>(expandedTerm, q->ctx());
-	}
-}
-
-std::shared_ptr<GraphTerm>
-QueryableBackend::expand(const std::shared_ptr<GraphTerm> &q, GraphQueryExpansion &ctx) { // NOLINT
-	switch (q->termType()) {
-		case GraphTermType::Pattern:
-			return expandPattern(std::static_pointer_cast<GraphPattern>(q), ctx);
-		case GraphTermType::Sequence: {
-			auto seq = std::static_pointer_cast<GraphSequence>(q);
-			std::vector<std::shared_ptr<GraphTerm>> expandedTerms(seq->terms().size());
-			if (expandAll(seq, expandedTerms, ctx)) {
-				return std::make_shared<GraphSequence>(expandedTerms);
-			}
-			break;
-		}
-		case GraphTermType::Union: {
-			auto unionTerm = std::static_pointer_cast<GraphUnion>(q);
-			std::vector<std::shared_ptr<GraphTerm>> expandedTerms(unionTerm->terms().size());
-			if (expandAll(unionTerm, expandedTerms, ctx)) {
-				return std::make_shared<GraphUnion>(expandedTerms);
-			}
-			break;
-		}
-		case GraphTermType::Builtin:
-			break;
-	}
-	return q;
-}
-
-bool QueryableBackend::expandAll(const std::shared_ptr<GraphConnective> &q, // NOLINT
-								 std::vector<std::shared_ptr<GraphTerm>> &expandedTerms,
-								 GraphQueryExpansion &ctx) {
-	bool hasExpansion = false;
-	for (size_t i = 0; i < q->terms().size(); ++i) {
-		auto expandedTerm = expand(q->terms()[i], ctx);
-		expandedTerms[i] = expandedTerm;
-		hasExpansion = hasExpansion || (expandedTerm != q->terms()[i]);
-	}
-	return hasExpansion;
-}
-
-std::shared_ptr<GraphTerm>
-QueryableBackend::expandPattern(const std::shared_ptr<GraphPattern> &q, GraphQueryExpansion &ctx) {
+static std::shared_ptr<GraphTerm>
+expand_pattern(const std::shared_ptr<GraphPattern> &q, GraphQueryExpansion &ctx) {
 	const auto &p = q->value();
 	ctx.counter += 1;
 
@@ -325,4 +252,84 @@ QueryableBackend::expandPattern(const std::shared_ptr<GraphPattern> &q, GraphQue
 	}
 
 	return outer_term;
+}
+
+static std::shared_ptr<GraphTerm>
+expand_term(const std::shared_ptr<GraphTerm> &q, GraphQueryExpansion &ctx) { // NOLINT
+	switch (q->termType()) {
+		case GraphTermType::Pattern:
+			return expand_pattern(std::static_pointer_cast<GraphPattern>(q), ctx);
+		case GraphTermType::Union:
+		case GraphTermType::Sequence: {
+			auto connective = std::static_pointer_cast<GraphConnective>(q);
+			std::vector<std::shared_ptr<GraphTerm>> expandedTerms(connective->terms().size());
+
+			bool hasExpansion = false;
+			for (size_t i = 0; i < connective->terms().size(); ++i) {
+				auto expandedTerm = expand_term(connective->terms()[i], ctx);
+				expandedTerms[i] = expandedTerm;
+				hasExpansion = hasExpansion || (expandedTerm != connective->terms()[i]);
+			}
+
+			if (hasExpansion) {
+				return std::make_shared<GraphSequence>(expandedTerms);
+			}
+			break;
+		}
+		case GraphTermType::Builtin:
+			break;
+	}
+	return q;
+}
+
+static GraphQueryPtr expand_query(const GraphQueryPtr &q, GraphQueryExpansion &ctx) {
+	// Initialize begin/end variables for the computation of the time interval.
+	static const auto var_begin = std::make_shared<Variable>("_begin");
+	static const auto var_end = std::make_shared<Variable>("_end");
+	ctx.accumulated_begin = var_begin;
+	ctx.accumulated_end = var_end;
+
+	// Expand the query
+	auto expandedTerm = expand_term(q->term(), ctx);
+
+	// If the query uses SOMETIMES operator, prepend initialization of the accumulated_begin and accumulated_end variables
+	// used to compute the intersection of triple time intervals.
+	if (ctx.query_ctx->selector.occasional) {
+		double b_min = ctx.query_ctx->selector.begin.value_or(0.0);
+		double e_max = ctx.query_ctx->selector.end.value_or(std::numeric_limits<double>::max());
+		auto set_b = GraphBuiltin::bind(var_begin, std::make_shared<Double>(b_min));
+		auto set_e = GraphBuiltin::bind(var_end, std::make_shared<Double>(e_max));
+
+		if (expandedTerm->termType() == GraphTermType::Sequence) {
+			// Prepend to existing sequence
+			auto seq_terms = std::static_pointer_cast<GraphSequence>(expandedTerm)->terms();
+			seq_terms.insert(seq_terms.begin(), set_e);
+			seq_terms.insert(seq_terms.begin(), set_b);
+			expandedTerm = std::make_shared<GraphSequence>(seq_terms);
+		} else {
+			// Create a new sequence
+			auto seq = std::make_shared<GraphSequence>();
+			seq->addMember(set_b);
+			seq->addMember(set_e);
+			seq->addMember(expandedTerm);
+			expandedTerm = seq;
+		}
+	}
+
+	if (expandedTerm == q->term()) {
+		return q;
+	} else {
+		return std::make_shared<GraphQuery>(expandedTerm, q->ctx());
+	}
+}
+
+GraphQueryExpansionPtr QueryableBackend::expand(const GraphPathQueryPtr &q) {
+	// Expand the query. Currently, this is mainly used to compute the answer frame here.
+	// But also to insert some builtins for occasional triples.
+	auto exp_ctx = std::make_shared<GraphQueryExpansion>();
+	exp_ctx->original = q;
+	exp_ctx->query_ctx = q->ctx();
+	exp_ctx->with_reassignment = supports(BackendFeature::ReAssignment);
+	exp_ctx->expanded = expand_query(q, *exp_ctx);
+	return exp_ctx;
 }

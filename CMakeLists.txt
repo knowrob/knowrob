@@ -316,7 +316,8 @@ add_library(knowrob SHARED
         src/db/mongo/MongoTriple.cpp
         src/db/mongo/MongoTriplePattern.cpp
         src/db/mongo/MongoTerm.cpp
-        src/db/mongo/MongoTaxonomy.cpp)
+        src/db/mongo/MongoTaxonomy.cpp
+        src/db/SPARQLBackend.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

@@ -13,7 +13,7 @@
 #include "DataBackend.h"
 #include "knowrob/triples/SPARQLQuery.h"
 #include "RedlandURI.h"
-#include "QueryableBackend.h"
+#include "SPARQLBackend.h"
 
 namespace knowrob {
 	/**
@@ -49,7 +49,7 @@ namespace knowrob {
 	 * and can load and save triples in different formats, such as RDF/XML, Turtle, and N-Triples.
 	 * It can further interface with SPARQL endpoints.
 	 */
-	class RedlandModel : public QueryableBackend {
+	class RedlandModel : public SPARQLBackend {
 	public:
 		static constexpr std::string_view QUERY_LANGUAGE_SPARQL = "sparql";
 
@@ -148,21 +148,8 @@ namespace knowrob {
 		 */
 		bool load(const URI &uri, semweb::TripleFormat tripleFormat);
 
-		/**
-		 * Run a SPARQL query on the model.
-		 * @param queryString the query to run.
-		 * @param callback the callback to handle the results.
-		 * @return true if the query was successful.
-		 */
-		bool sparql(std::string_view queryString, const BindingsHandler &callback) const;
-
-		/**
-		 * Run a SPARQL query on the model.
-		 * @param query the query to run.
-		 * @param callback the callback to handle the results.
-		 * @return true if the query was successful.
-		 */
-		bool query(const SPARQLQuery &query, const BindingsHandler &callback) const;
+		// override SPARQLBackend
+		bool sparql(std::string_view queryString, const BindingsHandler &callback) const override;
 
 		// override DataBackend
 		bool insertOne(const FramedTriple &triple) override;
@@ -193,12 +180,6 @@ namespace knowrob {
 
 		// Override QueryableBackend
 		void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
-
-		// Override QueryableBackend
-		void query(const GraphQueryPtr &query, const BindingsHandler &callback) override;
-
-		// Override QueryableBackend
-		void count(const ResourceCounter &callback) const override;
 
 	protected:
 		librdf_world *ownedWorld_;

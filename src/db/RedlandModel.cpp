@@ -77,7 +77,8 @@ static int logRedlandMessage([[maybe_unused]] void *user_data, librdf_log_messag
 }
 
 RedlandModel::RedlandModel()
-		: world_(nullptr),
+		: SPARQLBackend(SPARQLFlag::NOT_EXISTS_UNSUPPORTED),
+		  world_(nullptr),
 		  ownedWorld_(nullptr),
 		  model_(nullptr),
 		  storage_(nullptr),
@@ -299,7 +300,7 @@ bool RedlandModel::load(const URI &uri, semweb::TripleFormat tripleFormat) {
 			model_,
 			rdf_uri,
 			modelName,
-			OntologyParser::mimeType(tripleFormat), // TODO move mimeType def
+			tripleFormatMimeType(tripleFormat).data(),
 			nullptr);
 	librdf_free_uri(rdf_uri);
 	return returnCode == 0;
@@ -376,8 +377,6 @@ bool RedlandModel::removeOne(const FramedTriple &knowrobTriple) {
 	auto raptorTriple = librdf_new_statement(world_);
 	// map the knowrob triple into a raptor triple
 	knowrobToRaptor(knowrobTriple, raptorTriple);
-	// TODO: There maybe cases where the triple should be removed from all contexts, which I think
-	//       requires to iterate over contexts here and call remove for each one.
 	auto ret = librdf_model_context_remove_statement(model_, getContextNode(knowrobTriple), raptorTriple);
 	librdf_free_statement(raptorTriple);
 	return ret==0;
@@ -468,11 +467,13 @@ void RedlandModel::match(const FramedTriplePattern &query, const semweb::TripleV
 	auto triples = std::make_shared<RaptorContainer>(1);
 	auto rdf_query = librdf_new_statement(world_);
 	knowrobToRaptor(query, rdf_query);
+
 	auto stream = librdf_model_find_statements(model_, rdf_query);
 	while (!librdf_stream_end(stream)) {
 		auto rdf_statement = librdf_stream_get_object(stream);
 		triples->add(rdf_statement->subject, rdf_statement->predicate, rdf_statement->object);
 		auto &triple = *triples->begin()->ptr;
+
 		if (query.objectOperator() != FramedTriplePattern::EQ) {
 			if (query.filter(triple)) visitor(triple);
 		} else {
@@ -482,43 +483,6 @@ void RedlandModel::match(const FramedTriplePattern &query, const semweb::TripleV
 		librdf_stream_next(stream);
 	}
 	librdf_free_stream(stream);
-}
-
-void RedlandModel::query(const GraphQueryPtr &q, const BindingsHandler &callback) { // NOLINT
-	std::shared_ptr<GraphPattern> negatedPattern;
-	if (q->term()->termType() == GraphTermType::Pattern) {
-		// Currently we cannot support negations where the object is grounded.
-		// This is because the SPARQL query would need to use NOT-EXISTS or MINUS, which is not supported by rasqal.
-		// Instead, we use OPTIONAL and !BOUND to simulate negation which requires that the object is not grounded
-		// when entering the negated pattern.
-		// But, on the other hand negations are handled separately by the KnowledgeBase anyway.
-		// So KnowRob will at the moment only call this interface with single negated patterns
-		// while evaluating sequences of negations in parallel and after any positive pattern that
-		// appears in a query.
-		auto pat = std::static_pointer_cast<GraphPattern>(q->term());
-		if (pat->value()->isNegated()) {
-			negatedPattern = pat;
-		}
-	}
-
-	if (negatedPattern) {
-		// negation-as-failure: Try positive query, if it has no solution, then the negated pattern is true.
-		auto positivePat = std::make_shared<FramedTriplePattern>(*negatedPattern->value());
-		positivePat->setIsNegated(false);
-		auto positiveQuery = std::make_shared<GraphQuery>(
-				std::make_shared<GraphPattern>(positivePat),
-				OneSolutionContext());
-		bool hasSolution = false;
-		query(positiveQuery, [&](const BindingsPtr &bindings) {
-			hasSolution = true;
-		});
-		if (!hasSolution) {
-			callback(Bindings::emptyBindings());
-		}
-	} else {
-		static const SPARQLFlags sparql_flags = SPARQLFlag::NOT_EXISTS_UNSUPPORTED;
-		sparql(SPARQLQuery(q, sparql_flags)(), callback);
-	}
 }
 
 bool RedlandModel::sparql(std::string_view queryString, const BindingsHandler &callback) const {
@@ -574,26 +538,6 @@ bool RedlandModel::sparql(std::string_view queryString, const BindingsHandler &c
 	librdf_free_query_results(results);
 	librdf_free_query(queryObj);
 	return true;
-}
-
-bool RedlandModel::query(const SPARQLQuery &q, const BindingsHandler &callback) const {
-	return sparql(q(), callback);
-}
-
-void RedlandModel::count(const ResourceCounter &callback) const {
-	// TODO: could be moved to a sparql interface
-	static const char *sparqlString = "SELECT ?resource (COUNT(?s) AS ?count) WHERE "\
-                "{ ?s rdf:type ?resource . } UNION { ?s ?resource ?o . } } "\
-                "GROUP BY ?resource";
-	sparql(sparqlString, [&](const BindingsPtr &bindings) {
-		auto resource = bindings->getAtomic("resource");
-		auto count = bindings->getAtomic("count");
-		if (!resource || !count || !count->isNumeric()) {
-			KB_WARN("Failed to count triples!");
-			return;
-		}
-		callback(resource->stringForm(), std::static_pointer_cast<Numeric>(count)->asLong());
-	});
 }
 
 librdf_node *RedlandModel::getContextNode(std::string_view origin) {

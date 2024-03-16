@@ -13,25 +13,10 @@
 #include "knowrob/queries/AnswerYes.h"
 #include "knowrob/queries/AnswerNo.h"
 #include "knowrob/triples/GraphConnective.h"
+#include "knowrob/triples/GraphQueryExpansion.h"
 
 namespace knowrob {
 	using ResourceCounter = std::function<void(std::string_view, uint64_t)>;
-
-	struct GraphQueryExpansion {
-		GraphQueryExpansion() : counter(0), with_reassignment(false) {}
-
-		GraphPathQueryPtr original;
-		GraphQueryPtr expanded;
-		std::vector<VariablePtr> o_vars;
-		std::vector<VariablePtr> u_vars;
-		VariablePtr accumulated_begin;
-		VariablePtr accumulated_end;
-		QueryContextPtr query_ctx;
-		uint32_t counter;
-		bool with_reassignment;
-	};
-
-	using GraphQueryExpansionPtr = std::shared_ptr<GraphQueryExpansion>;
 
 	/**
 	 * A backend that can be queried.
@@ -48,12 +33,6 @@ namespace knowrob {
 		virtual bool isPersistent() const = 0;
 
 		/**
-		 * @param triple a framed triple.
-		 * @return true if the model contains the triple.
-		 */
-		virtual bool contains(const FramedTriple &triple) = 0;
-
-		/**
 		 * Iterate over all triples in the model.
 		 * @param callback the callback to handle the triples.
 		 * @return true if the iteration was successful.
@@ -68,10 +47,16 @@ namespace knowrob {
 		virtual void batch(const semweb::TripleHandler &callback) const = 0;
 
 		/**
+		 * @param triple a framed triple.
+		 * @return true if the model contains the triple.
+		 */
+		virtual bool contains(const FramedTriple &triple);
+
+		/**
 		 * @param query a framed triple pattern.
 		 * @param handler a function that is called for each matching framed triple.
 		 */
-		virtual void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) = 0;
+		virtual void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor);
 
 		/**
 		 * Submits a graph query to this knowledge graph.
@@ -86,7 +71,7 @@ namespace knowrob {
 		virtual void count(const ResourceCounter &callback) const = 0;
 
 		/**
-		 * @return a list of all origins that have been persisted.
+		 * @return a list of all origins that have been asserted.
 		 */
 		std::vector<std::string> getOrigins();
 
@@ -103,31 +88,27 @@ namespace knowrob {
 		 */
 		void setVersionOfOrigin(std::string_view origin, std::string_view version);
 
+		/**
+		 * Compute the expansion of a graph path query.
+		 * @param q a graph path query.
+		 * @return the expansion of the query.
+		 */
 		GraphQueryExpansionPtr expand(const GraphPathQueryPtr &q);
 
 		/**
-		 * @param q a graph path query.
-		 * @return a negative answer to the query.
-		 */
-		static std::shared_ptr<AnswerNo> no(const GraphPathQueryPtr &q);
-
-		/**
-		 * @param q a graph path query.
+		 * Generates a positive answer to a query.
+		 * @param expansion a graph query expansion.
 		 * @param bindings a set of bindings.
 		 * @return a positive answer to the query.
 		 */
 		static std::shared_ptr<AnswerYes> yes(const GraphQueryExpansionPtr &expansion, const BindingsPtr &bindings);
 
-	protected:
-		GraphQueryPtr expand(const GraphQueryPtr &q, GraphQueryExpansion &ctx);
-
-		std::shared_ptr<GraphTerm> expand(const std::shared_ptr<GraphTerm> &q, GraphQueryExpansion &ctx);
-
-		std::shared_ptr<GraphTerm> expandPattern(const std::shared_ptr<GraphPattern> &q, GraphQueryExpansion &ctx);
-
-		bool expandAll(const std::shared_ptr<GraphConnective> &q,
-					   std::vector<std::shared_ptr<GraphTerm>> &expandedTerms,
-					   GraphQueryExpansion &ctx);
+		/**
+		 * Generates a negative answer to a query.
+		 * @param q a graph path query.
+		 * @return a negative answer to the query.
+		 */
+		static std::shared_ptr<AnswerNo> no(const GraphPathQueryPtr &q);
 	};
 
 	using QueryableBackendPtr = std::shared_ptr<QueryableBackend>;

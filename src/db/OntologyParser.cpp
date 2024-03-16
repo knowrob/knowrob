@@ -54,16 +54,6 @@ static void raptor_log(void *, raptor_log_message *message) {
 	}
 }
 
-// these are all formats supported by raptor according to:
-// https://librdf.org/raptor/api-1.4/raptor-parsers.html#raptor-parsers-intro
-const std::string OntologyParser::NAME_TURTLE = "turtle";
-const std::string OntologyParser::NAME_TRIG = "trig";
-const std::string OntologyParser::NAME_GRDDL = "grddl";
-const std::string OntologyParser::NAME_NTRIPLES = "ntriples";
-const std::string OntologyParser::NAME_RDFXML = "rdfxml";
-const std::string OntologyParser::NAME_RDFA = "rdfa";
-const std::string OntologyParser::NAME_RSS_TAG_SOUP = "rss-tag-soup";
-
 OntologyParser::OntologyParser(const std::string_view &fileURI, knowrob::semweb::TripleFormat format) {
 	world_ = createWorld();
 	parser_ = createParser(format);
@@ -105,26 +95,8 @@ raptor_world *OntologyParser::createWorld() {
 	return world;
 }
 
-const char* OntologyParser::mimeType(knowrob::semweb::TripleFormat format) {
-	switch (format) {
-		case semweb::RDF_XML:
-			return NAME_RDFXML.data();
-		case semweb::TURTLE:
-			return NAME_TURTLE.data();
-		case semweb::N_TRIPLES:
-			return NAME_NTRIPLES.data();
-		case semweb::RDFA:
-			return NAME_RDFA.data();
-		case semweb::TRIG:
-			return NAME_TRIG.data();
-		case semweb::GRDDL:
-			return NAME_GRDDL.data();
-	}
-	return nullptr;
-}
-
 raptor_parser *OntologyParser::createParser(knowrob::semweb::TripleFormat format) {
-	return raptor_new_parser(world_, mimeType(format));
+	return raptor_new_parser(world_, tripleFormatMimeType(format).data());
 }
 
 void OntologyParser::applyFrame(FramedTriple *triple) {

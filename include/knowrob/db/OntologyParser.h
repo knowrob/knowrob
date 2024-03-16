@@ -21,14 +21,6 @@ namespace knowrob {
 	 */
 	class OntologyParser {
 	public:
-		static const std::string NAME_TURTLE;
-		static const std::string NAME_TRIG;
-		static const std::string NAME_GRDDL;
-		static const std::string NAME_NTRIPLES;
-		static const std::string NAME_RDFXML;
-		static const std::string NAME_RDFA;
-		static const std::string NAME_RSS_TAG_SOUP;
-
 		/**
 		 * @param fileURI the URI of the file to parse.
 		 * @param format the format of the file.
@@ -79,8 +71,6 @@ namespace knowrob {
 		 * @return the list of directly imported ontologies.
 		 */
 		auto &imports() const { return imports_; }
-
-		static const char *mimeType(knowrob::semweb::TripleFormat format);
 
 	protected:
 		raptor_uri *uri_;

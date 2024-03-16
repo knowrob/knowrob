@@ -26,7 +26,7 @@ namespace knowrob {
 		// A flag that indicates that re-assignment of variables within query pipelines is supported.
 		ReAssignment = 1ul << 2,
 		// A flag that indicates that triple context is supported.
-		// If this flag is not set, statements with additional context information first will be reified
+		// If this flag is not set, statements with additional context information first must be reified
 		// before they can be handled by this backend.
 		TripleContext = 1ul << 3
 	};
@@ -51,9 +51,9 @@ namespace knowrob {
 	/**
 	 * A data backend is a component that stores extensional data.
 	 * Note that data backends do not do reification internally --
-	 * reification is only handled via the transaction controller.
+	 * reification is only handled via BackendInterface.
 	 * Meaning that data backends without support for triple context
-	 * might just ignore any contextual parameters handed to them.
+	 * can just ignore any contextual parameters handed to them.
 	 */
 	class DataBackend : public DataSourceHandler {
 	public:
