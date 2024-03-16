@@ -159,12 +159,14 @@ std::shared_ptr<Predicate> FramedTriplePattern::getRDFPredicate(const FramedTrip
 	return std::make_shared<Predicate>("triple", std::vector<TermPtr>({s, p, o}));
 }
 
-std::vector<VariablePtr> FramedTriplePattern::getVariables() const {
+std::vector<VariablePtr> FramedTriplePattern::getVariables(bool includeObjectVar) const {
 	std::vector<VariablePtr> vars;
+	TermPtr o_var = (includeObjectVar ? objectVariable_ : nullptr);
 	for (auto &t: {
 			subjectTerm_,
 			propertyTerm_,
 			objectTerm_,
+			o_var,
 			*graphTerm_,
 			*perspectiveTerm_,
 			*beginTerm_,
@@ -178,7 +180,7 @@ std::vector<VariablePtr> FramedTriplePattern::getVariables() const {
 }
 
 uint32_t FramedTriplePattern::numVariables() const {
-	return getVariables().size();
+	return getVariables(false).size();
 }
 
 bool
@@ -216,10 +218,13 @@ FramedTriplePattern::instantiateInto(FramedTriple &triple, const std::shared_ptr
 		hasMissingSPO = true;
 	}
 	// handle object
-	if (objectTerm_) {
-		auto &o = objectTerm_->isVariable() ?
+	if (objectTerm_ || objectVariable_) {
+		auto &o = (objectTerm_ && objectTerm_->isVariable()) ?
 				  bindings->get(std::static_pointer_cast<Variable>(objectTerm_)->name()) :
+				  (objectVariable_ && objectVariable_->isVariable()) ?
+				  bindings->get(std::static_pointer_cast<Variable>(objectVariable_)->name()) :
 				  objectTerm_;
+
 		if (!o) {
 			hasMissingSPO = true;
 		} else if (o->isNumeric()) {
@@ -344,6 +349,13 @@ namespace knowrob {
 
 		auto object = applyBindings(pat->objectTerm(), bindings);
 		if (object != pat->objectTerm()) hasChanges = true;
+		else if(pat->objectVariable()) {
+			auto actualObject = applyBindings(pat->objectVariable(), bindings);
+			if (actualObject && actualObject != pat->objectTerm()) {
+				object = actualObject;
+				hasChanges = true;
+			}
+		}
 
 		auto graph = pat->graphTerm() ? applyBindings(*pat->graphTerm(), bindings) : nullptr;
 		if (graph && graph != *pat->graphTerm()) hasChanges = true;

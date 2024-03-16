@@ -10,6 +10,7 @@
 #include "knowrob/db/BackendTransaction.h"
 #include "knowrob/triples/GraphBuiltin.h"
 #include "knowrob/knowrob.h"
+#include "knowrob/reification/model.h"
 
 using namespace knowrob;
 
@@ -93,11 +94,12 @@ bool BackendInterface::mergeInsert(const QueryableBackendPtr &backend, const Fra
 	// Construct a merged triple
 	FramedTripleView mergedTriple(triple);
 	// TODO: copy of original triples can be avoided by switching to FramedTriplePtr and taking over ownership in the loop.
+	// TODO: query for individual name of reified triple and hand it to remove
 	std::vector<FramedTriplePtr> overlappingTriples;
-	match(backend, *pat, [&](const FramedTriple &triple) {
-		if (mergedTriple.mergeFrame(triple)) {
+	match(backend, *pat, [&](const FramedTriple &matchedTriple) {
+		if (mergedTriple.mergeFrame(matchedTriple)) {
 			auto &x = overlappingTriples.emplace_back();
-			x.ptr = new FramedTripleCopy(triple);
+			x.ptr = new FramedTripleCopy(matchedTriple);
 			x.owned = true;
 		}
 	});
@@ -205,6 +207,33 @@ void BackendInterface::batch(const QueryableBackendPtr &backend, const semweb::T
 	}
 }
 
+static void setReifiedVariables( // NOLINT(misc-no-recursion)
+		const std::shared_ptr<GraphTerm> &t,
+		const std::map<std::string_view, VariablePtr> &variables) {
+	switch (t->termType()) {
+		case knowrob::GraphTermType::Pattern: {
+			auto &pattern = std::static_pointer_cast<GraphPattern>(t)->value();
+			if (!pattern->propertyTerm() || !pattern->propertyTerm()->isAtomic()) break;
+			auto atomic = std::static_pointer_cast<Atomic>(pattern->propertyTerm());
+			auto needle = variables.find(atomic->stringForm());
+			if (needle != variables.end()) {
+				pattern->setObjectVariable(needle->second);
+			}
+			break;
+		}
+		case knowrob::GraphTermType::Union:
+		case knowrob::GraphTermType::Sequence: {
+			auto connective = std::static_pointer_cast<GraphConnective>(t);
+			for (auto &term : connective->terms()) {
+				setReifiedVariables(term, variables);
+			}
+			break;
+		}
+		case knowrob::GraphTermType::Builtin:
+			break;
+	};
+}
+
 void BackendInterface::match(const QueryableBackendPtr &backend, const FramedTriplePattern &q,
 							 const semweb::TripleVisitor &visitor) const {
 	static auto ctx = std::make_shared<QueryContext>();
@@ -216,10 +245,60 @@ void BackendInterface::match(const QueryableBackendPtr &backend, const FramedTri
 			backend->match(q, visitor);
 		}
 		if (flags & IncludeReified) {
-			auto reified = std::make_shared<ReifiedQuery>(q, vocabulary());
+			static auto v_o = std::make_shared<Variable>("o");
+			static auto v_begin = std::make_shared<Variable>("begin");
+			static auto v_end = std::make_shared<Variable>("end");
+			static auto v_confidence = std::make_shared<Variable>("confidence");
+			static auto v_uncertain = std::make_shared<Variable>("uncertain");
+			static auto v_occasional = std::make_shared<Variable>("occasional");
+
+			auto reified = std::make_shared<ReifiedQuery>(q, vocabulary(), true);
+			// insert variables for contextual parameters
+			setReifiedVariables(reified->term(), {
+					{ reification::hasBeginTime->stringForm(), v_begin },
+					{ reification::hasEndTime->stringForm(), v_end },
+					{ reification::hasConfidence->stringForm(), v_confidence },
+					{ reification::isUncertain->stringForm(), v_uncertain },
+					{ reification::isOccasional->stringForm(), v_occasional }
+			});
+
 			backend->query(reified, [&](const BindingsPtr &bindings) {
 				FramedTripleView triple;
 				if (q.instantiateInto(triple, bindings)) {
+					if (bindings->contains(v_begin->name())) {
+						auto &t_begin = bindings->get(v_begin->name());
+						if (t_begin->isNumeric()) {
+							triple.setBegin(std::static_pointer_cast<Numeric>(t_begin)->asDouble());
+						}
+					}
+					if (bindings->contains(v_end->name())) {
+						auto &t_end = bindings->get(v_end->name());
+						if (t_end->isNumeric()) {
+							triple.setEnd(std::static_pointer_cast<Numeric>(t_end)->asDouble());
+						}
+					}
+					if (bindings->contains(v_confidence->name())) {
+						auto &t_confidence = bindings->get(v_confidence->name());
+						if (t_confidence->isNumeric()) {
+							triple.setConfidence(std::static_pointer_cast<Numeric>(t_confidence)->asDouble());
+						}
+					}
+					if (bindings->contains(v_uncertain->name())) {
+						auto &t_uncertain = bindings->get(v_uncertain->name());
+						if (t_uncertain->isNumeric()) {
+							triple.setIsUncertain(std::static_pointer_cast<Boolean>(t_uncertain)->asBoolean());
+						}
+					} else {
+						triple.setIsUncertain(false);
+					}
+					if (bindings->contains(v_occasional->name())) {
+						auto &t_occasional = bindings->get(v_occasional->name());
+						if (t_occasional->isNumeric()) {
+							triple.setIsOccasional(std::static_pointer_cast<Boolean>(t_occasional)->asBoolean());
+						}
+					} else {
+						triple.setIsOccasional(false);
+					}
 					visitor(triple);
 				}
 			});

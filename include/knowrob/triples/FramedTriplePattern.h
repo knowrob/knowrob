@@ -80,6 +80,17 @@ namespace knowrob {
 		auto &objectTerm() const { return objectTerm_; }
 
 		/**
+		 * @return an additional object variable to bind the actual value of the object term.
+		 */
+		auto &objectVariable() const { return objectVariable_; }
+
+		/**
+		 * Set the object variable of this expression.
+		 * @param objectVariable the object variable.
+		 */
+		void setObjectVariable(const VariablePtr &objectVariable) { objectVariable_ = objectVariable; }
+
+		/**
 		 * @return the graph term of this expression.
 		 */
 		auto &graphTerm() const { return graphTerm_; }
@@ -192,7 +203,7 @@ namespace knowrob {
 		/**
 		 * @return the variables in this expression.
 		 */
-		std::vector<VariablePtr> getVariables() const;
+		std::vector<VariablePtr> getVariables(bool includeObjectVar = true) const;
 
 		/**
 		 * Map the instantiation of this expression into a triple.
@@ -207,6 +218,7 @@ namespace knowrob {
 		TermPtr subjectTerm_;
 		TermPtr propertyTerm_;
 		TermPtr objectTerm_;
+		VariablePtr objectVariable_;
 		OperatorType objectOperator_;
 		bool isOptional_;
 

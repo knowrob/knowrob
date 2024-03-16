@@ -292,19 +292,33 @@ void SPARQLQuery::where_with_filter(std::ostream &os, const FramedTriplePattern 
 }
 
 bool SPARQLQuery::where(std::ostream &os, const FramedTriplePattern &triplePattern) {
-	static const std::string adhocVarPrefix = "v_adhoc";
 
 	where(os, triplePattern.subjectTerm());
 	where(os, triplePattern.propertyTerm());
 	if (triplePattern.objectTerm()->isVariable() ||
 		triplePattern.objectOperator() == FramedTriplePattern::OperatorType::EQ) {
-		where(os, triplePattern.objectTerm());
-		os << ". ";
-		return false;
+		if (!triplePattern.objectTerm()->isVariable() && triplePattern.objectVariable()) {
+			where(os, triplePattern.objectVariable());
+			os << ". ";
+			lastVar_ = triplePattern.objectVariable()->name();
+			return true;
+		} else {
+			where(os, triplePattern.objectTerm());
+			os << ". ";
+			return false;
+		}
+	} else if (triplePattern.objectVariable()) {
+		// value, operator and variable are provided in the pattern
+		lastVar_ = triplePattern.objectVariable()->name();
+		os << "?" << lastVar_ << " . ";
+		return true;
 	} else {
 		// we need to introduce a temporary variable to handle value expressions like `<(5)` such
 		// that they can be filtered after the match.
-		lastVar_ = adhocVarPrefix + std::to_string(varCounter_++);
+		static const std::string adhocVarPrefix = "v_adhoc";
+		std::stringstream varName_os;
+		varName_os << adhocVarPrefix << (varCounter_++);
+		lastVar_ = varName_os.str();
 		os << "?" << lastVar_ << " . ";
 		return true;
 	}

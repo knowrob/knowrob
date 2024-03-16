@@ -46,6 +46,8 @@ bool Transaction::commit(const semweb::TripleContainerPtr &triples) {
 		auto &backend = definedBackend->backend();
 		const semweb::TripleContainerPtr *backendTriples;
 		if (!backend->supports(BackendFeature::TripleContext)) {
+			// FIXME: there is a problem with reification and removal, individual name CANNOT be generated.
+			//        so need to allow that an additional mapping from triple to reified individual is provided.
 			if (!reified) reified = std::make_shared<ReificationContainer>(triples, vocabulary_);
 			backendTriples = &reified;
 		} else {

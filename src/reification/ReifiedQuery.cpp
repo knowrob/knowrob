@@ -13,16 +13,18 @@
 
 using namespace knowrob;
 
-ReifiedQuery::ReifiedQuery(const std::shared_ptr<GraphQuery> &nonReified, semweb::VocabularyPtr vocabulary)
+ReifiedQuery::ReifiedQuery(const std::shared_ptr<GraphQuery> &nonReified, semweb::VocabularyPtr vocabulary, bool withFullFrame)
 		: GraphQuery(nonReified->ctx()),
 		  vocabulary_(std::move(vocabulary)),
+		  withFullFrame_(withFullFrame),
 		  varCounter_(0) {
 	setNonReified(nonReified->term());
 }
 
-ReifiedQuery::ReifiedQuery(const FramedTriplePattern &nonReified, semweb::VocabularyPtr vocabulary)
+ReifiedQuery::ReifiedQuery(const FramedTriplePattern &nonReified, semweb::VocabularyPtr vocabulary, bool withFullFrame)
 		: GraphQuery(),
 		  vocabulary_(std::move(vocabulary)),
+		  withFullFrame_(withFullFrame),
 		  varCounter_(0) {
 	term_ = reifiedPatternSequence(nonReified);
 }
@@ -107,8 +109,6 @@ std::shared_ptr<FramedTriplePattern> addPattern(
 }
 
 std::shared_ptr<GraphTerm> ReifiedQuery::reifiedPatternSequence(const FramedTriplePattern &nonReified) {
-	static auto b_true = Numeric::trueAtom();
-	static auto b_false = Numeric::falseAtom();
 	static auto fullyConfident = std::make_shared<Double>(1.0);
 	static auto egoPerspective = Perspective::getEgoPerspective()->atom();
 	static auto b_var = std::make_shared<Variable>("_reified_b");
@@ -146,14 +146,17 @@ std::shared_ptr<GraphTerm> ReifiedQuery::reifiedPatternSequence(const FramedTrip
 	// create queries for optional properties
 	bool includeOnlyCertain;
 	if (nonReified.isUncertainTerm().has_grounding() && nonReified.isUncertainTerm().grounded()->asBoolean()) {
-		addPattern(seq, name, reification::isUncertain, b_true, g);
+		if (withFullFrame_) {
+			auto x = addPattern(seq, name, reification::isUncertain, Numeric::trueAtom(), g);
+			x->setIsOptional(true);
+		}
 		includeOnlyCertain = false;
 	} else if (nonReified.isUncertainTerm().has_variable()) {
 		auto x = addPattern(seq, name, reification::isUncertain, nonReified.isUncertainTerm().variable(), g);
 		x->setIsOptional(true);
 		includeOnlyCertain = false;
 	} else {
-		auto x = addPattern(seq, name, reification::isUncertain, b_false, g);
+		auto x = addPattern(seq, name, reification::isUncertain, Numeric::falseAtom(), g);
 		x->setIsOptional(true);
 		includeOnlyCertain = true;
 	}
@@ -188,14 +191,17 @@ std::shared_ptr<GraphTerm> ReifiedQuery::reifiedPatternSequence(const FramedTrip
 
 	bool includeOccasional;
 	if (nonReified.isOccasionalTerm().has_grounding() && nonReified.isOccasionalTerm().grounded()->asBoolean()) {
-		addPattern(seq, name, reification::isOccasional, b_true, g);
+		if (withFullFrame_) {
+			auto x = addPattern(seq, name, reification::isOccasional, Numeric::trueAtom(), g);
+			x->setIsOptional(true);
+		}
 		includeOccasional = true;
 	} else if (nonReified.isOccasionalTerm().has_variable()) {
 		auto x = addPattern(seq, name, reification::isOccasional, nonReified.isOccasionalTerm().variable(), g);
 		x->setIsOptional(true);
 		includeOccasional = true;
 	} else {
-		auto x = addPattern(seq, name, reification::isOccasional, b_false, g);
+		auto x = addPattern(seq, name, reification::isOccasional, Numeric::falseAtom(), g);
 		x->setIsOptional(true);
 		includeOccasional = false;
 	}

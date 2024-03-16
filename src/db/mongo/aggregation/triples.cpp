@@ -92,10 +92,18 @@ static void setTripleVariables(
 		Pipeline &pipeline,
 		const aggregation::TripleLookupData &lookupData) {
 	std::list<std::pair<const char *, Variable *>> varList;
+
+	// the object can be specified as a triple (Value, Operator, ActualValue) such that
+	// a value constraint is given plus a variable where the actual value of the triple should be stored.
+	TermPtr objectVar = lookupData.expr->objectTerm();
+	if (objectVar && !objectVar->isVariable() && lookupData.expr->objectVariable()) {
+		objectVar = lookupData.expr->objectVariable();
+	}
+
 	for (auto &it: {
 			std::make_pair("$next.s", lookupData.expr->subjectTerm()),
 			std::make_pair("$next.p", lookupData.expr->propertyTerm()),
-			std::make_pair("$next.o", lookupData.expr->objectTerm()),
+			std::make_pair("$next.o", objectVar),
 			std::make_pair("$next.graph", lookupData.expr->graphTerm().get()),
 			std::make_pair("$next.confidence", lookupData.expr->confidenceTerm().get()),
 			std::make_pair("$next.agent", lookupData.expr->perspectiveTerm().get()),

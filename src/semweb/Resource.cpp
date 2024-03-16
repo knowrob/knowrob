@@ -31,7 +31,6 @@ Resource::Resource(std::string_view iri) {
 static inline void write_unique(std::ostream &os) {
 	static boost::uuids::random_generator generator;
 	std::hash<std::string> str_hash;
-	os << ' ';
 	os << std::setfill('0') << std::setw(8) << std::hex <<
 	   str_hash(to_string(generator()));
 }
@@ -42,6 +41,7 @@ knowrob::IRIAtomPtr Resource::unique_iri(std::string_view ns, std::string_view n
 	if (!ns.empty() && ns.back() != '#') {
 		ss << "#";
 	}
+	ss << name << '_';
 	write_unique(ss);
 	return IRIAtom::Tabled(ss.str());
 }
@@ -49,6 +49,7 @@ knowrob::IRIAtomPtr Resource::unique_iri(std::string_view ns, std::string_view n
 knowrob::IRIAtomPtr Resource::unique_iri(std::string_view type_iri) {
 	std::stringstream ss;
 	ss << type_iri;
+	ss << '_';
 	write_unique(ss);
 	return IRIAtom::Tabled(ss.str());
 }
