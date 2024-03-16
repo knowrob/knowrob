@@ -3,18 +3,32 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+#include <utility>
+
 #include "knowrob/reification/ReificationContainer.h"
 #include "knowrob/reification/ReifiedTriple.h"
 
 using namespace knowrob;
 
-ReificationContainer::ReificationContainer(semweb::TripleContainerPtr originalTriples, semweb::VocabularyPtr vocabulary)
-		: originalTriples_(std::move(originalTriples)), vocabulary_(std::move(vocabulary)) {
+ReificationContainer::ReificationContainer(semweb::TripleContainerPtr originalTriples,
+										   semweb::VocabularyPtr vocabulary,
+										   ReifiedNames reifiedNames)
+		: originalTriples_(std::move(originalTriples)),
+		  vocabulary_(std::move(vocabulary)),
+		  reifiedNames_(std::move(reifiedNames)) {
 }
 
 semweb::TripleContainer::ConstGenerator
-getReifiedGenerator(const FramedTriple &triple, const semweb::VocabularyPtr &vocabulary) {
-	auto reified = std::make_shared<ReifiedTriple>(triple, vocabulary);
+getReifiedGenerator(const FramedTriple &triple,
+					const semweb::VocabularyPtr &vocabulary,
+					const ReifiedNames &reifiedNames,
+					uint32_t tripleIndex) {
+	std::shared_ptr<ReifiedTriple> reified;
+	if (reifiedNames && !reifiedNames->empty()) {
+		reified = std::make_shared<ReifiedTriple>(triple, vocabulary, (*reifiedNames)[tripleIndex - 1]);
+	} else {
+		reified = std::make_shared<ReifiedTriple>(triple, vocabulary);
+	}
 	return [reified, it = reified->begin()]() mutable -> const FramedTriplePtr * {
 		if (it == reified->end()) return nullptr;
 		return &*it++;
@@ -22,20 +36,26 @@ getReifiedGenerator(const FramedTriple &triple, const semweb::VocabularyPtr &voc
 }
 
 struct IterationData {
-	IterationData(semweb::VocabularyPtr vocabulary, const semweb::TripleContainerPtr &originalTriples)
+	IterationData(semweb::VocabularyPtr vocabulary, const semweb::TripleContainerPtr &originalTriples,
+				  ReifiedNames reifiedNames)
 			: vocabulary(std::move(vocabulary)),
 			  it(originalTriples->begin()),
 			  end(originalTriples->end()),
-			  reifiedGen(nullptr) {
+			  reifiedNames(std::move(reifiedNames)),
+			  reifiedGen(nullptr),
+			  tripleIndex(0) {
 	}
+
 	semweb::VocabularyPtr vocabulary;
 	semweb::TripleContainer::ConstGenerator reifiedGen;
 	semweb::TripleContainer::iterator it;
 	semweb::TripleContainer::iterator end;
+	ReifiedNames reifiedNames;
+	uint32_t tripleIndex;
 };
 
 semweb::TripleContainer::ConstGenerator ReificationContainer::cgenerator() const {
-	auto data = std::make_shared<IterationData>(vocabulary_, originalTriples_);
+	auto data = std::make_shared<IterationData>(vocabulary_, originalTriples_, reifiedNames_);
 
 	return [data]() mutable -> const FramedTriplePtr * {
 		if (data->reifiedGen) {
@@ -46,9 +66,10 @@ semweb::TripleContainer::ConstGenerator ReificationContainer::cgenerator() const
 		}
 		// else process the next triple from the original container
 		if (data->it == data->end) return nullptr;
+		data->tripleIndex += 1;
 		const FramedTriplePtr *next = &*data->it++;
 		if (ReifiedTriple::isReifiable(*next->ptr)) {
-			data->reifiedGen = getReifiedGenerator(*next->ptr, data->vocabulary);
+			data->reifiedGen = getReifiedGenerator(*next->ptr, data->vocabulary, data->reifiedNames, data->tripleIndex);
 			return data->reifiedGen();
 		} else {
 			return next;

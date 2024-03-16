@@ -1,6 +1,7 @@
-//
-// Created by danielb on 23.11.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #include <utility>
 
@@ -47,7 +48,7 @@ bool LiteralNegationStage::succeeds(const AnswerYesPtr &answer) {
 	// of the queries produced a result.
 	std::vector<TokenBufferPtr> results;
 
-	auto kg = kb_->getBackendForQuery(negatedLiterals_, ctx_);
+	auto kg = kb_->getBackendForQuery();
 
 	for (auto &lit: negatedLiterals_) {
 		auto lit1 = applyBindings(lit, *answer->substitution());

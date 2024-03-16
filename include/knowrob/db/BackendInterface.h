@@ -50,15 +50,17 @@ namespace knowrob {
 
 		/**
 		 * Creates a new transaction.
+		 * @param queryable a backend used to perform any queries needed to complete the transaction.
 		 * @param type the type of the transaction.
 		 * @param mode determines how backends are selected for the transaction.
 		 * @param backends the backends to include or exclude from the transaction.
 		 * @return the transaction.
 		 */
 		std::shared_ptr<transaction::Transaction> createTransaction(
+				const QueryableBackendPtr &queryable,
 				TransactionType type,
 				BackendSelection mode = Excluding,
-				const std::vector<std::shared_ptr<DefinedBackend>> &backends = {});
+				const std::vector<std::shared_ptr<DefinedBackend>> &transactionBackends = {});
 
 		/**
 		 * Removes all triples with a given origin from all backends.
@@ -89,14 +91,14 @@ namespace knowrob {
 		 * @param backend the backend to query.
 		 * @param visitor the visitor to execute.
 		 */
-		void foreach(const QueryableBackendPtr &backend, const semweb::TripleVisitor &visitor) const;
+		static void foreach(const QueryableBackendPtr &backend, const semweb::TripleVisitor &visitor);
 
 		/**
 		 * Executes a visitor on all triples in the extensional database.
 		 * @param backend the backend to query.
 		 * @param callback the visitor to execute.
 		 */
-		void batch(const QueryableBackendPtr &backend, const semweb::TripleHandler &callback) const;
+		static void batch(const QueryableBackendPtr &backend, const semweb::TripleHandler &callback);
 
 		/**
 		 * Evaluates a query on the extensional database and executes a visitor on the results

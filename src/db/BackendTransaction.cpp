@@ -9,22 +9,71 @@
 #include "knowrob/semweb/rdfs.h"
 #include "knowrob/semweb/owl.h"
 #include "knowrob/semweb/rdf.h"
+#include "knowrob/reification/ReifiedQuery.h"
 
 using namespace knowrob;
 using namespace knowrob::transaction;
 
+static void setReificationVariable( // NOLINT(misc-no-recursion)
+		const std::shared_ptr<GraphTerm> &t,
+		const VariablePtr &variable) {
+	switch (t->termType()) {
+		case knowrob::GraphTermType::Pattern: {
+			auto &pattern = std::static_pointer_cast<GraphPattern>(t)->value();
+			pattern->setSubjectTerm(variable);
+			break;
+		}
+		case knowrob::GraphTermType::Union:
+		case knowrob::GraphTermType::Sequence: {
+			auto connective = std::static_pointer_cast<GraphConnective>(t);
+			for (auto &term: connective->terms()) {
+				setReificationVariable(term, variable);
+			}
+			break;
+		}
+		case knowrob::GraphTermType::Builtin:
+			break;
+	};
+}
+
+IRIAtomPtr Transaction::queryReifiedName(const FramedTriple &triple) {
+	static auto v_reification = std::make_shared<Variable>("reification");
+	auto pat = std::make_shared<FramedTriplePattern>(triple);
+	auto query = std::make_shared<GraphPathQuery>(pat);
+	auto reified = std::make_shared<ReifiedQuery>(query, vocabulary_);
+	setReificationVariable(reified->term(), v_reification);
+
+	IRIAtomPtr reifiedName;
+	queryable_->query(reified, [&](const BindingsPtr &bindings) {
+		auto t_reifiedName = bindings->get(v_reification->name());
+		if (t_reifiedName && t_reifiedName->isIRI()) {
+			reifiedName = IRIAtom::Tabled(std::static_pointer_cast<IRIAtom>(t_reifiedName)->stringForm());
+		}
+	});
+	return reifiedName;
+}
+
 bool Transaction::commit(const FramedTriple &triple) {
+	static auto v_reification = std::make_shared<Variable>("reification");
+	if (isRemoval_ && ReifiedTriple::isReifiable(triple)) {
+		return commit(triple, queryReifiedName(triple));
+	} else {
+		return commit(triple, nullptr);
+	}
+}
+
+bool Transaction::commit(const FramedTriple &triple, const IRIAtomPtr &reifiedName) {
 	ReifiedTriplePtr reification;
 	bool success = true;
 	for (auto &definedBackend: backends_) {
 		auto &backend = definedBackend->backend();
 		if (!backend->supports(BackendFeature::TripleContext) && ReifiedTriple::isReifiable(triple)) {
-			if (!reification) reification = std::make_shared<ReifiedTriple>(triple, vocabulary_);
+			if (!reification) reification = std::make_shared<ReifiedTriple>(triple, vocabulary_, reifiedName);
 			for (auto &reified: *reification) {
-				success = success && commit(*reified.ptr, backend);
+				success = success && doCommit(*reified.ptr, backend);
 			}
 		} else {
-			success = commit(triple, backend);
+			success = doCommit(triple, backend);
 		}
 		if (!success) break;
 	}
@@ -35,6 +84,25 @@ bool Transaction::commit(const FramedTriple &triple) {
 }
 
 bool Transaction::commit(const semweb::TripleContainerPtr &triples) {
+	static auto v_reification = std::make_shared<Variable>("reification");
+	if (isRemoval_) {
+		// TODO: add size method to container and reserve space for names instead of resizing in the loop below
+		// TODO: query multiple names at once, should be faster.
+		ReifiedNames reifiedNames = std::make_shared<std::vector<IRIAtomPtr>>();
+		for (auto &triple: *triples) {
+			if (ReifiedTriple::isReifiable(*triple)) {
+				reifiedNames->push_back(queryReifiedName(*triple));
+			} else {
+				reifiedNames->push_back(nullptr);
+			}
+		}
+		return commit(triples, reifiedNames);
+	} else {
+		return commit(triples, {});
+	}
+}
+
+bool Transaction::commit(const semweb::TripleContainerPtr &triples, const ReifiedNames &reifiedNames) {
 	semweb::TripleContainerPtr reified;
 	std::vector<std::shared_ptr<ThreadPool::Runner>> transactions;
 	bool success = true;
@@ -46,15 +114,13 @@ bool Transaction::commit(const semweb::TripleContainerPtr &triples) {
 		auto &backend = definedBackend->backend();
 		const semweb::TripleContainerPtr *backendTriples;
 		if (!backend->supports(BackendFeature::TripleContext)) {
-			// FIXME: there is a problem with reification and removal, individual name CANNOT be generated.
-			//        so need to allow that an additional mapping from triple to reified individual is provided.
-			if (!reified) reified = std::make_shared<ReificationContainer>(triples, vocabulary_);
+			if (!reified) reified = std::make_shared<ReificationContainer>(triples, vocabulary_, reifiedNames);
 			backendTriples = &reified;
 		} else {
 			backendTriples = &triples;
 		}
 		auto worker = std::make_shared<ThreadPool::LambdaRunner>(
-				[&](const std::function<bool()> &) { success = success && commit(*backendTriples, backend); });
+				[&](const std::function<bool()> &) { success = success && doCommit(*backendTriples, backend); });
 		transactions.push_back(worker);
 
 		DefaultThreadPool()->pushWork(worker,
@@ -84,19 +150,19 @@ std::shared_ptr<ThreadPool::Runner> Transaction::createTripleWorker(
 	return perTripleWorker;
 }
 
-bool Insert::commit(const FramedTriple &triple, const DataBackendPtr &backend) {
+bool Insert::doCommit(const FramedTriple &triple, const DataBackendPtr &backend) {
 	return backend->insertOne(triple);
 }
 
-bool Remove::commit(const FramedTriple &triple, const DataBackendPtr &backend) {
+bool Remove::doCommit(const FramedTriple &triple, const DataBackendPtr &backend) {
 	return backend->removeOne(triple);
 }
 
-bool Insert::commit(const semweb::TripleContainerPtr &triples, const knowrob::DataBackendPtr &backend) {
+bool Insert::doCommit(const semweb::TripleContainerPtr &triples, const knowrob::DataBackendPtr &backend) {
 	return backend->insertAll(triples);
 }
 
-bool Remove::commit(const semweb::TripleContainerPtr &triples, const knowrob::DataBackendPtr &backend) {
+bool Remove::doCommit(const semweb::TripleContainerPtr &triples, const knowrob::DataBackendPtr &backend) {
 	return backend->removeAll(triples);
 }
 

@@ -23,7 +23,8 @@ namespace knowrob {
 		 * @param triple the triple to reify.
 		 * @param vocabulary the vocabulary to use for reification.
 		 */
-		explicit ReifiedTriple(const FramedTriple &triple, const semweb::VocabularyPtr &vocabulary);
+		explicit ReifiedTriple(const FramedTriple &triple, const semweb::VocabularyPtr &vocabulary,
+							   const IRIAtomPtr &reifiedName = nullptr);
 
 		/**
 		 * @return begin iterator over the reified triples.
@@ -67,7 +68,7 @@ namespace knowrob {
 		knowrob::IRIAtomPtr name_;
 		std::string generatedString_;
 
-		FramedTriple*
+		FramedTriple *
 		create(std::string_view subject, const AtomPtr &property, const std::optional<std::string_view> &g);
 	};
 

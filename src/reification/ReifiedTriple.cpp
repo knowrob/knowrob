@@ -10,15 +10,13 @@
 
 using namespace knowrob;
 
-ReifiedTriple::ReifiedTriple(const FramedTriple &triple, const semweb::VocabularyPtr &vocabulary) {
+ReifiedTriple::ReifiedTriple(const FramedTriple &triple, const semweb::VocabularyPtr &vocabulary,
+							 const IRIAtomPtr &reifiedName) {
 	auto property = vocabulary->defineProperty(triple.predicate());
 	// map the property to a Relation concept
 	auto relationType = property->reification();
 	// generate a unique individual name
-	// FIXME: this is not ok if triple is reified for remove! because we need to match
-	//        the subject string in the DB for removal. So better to allow the user to
-	//        provide the name.
-	name_ = semweb::Resource::unique_iri(
+	name_ = reifiedName ? reifiedName : semweb::Resource::unique_iri(
 			reification::individualPrefix->stringForm(),
 			semweb::Resource::iri_name(relationType->iri()));
 	const auto &name = name_->stringForm();

@@ -15,14 +15,15 @@
 using namespace knowrob;
 
 std::shared_ptr<transaction::Transaction> BackendInterface::createTransaction(
+		const QueryableBackendPtr &queryable,
 		TransactionType transactionType,
 		BackendSelection transactionTargets,
 		const std::vector<std::shared_ptr<DefinedBackend>> &backends) {
 	std::shared_ptr<transaction::Transaction> transaction;
 	if (transactionType == Insert) {
-		transaction = std::make_shared<transaction::Insert>(vocabulary(), importHierarchy());
+		transaction = std::make_shared<transaction::Insert>(queryable, vocabulary(), importHierarchy());
 	} else {
-		transaction = std::make_shared<transaction::Remove>(vocabulary(), importHierarchy());
+		transaction = std::make_shared<transaction::Remove>(queryable, vocabulary(), importHierarchy());
 	}
 	if (transactionTargets == Including) {
 		for (auto &backend: backends) {
@@ -94,7 +95,8 @@ bool BackendInterface::mergeInsert(const QueryableBackendPtr &backend, const Fra
 	// Construct a merged triple
 	FramedTripleView mergedTriple(triple);
 	// TODO: copy of original triples can be avoided by switching to FramedTriplePtr and taking over ownership in the loop.
-	// TODO: query for individual name of reified triple and hand it to remove
+	// TODO: query for individual name of reified triple and hand it to remove.
+	//       can be done by using query of original backend, or if the query can be changed to return the id
 	std::vector<FramedTriplePtr> overlappingTriples;
 	match(backend, *pat, [&](const FramedTriple &matchedTriple) {
 		if (mergedTriple.mergeFrame(matchedTriple)) {
@@ -106,10 +108,10 @@ bool BackendInterface::mergeInsert(const QueryableBackendPtr &backend, const Fra
 	if (!overlappingTriples.empty()) {
 		// remove overlapping triples if any
 		auto container = std::make_shared<semweb::ProxyTripleContainer>(&overlappingTriples);
-		createTransaction(Remove)->commit(container);
+		createTransaction(backend, Remove)->commit(container);
 	}
 	// Insert the triple after merging with overlapping existing ones
-	createTransaction(Insert)->commit(mergedTriple);
+	createTransaction(backend, Insert)->commit(mergedTriple);
 	return true;
 }
 
@@ -129,7 +131,7 @@ bool BackendInterface::contains(const QueryableBackendPtr &backend, const Framed
 	return containsAll;
 }
 
-void BackendInterface::foreach(const QueryableBackendPtr &backend, const semweb::TripleVisitor &visitor) const {
+void BackendInterface::foreach(const QueryableBackendPtr &backend, const semweb::TripleVisitor &visitor) {
 	if (backend->supports(BackendFeature::TripleContext)) {
 		backend->foreach(visitor);
 		return;
@@ -157,7 +159,7 @@ void BackendInterface::foreach(const QueryableBackendPtr &backend, const semweb:
 	}
 }
 
-void BackendInterface::batch(const QueryableBackendPtr &backend, const semweb::TripleHandler &callback) const {
+void BackendInterface::batch(const QueryableBackendPtr &backend, const semweb::TripleHandler &callback) {
 	if (backend->supports(BackendFeature::TripleContext)) {
 		backend->batch(callback);
 		return;
@@ -224,7 +226,7 @@ static void setReifiedVariables( // NOLINT(misc-no-recursion)
 		case knowrob::GraphTermType::Union:
 		case knowrob::GraphTermType::Sequence: {
 			auto connective = std::static_pointer_cast<GraphConnective>(t);
-			for (auto &term : connective->terms()) {
+			for (auto &term: connective->terms()) {
 				setReifiedVariables(term, variables);
 			}
 			break;
@@ -255,11 +257,11 @@ void BackendInterface::match(const QueryableBackendPtr &backend, const FramedTri
 			auto reified = std::make_shared<ReifiedQuery>(q, vocabulary(), true);
 			// insert variables for contextual parameters
 			setReifiedVariables(reified->term(), {
-					{ reification::hasBeginTime->stringForm(), v_begin },
-					{ reification::hasEndTime->stringForm(), v_end },
-					{ reification::hasConfidence->stringForm(), v_confidence },
-					{ reification::isUncertain->stringForm(), v_uncertain },
-					{ reification::isOccasional->stringForm(), v_occasional }
+					{reification::hasBeginTime->stringForm(),  v_begin},
+					{reification::hasEndTime->stringForm(),    v_end},
+					{reification::hasConfidence->stringForm(), v_confidence},
+					{reification::isUncertain->stringForm(),   v_uncertain},
+					{reification::isOccasional->stringForm(),  v_occasional}
 			});
 
 			backend->query(reified, [&](const BindingsPtr &bindings) {

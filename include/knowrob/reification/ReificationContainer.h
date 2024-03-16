@@ -12,12 +12,16 @@
 #include "knowrob/semweb/Vocabulary.h"
 
 namespace knowrob {
+	using ReifiedNames = std::shared_ptr<std::vector<IRIAtomPtr>>;
+
 	/**
 	 * A container that reifies triples of an input container.
 	 */
 	class ReificationContainer : public semweb::TripleContainer {
 	public:
-		explicit ReificationContainer(semweb::TripleContainerPtr originalTriples, semweb::VocabularyPtr vocabulary);
+		explicit ReificationContainer(semweb::TripleContainerPtr originalTriples,
+									  semweb::VocabularyPtr vocabulary,
+									  ReifiedNames reifiedNames);
 
 		// Override TripleContainer
 		ConstGenerator cgenerator() const override;
@@ -25,6 +29,7 @@ namespace knowrob {
 	protected:
 		semweb::TripleContainerPtr originalTriples_;
 		semweb::VocabularyPtr vocabulary_;
+		ReifiedNames reifiedNames_;
 	};
 } // knowrob
 

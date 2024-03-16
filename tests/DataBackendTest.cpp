@@ -77,7 +77,7 @@ public:
 	}
 
 	static bool insertOne(const FramedTriple &triple) {
-		return backend_->createTransaction(BackendInterface::Insert)->commit(triple);
+		return backend_->createTransaction(queryable_,BackendInterface::Insert)->commit(triple);
 	}
 
 	static bool mergeOne(const FramedTriple &triple) {

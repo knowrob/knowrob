@@ -59,12 +59,6 @@ namespace knowrob {
 		 */
 		bool loadDataSource(const DataSourcePtr &source);
 
-
-		QueryableBackendPtr getBackendForQuery(const FramedTriplePatternPtr &query, const QueryContextPtr &ctx) const;
-
-		QueryableBackendPtr
-		getBackendForQuery(const std::vector<FramedTriplePatternPtr> &query, const QueryContextPtr &ctx) const;
-
 		/**
 		 * @return the vocabulary of this knowledge base, i.e. all known properties and classes
 		 */
@@ -125,6 +119,8 @@ namespace knowrob {
 		bool removeAllWithOrigin(std::string_view origin);
 
 		auto &edb() const { return edb_; }
+
+		QueryableBackendPtr getBackendForQuery() const;
 
 	protected:
 		std::shared_ptr<BackendInterface> edb_;

@@ -11,6 +11,8 @@
 #include "knowrob/db/DataBackend.h"
 #include "knowrob/triples/TripleContainer.h"
 #include "DefinedBackend.h"
+#include "QueryableBackend.h"
+#include "knowrob/reification/ReificationContainer.h"
 
 namespace knowrob::transaction {
 	/**
@@ -21,9 +23,14 @@ namespace knowrob::transaction {
 	 */
 	class Transaction {
 	public:
-		Transaction(const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-					const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy)
-				: vocabulary_(vocabulary), importHierarchy_(importHierarchy) {}
+		Transaction(const std::shared_ptr<QueryableBackend> queryable,
+					const std::shared_ptr<semweb::Vocabulary> &vocabulary,
+					const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy,
+					bool isRemoval)
+				: queryable_(queryable),
+				  vocabulary_(vocabulary),
+				  importHierarchy_(importHierarchy),
+				  isRemoval_(isRemoval) {}
 
 		/**
 		 * Adds a backend to the transaction.
@@ -39,26 +46,46 @@ namespace knowrob::transaction {
 		bool commit(const FramedTriple &triple);
 
 		/**
+		 * Commits a triple to all backends.
+		 * @param triple the triple to commit.
+		 * @param reifiedName the reified name of the triple.
+		 * @return true if the triple was committed to all backends, false otherwise.
+		 */
+		bool commit(const FramedTriple &triple, const IRIAtomPtr &reifiedName);
+
+		/**
 		 * Commits a set of triples to all backends.
 		 * @param triples the triples to commit.
 		 * @return true if the triples were committed to all backends, false otherwise.
 		 */
 		bool commit(const semweb::TripleContainerPtr &triples);
 
+		/**
+		 * Commits a set of triples to all backends.
+		 * @param triples the triples to commit.
+		 * @param reifiedNames the reified names of the triples.
+		 * @return true if the triples were committed to all backends, false otherwise.
+		 */
+		bool commit(const semweb::TripleContainerPtr &triples, const ReifiedNames &reifiedNames);
+
 	protected:
 		std::shared_ptr<semweb::Vocabulary> vocabulary_;
 		std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
 		std::vector<std::shared_ptr<DefinedBackend>> backends_;
+		std::shared_ptr<QueryableBackend> queryable_;
+		bool isRemoval_;
 
-		virtual bool commit(const FramedTriple &triple, const DataBackendPtr &backend) = 0;
+		virtual bool doCommit(const FramedTriple &triple, const DataBackendPtr &backend) = 0;
 
-		virtual bool commit(const semweb::TripleContainerPtr &triples, const DataBackendPtr &backend) = 0;
+		virtual bool doCommit(const semweb::TripleContainerPtr &triples, const DataBackendPtr &backend) = 0;
 
 		virtual void updateVocabulary(const FramedTriple &triple) = 0;
 
 		static std::shared_ptr<ThreadPool::Runner> createTripleWorker(
 				const semweb::TripleContainerPtr &triples,
 				const std::function<void(const FramedTriplePtr &)> &fn);
+
+		IRIAtomPtr queryReifiedName(const FramedTriple &triple);
 	};
 
 	/**
@@ -66,14 +93,15 @@ namespace knowrob::transaction {
 	 */
 	class Insert : public Transaction {
 	public:
-		Insert(const std::shared_ptr<semweb::Vocabulary> &vocabulary,
+		Insert(const std::shared_ptr<QueryableBackend> queryable,
+			   const std::shared_ptr<semweb::Vocabulary> &vocabulary,
 			   const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy)
-				: Transaction(vocabulary, importHierarchy) {}
+				: Transaction(queryable, vocabulary, importHierarchy, false) {}
 
 	protected:
-		bool commit(const FramedTriple &triple, const DataBackendPtr &backend) override;
+		bool doCommit(const FramedTriple &triple, const DataBackendPtr &backend) override;
 
-		bool commit(const semweb::TripleContainerPtr &triples, const DataBackendPtr &backend) override;
+		bool doCommit(const semweb::TripleContainerPtr &triples, const DataBackendPtr &backend) override;
 
 		void updateVocabulary(const FramedTriple &triple) override;
 	};
@@ -83,14 +111,15 @@ namespace knowrob::transaction {
 	 */
 	class Remove : public Transaction {
 	public:
-		Remove(const std::shared_ptr<semweb::Vocabulary> &vocabulary,
+		Remove(const std::shared_ptr<QueryableBackend> queryable,
+			   const std::shared_ptr<semweb::Vocabulary> &vocabulary,
 			   const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy)
-				: Transaction(vocabulary, importHierarchy) {}
+				: Transaction(queryable, vocabulary, importHierarchy, true) {}
 
 	protected:
-		bool commit(const FramedTriple &triple, const DataBackendPtr &backend) override;
+		bool doCommit(const FramedTriple &triple, const DataBackendPtr &backend) override;
 
-		bool commit(const semweb::TripleContainerPtr &triples, const DataBackendPtr &backend) override;
+		bool doCommit(const semweb::TripleContainerPtr &triples, const DataBackendPtr &backend) override;
 
 		void updateVocabulary(const FramedTriple &triple) override;
 	};

@@ -70,6 +70,12 @@ namespace knowrob {
 		auto &subjectTerm() const { return subjectTerm_; }
 
 		/**
+		 * Set the subject term of this expression.
+		 * @param subjectTerm the subject term.
+		 */
+		void setSubjectTerm(const TermPtr &subjectTerm) { subjectTerm_ = subjectTerm; }
+
+		/**
 		 * @return the property term of this expression.
 		 */
 		auto &propertyTerm() const { return propertyTerm_; }
@@ -78,6 +84,12 @@ namespace knowrob {
 		 * @return the object term of this expression.
 		 */
 		auto &objectTerm() const { return objectTerm_; }
+
+		/**
+		 * Set the object term of this expression.
+		 * @param objectTerm the object term.
+		 */
+		void setObjectTerm(const TermPtr &objectTerm) { objectTerm_ = objectTerm; }
 
 		/**
 		 * @return an additional object variable to bind the actual value of the object term.
@@ -276,7 +288,7 @@ namespace knowrob {
 		MutableGenerator generator() override;
 
 	protected:
-		std::vector<FramedTriplePtr*> data_;
+		std::vector<FramedTriplePtr *> data_;
 		std::vector<FramedTriplePatternPtr> statements_;
 	};
 } // knowrob

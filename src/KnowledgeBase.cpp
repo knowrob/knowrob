@@ -139,7 +139,7 @@ void KnowledgeBase::initVocabulary() {
 		// query number of assertions of each property/class.
 		// this is useful information for optimizing the query planner.
 		std::vector<semweb::PropertyPtr> reifiedProperties;
-		backend->count([this,&reifiedProperties](std::string_view resource, uint64_t count) {
+		backend->count([this, &reifiedProperties](std::string_view resource, uint64_t count) {
 			// special handling for reified relations: they are concepts, but do also increase the relation counter
 			auto reifiedProperty = vocabulary_->getDefinedReification(resource);
 			if (reifiedProperty) reifiedProperties.push_back(reifiedProperty);
@@ -306,23 +306,14 @@ bool KnowledgeBase::isMaterializedInEDB(std::string_view property) const {
 	return vocabulary_->frequency(property) > 0;
 }
 
-QueryableBackendPtr
-KnowledgeBase::getBackendForQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) const {
+QueryableBackendPtr KnowledgeBase::getBackendForQuery() const {
 	auto &queryable = backendManager_->queryable();
 	if (queryable.empty()) {
-		throw KnowledgeBaseError("no queryable backends available.");
+		KB_WARN("No queryable backends available.");
+		return nullptr;
+	} else {
+		return queryable.begin()->second;
 	}
-	return queryable.begin()->second;
-}
-
-QueryableBackendPtr
-KnowledgeBase::getBackendForQuery(const std::vector<FramedTriplePatternPtr> &query, const QueryContextPtr &ctx) const {
-	// TODO: pick backend depending on query context and queried literals
-	auto &queryable = backendManager_->queryable();
-	if (queryable.empty()) {
-		throw KnowledgeBaseError("no queryable backends available.");
-	}
-	return queryable.begin()->second;
 }
 
 std::vector<RDFComputablePtr> KnowledgeBase::createComputationSequence(
@@ -419,7 +410,7 @@ void KnowledgeBase::createComputationPipeline(
 					std::static_pointer_cast<Atomic>(lit->propertyTerm())->stringForm());
 		}
 		if (isEDBStageNeeded) {
-			auto edb = getBackendForQuery(lit, ctx);
+			auto edb = getBackendForQuery();
 			auto edbStage = std::make_shared<EDBStage>(edb_, edb, lit, ctx);
 			edbStage->selfWeakRef_ = edbStage;
 			stepInput >> edbStage;
@@ -533,9 +524,9 @@ TokenBufferPtr KnowledgeBase::submitQuery(const GraphPathQueryPtr &graphQuery) {
 		channel->push(GenericYes());
 		channel->push(EndOfEvaluation::get());
 	} else {
-		auto edb = getBackendForQuery(edbOnlyLiterals, graphQuery->ctx());
+		auto edb = getBackendForQuery();
 		edbOut = edb_->getAnswerCursor(edb,
-				std::make_shared<GraphPathQuery>(edbOnlyLiterals, graphQuery->ctx()));
+									   std::make_shared<GraphPathQuery>(edbOnlyLiterals, graphQuery->ctx()));
 	}
 	pipeline->addStage(edbOut);
 
@@ -768,28 +759,40 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 bool KnowledgeBase::insertOne(const FramedTriple &triple) {
 	auto sourceBackend = findSourceBackend(triple);
 	auto transaction = edb_->createTransaction(
-		BackendInterface::Insert, BackendInterface::Excluding, {sourceBackend});
+			getBackendForQuery(),
+			BackendInterface::Insert,
+			BackendInterface::Excluding,
+			{sourceBackend});
 	return transaction->commit(triple);
 }
 
 bool KnowledgeBase::insertAll(const semweb::TripleContainerPtr &triples) {
 	auto sourceBackend = findSourceBackend(**triples->begin());
 	auto transaction = edb_->createTransaction(
-		BackendInterface::Insert, BackendInterface::Excluding, {sourceBackend});
+			getBackendForQuery(),
+			BackendInterface::Insert,
+			BackendInterface::Excluding,
+			{sourceBackend});
 	return transaction->commit(triples);
 }
 
 bool KnowledgeBase::removeOne(const FramedTriple &triple) {
 	auto sourceBackend = findSourceBackend(triple);
 	auto transaction = edb_->createTransaction(
-			BackendInterface::Remove, BackendInterface::Excluding, {sourceBackend});
+			getBackendForQuery(),
+			BackendInterface::Remove,
+			BackendInterface::Excluding,
+			{sourceBackend});
 	return transaction->commit(triple);
 }
 
 bool KnowledgeBase::removeAll(const semweb::TripleContainerPtr &triples) {
 	auto sourceBackend = findSourceBackend(**triples->begin());
 	auto transaction = edb_->createTransaction(
-			BackendInterface::Remove, BackendInterface::Excluding, {sourceBackend});
+			getBackendForQuery(),
+			BackendInterface::Remove,
+			BackendInterface::Excluding,
+			{sourceBackend});
 	return transaction->commit(triples);
 }
 
@@ -946,7 +949,10 @@ bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source
 		parser.setBlankPrefix(std::string("_") + origin);
 		auto result = parser.run([this, &backendsToLoad](const semweb::TripleContainerPtr &triples) {
 			auto transaction = edb_->createTransaction(
-				BackendInterface::Insert, BackendInterface::Including, backendsToLoad);
+					getBackendForQuery(),
+					BackendInterface::Insert,
+					BackendInterface::Including,
+					backendsToLoad);
 			transaction->commit(triples);
 		});
 		if (!result) {
@@ -986,7 +992,10 @@ bool KnowledgeBase::loadSPARQLDataSource(const std::shared_ptr<DataSource> &sour
 
 	auto result = service->load([this, &backendsToLoad](const semweb::TripleContainerPtr &triples) {
 		auto transaction = edb_->createTransaction(
-			BackendInterface::Insert, BackendInterface::Including, backendsToLoad);
+				getBackendForQuery(),
+				BackendInterface::Insert,
+				BackendInterface::Including,
+				backendsToLoad);
 		transaction->commit(triples);
 	});
 	if (!result) {
