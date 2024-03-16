@@ -105,12 +105,15 @@ void ConjunctiveBroadcaster::genCombinations( //NOLINT
 
 
 // fixture class for testing
-class AnswerCombinerTest : public ::testing::Test {
-protected:
-	void SetUp() override {}
+namespace knowrob::testing {
+	class AnswerCombinerTest : public ::testing::Test {
+	protected:
+		void SetUp() override {}
 
-	void TearDown() override {}
-};
+		void TearDown() override {}
+	};
+}
+using namespace knowrob::testing;
 
 TEST_F(AnswerCombinerTest, CombineOne) {
 	auto combiner = std::make_shared<ConjunctiveBroadcaster>();

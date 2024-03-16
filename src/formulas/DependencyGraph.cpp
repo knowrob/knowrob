@@ -94,20 +94,25 @@ void DependencyNode::addDependency(const std::shared_ptr<DependencyNode> &other)
 
 
 // fixture class for testing
-class DependencyGraphTest : public ::testing::Test {
-protected:
-    FirstOrderLiteralPtr p_, q_, r_, s_;
-    void SetUp() override {
-        p_ = std::make_shared<FirstOrderLiteral>(QueryParser::parsePredicate("p(a,X)"), false);
-        q_ = std::make_shared<FirstOrderLiteral>(QueryParser::parsePredicate("q(X,Y)"), false);
-        r_ = std::make_shared<FirstOrderLiteral>(QueryParser::parsePredicate("r(Y,z)"), false);
-        s_ = std::make_shared<FirstOrderLiteral>(QueryParser::parsePredicate("s(b,a)"), false);
+namespace knowrob::testing {
+	class DependencyGraphTest : public ::testing::Test {
+	protected:
+		FirstOrderLiteralPtr p_, q_, r_, s_;
 
-        auto x = std::make_shared<ModalIteration>();
-        *x += KnowledgeModality::K();
-    }
-    void TearDown() override {}
-};
+		void SetUp() override {
+			p_ = std::make_shared<FirstOrderLiteral>(QueryParser::parsePredicate("p(a,X)"), false);
+			q_ = std::make_shared<FirstOrderLiteral>(QueryParser::parsePredicate("q(X,Y)"), false);
+			r_ = std::make_shared<FirstOrderLiteral>(QueryParser::parsePredicate("r(Y,z)"), false);
+			s_ = std::make_shared<FirstOrderLiteral>(QueryParser::parsePredicate("s(b,a)"), false);
+
+			auto x = std::make_shared<ModalIteration>();
+			*x += KnowledgeModality::K();
+		}
+
+		void TearDown() override {}
+	};
+}
+using namespace knowrob::testing;
 
 TEST_F(DependencyGraphTest, SingleLiteral)
 {

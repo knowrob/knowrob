@@ -231,17 +231,19 @@ std::shared_ptr<Formula> QueryTree::Path::toFormula() const
 
 
 // fixture class for testing
-class QueryTreeTest : public ::testing::Test {
-protected:
-    FormulaPtr p_, q_, r_;
-    void SetUp() override {
-        p_ = std::make_shared<Predicate>("p");
-        q_ = std::make_shared<Predicate>("q");
-        r_ = std::make_shared<Predicate>("r");
-    }
-    // void TearDown() override {}
-};
-
+namespace knowrob::testing {
+	class QueryTreeTest : public ::testing::Test {
+	protected:
+		FormulaPtr p_, q_, r_;
+		void SetUp() override {
+			p_ = std::make_shared<Predicate>("p");
+			q_ = std::make_shared<Predicate>("q");
+			r_ = std::make_shared<Predicate>("r");
+		}
+		// void TearDown() override {}
+	};
+}
+using namespace knowrob::testing;
 
 TEST_F(QueryTreeTest, PositiveLiteral)
 {

@@ -8,11 +8,13 @@ from typing import List, Tuple, Union
 
 import traceback
 
+## @brief A reasoner that uses the pyfactxx library to perform reasoning on an OWL knowledge base.
+# A reasoner that uses the pyfactxx library to perform reasoning on an OWL knowledge base.
+# Currently, only the initial loading of OWL files is supported which are then classified and realised
+# by the reasoner. All inferred triples are added to the knowledge base.
+#
 class FactxxReasoner(ReasonerWithBackend):
 	"""
-	A reasoner that uses the pyfactxx library to perform reasoning on an OWL knowledge base.
-	Currently, only the initial loading of OWL files is supported which are then classified and realised
-	by the reasoner. All inferred triples are added to the knowledge base.
 	"""
 
 	def __init__(self):

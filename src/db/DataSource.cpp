@@ -97,11 +97,14 @@ namespace knowrob::py {
 
 
 // fixture class for testing
-class DataSourceTest : public ::testing::Test {
-protected:
-	void SetUp() override {}
-	// void TearDown() override {}
-};
+namespace knowrob::testing {
+	class DataSourceTest : public ::testing::Test {
+	protected:
+		void SetUp() override {}
+		// void TearDown() override {}
+	};
+}
+using namespace knowrob::testing;
 
 TEST_F(DataSourceTest, IsGraphVersionString) {
 	EXPECT_TRUE(DataSource::isVersionString("v1.1"));

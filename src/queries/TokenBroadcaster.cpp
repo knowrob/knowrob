@@ -61,12 +61,15 @@ namespace knowrob::py {
 }
 
 // fixture class for testing
-class AnswerBroadcasterTest : public ::testing::Test {
-protected:
-	void SetUp() override {}
+namespace knowrob::testing {
+	class AnswerBroadcasterTest : public ::testing::Test {
+	protected:
+		void SetUp() override {}
 
-	void TearDown() override {}
-};
+		void TearDown() override {}
+	};
+}
+using namespace knowrob::testing;
 
 TEST_F(AnswerBroadcasterTest, OneToOneBroadcast) {
 	auto broadcast = std::make_shared<TokenBroadcaster>();

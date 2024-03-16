@@ -36,105 +36,107 @@ namespace po = boost::program_options;
 
 static const char *PROMPT = "?- ";
 
-class QueryHistory {
-public:
-	explicit QueryHistory()
-			: selection_(data_.end()),
-			  pos_(-1),
-			  maxHistoryItems_(100) {}
+namespace knowrob {
+	class QueryHistory {
+	public:
+		explicit QueryHistory()
+				: selection_(data_.end()),
+				  pos_(-1),
+				  maxHistoryItems_(100) {}
 
-	void append(const std::string &queryString) {
-		data_.push_front(queryString);
-		reset();
-	}
-
-	void reset() {
-		selection_ = data_.end();
-		pos_ = -1;
-	}
-
-	void save(const std::string &historyFile) {
-		// FIXME: seems like history file will be corrupted in case the program is terminated during writing!
-		std::ofstream file(historyFile);
-		if (file.good()) {
-			boost::archive::text_oarchive oa(file);
-			oa << data_.size();
-			for (auto &x: data_) oa << x;
-		} else {
-			KB_WARN("unable to write history to file '{}'", historyFile);
+		void append(const std::string &queryString) {
+			data_.push_front(queryString);
+			reset();
 		}
-	}
 
-	void load(const std::string &historyFile) {
-		std::ifstream file(historyFile);
-		if (file.good()) {
-			boost::archive::text_iarchive ia(file);
-			std::list<std::string>::size_type size;
-			ia >> size;
-			size = std::min(maxHistoryItems_, size);
-			for (int i = 0; i < size; ++i) {
-				std::string queryString;
-				ia >> queryString;
-				data_.push_back(queryString);
-			}
-		}
-	}
-
-	const std::string &getSelection() { return *selection_; }
-
-	bool hasSelection() { return selection_ != data_.end(); }
-
-	void nextItem() {
-		if (pos_ == -1) {
-			selection_ = data_.begin();
-			pos_ = 0;
-		} else if (pos_ == 0) {
-			selection_++;
-		}
-		if (selection_ == data_.end()) {
-			pos_ = 1;
-		}
-	}
-
-	void previousItem() {
-		if (selection_ == data_.begin()) {
+		void reset() {
 			selection_ = data_.end();
 			pos_ = -1;
-		} else if (pos_ == 0 || pos_ == 1) {
-			selection_--;
-			pos_ = 0;
 		}
-	}
 
-protected:
-	std::list<std::string> data_;
-	std::list<std::string>::iterator selection_;
-	const std::string historyFile_;
-	unsigned long maxHistoryItems_;
-	int pos_;
-};
-
-template<class T>
-class TerminalCommand {
-public:
-	using CommandFunction = std::function<bool(const std::vector<T> &arguments)>;
-
-	TerminalCommand(std::string functor, uint32_t arity, CommandFunction function)
-			: functor_(std::move(functor)), arity_(arity), function_(std::move(function)) {}
-
-	bool runCommand(const std::vector<T> &arguments) {
-		if (arguments.size() != arity_) {
-			throw QueryError("Wrong number of arguments for terminal command '{}/{}'. "
-							 "Actual number of arguments: {}.", functor_, arity_, arguments.size());
+		void save(const std::string &historyFile) {
+			// FIXME: seems like history file will be corrupted in case the program is terminated during writing!
+			std::ofstream file(historyFile);
+			if (file.good()) {
+				boost::archive::text_oarchive oa(file);
+				oa << data_.size();
+				for (auto &x: data_) oa << x;
+			} else {
+				KB_WARN("unable to write history to file '{}'", historyFile);
+			}
 		}
-		return function_(arguments);
-	}
 
-protected:
-	const std::string functor_;
-	const uint32_t arity_;
-	const CommandFunction function_;
-};
+		void load(const std::string &historyFile) {
+			std::ifstream file(historyFile);
+			if (file.good()) {
+				boost::archive::text_iarchive ia(file);
+				std::list<std::string>::size_type size;
+				ia >> size;
+				size = std::min(maxHistoryItems_, size);
+				for (int i = 0; i < size; ++i) {
+					std::string queryString;
+					ia >> queryString;
+					data_.push_back(queryString);
+				}
+			}
+		}
+
+		const std::string &getSelection() { return *selection_; }
+
+		bool hasSelection() { return selection_ != data_.end(); }
+
+		void nextItem() {
+			if (pos_ == -1) {
+				selection_ = data_.begin();
+				pos_ = 0;
+			} else if (pos_ == 0) {
+				selection_++;
+			}
+			if (selection_ == data_.end()) {
+				pos_ = 1;
+			}
+		}
+
+		void previousItem() {
+			if (selection_ == data_.begin()) {
+				selection_ = data_.end();
+				pos_ = -1;
+			} else if (pos_ == 0 || pos_ == 1) {
+				selection_--;
+				pos_ = 0;
+			}
+		}
+
+	protected:
+		std::list<std::string> data_;
+		std::list<std::string>::iterator selection_;
+		const std::string historyFile_;
+		unsigned long maxHistoryItems_;
+		int pos_;
+	};
+
+	template<class T>
+	class TerminalCommand {
+	public:
+		using CommandFunction = std::function<bool(const std::vector<T> &arguments)>;
+
+		TerminalCommand(std::string functor, uint32_t arity, CommandFunction function)
+				: functor_(std::move(functor)), arity_(arity), function_(std::move(function)) {}
+
+		bool runCommand(const std::vector<T> &arguments) {
+			if (arguments.size() != arity_) {
+				throw QueryError("Wrong number of arguments for terminal command '{}/{}'. "
+								 "Actual number of arguments: {}.", functor_, arity_, arguments.size());
+			}
+			return function_(arguments);
+		}
+
+	protected:
+		const std::string functor_;
+		const uint32_t arity_;
+		const CommandFunction function_;
+	};
+}
 
 class KnowRobTerminal {
 public:

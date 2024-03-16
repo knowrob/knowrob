@@ -57,7 +57,7 @@ static inline void register_term_types() {
 	py::createType<Bindings>();
 	// allow conversion between std::vector and python::list for Term objects.
 	typedef std::vector<TermPtr> TermList;
-	custom_vector_from_seq<TermPtr>();
+	py::custom_vector_from_seq<TermPtr>();
 	boost::python::class_<TermList>("TermList").def(boost::python::vector_indexing_suite<TermList, true>());
 }
 
@@ -77,7 +77,7 @@ static inline void register_formula_types() {
 	py::createType<PredicateDescription>();
 	// allow conversion between std::vector and python::list for Formula objects.
 	typedef std::vector<FormulaPtr> FormulaList;
-	custom_vector_from_seq<FormulaPtr>();
+	py::custom_vector_from_seq<FormulaPtr>();
 	boost::python::class_<FormulaList>("FormulaList").def(boost::python::vector_indexing_suite<FormulaList, true>());
 }
 
@@ -88,7 +88,7 @@ static inline void register_triple_types() {
 	py::createType<semweb::TripleContainer>();
 	// allow conversion between std::vector and python::list for FramedTriple objects.
 	typedef std::vector<std::shared_ptr<FramedTriple>> TripleList;
-	custom_vector_from_seq<std::shared_ptr<FramedTriple>>();
+	py::custom_vector_from_seq<std::shared_ptr<FramedTriple>>();
 	boost::python::class_<TripleList>("TripleList").def(boost::python::vector_indexing_suite<TripleList, true>());
 }
 
@@ -112,6 +112,7 @@ static inline void register_reasoner_types() {
 
 BOOST_PYTHON_MODULE (knowrob) {
 	using namespace boost::python;
+	using namespace knowrob::py;
 
 	// convert std::string_view to python::str and vice versa.
 	register_string_view_converter();

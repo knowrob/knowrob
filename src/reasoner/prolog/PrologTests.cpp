@@ -86,12 +86,15 @@ void PrologTestsBase::runPrologTests(
 	KB_INFO1(target.c_str(), 1, "[plunit] {}/{} tests succeeded for target '{}'.", (numTests - numFailedTests), numTests, target);
 }
 
-class PrologReasonerTests : public PrologTests<knowrob::PrologReasoner, knowrob::PrologBackend> {
-protected:
-	static std::string getPath(const std::string &filename) {
-		return std::filesystem::path("reasoner") / "prolog" / filename;
-	}
-};
+namespace knowrob::testing {
+	class PrologReasonerTests : public PrologTests<knowrob::PrologReasoner, knowrob::PrologBackend> {
+	protected:
+		static std::string getPath(const std::string &filename) {
+			return std::filesystem::path("reasoner") / "prolog" / filename;
+		}
+	};
+}
+using namespace knowrob::testing;
 
 // register test cases of prolog files in this directory (pl or plt file extension)
 TEST_F(PrologReasonerTests, semweb) { runTests(getPath("semweb.pl")); }

@@ -14,10 +14,12 @@
 namespace fs = std::filesystem;
 using namespace knowrob;
 
-struct RaptorUserData {
-	OntologyParser *parser;
-	semweb::TripleHandler callback;
-};
+namespace knowrob {
+	struct RaptorUserData {
+		OntologyParser *parser;
+		semweb::TripleHandler callback;
+	};
+}
 
 static void processTriple(void *userData, raptor_statement *statement) {
 	auto x = (RaptorUserData *) userData;

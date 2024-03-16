@@ -22,16 +22,18 @@ using namespace knowrob::mongo;
 #define PREDICATE_COLLECTION MongoInterface::get().connect(PL_A1, (char*)PL_A2)
 #define PREDICATE_CURSOR MongoInterface::get().cursor((char*)PL_A1)
 
-class MongoPLException : public PlException, std::exception {
-public:
-    explicit MongoPLException(const MongoException &exc)
-    : PlException(PlCompound(
-        "mng_error", PlCompound(exc.contextMessage_.c_str(), PlTerm(exc.bsonMessage_.c_str()))
-    )) {}
+namespace knowrob {
+	class MongoPLException : public PlException, std::exception {
+	public:
+		explicit MongoPLException(const MongoException &exc)
+				: PlException(PlCompound(
+				"mng_error", PlCompound(exc.contextMessage_.c_str(), PlTerm(exc.bsonMessage_.c_str()))
+		)) {}
 
-    explicit MongoPLException(const std::exception &exc)
-    : PlException(PlCompound("mng_error", PlTerm(exc.what()))) {}
-};
+		explicit MongoPLException(const std::exception &exc)
+				: PlException(PlCompound("mng_error", PlTerm(exc.what()))) {}
+	};
+}
 
 static inline bson_t* termToDocument(const PlTerm &term) {
     bson_error_t err;

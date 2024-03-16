@@ -489,11 +489,14 @@ std::string QueryParser::parseRawAtom(const std::string &queryString) {
 }
 
 // fixture class for testing
-class QueryParserTest : public ::testing::Test {
-protected:
-    // void SetUp() override { }
-    // void TearDown() override {}
-};
+namespace knowrob::testing {
+	class QueryParserTest : public ::testing::Test {
+	protected:
+		// void SetUp() override { }
+		// void TearDown() override {}
+	};
+}
+using namespace knowrob::testing;
 
 static inline void testNumber(const TermPtr &t, const double &expected) {
     EXPECT_NE(t.get(), nullptr);

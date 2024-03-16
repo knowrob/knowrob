@@ -45,15 +45,17 @@ std::shared_ptr<semweb::ImportHierarchy> Reasoner::importHierarchy() const {
 	return reasonerManager().kb()->importHierarchy();
 }
 
-class ReasonerTask : public ThreadPool::Runner {
-public:
-	explicit ReasonerTask(const std::function<void()> &fn) : fn_(fn) {}
+namespace knowrob {
+	class ReasonerTask : public ThreadPool::Runner {
+	public:
+		explicit ReasonerTask(const std::function<void()> &fn) : fn_(fn) {}
 
-	void run() override { fn_(); }
+		void run() override { fn_(); }
 
-protected:
-	std::function<void()> fn_;
-};
+	protected:
+		std::function<void()> fn_;
+	};
+}
 
 void Reasoner::pushWork(const std::function<void(void)> &fn) {
 	// TODO: add support for stop request flag. For this the lambda needs to take an additional parameter.

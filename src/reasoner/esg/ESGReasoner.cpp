@@ -24,11 +24,15 @@ bool ESGReasoner::initializeDefaultPackages()
 	return consult(std::filesystem::path("reasoner") / "esg" / "__init__.pl");
 }
 
-class ESGTests: public PrologTests<knowrob::ESGReasoner,knowrob::PrologBackend> {
-protected:
-	static std::string getPath(const std::string &filename)
-	{ return std::filesystem::path("reasoner") / "esg" / filename; }
-};
+namespace knowrob::testing {
+	class ESGTests : public PrologTests<knowrob::ESGReasoner, knowrob::PrologBackend> {
+	protected:
+		static std::string getPath(const std::string &filename) {
+			return std::filesystem::path("reasoner") / "esg" / filename;
+		}
+	};
+}
+using namespace knowrob::testing;
 
 TEST_F(ESGTests, esg)      { runTests(getPath("esg.plt")); }
 TEST_F(ESGTests, interval) { runTests(getPath("interval.plt")); }
