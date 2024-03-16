@@ -359,7 +359,9 @@ bool RedlandModel::insertOne(const FramedTriple &knowrobTriple) {
 bool RedlandModel::insertAll(const semweb::TripleContainerPtr &triples) {
 	// insert all triples into an in-memory model.
 	// only after all triples are inserted, the model is transformed and then pushed to the next stage.
-	// TODO: rather do batch insert, I bet librdf can do something...
+	// TODO: we could create a stream here over the iterator interface of triple container.
+	//       stream can be created with librdf_new_stream, and then librdf_model_context_add_statements can be used.
+	//       same in removeAll.
 	auto raptorTriple = librdf_new_statement(world_);
 	for (auto &knowrobTriple: *triples) {
 		// map the knowrob triple into a raptor triple
@@ -399,6 +401,7 @@ bool RedlandModel::removeAll(const semweb::TripleContainerPtr &triples) {
 bool RedlandModel::removeAllWithOrigin(std::string_view origin) {
 	auto stream = librdf_model_find_statements_in_context(
 			model_, nullptr, getContextNode(origin));
+	if (!stream) return false;
 	// collect matching statements
 	std::vector<librdf_statement *> toRemove;
 	while (!librdf_stream_end(stream)) {
@@ -491,7 +494,7 @@ void RedlandModel::query(const GraphQueryPtr &q, const BindingsHandler &callback
 		// But, on the other hand negations are handled separately by the KnowledgeBase anyway.
 		// So KnowRob will at the moment only call this interface with single negated patterns
 		// while evaluating sequences of negations in parallel and after any positive pattern that
-		// appears in the sequence.
+		// appears in a query.
 		auto pat = std::static_pointer_cast<GraphPattern>(q->term());
 		if (pat->value()->isNegated()) {
 			negatedPattern = pat;
