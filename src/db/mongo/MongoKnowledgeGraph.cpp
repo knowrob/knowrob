@@ -50,7 +50,7 @@ const std::string MongoKnowledgeGraph::COLL_NAME_TESTS = "triples_test";
 
 static inline BackendFeatures mongoBackendFeatures() {
 	return BackendFeature::ReAssignment |
-	       BackendFeature::TripleContext;
+		   BackendFeature::TripleContext;
 }
 
 MongoKnowledgeGraph::MongoKnowledgeGraph()
@@ -296,14 +296,6 @@ void MongoKnowledgeGraph::count(const ResourceCounter &callback) const {
 			callback(property, count);
 		}
 	}
-}
-
-bool MongoKnowledgeGraph::contains(const FramedTriple &triple) {
-	bool hasTriple = false;
-	match(FramedTriplePattern(triple), [&hasTriple](const FramedTriple &) {
-		hasTriple = true;
-	});
-	return hasTriple;
 }
 
 void MongoKnowledgeGraph::foreach(const semweb::TripleVisitor &visitor) const {

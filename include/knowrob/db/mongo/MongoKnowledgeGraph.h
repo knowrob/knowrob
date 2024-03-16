@@ -107,9 +107,6 @@ namespace knowrob {
 		bool isPersistent() const override { return true; }
 
 		// Override QueryableBackend
-		bool contains(const FramedTriple &triple) override;
-
-		// Override QueryableBackend
 		void foreach(const semweb::TripleVisitor &visitor) const override;
 
 		// Override QueryableBackend

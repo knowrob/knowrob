@@ -57,12 +57,11 @@ void QueryableBackend::match(const FramedTriplePattern &q, const semweb::TripleV
 }
 
 bool QueryableBackend::contains(const FramedTriple &triple) {
-	auto pattern = std::make_shared<FramedTriplePattern>(triple);
-	bool hasResult = false;
-	match(*pattern, [&](const FramedTriple &t) {
-		hasResult = true;
+	bool hasTriple = false;
+	match(FramedTriplePattern(triple), [&hasTriple](const FramedTriple &) {
+		hasTriple = true;
 	});
-	return hasResult;
+	return hasTriple;
 }
 
 std::shared_ptr<AnswerYes> QueryableBackend::yes(const GraphQueryExpansionPtr &expanded, const BindingsPtr &bindings) {
