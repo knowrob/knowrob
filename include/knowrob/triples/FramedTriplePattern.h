@@ -218,6 +218,12 @@ namespace knowrob {
 		std::vector<VariablePtr> getVariables(bool includeObjectVar = true) const;
 
 		/**
+		 * @param triple a triple query.
+		 * @return true if the triple matches this pattern.
+		 */
+		bool filter(const FramedTriple &triple) const;
+
+		/**
 		 * Map the instantiation of this expression into a triple.
 		 * @param triple the triple to be instantiated.
 		 * @param bindings the substitution to be applied.

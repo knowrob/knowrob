@@ -465,17 +465,15 @@ void RedlandModel::match(const FramedTriplePattern &query, const semweb::TripleV
 	auto triples = std::make_shared<RaptorContainer>(1);
 	auto rdf_query = librdf_new_statement(world_);
 	knowrobToRaptor(query, rdf_query);
-
 	auto stream = librdf_model_find_statements(model_, rdf_query);
 	while (!librdf_stream_end(stream)) {
 		auto rdf_statement = librdf_stream_get_object(stream);
 		triples->add(rdf_statement->subject, rdf_statement->predicate, rdf_statement->object);
+		auto &triple = *triples->begin()->ptr;
 		if (query.objectOperator() != FramedTriplePattern::EQ) {
-			// TODO: handle object operator
-			KB_WARN("Object operator not yet supported in RedlandModel::match.");
-			visitor(*triples->begin()->ptr);
+			if (query.filter(triple)) visitor(triple);
 		} else {
-			visitor(*triples->begin()->ptr);
+			visitor(triple);
 		}
 		triples->reset();
 		librdf_stream_next(stream);
@@ -647,7 +645,7 @@ void RedlandModel::knowrobToRaptor(const FramedTriplePattern &pat, raptor_statem
 		predicate = knowrobToRaptor(pat.propertyTerm());
 		librdf_statement_set_predicate(raptorTriple, predicate);
 	}
-	if (pat.objectTerm()) {
+	if (pat.objectTerm() && pat.objectOperator() == FramedTriplePattern::EQ) {
 		object = knowrobToRaptor(pat.objectTerm());
 		librdf_statement_set_object(raptorTriple, object);
 	}

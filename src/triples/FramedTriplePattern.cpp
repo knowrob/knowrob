@@ -183,6 +183,82 @@ uint32_t FramedTriplePattern::numVariables() const {
 	return getVariables(false).size();
 }
 
+
+
+static bool filterString(std::string_view value, const FramedTriplePattern &query) {
+	auto &q_term = query.objectTerm();
+	if (!q_term->isAtomic()) return false;
+	auto q_atomic = std::static_pointer_cast<Atomic>(q_term);
+	switch (query.objectOperator()) {
+		case FramedTriplePattern::EQ:
+			return value == q_atomic->stringForm();
+		case FramedTriplePattern::LEQ:
+			return value <= q_atomic->stringForm();
+		case FramedTriplePattern::GEQ:
+			return value >= q_atomic->stringForm();
+		case FramedTriplePattern::GT:
+			return value > q_atomic->stringForm();
+		case FramedTriplePattern::LT:
+			return value < q_atomic->stringForm();
+	}
+	return false;
+}
+
+template<typename NumType>
+bool filterNumeric(const NumType &a, const NumType &b, FramedTriplePattern::OperatorType op) {
+	switch (op) {
+		case FramedTriplePattern::EQ:
+			return a == b;
+		case FramedTriplePattern::LEQ:
+			return a <= b;
+		case FramedTriplePattern::GEQ:
+			return a >= b;
+		case FramedTriplePattern::GT:
+			return a > b;
+		case FramedTriplePattern::LT:
+			return a < b;
+	}
+	return false;
+}
+
+bool FramedTriplePattern::filter(const FramedTriple &triple) const {
+	if (triple.isObjectIRI() || triple.isObjectBlank()) {
+		return filterString(triple.valueAsString(), *this);
+	} else if (triple.xsdType()) {
+		if (triple.xsdType().value() == XSDType::STRING) {
+			return filterString(triple.valueAsString(), *this);
+		}
+		auto &q_term = objectTerm();
+		if (!q_term->isNumeric()) return false;
+		auto q_numeric = std::static_pointer_cast<Numeric>(q_term);
+		switch (triple.xsdType().value()) {
+			case knowrob::XSDType::BOOLEAN:
+				return filterNumeric(triple.valueAsBoolean(), q_numeric->asBoolean(), objectOperator());
+			case knowrob::XSDType::DOUBLE:
+				return filterNumeric(triple.valueAsDouble(), q_numeric->asDouble(), objectOperator());
+			case knowrob::XSDType::FLOAT:
+				return filterNumeric(triple.valueAsFloat(), q_numeric->asFloat(), objectOperator());
+			case knowrob::XSDType::NON_NEGATIVE_INTEGER:
+			case knowrob::XSDType::INTEGER:
+				return filterNumeric(triple.valueAsInt(), q_numeric->asInteger(), objectOperator());
+			case knowrob::XSDType::LONG:
+				return filterNumeric(triple.valueAsLong(), q_numeric->asLong(), objectOperator());
+			case knowrob::XSDType::SHORT:
+				return filterNumeric(triple.valueAsShort(), q_numeric->asShort(), objectOperator());
+			case knowrob::XSDType::UNSIGNED_LONG:
+				return filterNumeric(triple.valueAsUnsignedLong(), q_numeric->asUnsignedLong(), objectOperator());
+			case knowrob::XSDType::UNSIGNED_INT:
+				return filterNumeric(triple.valueAsUnsignedInt(), q_numeric->asUnsignedInteger(), objectOperator());
+			case knowrob::XSDType::UNSIGNED_SHORT:
+				return filterNumeric(triple.valueAsUnsignedShort(), q_numeric->asUnsignedShort(), objectOperator());
+			case knowrob::XSDType::STRING:
+			case knowrob::XSDType::LAST:
+				break;
+		}
+	}
+	return false;
+}
+
 bool
 FramedTriplePattern::instantiateInto(FramedTriple &triple, const std::shared_ptr<const Bindings> &bindings) const {
 	// return a flag that indicates if s/p/o were assigned successfully.
