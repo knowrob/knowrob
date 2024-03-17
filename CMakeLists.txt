@@ -275,7 +275,6 @@ add_library(knowrob SHARED
 		src/queries/QueryStageFormula.cpp
 		src/py/utils.cpp
         src/triples/FramedTriple.cpp
-        src/semweb/Transformation.cpp
         src/triples/TripleFormat.cpp
         src/semweb/OntologyLanguage.cpp
         src/db/DataService.cpp
