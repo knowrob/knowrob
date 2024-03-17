@@ -318,7 +318,8 @@ add_library(knowrob SHARED
         src/db/mongo/MongoTaxonomy.cpp
         src/db/SPARQLBackend.cpp
         src/queries/parsers/strings.cpp
-        src/queries/parsers/terms.cpp)
+        src/queries/parsers/terms.cpp
+        src/queries/parsers/formula.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

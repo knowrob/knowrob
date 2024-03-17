@@ -1,6 +1,7 @@
-//
-// Created by daniel on 21.03.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_QUERY_PARSER_H
 #define KNOWROB_QUERY_PARSER_H
@@ -10,21 +11,10 @@
 #include "knowrob/terms/Function.h"
 
 namespace knowrob {
-	// note: forward declared to avoid including parser library in the header.
-	//       struct is defined in c++ file.
-	struct ParserRules;
-
 	/**
 	 * Constructs formulae from strings.
 	 */
 	class QueryParser {
-	protected:
-		QueryParser();
-
-		~QueryParser();
-
-		static ParserRules *get();
-
 	public:
 		static FormulaPtr parse(const std::string &queryString);
 
@@ -35,9 +25,6 @@ namespace knowrob {
 		static TermPtr parseConstant(const std::string &queryString);
 
 		static std::string parseRawAtom(const std::string &queryString);
-
-	protected:
-		ParserRules *bnf_;
 	};
 
 } // knowrob
