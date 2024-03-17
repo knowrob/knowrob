@@ -45,6 +45,12 @@ std::optional<std::string> QueryableBackend::getVersionOfOrigin(std::string_view
 	return version;
 }
 
+void QueryableBackend::dropSessionOrigins() {
+	removeAllWithOrigin(ImportHierarchy::ORIGIN_USER);
+	removeAllWithOrigin(ImportHierarchy::ORIGIN_REASONER);
+	removeAllWithOrigin(ImportHierarchy::ORIGIN_SESSION);
+}
+
 void QueryableBackend::match(const FramedTriplePattern &q, const TripleVisitor &visitor) {
 	auto graph_query = std::make_shared<GraphQuery>(
 			std::make_shared<GraphPattern>(std::make_shared<FramedTriplePattern>(q)),

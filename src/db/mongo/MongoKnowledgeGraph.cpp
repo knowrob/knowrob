@@ -135,13 +135,6 @@ void MongoKnowledgeGraph::initializeMongo() {
 	taxonomy_ = std::make_shared<MongoTaxonomy>(tripleCollection_, oneCollection_);
 }
 
-void MongoKnowledgeGraph::dropSessionOrigins() {
-	// TODO: move into KnowledgeBase, and do it for all backends
-	dropOrigin(ImportHierarchy::ORIGIN_USER);
-	dropOrigin(ImportHierarchy::ORIGIN_REASONER);
-	dropOrigin(ImportHierarchy::ORIGIN_SESSION);
-}
-
 std::shared_ptr<Collection> MongoKnowledgeGraph::connect(
 		const std::string_view db_uri,
 		const std::string_view db_name,

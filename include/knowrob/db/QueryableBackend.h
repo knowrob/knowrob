@@ -89,6 +89,11 @@ namespace knowrob {
 		void setVersionOfOrigin(std::string_view origin, std::string_view version);
 
 		/**
+		 * Delete triples that have been asserted from a "session" origin.
+		 */
+		void dropSessionOrigins();
+
+		/**
 		 * Compute the expansion of a graph path query.
 		 * @param q a graph path query.
 		 * @return the expansion of the query.
