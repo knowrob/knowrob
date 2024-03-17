@@ -17,9 +17,9 @@ namespace knowrob {
 	/**
 	 * A container that reifies triples of an input container.
 	 */
-	class ReificationContainer : public semweb::TripleContainer {
+	class ReificationContainer : public TripleContainer {
 	public:
-		explicit ReificationContainer(semweb::TripleContainerPtr originalTriples,
+		explicit ReificationContainer(TripleContainerPtr originalTriples,
 									  VocabularyPtr vocabulary,
 									  ReifiedNames reifiedNames);
 
@@ -27,7 +27,7 @@ namespace knowrob {
 		ConstGenerator cgenerator() const override;
 
 	protected:
-		semweb::TripleContainerPtr originalTriples_;
+		TripleContainerPtr originalTriples_;
 		VocabularyPtr vocabulary_;
 		ReifiedNames reifiedNames_;
 	};

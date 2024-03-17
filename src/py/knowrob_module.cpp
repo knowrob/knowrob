@@ -85,7 +85,7 @@ static inline void register_triple_types() {
 	py::createType<FramedTriple>();
 	py::createType<FramedTriplePattern>();
 	py::createType<GraphSelector>();
-	py::createType<semweb::TripleContainer>();
+	py::createType<TripleContainer>();
 	// allow conversion between std::vector and python::list for FramedTriple objects.
 	typedef std::vector<std::shared_ptr<FramedTriple>> TripleList;
 	py::custom_vector_from_seq<std::shared_ptr<FramedTriple>>();

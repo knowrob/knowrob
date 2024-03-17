@@ -95,7 +95,7 @@ public:
 		});
 		// define a prefix for naming blank nodes
 		parser.setBlankPrefix(std::string("_") + origin);
-		auto result = parser.run([](const semweb::TripleContainerPtr &tripleContainer) {
+		auto result = parser.run([](const TripleContainerPtr &tripleContainer) {
 			queryable_->insertAll(tripleContainer);
 		});
 		if (result) {

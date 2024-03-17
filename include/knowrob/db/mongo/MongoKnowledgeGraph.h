@@ -92,13 +92,13 @@ namespace knowrob {
 		bool insertOne(const FramedTriple &triple) override;
 
 		// Override DataBackend
-		bool insertAll(const semweb::TripleContainerPtr &triples) override;
+		bool insertAll(const TripleContainerPtr &triples) override;
 
 		// Override DataBackend
 		bool removeOne(const FramedTriple &triple) override;
 
 		// Override DataBackend
-		bool removeAll(const semweb::TripleContainerPtr &triples) override;
+		bool removeAll(const TripleContainerPtr &triples) override;
 
 		// Override DataBackend
 		bool removeAllWithOrigin(std::string_view origin) override;
@@ -107,13 +107,13 @@ namespace knowrob {
 		bool isPersistent() const override { return true; }
 
 		// Override QueryableBackend
-		void foreach(const semweb::TripleVisitor &visitor) const override;
+		void foreach(const TripleVisitor &visitor) const override;
 
 		// Override QueryableBackend
-		void batch(const semweb::TripleHandler &callback) const override;
+		void batch(const TripleHandler &callback) const override;
 
 		// Override QueryableBackend
-		void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
+		void match(const FramedTriplePattern &query, const TripleVisitor &visitor) override;
 
 		// Override QueryableBackend
 		void query(const GraphQueryPtr &query, const BindingsHandler &callback) override;

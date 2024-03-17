@@ -10,7 +10,7 @@
 
 using namespace knowrob;
 
-ReificationContainer::ReificationContainer(semweb::TripleContainerPtr originalTriples,
+ReificationContainer::ReificationContainer(TripleContainerPtr originalTriples,
 										   VocabularyPtr vocabulary,
 										   ReifiedNames reifiedNames)
 		: originalTriples_(std::move(originalTriples)),
@@ -18,7 +18,7 @@ ReificationContainer::ReificationContainer(semweb::TripleContainerPtr originalTr
 		  reifiedNames_(std::move(reifiedNames)) {
 }
 
-semweb::TripleContainer::ConstGenerator
+TripleContainer::ConstGenerator
 getReifiedGenerator(const FramedTriple &triple,
 					const VocabularyPtr &vocabulary,
 					const ReifiedNames &reifiedNames,
@@ -37,7 +37,7 @@ getReifiedGenerator(const FramedTriple &triple,
 
 namespace knowrob::reification {
 	struct IterationData {
-		IterationData(VocabularyPtr vocabulary, const semweb::TripleContainerPtr &originalTriples,
+		IterationData(VocabularyPtr vocabulary, const TripleContainerPtr &originalTriples,
 					  ReifiedNames reifiedNames)
 				: vocabulary(std::move(vocabulary)),
 				  it(originalTriples->begin()),
@@ -48,15 +48,15 @@ namespace knowrob::reification {
 		}
 
 		VocabularyPtr vocabulary;
-		semweb::TripleContainer::ConstGenerator reifiedGen;
-		semweb::TripleContainer::iterator it;
-		semweb::TripleContainer::iterator end;
+		TripleContainer::ConstGenerator reifiedGen;
+		TripleContainer::iterator it;
+		TripleContainer::iterator end;
 		ReifiedNames reifiedNames;
 		uint32_t tripleIndex;
 	};
 }
 
-semweb::TripleContainer::ConstGenerator ReificationContainer::cgenerator() const {
+TripleContainer::ConstGenerator ReificationContainer::cgenerator() const {
 	auto data = std::make_shared<reification::IterationData>(
 			vocabulary_, originalTriples_, reifiedNames_);
 

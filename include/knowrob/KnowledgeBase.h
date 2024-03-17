@@ -106,13 +106,13 @@ namespace knowrob {
 
 		bool insertOne(const FramedTriple &triple);
 
-		bool insertAll(const semweb::TripleContainerPtr &triples);
+		bool insertAll(const TripleContainerPtr &triples);
 
 		bool insertAll(const std::vector<FramedTriplePtr> &triples);
 
 		bool removeOne(const FramedTriple &triple);
 
-		bool removeAll(const semweb::TripleContainerPtr &triples);
+		bool removeAll(const TripleContainerPtr &triples);
 
 		bool removeAll(const std::vector<FramedTriplePtr> &triples);
 

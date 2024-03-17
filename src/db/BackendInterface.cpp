@@ -107,7 +107,7 @@ bool BackendInterface::mergeInsert(const QueryableBackendPtr &backend, const Fra
 	});
 	if (!overlappingTriples.empty()) {
 		// remove overlapping triples if any
-		auto container = std::make_shared<semweb::ProxyTripleContainer>(&overlappingTriples);
+		auto container = std::make_shared<ProxyTripleContainer>(&overlappingTriples);
 		createTransaction(backend, Remove)->commit(container);
 	}
 	// Insert the triple after merging with overlapping existing ones
@@ -131,7 +131,7 @@ bool BackendInterface::contains(const QueryableBackendPtr &backend, const Framed
 	return containsAll;
 }
 
-void BackendInterface::foreach(const QueryableBackendPtr &backend, const semweb::TripleVisitor &visitor) {
+void BackendInterface::foreach(const QueryableBackendPtr &backend, const TripleVisitor &visitor) {
 	if (backend->supports(BackendFeature::TripleContext)) {
 		backend->foreach(visitor);
 		return;
@@ -159,7 +159,7 @@ void BackendInterface::foreach(const QueryableBackendPtr &backend, const semweb:
 	}
 }
 
-void BackendInterface::batch(const QueryableBackendPtr &backend, const semweb::TripleHandler &callback) {
+void BackendInterface::batch(const QueryableBackendPtr &backend, const TripleHandler &callback) {
 	if (backend->supports(BackendFeature::TripleContext)) {
 		backend->batch(callback);
 		return;
@@ -175,8 +175,8 @@ void BackendInterface::batch(const QueryableBackendPtr &backend, const semweb::T
 	// while taking over ownership of the reified triples to avoid copies and allow
 	// the use of views in the UnReificationContainer.
 	std::vector<FramedTriplePtr> reificationTriples;
-	auto batch = std::make_shared<semweb::TripleViewBatch>(batchSize);
-	backend->batch([&](const semweb::TripleContainerPtr &triples) {
+	auto batch = std::make_shared<TripleViewBatch>(batchSize);
+	backend->batch([&](const TripleContainerPtr &triples) {
 		for (auto &triple: *triples) {
 			if (ReifiedTriple::isPartOfReification(*triple.ptr)) {
 				// take over ownership of triple
@@ -237,7 +237,7 @@ static void setReifiedVariables( // NOLINT(misc-no-recursion)
 }
 
 void BackendInterface::match(const QueryableBackendPtr &backend, const FramedTriplePattern &q,
-							 const semweb::TripleVisitor &visitor) const {
+							 const TripleVisitor &visitor) const {
 	static auto ctx = std::make_shared<QueryContext>();
 	if (backend->supports(BackendFeature::TripleContext)) {
 		backend->match(q, visitor);

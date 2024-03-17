@@ -35,14 +35,14 @@ void GraphRestructuring::finalizeTransformation() {
 	}
 	// push into next stage
 	initializeNext();
-	model_->batch([this](const semweb::TripleContainerPtr &triples) {
+	model_->batch([this](const TripleContainerPtr &triples) {
 		pushOutputTriples(triples);
 	});
 	finalizeNext();
 	model_ = nullptr;
 }
 
-void GraphRestructuring::pushInputTriples(const semweb::TripleContainerPtr &triples) {
+void GraphRestructuring::pushInputTriples(const TripleContainerPtr &triples) {
 	model_->insertAll(triples);
 }
 

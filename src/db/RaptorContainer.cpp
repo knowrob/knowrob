@@ -29,14 +29,14 @@ RaptorContainer::~RaptorContainer() {
 	reset();
 }
 
-semweb::TripleContainer::ConstGenerator RaptorContainer::cgenerator() const {
+TripleContainer::ConstGenerator RaptorContainer::cgenerator() const {
 	return [this, i = 0]() mutable -> const FramedTriplePtr * {
 		if (i < actualSize_) return &mappedData_[i++];
 		return nullptr;
 	};
 }
 
-semweb::MutableTripleContainer::MutableGenerator RaptorContainer::generator() {
+MutableTripleContainer::MutableGenerator RaptorContainer::generator() {
 	return [this, i = 0]() mutable -> FramedTriplePtr * {
 		if (i < actualSize_) return &mappedData_[i++];
 		return nullptr;

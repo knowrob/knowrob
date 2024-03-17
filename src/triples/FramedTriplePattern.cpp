@@ -399,14 +399,14 @@ void TriplePatternContainer::push_back(const FramedTriplePatternPtr &q) {
 	}
 }
 
-semweb::TripleContainer::ConstGenerator TriplePatternContainer::cgenerator() const {
+TripleContainer::ConstGenerator TriplePatternContainer::cgenerator() const {
 	return [this, i = 0]() mutable -> const FramedTriplePtr * {
 		if (i < data_.size()) return data_[i++];
 		return nullptr;
 	};
 }
 
-semweb::MutableTripleContainer::MutableGenerator TriplePatternContainer::generator() {
+MutableTripleContainer::MutableGenerator TriplePatternContainer::generator() {
 	return [this, i = 0]() mutable -> FramedTriplePtr * {
 		if (i < data_.size()) return data_[i++];
 		return nullptr;

@@ -37,14 +37,14 @@ namespace knowrob {
 		 * @param callback the callback to handle the triples.
 		 * @return true if the iteration was successful.
 		 */
-		virtual void foreach(const semweb::TripleVisitor &visitor) const = 0;
+		virtual void foreach(const TripleVisitor &visitor) const = 0;
 
 		/**
 		 * Iterate over all triples in the model.
 		 * @param callback the callback to handle the triples.
 		 * @return true if the iteration was successful.
 		 */
-		virtual void batch(const semweb::TripleHandler &callback) const = 0;
+		virtual void batch(const TripleHandler &callback) const = 0;
 
 		/**
 		 * @param triple a framed triple.
@@ -56,7 +56,7 @@ namespace knowrob {
 		 * @param query a framed triple pattern.
 		 * @param handler a function that is called for each matching framed triple.
 		 */
-		virtual void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor);
+		virtual void match(const FramedTriplePattern &query, const TripleVisitor &visitor);
 
 		/**
 		 * Submits a graph query to this knowledge graph.

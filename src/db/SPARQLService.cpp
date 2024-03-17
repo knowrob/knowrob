@@ -30,7 +30,7 @@ SPARQLService::SPARQLService(const URI &uri, std::string_view format)
 	}
 }
 
-bool SPARQLService::load(const semweb::TripleHandler &callback) {
+bool SPARQLService::load(const TripleHandler &callback) {
 	// iterate over all triples in the SPARQL endpoint
 	model_.batch(callback);
 	return true;

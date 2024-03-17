@@ -29,7 +29,7 @@ namespace knowrob {
 		 * Set the next handler to be called after this transformation.
 		 * @param next the next handler
 		 */
-		void setNext(const semweb::TripleHandler &next) { next_ = next; }
+		void setNext(const TripleHandler &next) { next_ = next; }
 
 		/**
 		 * Set the origin of the triples.
@@ -49,13 +49,13 @@ namespace knowrob {
 		 * Push output triples to the next transformation or handler.
 		 * @param triples the output triples
 		 */
-		void pushOutputTriples(const semweb::TripleContainerPtr &triples);
+		void pushOutputTriples(const TripleContainerPtr &triples);
 
 		/**
 		 * Push input triples to the transformation.
 		 * @param triples the input triples
 		 */
-		virtual void pushInputTriples(const semweb::TripleContainerPtr &triples) = 0;
+		virtual void pushInputTriples(const TripleContainerPtr &triples) = 0;
 
 		/**
 		 * Configure the transformation with the given options.
@@ -75,7 +75,7 @@ namespace knowrob {
 		virtual void finalizeTransformation() = 0;
 
 	protected:
-		semweb::TripleHandler next_;
+		TripleHandler next_;
 		std::shared_ptr<GraphTransformation> nextTransformation_;
 		std::string origin_;
 

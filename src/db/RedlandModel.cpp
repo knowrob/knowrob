@@ -357,7 +357,7 @@ bool RedlandModel::insertOne(const FramedTriple &knowrobTriple) {
 	return true;
 }
 
-bool RedlandModel::insertAll(const semweb::TripleContainerPtr &triples) {
+bool RedlandModel::insertAll(const TripleContainerPtr &triples) {
 	// insert all triples into an in-memory model.
 	// only after all triples are inserted, the model is transformed and then pushed to the next stage.
 	// TODO: we could create a stream here over the iterator interface of triple container.
@@ -382,7 +382,7 @@ bool RedlandModel::removeOne(const FramedTriple &knowrobTriple) {
 	return ret==0;
 }
 
-bool RedlandModel::removeAll(const semweb::TripleContainerPtr &triples) {
+bool RedlandModel::removeAll(const TripleContainerPtr &triples) {
 	auto raptorTriple = librdf_new_statement(world_);
 	bool allRemoved = true;
 	for (auto &knowrobTriple: *triples) {
@@ -417,15 +417,15 @@ bool RedlandModel::removeAllWithOrigin(std::string_view origin) {
 	return true;
 }
 
-void RedlandModel::foreach(const semweb::TripleVisitor &visitor) const {
-	batch([&](const semweb::TripleContainerPtr &container) {
+void RedlandModel::foreach(const TripleVisitor &visitor) const {
+	batch([&](const TripleContainerPtr &container) {
 		for (auto &triple: *container) {
 			visitor(*triple);
 		}
 	});
 }
 
-void RedlandModel::batch(const semweb::TripleHandler &callback) const {
+void RedlandModel::batch(const TripleHandler &callback) const {
 	auto triples = std::make_shared<RaptorContainer>(GlobalSettings::batchSize());
 	auto contexts = librdf_model_get_contexts(model_);
 
@@ -463,7 +463,7 @@ bool RedlandModel::contains(const FramedTriple &triple) {
 	return result;
 }
 
-void RedlandModel::match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) {
+void RedlandModel::match(const FramedTriplePattern &query, const TripleVisitor &visitor) {
 	auto triples = std::make_shared<RaptorContainer>(1);
 	auto rdf_query = librdf_new_statement(world_);
 	knowrobToRaptor(query, rdf_query);

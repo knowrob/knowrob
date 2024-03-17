@@ -38,17 +38,17 @@ bool PrologBackend::removeAllWithOrigin(std::string_view origin) {
 	return PROLOG_ENGINE_EVAL(PrologTerm(rdf_retractall, PrologTerm(), PrologTerm(), PrologTerm(), origin));
 }
 
-bool PrologBackend::insertAll(const semweb::TripleContainerPtr &triples) {
+bool PrologBackend::insertAll(const TripleContainerPtr &triples) {
 	// :- rdf_transaction(...).
 	return PROLOG_ENGINE_EVAL(transaction(rdf_assert, triples));
 }
 
-bool PrologBackend::removeAll(const semweb::TripleContainerPtr &triples) {
+bool PrologBackend::removeAll(const TripleContainerPtr &triples) {
 	// :- rdf_transaction(...).
 	return PROLOG_ENGINE_EVAL(transaction(rdf_retractall, triples));
 }
 
-PrologTerm PrologBackend::transaction(std::string_view rdf_functor, const semweb::TripleContainerPtr &triples) {
+PrologTerm PrologBackend::transaction(std::string_view rdf_functor, const TripleContainerPtr &triples) {
 	// transactionTerm = rdf_transaction((rdf_functor(s, p, o, g), ...)).
 	PrologTerm transactionGoal;
 	for (const auto &triple: *triples) {

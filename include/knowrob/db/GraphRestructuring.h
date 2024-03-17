@@ -36,7 +36,7 @@ namespace knowrob {
 		void finalizeTransformation() override;
 
 		// override GraphTransformation
-		void pushInputTriples(const semweb::TripleContainerPtr &triples) override;
+		void pushInputTriples(const TripleContainerPtr &triples) override;
 
 	protected:
 		std::unique_ptr<RedlandModel> model_;

@@ -83,7 +83,7 @@ bool Transaction::commit(const FramedTriple &triple, const IRIAtomPtr &reifiedNa
 	return success;
 }
 
-bool Transaction::commit(const semweb::TripleContainerPtr &triples) {
+bool Transaction::commit(const TripleContainerPtr &triples) {
 	static auto v_reification = std::make_shared<Variable>("reification");
 	if (isRemoval_) {
 		// TODO: add size method to container and reserve space for names instead of resizing in the loop below
@@ -102,8 +102,8 @@ bool Transaction::commit(const semweb::TripleContainerPtr &triples) {
 	}
 }
 
-bool Transaction::commit(const semweb::TripleContainerPtr &triples, const ReifiedNames &reifiedNames) {
-	semweb::TripleContainerPtr reified;
+bool Transaction::commit(const TripleContainerPtr &triples, const ReifiedNames &reifiedNames) {
+	TripleContainerPtr reified;
 	std::vector<std::shared_ptr<ThreadPool::Runner>> transactions;
 	bool success = true;
 
@@ -112,7 +112,7 @@ bool Transaction::commit(const semweb::TripleContainerPtr &triples, const Reifie
 
 	for (auto &definedBackend: backends_) {
 		auto &backend = definedBackend->backend();
-		const semweb::TripleContainerPtr *backendTriples;
+		const TripleContainerPtr *backendTriples;
 		if (!backend->supports(BackendFeature::TripleContext)) {
 			if (!reified) reified = std::make_shared<ReificationContainer>(triples, vocabulary_, reifiedNames);
 			backendTriples = &reified;
@@ -137,7 +137,7 @@ bool Transaction::commit(const semweb::TripleContainerPtr &triples, const Reifie
 }
 
 std::shared_ptr<ThreadPool::Runner> Transaction::createTripleWorker(
-		const semweb::TripleContainerPtr &triples,
+		const TripleContainerPtr &triples,
 		const std::function<void(const FramedTriplePtr &)> &fn) {
 	auto perTripleWorker =
 			std::make_shared<ThreadPool::LambdaRunner>([fn, triples](const ThreadPool::LambdaRunner::StopChecker &) {
@@ -158,11 +158,11 @@ bool Remove::doCommit(const FramedTriple &triple, const DataBackendPtr &backend)
 	return backend->removeOne(triple);
 }
 
-bool Insert::doCommit(const semweb::TripleContainerPtr &triples, const knowrob::DataBackendPtr &backend) {
+bool Insert::doCommit(const TripleContainerPtr &triples, const knowrob::DataBackendPtr &backend) {
 	return backend->insertAll(triples);
 }
 
-bool Remove::doCommit(const semweb::TripleContainerPtr &triples, const knowrob::DataBackendPtr &backend) {
+bool Remove::doCommit(const TripleContainerPtr &triples, const knowrob::DataBackendPtr &backend) {
 	return backend->removeAll(triples);
 }
 

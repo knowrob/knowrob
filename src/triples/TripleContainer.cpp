@@ -6,7 +6,7 @@
 #include "knowrob/triples/TripleContainer.h"
 #include "knowrob/py/utils.h"
 
-using namespace knowrob::semweb;
+using namespace knowrob;
 
 ProxyTripleContainer::ProxyTripleContainer(const std::vector<FramedTriplePtr> *triples)
 		: triples_(triples) {
@@ -61,11 +61,11 @@ MutableTripleContainer::MutableGenerator TripleViewBatch::generator() {
 
 namespace knowrob::py {
 	template<>
-	void createType<semweb::TripleContainer>() {
+	void createType<TripleContainer>() {
 		using namespace boost::python;
-		class_<semweb::TripleContainer, std::shared_ptr<semweb::TripleContainer>, boost::noncopyable>
+		class_<TripleContainer, std::shared_ptr<TripleContainer>, boost::noncopyable>
 				("TripleContainer", no_init)
 				.def("__iter__",
-					 boost::python::iterator<semweb::TripleContainer, boost::python::return_value_policy<boost::python::copy_const_reference>>{});
+					 boost::python::iterator<TripleContainer, boost::python::return_value_policy<boost::python::copy_const_reference>>{});
 	}
 }

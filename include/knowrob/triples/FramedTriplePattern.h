@@ -274,7 +274,7 @@ namespace knowrob {
 	/**
 	 * A container that maps a vector of framed triple patterns into a vector of framed triples.
 	 */
-	class TriplePatternContainer : public semweb::MutableTripleContainer {
+	class TriplePatternContainer : public MutableTripleContainer {
 	public:
 		TriplePatternContainer() = default;
 

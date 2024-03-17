@@ -10,7 +10,7 @@
 #include <vector>
 #include "knowrob/triples/FramedTriple.h"
 
-namespace knowrob::semweb {
+namespace knowrob {
 	/**
 	 * A container of framed triples that can be created from a generator function.
 	 * The baseclass has immutable triples, but `MutableTripleContainer` is a subclass that allows to modify
@@ -180,11 +180,11 @@ namespace knowrob::semweb {
 	};
 
 	using TripleContainerPtr = std::shared_ptr<TripleContainer>;
-	using TripleHandler = std::function<void(const semweb::TripleContainerPtr &)>;
+	using TripleHandler = std::function<void(const TripleContainerPtr &)>;
 	using TripleVisitor = std::function<void(const FramedTriple &)>;
 
 	using MutableTripleContainerPtr = std::shared_ptr<MutableTripleContainer>;
-	using MutableTripleHandler = std::function<void(const semweb::MutableTripleContainerPtr &)>;
+	using MutableTripleHandler = std::function<void(const MutableTripleContainerPtr &)>;
 
 	using TripleFilter = std::function<bool(const FramedTriple &)>;
 }

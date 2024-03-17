@@ -91,14 +91,14 @@ namespace knowrob {
 		 * @param backend the backend to query.
 		 * @param visitor the visitor to execute.
 		 */
-		static void foreach(const QueryableBackendPtr &backend, const semweb::TripleVisitor &visitor);
+		static void foreach(const QueryableBackendPtr &backend, const TripleVisitor &visitor);
 
 		/**
 		 * Executes a visitor on all triples in the extensional database.
 		 * @param backend the backend to query.
 		 * @param callback the visitor to execute.
 		 */
-		static void batch(const QueryableBackendPtr &backend, const semweb::TripleHandler &callback);
+		static void batch(const QueryableBackendPtr &backend, const TripleHandler &callback);
 
 		/**
 		 * Evaluates a query on the extensional database and executes a visitor on the results
@@ -108,7 +108,7 @@ namespace knowrob {
 		 * @param visitor the visitor to execute.
 		 */
 		void match(const QueryableBackendPtr &backend, const FramedTriplePattern &query,
-				   const semweb::TripleVisitor &visitor) const;
+				   const TripleVisitor &visitor) const;
 
 		/**
 		 * Evaluates a query on the extensional database and executes a visitor on the results

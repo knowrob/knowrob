@@ -48,24 +48,24 @@ namespace knowrob {
 		/**
 		 * @param filter the filter to use for filtering triples.
 		 */
-		void setFilter(const semweb::TripleFilter &filter) { filter_ = filter; }
+		void setFilter(const TripleFilter &filter) { filter_ = filter; }
 
 		/**
 		 * @param callback the callback to use for handling triples.
 		 * @return true if the parsing was successful, false otherwise.
 		 */
-		bool run(const semweb::TripleHandler &callback);
+		bool run(const TripleHandler &callback);
 
 		/**
 		 * @param statement a raptor statement
 		 * @param callback the callback to use for handling triples.
 		 */
-		void add(raptor_statement *statement, const semweb::TripleHandler &callback);
+		void add(raptor_statement *statement, const TripleHandler &callback);
 
 		/**
 		 * Flush the parser, pushing all remaining triples to the callback.
 		 */
-		void flush(const semweb::TripleHandler &callback);
+		void flush(const TripleHandler &callback);
 
 		/**
 		 * @return the list of directly imported ontologies.
@@ -78,7 +78,7 @@ namespace knowrob {
 		raptor_parser *parser_;
 		raptor_world *world_;
 		GraphSelectorPtr frame_;
-		semweb::TripleFilter filter_;
+		TripleFilter filter_;
 		std::string blankPrefix_;
 		std::string origin_;
 		std::vector<std::string> imports_;

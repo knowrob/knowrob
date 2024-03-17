@@ -76,7 +76,7 @@ namespace knowrob {
 		 * @param triples a set of triples.
 		 * @return true on success
 		 */
-		virtual bool insertAll(const semweb::TripleContainerPtr &triples) = 0;
+		virtual bool insertAll(const TripleContainerPtr &triples) = 0;
 
 		/**
 		 * Delete the first matching statement from this backend.
@@ -88,7 +88,7 @@ namespace knowrob {
 		 * Delete all matching statements from this backend.
 		 * @param triples a set of triples.
 		 */
-		virtual bool removeAll(const semweb::TripleContainerPtr &triples) = 0;
+		virtual bool removeAll(const TripleContainerPtr &triples) = 0;
 
 		/**
 		 * Delete all statements with a given origin from this backend.

@@ -15,7 +15,7 @@ namespace knowrob {
 	/**
 	 * A batch of triples loaded with raptor.
 	 */
-	class RaptorContainer : public semweb::MutableTripleContainer {
+	class RaptorContainer : public MutableTripleContainer {
 	public:
 		/**
 		 * @param size the maximum number of triples to be stored.

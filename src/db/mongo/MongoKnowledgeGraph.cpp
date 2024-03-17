@@ -212,7 +212,7 @@ bool MongoKnowledgeGraph::insertOne(const FramedTriple &tripleData) {
 	return true;
 }
 
-bool MongoKnowledgeGraph::insertAll(const semweb::TripleContainerPtr &triples) {
+bool MongoKnowledgeGraph::insertAll(const TripleContainerPtr &triples) {
 	// only used in case triples do not specify origin field
 	auto &fallbackOrigin = importHierarchy_->defaultGraph();
 	auto bulk = tripleCollection_->createBulkOperation();
@@ -249,7 +249,7 @@ bool MongoKnowledgeGraph::removeOne(const FramedTriple &triple) {
 	return true;
 }
 
-bool MongoKnowledgeGraph::removeAll(const semweb::TripleContainerPtr &triples) {
+bool MongoKnowledgeGraph::removeAll(const TripleContainerPtr &triples) {
 	auto bulk = tripleCollection_->createBulkOperation();
 	std::for_each(triples->begin(), triples->end(),
 				  [&](auto &data) {
@@ -298,7 +298,7 @@ void MongoKnowledgeGraph::count(const ResourceCounter &callback) const {
 	}
 }
 
-void MongoKnowledgeGraph::foreach(const semweb::TripleVisitor &visitor) const {
+void MongoKnowledgeGraph::foreach(const TripleVisitor &visitor) const {
 	TripleCursor cursor(tripleCollection_);
 	FramedTripleView tripleData;
 	while (cursor.nextTriple(tripleData)) {
@@ -306,7 +306,7 @@ void MongoKnowledgeGraph::foreach(const semweb::TripleVisitor &visitor) const {
 	}
 }
 
-void MongoKnowledgeGraph::match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) {
+void MongoKnowledgeGraph::match(const FramedTriplePattern &query, const TripleVisitor &visitor) {
 	bool b_isTaxonomicProperty;
 	if (query.propertyTerm()->termType() == TermType::ATOMIC) {
 		b_isTaxonomicProperty = vocabulary_->isTaxonomicProperty(((Atomic *) query.propertyTerm().get())->stringForm());
@@ -324,7 +324,7 @@ void MongoKnowledgeGraph::match(const FramedTriplePattern &query, const semweb::
 	}
 }
 
-void MongoKnowledgeGraph::batch(const semweb::TripleHandler &callback) const {
+void MongoKnowledgeGraph::batch(const TripleHandler &callback) const {
 	TripleCursor cursor(tripleCollection_);
 	std::vector<FramedTriplePtr> batchData(GlobalSettings::batchSize());
 	uint32_t currentSize = 0;

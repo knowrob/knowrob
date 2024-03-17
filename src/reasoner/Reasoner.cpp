@@ -194,7 +194,7 @@ namespace knowrob::py {
 			return knowrob::py::call_method<bool>(self, "insertOne", &triple);
 		}
 
-		bool insertAll(const semweb::TripleContainerPtr &triples) override {
+		bool insertAll(const TripleContainerPtr &triples) override {
 			return knowrob::py::call_method<bool>(self, "insertAll", triples);
 		}
 
@@ -202,7 +202,7 @@ namespace knowrob::py {
 			return knowrob::py::call_method<bool>(self, "removeOne", &triple);
 		}
 
-		bool removeAll(const semweb::TripleContainerPtr &triples) override {
+		bool removeAll(const TripleContainerPtr &triples) override {
 			return knowrob::py::call_method<bool>(self, "removeAll", triples);
 		}
 

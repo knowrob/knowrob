@@ -58,7 +58,7 @@ namespace knowrob::transaction {
 		 * @param triples the triples to commit.
 		 * @return true if the triples were committed to all backends, false otherwise.
 		 */
-		bool commit(const semweb::TripleContainerPtr &triples);
+		bool commit(const TripleContainerPtr &triples);
 
 		/**
 		 * Commits a set of triples to all backends.
@@ -66,7 +66,7 @@ namespace knowrob::transaction {
 		 * @param reifiedNames the reified names of the triples.
 		 * @return true if the triples were committed to all backends, false otherwise.
 		 */
-		bool commit(const semweb::TripleContainerPtr &triples, const ReifiedNames &reifiedNames);
+		bool commit(const TripleContainerPtr &triples, const ReifiedNames &reifiedNames);
 
 	protected:
 		std::shared_ptr<Vocabulary> vocabulary_;
@@ -77,12 +77,12 @@ namespace knowrob::transaction {
 
 		virtual bool doCommit(const FramedTriple &triple, const DataBackendPtr &backend) = 0;
 
-		virtual bool doCommit(const semweb::TripleContainerPtr &triples, const DataBackendPtr &backend) = 0;
+		virtual bool doCommit(const TripleContainerPtr &triples, const DataBackendPtr &backend) = 0;
 
 		virtual void updateVocabulary(const FramedTriple &triple) = 0;
 
 		static std::shared_ptr<ThreadPool::Runner> createTripleWorker(
-				const semweb::TripleContainerPtr &triples,
+				const TripleContainerPtr &triples,
 				const std::function<void(const FramedTriplePtr &)> &fn);
 
 		IRIAtomPtr queryReifiedName(const FramedTriple &triple);
@@ -101,7 +101,7 @@ namespace knowrob::transaction {
 	protected:
 		bool doCommit(const FramedTriple &triple, const DataBackendPtr &backend) override;
 
-		bool doCommit(const semweb::TripleContainerPtr &triples, const DataBackendPtr &backend) override;
+		bool doCommit(const TripleContainerPtr &triples, const DataBackendPtr &backend) override;
 
 		void updateVocabulary(const FramedTriple &triple) override;
 	};
@@ -119,7 +119,7 @@ namespace knowrob::transaction {
 	protected:
 		bool doCommit(const FramedTriple &triple, const DataBackendPtr &backend) override;
 
-		bool doCommit(const semweb::TripleContainerPtr &triples, const DataBackendPtr &backend) override;
+		bool doCommit(const TripleContainerPtr &triples, const DataBackendPtr &backend) override;
 
 		void updateVocabulary(const FramedTriple &triple) override;
 	};

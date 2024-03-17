@@ -17,7 +17,7 @@ using namespace knowrob;
 namespace knowrob {
 	struct RaptorUserData {
 		OntologyParser *parser;
-		semweb::TripleHandler callback;
+		TripleHandler callback;
 	};
 }
 
@@ -125,7 +125,7 @@ void OntologyParser::applyFrame(FramedTriple *triple) {
 	}
 }
 
-void OntologyParser::add(raptor_statement *statement, const semweb::TripleHandler &callback) {
+void OntologyParser::add(raptor_statement *statement, const TripleHandler &callback) {
 	auto batchSize = GlobalSettings::batchSize();
 	if (!currentBatch_) {
 		if(origin_.empty()) {
@@ -152,7 +152,7 @@ void OntologyParser::add(raptor_statement *statement, const semweb::TripleHandle
 	}
 }
 
-void OntologyParser::flush(const semweb::TripleHandler &callback) {
+void OntologyParser::flush(const TripleHandler &callback) {
 	if (!currentBatch_) return;
 	// reduce vector size to actual number of elements
 	currentBatch_->shrink();
@@ -168,7 +168,7 @@ void OntologyParser::flush(const semweb::TripleHandler &callback) {
 }
 
 
-bool OntologyParser::run(const semweb::TripleHandler &callback) {
+bool OntologyParser::run(const TripleHandler &callback) {
 	// call processTriple for each loaded triple
 	RaptorUserData userData = {const_cast<OntologyParser *>(this), callback};
 	raptor_parser_set_statement_handler(parser_, &userData, processTriple);

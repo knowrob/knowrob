@@ -10,7 +10,7 @@
 
 using namespace knowrob;
 
-semweb::TripleContainer::ConstGenerator UnReificationContainer::cgenerator() const {
+TripleContainer::ConstGenerator UnReificationContainer::cgenerator() const {
 	return [this, it = triples_.begin()]() mutable -> const FramedTriplePtr * {
 		if (it == triples_.end()) return nullptr;
 		auto &triple = it->second;

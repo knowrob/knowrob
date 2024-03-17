@@ -766,7 +766,7 @@ bool KnowledgeBase::insertOne(const FramedTriple &triple) {
 	return transaction->commit(triple);
 }
 
-bool KnowledgeBase::insertAll(const semweb::TripleContainerPtr &triples) {
+bool KnowledgeBase::insertAll(const TripleContainerPtr &triples) {
 	auto sourceBackend = findSourceBackend(**triples->begin());
 	auto transaction = edb_->createTransaction(
 			getBackendForQuery(),
@@ -786,7 +786,7 @@ bool KnowledgeBase::removeOne(const FramedTriple &triple) {
 	return transaction->commit(triple);
 }
 
-bool KnowledgeBase::removeAll(const semweb::TripleContainerPtr &triples) {
+bool KnowledgeBase::removeAll(const TripleContainerPtr &triples) {
 	auto sourceBackend = findSourceBackend(**triples->begin());
 	auto transaction = edb_->createTransaction(
 			getBackendForQuery(),
@@ -798,11 +798,11 @@ bool KnowledgeBase::removeAll(const semweb::TripleContainerPtr &triples) {
 
 bool KnowledgeBase::insertAll(const std::vector<FramedTriplePtr> &triples) {
 	// Note: insertAll blocks until the triples are inserted, so it is safe to use the triples vector as a pointer.
-	return insertAll(std::make_shared<semweb::ProxyTripleContainer>(&triples));
+	return insertAll(std::make_shared<ProxyTripleContainer>(&triples));
 }
 
 bool KnowledgeBase::removeAll(const std::vector<FramedTriplePtr> &triples) {
-	return removeAll(std::make_shared<semweb::ProxyTripleContainer>(&triples));
+	return removeAll(std::make_shared<ProxyTripleContainer>(&triples));
 }
 
 bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
@@ -947,7 +947,7 @@ bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source
 		});
 		// define a prefix for naming blank nodes
 		parser.setBlankPrefix(std::string("_") + origin);
-		auto result = parser.run([this, &backendsToLoad](const semweb::TripleContainerPtr &triples) {
+		auto result = parser.run([this, &backendsToLoad](const TripleContainerPtr &triples) {
 			auto transaction = edb_->createTransaction(
 					getBackendForQuery(),
 					BackendInterface::Insert,
@@ -990,7 +990,7 @@ bool KnowledgeBase::loadSPARQLDataSource(const std::shared_ptr<DataSource> &sour
 	KB_INFO("Loading data from SPARQL endpoint at '{}' with version "
 			"\"{}\" and origin \"{}\".", serviceURI, newVersion, origin);
 
-	auto result = service->load([this, &backendsToLoad](const semweb::TripleContainerPtr &triples) {
+	auto result = service->load([this, &backendsToLoad](const TripleContainerPtr &triples) {
 		auto transaction = edb_->createTransaction(
 				getBackendForQuery(),
 				BackendInterface::Insert,

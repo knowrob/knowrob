@@ -12,7 +12,7 @@ namespace knowrob {
 	/**
 	 * A container that reverses the reification of input triples.
 	 */
-	class UnReificationContainer : public semweb::TripleContainer {
+	class UnReificationContainer : public TripleContainer {
 	public:
 		/**
 		 * Add a triple to the container.

@@ -7,7 +7,7 @@
 
 using namespace knowrob;
 
-void GraphTransformation::pushOutputTriples(const semweb::TripleContainerPtr &triples) {
+void GraphTransformation::pushOutputTriples(const TripleContainerPtr &triples) {
 	if (nextTransformation_) {
 		nextTransformation_->pushInputTriples(triples);
 	} else if (next_) {

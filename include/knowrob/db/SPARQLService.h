@@ -36,7 +36,7 @@ namespace knowrob {
 		 * @param callback the callback to handle the triples.
 		 * @return true if the triples were loaded successfully.
 		 */
-		bool load(const semweb::TripleHandler &callback);
+		bool load(const TripleHandler &callback);
 
 		// Override OntologySource
 		std::string_view origin() const override { return origin_; }

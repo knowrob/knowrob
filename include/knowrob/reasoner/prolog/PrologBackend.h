@@ -28,19 +28,19 @@ namespace knowrob {
 		bool insertOne(const FramedTriple &triple) override;
 
 		// override DataBackend
-		bool insertAll(const semweb::TripleContainerPtr &triples) override;
+		bool insertAll(const TripleContainerPtr &triples) override;
 
 		// override DataBackend
 		bool removeOne(const FramedTriple &triple) override;
 
 		// override DataBackend
-		bool removeAll(const semweb::TripleContainerPtr &triples) override;
+		bool removeAll(const TripleContainerPtr &triples) override;
 
 		// override DataBackend
 		bool removeAllWithOrigin(std::string_view origin) override;
 
 	protected:
-		static PrologTerm transaction(std::string_view rdf_functor, const semweb::TripleContainerPtr &triples);
+		static PrologTerm transaction(std::string_view rdf_functor, const TripleContainerPtr &triples);
 	};
 
 } // knowrob

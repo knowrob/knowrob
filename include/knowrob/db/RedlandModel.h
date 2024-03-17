@@ -155,13 +155,13 @@ namespace knowrob {
 		bool insertOne(const FramedTriple &triple) override;
 
 		// override DataBackend
-		bool insertAll(const semweb::TripleContainerPtr &triples) override;
+		bool insertAll(const TripleContainerPtr &triples) override;
 
 		// override DataBackend
 		bool removeOne(const FramedTriple &triple) override;
 
 		// override DataBackend
-		bool removeAll(const semweb::TripleContainerPtr &triples) override;
+		bool removeAll(const TripleContainerPtr &triples) override;
 
 		// override DataBackend
 		bool removeAllWithOrigin(std::string_view origin) override;
@@ -173,13 +173,13 @@ namespace knowrob {
 		bool contains(const FramedTriple &triple) override;
 
 		// Override QueryableBackend
-		void foreach(const semweb::TripleVisitor &visitor) const override;
+		void foreach(const TripleVisitor &visitor) const override;
 
 		// Override QueryableBackend
-		void batch(const semweb::TripleHandler &callback) const override;
+		void batch(const TripleHandler &callback) const override;
 
 		// Override QueryableBackend
-		void match(const FramedTriplePattern &query, const semweb::TripleVisitor &visitor) override;
+		void match(const FramedTriplePattern &query, const TripleVisitor &visitor) override;
 
 	protected:
 		librdf_world *ownedWorld_;
