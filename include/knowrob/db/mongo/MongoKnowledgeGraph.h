@@ -141,8 +141,6 @@ namespace knowrob {
 		static std::string getURI(const boost::property_tree::ptree &config);
 
 		bool dropOrigin(std::string_view origin);
-
-		void dropSessionOrigins();
 	};
 
 } // knowrob::mongo
