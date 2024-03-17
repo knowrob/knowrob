@@ -12,9 +12,9 @@
 // STD
 #include <iostream>
 // KnowRob
-#include "knowrob/db/mongo/MongoInterface.h"
+#include "knowrob/backend/mongo/MongoInterface.h"
 #include "knowrob/reasoner/mongolog/bson_pl.h"
-#include "knowrob/db/mongo/Document.h"
+#include "knowrob/backend/mongo/Document.h"
 
 using namespace knowrob;
 using namespace knowrob::mongo;

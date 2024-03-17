@@ -10,7 +10,7 @@
 #include "knowrob/reasoner/ReasonerPlugin.h"
 #include "knowrob/reasoner/DefinedPredicate.h"
 #include "knowrob/reasoner/DefinedReasoner.h"
-#include "knowrob/db/BackendManager.h"
+#include "knowrob/backend/BackendManager.h"
 #include "knowrob/KnowledgeBase.h"
 #include "ReasonerModule.h"
 

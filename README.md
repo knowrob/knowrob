@@ -109,7 +109,7 @@ an ontology, often by accessing some database, or by reading from
 a message queue, etc.
 
 For more information on database backends in KnowRob, please have a look
-[here](src/db/README.md).
+[here](src/backend/README.md).
 
 ### Reasoning
 

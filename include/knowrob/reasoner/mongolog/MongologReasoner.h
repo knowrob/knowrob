@@ -13,7 +13,7 @@
 #include <memory>
 // KnowRob
 #include "knowrob/terms/Term.h"
-#include "knowrob/db/mongo/MongoKnowledgeGraph.h"
+#include "knowrob/backend/mongo/MongoKnowledgeGraph.h"
 #include "knowrob/reasoner/Reasoner.h"
 #include "knowrob/reasoner/prolog/PrologReasoner.h"
 

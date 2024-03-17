@@ -15,12 +15,12 @@
 #include "knowrob/queries/QueryContext.h"
 #include "knowrob/semweb/RDFComputable.h"
 #include "knowrob/reasoner/DefinedReasoner.h"
-#include "knowrob/db/OntologyFile.h"
-#include "knowrob/db/QueryableBackend.h"
-#include "knowrob/db/DefinedBackend.h"
-#include "knowrob/db/BackendManager.h"
+#include "knowrob/sources/OntologyFile.h"
+#include "knowrob/backend/QueryableBackend.h"
+#include "knowrob/backend/DefinedBackend.h"
+#include "knowrob/backend/BackendManager.h"
 #include "knowrob/triples/GraphPathQuery.h"
-#include "knowrob/db/BackendInterface.h"
+#include "knowrob/backend/BackendInterface.h"
 
 namespace knowrob {
 	// forward declaration

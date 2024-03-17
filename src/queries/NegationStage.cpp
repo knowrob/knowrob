@@ -9,7 +9,7 @@
 #include "knowrob/KnowledgeBase.h"
 #include "knowrob/formulas/ModalFormula.h"
 #include "knowrob/reasoner/ReasonerManager.h"
-#include "knowrob/db/BackendInterface.h"
+#include "knowrob/backend/BackendInterface.h"
 
 using namespace knowrob;
 

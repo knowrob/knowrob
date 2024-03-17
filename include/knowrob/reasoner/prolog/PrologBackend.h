@@ -6,7 +6,7 @@
 #ifndef KNOWROB_PROLOG_BACKEND_H
 #define KNOWROB_PROLOG_BACKEND_H
 
-#include "knowrob/db/DataBackend.h"
+#include "knowrob/backend/Backend.h"
 #include "PrologTerm.h"
 
 //#define KNOWROB_USE_PROLOG_RDF11

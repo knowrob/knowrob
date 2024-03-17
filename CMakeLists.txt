@@ -164,7 +164,7 @@ add_library(knowrob SHARED
 		src/ThreadPool.cpp
 		src/Logger.cpp
 		src/KnowledgeBase.cpp
-        src/db/DataSource.cpp
+        src/sources/DataSource.cpp
 		src/URI.cpp
         src/modalities/TimePoint.cpp
 		src/modalities/TimeInterval.cpp
@@ -235,28 +235,28 @@ add_library(knowrob SHARED
 		src/reasoner/mongolog/bson_pl.cpp
 		src/reasoner/swrl/SWRLReasoner.cpp
 		src/reasoner/esg/ESGReasoner.cpp
-        src/db/QueryableBackend.cpp
-        src/db/BackendManager.cpp
-        src/db/BackendPlugin.cpp
-        src/db/DataSourceHandler.cpp
-        src/db/OntologyFile.cpp
-        src/db/OntologyParser.cpp
-        src/db/DataFile.cpp
-        src/db/BackendTransaction.cpp
-        src/db/mongo/MongoInterface.cpp
-        src/db/mongo/Database.cpp
-        src/db/mongo/Collection.cpp
-        src/db/mongo/ChangeStream.cpp
-        src/db/mongo/Cursor.cpp
-        src/db/mongo/QueryWatch.cpp
-        src/db/mongo/MongoKnowledgeGraph.cpp
-        src/db/mongo/BulkOperation.cpp
-        src/db/mongo/Pipeline.cpp
-        src/db/mongo/TripleCursor.cpp
-        src/db/mongo/BindingsCursor.cpp
-        src/db/mongo/aggregation/triples.cpp
-        src/db/mongo/Connection.cpp
-        src/db/mongo/bson-helper.cpp
+        src/backend/QueryableBackend.cpp
+        src/backend/BackendManager.cpp
+        src/backend/BackendPlugin.cpp
+        src/sources/DataSourceHandler.cpp
+        src/sources/OntologyFile.cpp
+        src/sources/OntologyParser.cpp
+        src/sources/DataFile.cpp
+        src/backend/BackendTransaction.cpp
+        src/backend/mongo/MongoInterface.cpp
+        src/backend/mongo/Database.cpp
+        src/backend/mongo/Collection.cpp
+        src/backend/mongo/ChangeStream.cpp
+        src/backend/mongo/Cursor.cpp
+        src/backend/mongo/QueryWatch.cpp
+        src/backend/mongo/MongoKnowledgeGraph.cpp
+        src/backend/mongo/BulkOperation.cpp
+        src/backend/mongo/Pipeline.cpp
+        src/backend/mongo/TripleCursor.cpp
+        src/backend/mongo/BindingsCursor.cpp
+        src/backend/mongo/aggregation/triples.cpp
+        src/backend/mongo/Connection.cpp
+        src/backend/mongo/bson-helper.cpp
 		src/queries/ModalStage.cpp
         src/triples/Perspective.cpp
 		src/formulas/PredicateIndicator.cpp
@@ -275,16 +275,16 @@ add_library(knowrob SHARED
         src/triples/FramedTriple.cpp
         src/triples/TripleFormat.cpp
         src/semweb/OntologyLanguage.cpp
-        src/db/DataService.cpp
+        src/sources/DataService.cpp
         src/reasoner/prolog/semweb.cpp
         src/reasoner/prolog/PrologBackend.cpp
         src/reasoner/prolog/PrologTerm.cpp
-        src/db/SPARQLService.cpp
-        src/db/RaptorContainer.cpp
-        src/db/GraphRenaming.cpp
-        src/db/GraphRestructuring.cpp
-        src/db/RedlandModel.cpp
-        src/db/GraphTransformation.cpp
+        src/sources/SPARQLService.cpp
+        src/backend/redland/RaptorContainer.cpp
+        src/alignment/GraphRenaming.cpp
+        src/alignment/GraphRestructuring.cpp
+        src/backend/redland/RedlandModel.cpp
+        src/alignment/GraphTransformation.cpp
         src/terms/Atom.cpp
         src/terms/Atomic.cpp
         src/terms/Function.cpp
@@ -295,7 +295,7 @@ add_library(knowrob SHARED
         src/semweb/Resource.cpp
         src/terms/Numeric.cpp
         src/terms/String.cpp
-        src/db/DataBackend.cpp
+        src/backend/DataBackend.cpp
         src/queries/QueryContext.cpp
         src/modalities/Modality.cpp
         src/triples/SPARQLQuery.cpp
@@ -306,15 +306,15 @@ add_library(knowrob SHARED
         src/reification/ReifiedQuery.cpp
         src/reification/ReificationContainer.cpp
         src/reification/UnReificationContainer.cpp
-        src/db/BackendInterface.cpp
+        src/backend/BackendInterface.cpp
         src/triples/GraphUnion.cpp
         src/triples/GraphSequence.cpp
         src/triples/GraphTerm.cpp
-        src/db/mongo/MongoTriple.cpp
-        src/db/mongo/MongoTriplePattern.cpp
-        src/db/mongo/MongoTerm.cpp
-        src/db/mongo/MongoTaxonomy.cpp
-        src/db/SPARQLBackend.cpp
+        src/backend/mongo/MongoTriple.cpp
+        src/backend/mongo/MongoTriplePattern.cpp
+        src/backend/mongo/MongoTerm.cpp
+        src/backend/mongo/MongoTaxonomy.cpp
+        src/backend/SPARQLBackend.cpp
         src/queries/parsers/strings.cpp
         src/queries/parsers/terms.cpp
         src/queries/parsers/formula.cpp)

@@ -12,14 +12,14 @@
 
 #include "knowrob/terms/Term.h"
 #include "knowrob/reasoner/ReasonerConfig.h"
-#include "knowrob/db/DataSource.h"
+#include "knowrob/sources//DataSource.h"
 #include "knowrob/queries/TokenBuffer.h"
 #include "knowrob/formulas/FirstOrderLiteral.h"
 #include "knowrob/formulas/PredicateDescription.h"
 #include "knowrob/triples/GraphQuery.h"
-#include "knowrob/db/DataSourceHandler.h"
+#include "knowrob/sources/DataSourceHandler.h"
 #include "knowrob/semweb/Vocabulary.h"
-#include "knowrob/db/DataBackend.h"
+#include "knowrob/backend/Backend.h"
 #include "knowrob/terms/Atom.h"
 
 namespace knowrob {

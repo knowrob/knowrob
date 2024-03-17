@@ -6,9 +6,9 @@
 #define KNOWROB_EDB_STAGE_H
 
 #include <memory>
-#include "knowrob/db/QueryableBackend.h"
+#include "knowrob/backend/QueryableBackend.h"
 #include "QueryStageLiteral.h"
-#include "knowrob/db/BackendInterface.h"
+#include "knowrob/backend/BackendInterface.h"
 
 namespace knowrob {
 	/**

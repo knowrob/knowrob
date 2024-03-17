@@ -7,7 +7,7 @@
  */
 
 #include "knowrob/reasoner/mongolog/bson_pl.h"
-#include "knowrob/db/mongo/MongoException.h"
+#include "knowrob/backend/mongo/MongoException.h"
 #include <sstream>
 #include <iostream>
 

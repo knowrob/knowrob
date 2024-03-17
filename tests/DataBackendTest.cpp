@@ -4,15 +4,15 @@
  */
 
 #include <gtest/gtest.h>
-#include "knowrob/db/mongo/MongoKnowledgeGraph.h"
+#include "knowrob/backend/mongo/MongoKnowledgeGraph.h"
 #include "knowrob/queries/QueryParser.h"
-#include "knowrob/db/OntologyParser.h"
+#include "knowrob/sources/OntologyParser.h"
 #include "knowrob/semweb/rdfs.h"
-#include "knowrob/db/RedlandModel.h"
+#include "knowrob/backend/redland/RedlandModel.h"
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/reification/ReifiedTriple.h"
 #include "knowrob/reasoner/prolog/PrologEngine.h"
-#include "knowrob/db/BackendInterface.h"
+#include "knowrob/backend/BackendInterface.h"
 
 using namespace knowrob;
 using namespace knowrob::mongo;
