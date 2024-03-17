@@ -73,6 +73,7 @@ namespace knowrob {
 				db = createBackend(ss.str(), kb);
 				reasoner = createReasoner(ss.str(), kb, db);
 
+				kb->loadCommon();
 				kb->init();
 			}
 			return reasoner;

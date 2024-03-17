@@ -269,6 +269,7 @@ namespace knowrob::testing {
 			r->setDataBackend(db);
 			kb->reasonerManager()->addReasoner(name, r);
 			r->loadConfig(knowrob::ReasonerConfig());
+			r->load_rdf_xml("http://www.ease-crc.org/ont/SOMA.owl");
 			return r;
 		}
 
@@ -305,7 +306,6 @@ namespace knowrob::testing {
 				reasoner = createReasoner2(ss.str(), kb, db);
 
 				kb->loadCommon();
-				//kb->loadDataSource(std::make_shared<OntologyFile>(URI("http://www.ease-crc.org/ont/SOMA.owl"), "rdf-xml"));
 				kb->init();
 			}
 			return reasoner;
