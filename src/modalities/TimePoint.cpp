@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -39,26 +36,5 @@ namespace std {
 	std::ostream& operator<<(std::ostream& os, const TimePoint& tp) //NOLINT
 	{
 		return os << tp.value();
-	}
-
-	std::ostream& operator<<(std::ostream& os, const Range<TimePoint>& t) //NOLINT
-	{
-		if(t.min().has_value() && t.max().has_value()) {
-			if(t.min().value() == t.max().value()) {
-				return os << t.min().value();
-			}
-			else {
-				return os << '(' << t.min().value() << ',' << t.max().value() << ')';
-			}
-		}
-		else if(t.min().has_value()) {
-			return os << ">=" << t.max().value();
-		}
-		else if(t.max().has_value()) {
-			return os << "<=" << t.max().value();
-		}
-		else {
-			return os << '*';
-		}
 	}
 }

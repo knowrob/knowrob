@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -10,7 +7,6 @@
 #define KNOWROB_TIME_POINT_H_
 
 #include <ostream>
-#include "Range.h"
 
 namespace knowrob {
 	/**
@@ -52,7 +48,6 @@ namespace knowrob {
 
 namespace std {
 	std::ostream& operator<<(std::ostream& os, const knowrob::TimePoint& tp);
-	std::ostream& operator<<(std::ostream& os, const knowrob::Range<knowrob::TimePoint>& t);
 }
 
 #endif //KNOWROB_TIME_POINT_H_

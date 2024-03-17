@@ -166,9 +166,7 @@ add_library(knowrob SHARED
 		src/KnowledgeBase.cpp
         src/db/DataSource.cpp
 		src/URI.cpp
-		src/modalities/ConfidenceValue.cpp
-		src/modalities/ConfidenceInterval.cpp
-		src/modalities/Timepoint.cpp
+        src/modalities/TimePoint.cpp
 		src/modalities/TimeInterval.cpp
 		src/modalities/BeliefModality.cpp
 		src/modalities/KnowledgeModality.cpp
