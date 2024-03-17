@@ -9,7 +9,7 @@
 #include "string"
 #include "knowrob/terms/IRIAtom.h"
 
-namespace knowrob::semweb {
+namespace knowrob {
     namespace rdfs {
         constexpr std::string_view prefix  = "http://www.w3.org/2000/01/rdf-schema#";
         const IRIAtomPtr subClassOf        = IRIAtom::Tabled("http://www.w3.org/2000/01/rdf-schema#subClassOf");

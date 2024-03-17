@@ -129,7 +129,7 @@ std::shared_ptr<GraphTerm> ReifiedQuery::reifiedPatternSequence(const FramedTrip
 	auto &g = nonReified.graphTerm();
 
 	// create a type assertion
-	addPattern(seq, name, semweb::rdf::type, relationType->iriAtom(), g);
+	addPattern(seq, name, rdf::type, relationType->iriAtom(), g);
 
 	// create a query for subject
 	addPattern(seq, name, reification::hasSubject, nonReified.subjectTerm(), g);

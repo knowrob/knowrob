@@ -34,7 +34,7 @@ ReifiedTriple::ReifiedTriple(const FramedTriple &triple, const VocabularyPtr &vo
 	reified_.reserve(triple_count);
 
 	// create a rdf:type assertion for the relation individual
-	create(name, semweb::rdf::type, g)->setObjectIRI(relationType->iri());
+	create(name, rdf::type, g)->setObjectIRI(relationType->iri());
 
 	// set the subject, and object of the reified triple
 	if (triple.isSubjectBlank()) {

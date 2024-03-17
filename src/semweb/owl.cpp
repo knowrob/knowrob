@@ -5,7 +5,7 @@
 
 #include "knowrob/semweb/owl.h"
 
-namespace knowrob::semweb {
+namespace knowrob {
     bool isClassIRI(std::string_view iri)
     { return iri == owl::Class->stringForm(); }
 

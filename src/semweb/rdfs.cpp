@@ -5,7 +5,7 @@
 
 #include "knowrob/semweb/rdfs.h"
 
-namespace knowrob::semweb {
+namespace knowrob {
     bool isSubClassOfIRI(std::string_view iri)
     { return iri == rdfs::subClassOf->stringForm(); }
 

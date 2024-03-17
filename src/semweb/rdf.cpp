@@ -5,7 +5,7 @@
 
 #include "knowrob/semweb/rdf.h"
 
-namespace knowrob::semweb {
+namespace knowrob {
     bool isTypeIRI(std::string_view iri)
     { return iri == rdf::type->stringForm(); }
 

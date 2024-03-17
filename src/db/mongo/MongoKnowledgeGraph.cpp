@@ -203,9 +203,9 @@ bool MongoKnowledgeGraph::insertOne(const FramedTriple &tripleData) {
 	MongoTriple mngTriple(vocabulary_, tripleData, fallbackOrigin, isTaxonomic);
 	tripleCollection_->storeOne(mngTriple.document());
 
-	if (semweb::isSubClassOfIRI(tripleData.predicate())) {
+	if (isSubClassOfIRI(tripleData.predicate())) {
 		taxonomy_->update({{tripleData.subject(), tripleData.valueAsString()}}, {});
-	} else if (semweb::isSubPropertyOfIRI(tripleData.predicate())) {
+	} else if (isSubPropertyOfIRI(tripleData.predicate())) {
 		taxonomy_->update({}, {{tripleData.subject(), tripleData.valueAsString()}});
 	}
 
@@ -227,9 +227,9 @@ bool MongoKnowledgeGraph::insertAll(const semweb::TripleContainerPtr &triples) {
 											vocabulary_->isTaxonomicProperty(data->predicate().data()));
 					  bulk->pushInsert(mngTriple.document().bson());
 
-					  if (semweb::isSubClassOfIRI(data->predicate())) {
+					  if (isSubClassOfIRI(data->predicate())) {
 						  tAssertions.subClassAssertions.emplace_back(data->subject(), data->valueAsString());
-					  } else if (semweb::isSubPropertyOfIRI(data->predicate())) {
+					  } else if (isSubPropertyOfIRI(data->predicate())) {
 						  tAssertions.subPropertyAssertions.emplace_back(data->subject(), data->valueAsString());
 					  }
 				  });

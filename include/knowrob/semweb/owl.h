@@ -9,7 +9,7 @@
 #include "string"
 #include "knowrob/terms/IRIAtom.h"
 
-namespace knowrob::semweb {
+namespace knowrob {
     namespace owl {
         constexpr std::string_view prefix    = "http://www.w3.org/2002/07/owl#";
         const IRIAtomPtr imports             = IRIAtom::Tabled("http://www.w3.org/2002/07/owl#imports");

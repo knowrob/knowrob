@@ -168,37 +168,37 @@ bool Remove::doCommit(const semweb::TripleContainerPtr &triples, const knowrob::
 
 void Insert::updateVocabulary(const FramedTriple &triple) {
 	// keep track of imports, subclasses, and subproperties
-	if (semweb::isSubClassOfIRI(triple.predicate())) {
+	if (isSubClassOfIRI(triple.predicate())) {
 		auto sub = vocabulary_->defineClass(triple.subject());
 		auto sup = vocabulary_->defineClass(triple.valueAsString());
 		sub->addDirectParent(sup);
-	} else if (semweb::isSubPropertyOfIRI(triple.predicate())) {
+	} else if (isSubPropertyOfIRI(triple.predicate())) {
 		auto sub = vocabulary_->defineProperty(triple.subject());
 		auto sup = vocabulary_->defineProperty(triple.valueAsString());
 		sub->addDirectParent(sup);
-	} else if (semweb::isTypeIRI(triple.predicate())) {
+	} else if (isTypeIRI(triple.predicate())) {
 		vocabulary_->addResourceType(triple.subject(), triple.valueAsString());
 		// increase frequency in vocabulary
 		static std::set<std::string_view> skippedTypes = {
-				semweb::owl::Class->stringForm(),
-				semweb::owl::Restriction->stringForm(),
-				semweb::owl::NamedIndividual->stringForm(),
-				semweb::owl::AnnotationProperty->stringForm(),
-				semweb::owl::ObjectProperty->stringForm(),
-				semweb::owl::DatatypeProperty->stringForm(),
-				semweb::rdfs::Class->stringForm(),
-				semweb::rdf::Property->stringForm()
+				owl::Class->stringForm(),
+				owl::Restriction->stringForm(),
+				owl::NamedIndividual->stringForm(),
+				owl::AnnotationProperty->stringForm(),
+				owl::ObjectProperty->stringForm(),
+				owl::DatatypeProperty->stringForm(),
+				rdfs::Class->stringForm(),
+				rdf::Property->stringForm()
 		};
 		if (vocabulary_->isDefinedClass(triple.valueAsString()) &&
 			!skippedTypes.count(triple.valueAsString())) {
 			vocabulary_->increaseFrequency(triple.valueAsString());
 		}
-	} else if (semweb::isInverseOfIRI(triple.predicate())) {
+	} else if (isInverseOfIRI(triple.predicate())) {
 		auto p = vocabulary_->defineProperty(triple.subject());
 		auto q = vocabulary_->defineProperty(triple.valueAsString());
 		p->setInverse(q);
 		q->setInverse(p);
-	} else if (semweb::owl::imports->stringForm() == triple.predicate()) {
+	} else if (owl::imports->stringForm() == triple.predicate()) {
 		auto resolvedImport = URI::resolve(triple.valueAsString());
 		auto importedGraph = DataSource::getNameFromURI(resolvedImport);
 		if (triple.graph()) {
