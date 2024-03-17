@@ -79,6 +79,7 @@ namespace knowrob {
         TermRule keyvalue;
         TermRule options;
         TermRule nil;
+        TermRule blank;
 
         AtomRule atom;
 		AtomRule atom_regular;
@@ -89,6 +90,7 @@ namespace knowrob {
         StringRule doubleQuotes;
         StringRule lowerPrefix;
         StringRule upperPrefix;
+        StringRule rawBlank;
         StringRule atomRaw;
         StringRule atomRawWithIRI;
 
@@ -255,42 +257,48 @@ static inline std::optional<TimeInterval> readTimeInterval(ListTerm *options)
 	static const auto a_until = Atom::Tabled("until");
 
     std::optional<TimePoint> beginTime, endTime;
+    bool nextIsBegin = true;
 
     for(auto &option : *options)
     {
-        // TODO: allow eg `H[,20] phi`? i.e. empty for first arg?
-
-		if(option->termType() == TermType::FUNCTION) {
+		if(!option) {
+			nextIsBegin = false;
+			continue;
+		} else if(option->termType() == TermType::FUNCTION) {
         	// handle options with a key
             auto function = (Function*)option.get();
             if(function->arity()==2) {
                 auto &key = function->arguments()[0];
                 auto &value = function->arguments()[1];
-                if(value->isNumeric()) {
-                	auto numeric = std::static_pointer_cast<Numeric>(value);
-					if(!beginTime.has_value() && (*key == *a_begin || *key == *a_since)) {
-						beginTime = numeric->asDouble();
-						continue;
-					}
-					else if(!endTime.has_value() && (*key == *a_end || *key == *a_until)) {
-						endTime = numeric->asDouble();
-						continue;
-					}
+                if(value) {
+                	if (value->isNumeric()) {
+						auto numeric = std::static_pointer_cast<Numeric>(value);
+						if((*key == *a_begin || *key == *a_since)) {
+							beginTime = numeric->asDouble();
+							continue;
+						}
+						else if((*key == *a_end || *key == *a_until)) {
+							endTime = numeric->asDouble();
+							continue;
+						}
+                	}
 				}
             }
         } else if (option->isNumeric()) {
         	// handle options without key
         	auto numeric = std::static_pointer_cast<Numeric>(option);
-        	if(numeric) {
-				if(!beginTime.has_value()) {
-					beginTime = numeric->asDouble();
-					continue;
-				}
-				else if(!endTime.has_value()) {
-					endTime = numeric->asDouble();
-					continue;
-				}
-        	}
+			if(nextIsBegin) {
+				beginTime = numeric->asDouble();
+				nextIsBegin = false;
+				continue;
+			}
+			else {
+				endTime = numeric->asDouble();
+				continue;
+			}
+        } else if (option->isAtomic() && std::static_pointer_cast<Atomic>(option)->stringForm() == "_") {
+			nextIsBegin = false;
+			continue;
         }
         reportUnrecognized(option);
     }
@@ -341,6 +349,7 @@ QueryParser::QueryParser() {
     bnf_->doubleQuotes %= qi::lexeme['"' >> +(qi::char_ - '"') >> '"'];
     bnf_->lowerPrefix %= qi::raw[ascii::lower >> *(ascii::alnum | '_')];
     bnf_->upperPrefix %= qi::raw[ascii::upper >> *(ascii::alnum | '_')];
+    bnf_->rawBlank %= qi::raw['_'];
 
     // atoms are either a single quoted string, or words that start with a lowercase letter.
     bnf_->atomRaw %= (bnf_->singleQuotes | bnf_->lowerPrefix);
@@ -371,13 +380,14 @@ QueryParser::QueryParser() {
 	// TODO: support explicit typing of numbers, e.g. `123::int`
     bnf_->number = (qi::double_
             [qi::_val = ptr_<Double>()(qi::_1)]);
+    bnf_->blank = (bnf_->rawBlank [qi::_val = ptr_<String>()(qi::_1)]);
 
     ///////////////////////////
     // option lists
-    bnf_->keyvalue = ((((bnf_->atom) >> qi::char_('=')) >> (bnf_->atomic))
+    bnf_->keyvalue = (((bnf_->atom) >> qi::char_('=') >> (bnf_->atomic))
             [qi::_val = ptr_<Function>()(equalFunctor,
              boost::phoenix::bind(&createTermVector2, qi::_1, qi::_3))]);
-    bnf_->option %= (bnf_->keyvalue | bnf_->atomic);
+    bnf_->option %= (bnf_->keyvalue | bnf_->atomic | bnf_->blank);
     bnf_->options = ((qi::char_('[') >> (bnf_->option % ',') >> qi::char_(']'))
             [qi::_val = ptr_<ListTerm>()(qi::_2)]);
     bnf_->nil = qi::attr(ListTerm::nil());
@@ -745,9 +755,9 @@ TEST_F(QueryParserTest, ModalityWithWrongArguments) {
 }
 
 TEST_F(QueryParserTest, ModalityWithEmptyArguments) {
-	GTEST_SKIP() << "syntax like P[,10.0] where an argument is missing is not supported yet by the query parser.";
-    TEST_NO_THROW(testModal(QueryParser::parse("P[,10.0] p(x)"), "P", FormulaType::PREDICATE))
-    TEST_NO_THROW(testModal(QueryParser::parse("P[10,] p(x)"), "P", FormulaType::PREDICATE))
+	//GTEST_SKIP() << "syntax like P[,10.0] where an argument is missing is not supported yet by the query parser.";
+    TEST_NO_THROW(testModal(QueryParser::parse("P[_,10.0] p(x)"), "P", FormulaType::PREDICATE))
+    TEST_NO_THROW(testModal(QueryParser::parse("P[10,_] p(x)"), "P", FormulaType::PREDICATE))
 }
 
 TEST_F(QueryParserTest, Precedence) {
