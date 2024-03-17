@@ -64,9 +64,9 @@ ModalStage::ModalStage(
 			if (ti.has_value()) {
 				auto &since = ti->since();
 				auto &until = ti->until();
-				if (since.has_value()) modalContext->selector.begin = since.value().value();
+				if (since.has_value()) modalContext->selector.begin = time::toSeconds(since.value());
 				else modalContext->selector.begin = std::nullopt;
-				if (until.has_value()) modalContext->selector.end = until.value().value();
+				if (until.has_value()) modalContext->selector.end = time::toSeconds(until.value());
 				else modalContext->selector.end = std::nullopt;
 			} else {
 				modalContext->selector.begin = std::nullopt;

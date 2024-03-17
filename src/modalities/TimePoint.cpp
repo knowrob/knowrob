@@ -9,32 +9,25 @@
 
 using namespace knowrob;
 
-TimePoint::TimePoint(const double& value)
-: value_(value)
-{
+TimePoint time::now() {
+	auto tp = std::chrono::system_clock::now();
+	return std::chrono::time_point_cast<std::chrono::seconds>(tp);
 }
 
-TimePoint TimePoint::now()
-{
-	auto time = std::chrono::system_clock::now().time_since_epoch();
-	std::chrono::seconds seconds = std::chrono::duration_cast< std::chrono::seconds >(time);
-	std::chrono::milliseconds ms = std::chrono::duration_cast< std::chrono::milliseconds >(time);
-	return { (double) seconds.count() + ((double) (ms.count() % 1000)/1000.0) };
+TimePoint time::fromSeconds(double seconds) {
+	auto tp =
+			std::chrono::system_clock::from_time_t(static_cast<time_t>(seconds));
+	return std::chrono::time_point_cast<std::chrono::seconds>(tp);
 }
 
-bool TimePoint::operator<(const TimePoint& other) const
-{
-	return value_ < other.value_;
-}
-
-bool TimePoint::operator==(const TimePoint& other) const
-{
-	return fabs(value_ - other.value_) < 1e-9;
+double time::toSeconds(const TimePoint &timestamp) {
+	auto time_t_value = std::chrono::system_clock::to_time_t(timestamp);
+	return static_cast<double>(time_t_value);
 }
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const TimePoint& tp) //NOLINT
-	{
-		return os << tp.value();
+	std::ostream &operator<<(std::ostream &os, const TimePoint &tp) { // NOLINT
+		os << time::toSeconds(tp);
+		return os;
 	}
 }

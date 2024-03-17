@@ -23,16 +23,16 @@ namespace knowrob {
 		 */
 		TimeInterval(const std::optional<TimePoint> &since, const std::optional<TimePoint> &until);
 
-        /**
-         * @param other another time interval
-         * @return true if both time intervals are equal
-         */
-        bool operator==(const TimeInterval& other) const;
+		/**
+		 * @param other another time interval
+		 * @return true if both time intervals are equal
+		 */
+		bool operator==(const TimeInterval &other) const;
 
 		/**
 		 * @return a time interval without further constraints on begin and end time point of the interval.
 		 */
-		static const TimeInterval& anytime();
+		static const TimeInterval &anytime();
 
 		/**
 		 * @return a time interval that at least intersects with the current time.
@@ -47,17 +47,18 @@ namespace knowrob {
 		 */
 		std::shared_ptr<TimeInterval> intersectWith(const TimeInterval &other) const;
 
-        const auto& since() const { return since_; }
-        const auto& until() const { return until_; }
+		const auto &since() const { return since_; }
 
-    protected:
-        std::optional<TimePoint> since_;
-        std::optional<TimePoint> until_;
+		const auto &until() const { return until_; }
+
+	protected:
+		std::optional<TimePoint> since_;
+		std::optional<TimePoint> until_;
 	};
 }
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const knowrob::TimeInterval& ti);
+	std::ostream &operator<<(std::ostream &os, const knowrob::TimeInterval &ti);
 }
 
 #endif //KNOWROB_TIME_INTERVAL_H_

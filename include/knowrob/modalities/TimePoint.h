@@ -7,47 +7,36 @@
 #define KNOWROB_TIME_POINT_H_
 
 #include <ostream>
+#include <chrono>
 
 namespace knowrob {
 	/**
-	 * A point in time.
+	 * A time point in seconds.
 	 */
-	class TimePoint {
-	public:
+	typedef std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds> TimePoint;
+
+	namespace time {
 		/**
-		 * @param value time in seconds
+		 * @return the current time point.
 		 */
-		TimePoint(const double& value);
+		TimePoint now();
 
 		/**
-		 * @return the current system time
+		 * @param seconds the number of seconds since the epoch.
+		 * @return the time point.
 		 */
-		static TimePoint now();
+		TimePoint fromSeconds(double seconds);
 
 		/**
-		 * @return the value of this time point in seconds
+		 * @param timestamp the time point.
+		 * @return the number of seconds since the epoch.
 		 */
-		const double& value() const { return value_; }
-
-		/**
-		 * @param other another time point
-		 * @return true if this time point occurs earlier than another one.
-		 */
-		bool operator<(const TimePoint& other) const;
-
-		/**
-		 * @param other another time point
-		 * @return true if this time point equals the other in nanosecond resolution.
-		 */
-		bool operator==(const TimePoint& other) const;
-
-	protected:
-		double value_;
-	};
+		double toSeconds(const TimePoint &timestamp);
+	} // namespace time
 }
 
 namespace std {
-	std::ostream& operator<<(std::ostream& os, const knowrob::TimePoint& tp);
+	std::ostream &operator<<(std::ostream &os, const knowrob::TimePoint &tp);
 }
 
 #endif //KNOWROB_TIME_POINT_H_

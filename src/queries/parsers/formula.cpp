@@ -152,10 +152,10 @@ static inline std::optional<TimeInterval> readTimeInterval(ListTerm *options) {
 					if (value->isNumeric()) {
 						auto numeric = std::static_pointer_cast<Numeric>(value);
 						if ((*key == *a_begin || *key == *a_since)) {
-							beginTime = numeric->asDouble();
+							beginTime = time::fromSeconds(numeric->asDouble());
 							continue;
 						} else if ((*key == *a_end || *key == *a_until)) {
-							endTime = numeric->asDouble();
+							endTime = time::fromSeconds(numeric->asDouble());
 							continue;
 						}
 					}
@@ -165,11 +165,11 @@ static inline std::optional<TimeInterval> readTimeInterval(ListTerm *options) {
 			// handle options without key
 			auto numeric = std::static_pointer_cast<Numeric>(option);
 			if (nextIsBegin) {
-				beginTime = numeric->asDouble();
+				beginTime = time::fromSeconds(numeric->asDouble());
 				nextIsBegin = false;
 				continue;
 			} else {
-				endTime = numeric->asDouble();
+				endTime = time::fromSeconds(numeric->asDouble());
 				continue;
 			}
 		} else if (option->isAtomic() && std::static_pointer_cast<Atomic>(option)->stringForm() == "_") {

@@ -17,11 +17,11 @@ TemporalModality::TemporalModality(const TimeInterval &timeInterval)
 		: timeInterval_(timeInterval), Modality() {
 	if (timeInterval_->since().has_value()) {
 		parameters_[EPISTEMIC_MODALITY_SINCE_KEY] =
-				std::make_shared<Double>(timeInterval_->since().value().value());
+				std::make_shared<Double>(time::toSeconds(timeInterval_->since().value()));
 	}
 	if (timeInterval_->until().has_value()) {
 		parameters_[EPISTEMIC_MODALITY_UNTIL_KEY] =
-				std::make_shared<Double>(timeInterval_->until().value().value());
+				std::make_shared<Double>(time::toSeconds(timeInterval_->until().value()));
 	}
 }
 
