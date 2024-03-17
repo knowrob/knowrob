@@ -425,12 +425,13 @@ endif()
 ##############
 
 # add an executable target for GTest.
-# but the testing code is actually in the *knowrob* library
+# but the testing code is partly in the *knowrob* library
 # where gtest won't find them without using the "--no-as-needed"
 # flag for the linker.
 add_executable(all_gtests
 		tests/gtests.cpp
 		src/neems/test.cpp
+        tests/QueryParserTest.cpp
 		tests/KnowledgeBaseTest.cpp
         tests/DataBackendTest.cpp
 		tests/py/test-module.cpp)
