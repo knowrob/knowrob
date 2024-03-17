@@ -16,6 +16,7 @@
 
 #define RETURN_TERM_RULE(expr) static TermRule r(expr); return r
 #define RETURN_ATOM_RULE(expr) static AtomRule r(expr); return r
+#define RETURN_FUNCTION_RULE(expr) static FunctionRule r(expr); return r
 
 static knowrob::AtomPtr makeAtom(std::string_view stringForm) {
 	return knowrob::Atom::Tabled(stringForm);
@@ -106,5 +107,27 @@ namespace knowrob::parsers::terms {
 
 	TermRule &options_or_nil() {
 		RETURN_TERM_RULE(options() | nil());
+	}
+
+	struct term_and_function_parsers {
+		term_and_function_parsers() {
+			function = ((atom() >> '(' >> (term % ',') >> ')') [qi::_val = ptr_<Function>()(qi::_1, qi::_2)]);
+			term %= function | var() | atomic() | atomic_list();
+		}
+		TermRule term;
+		FunctionRule function;
+	};
+
+	auto &term_and_function() {
+		static term_and_function_parsers p;
+		return p;
+	}
+
+	TermRule &term() {
+		RETURN_TERM_RULE(term_and_function().term);
+	}
+
+	FunctionRule &function() {
+		RETURN_FUNCTION_RULE(term_and_function().function);
 	}
 }

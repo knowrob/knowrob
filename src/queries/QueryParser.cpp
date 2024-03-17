@@ -65,10 +65,6 @@ namespace knowrob {
 		PredicateRule predicate;
 		PredicateRule predicateNullary;
 		PredicateRule predicateWithArgs;
-
-		// a rule that matches a single argument of a predicate
-		TermRule term;
-		FunctionRule function;
 	};
 }
 
@@ -271,16 +267,8 @@ QueryParser::QueryParser() {
 	bnf_ = new ParserRules();
 
 	///////////////////////////
-	// arguments of predicates: constants or variables
-	// TODO: also support some operators like '<', '>' etc. without quotes
-	bnf_->function = ((terms::atom() >>
-									 qi::char_('(') >> (bnf_->term % ',') >> ')')
-	[qi::_val = ptr_<Function>()(qi::_1, qi::_3)]);
-	bnf_->term %= bnf_->function | terms::var() | terms::atomic() | terms::atomic_list();
-
-	///////////////////////////
 	// predicates
-	bnf_->predicateWithArgs = ((str::atom() >> qi::char_('(') >> (bnf_->term % ',') >> ')')
+	bnf_->predicateWithArgs = ((str::atom() >> qi::char_('(') >> (terms::term() % ',') >> ')')
 	[qi::_val = ptr_<Predicate>()(qi::_1, qi::_3)]);
 	bnf_->predicateNullary = (str::atom()
 	[qi::_val = ptr_<Predicate>()(qi::_1, std::vector<TermPtr>())]);
@@ -360,7 +348,7 @@ PredicatePtr QueryParser::parsePredicate(const std::string &queryString) {
 }
 
 FunctionPtr QueryParser::parseFunction(const std::string &queryString) {
-	return parse_<FunctionPtr, FunctionRule>(queryString, get()->function);
+	return parse_<FunctionPtr, FunctionRule>(queryString, knowrob::parsers::terms::function());
 }
 
 TermPtr QueryParser::parseConstant(const std::string &queryString) {

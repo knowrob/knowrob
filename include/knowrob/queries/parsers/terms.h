@@ -9,10 +9,12 @@
 #include <boost/spirit/include/qi.hpp>
 #include "knowrob/terms/Term.h"
 #include "knowrob/terms/Atom.h"
+#include "knowrob/terms/Function.h"
 
 namespace knowrob::parsers::terms {
 	using TermRule = boost::spirit::qi::rule<std::string::const_iterator, std::shared_ptr<Term>(), boost::spirit::ascii::space_type>;
 	using AtomRule = boost::spirit::qi::rule<std::string::const_iterator, std::shared_ptr<Atom>(), boost::spirit::ascii::space_type>;
+	using FunctionRule = boost::spirit::qi::rule<std::string::const_iterator, std::shared_ptr<Function>(), boost::spirit::ascii::space_type>;
 
 	AtomRule &iri();
 
@@ -47,6 +49,10 @@ namespace knowrob::parsers::terms {
 	TermRule &options();
 
 	TermRule &options_or_nil();
+
+	TermRule &term();
+
+	FunctionRule &function();
 }
 
 #endif //KNOWROB_TERM_PARSERS_H
