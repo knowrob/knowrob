@@ -44,6 +44,11 @@ test('rdf_list(+,-)') :-
 	;	true
 	).
 
+test('rdf_list_head(+,+)') :-
+	test_list(RDF_list1),
+	mongolog_call(triple(SubList, rdf:first, test:t2)),
+	assert_true(mongolog_call(rdf_list_head(SubList, RDF_list1))).
+
 test('rdf_list_head(+,-)') :-
 	test_list(RDF_list1),
 	mongolog_call(triple(SubList, rdf:first, test:t2)),
