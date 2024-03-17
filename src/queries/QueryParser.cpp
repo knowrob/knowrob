@@ -69,7 +69,7 @@ namespace knowrob {
         // a rule that matches a single argument of a predicate
         TermRule term;
         FunctionRule function;
-        TermRule variable;
+        TermRule variable, variable1, variable2;
         TermRule atomic;
         TermRule list;
         TermRule number;
@@ -387,7 +387,9 @@ QueryParser::QueryParser() {
     bnf_->atomic %= (bnf_->atom | bnf_->string | bnf_->number);
     bnf_->list = ((qi::char_('[') >> (bnf_->atomic % ',') >> qi::char_(']'))
             [qi::_val = ptr_<ListTerm>()(qi::_2)]);
-    bnf_->variable = (bnf_->upperPrefix[qi::_val = ptr_<Variable>()(qi::_1)]);
+    bnf_->variable1 = (bnf_->upperPrefix[qi::_val = ptr_<Variable>()(qi::_1)]);
+    bnf_->variable2 = (qi::char_('?') >> bnf_->lowerPrefix[qi::_val = ptr_<Variable>()(qi::_1)]);
+    bnf_->variable %= (bnf_->variable1 | bnf_->variable2);
     // TODO: also support some operators like '<', '>' etc. without quotes
     // TODO: needs atom type
     bnf_->function = (((bnf_->atom) >>
@@ -625,6 +627,9 @@ TEST_F(QueryParserTest, InvalidConstant) {
 TEST_F(QueryParserTest, Predicates) {
     TEST_NO_THROW(testPredicate(
             QueryParser::parsePredicate("p(X,a)"),
+            "p", 2, {TermType::VARIABLE, TermType::ATOMIC}))
+    TEST_NO_THROW(testPredicate(
+            QueryParser::parsePredicate("p(?x,a)"),
             "p", 2, {TermType::VARIABLE, TermType::ATOMIC}))
     TEST_NO_THROW(testPredicate(
             QueryParser::parsePredicate("'X1'(x1)"),
