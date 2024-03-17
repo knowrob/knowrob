@@ -9,7 +9,7 @@
 #include <mongoc.h>
 #include "knowrob/terms/Term.h"
 
-namespace knowrob {
+namespace knowrob::mongo {
 	/**
 	 * Translates a Term to a MongoDB query.
 	 */

@@ -4,7 +4,7 @@
 #include <mongoc.h>
 #include <fmt/core.h>
 
-namespace knowrob {
+namespace knowrob::mongo {
     /**
      * A runtime exception that occurred when interacting with Mongo DB.
      */

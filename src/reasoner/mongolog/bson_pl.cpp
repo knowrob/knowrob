@@ -233,7 +233,7 @@ PlTerm bson_to_term(const bson_t *doc)
 				MONGOC_ERROR_BSON,
 				MONGOC_ERROR_BSON_INVALID,
 				"BSON iteration prematurely stopped.");
-			throw knowrob::MongoException("bson", err);
+			throw knowrob::mongo::MongoException("bson", err);
 		}
 	}
 	out_list.close();

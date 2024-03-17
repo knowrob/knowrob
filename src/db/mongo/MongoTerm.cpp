@@ -8,7 +8,7 @@
 #include "knowrob/terms/Numeric.h"
 #include "knowrob/terms/Variable.h"
 
-using namespace knowrob;
+using namespace knowrob::mongo;
 
 void MongoTerm::append( //NOLINT
 		bson_t *doc,

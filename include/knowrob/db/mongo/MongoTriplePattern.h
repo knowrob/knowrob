@@ -11,7 +11,7 @@
 #include "knowrob/semweb/ImportHierarchy.h"
 #include "Document.h"
 
-namespace knowrob {
+namespace knowrob::mongo {
 	/**
 	 * A class to represent a triple pattern in a MongoDB.
 	 */

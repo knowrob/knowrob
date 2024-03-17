@@ -12,7 +12,7 @@
 #include "Pipeline.h"
 #include "Collection.h"
 
-namespace knowrob {
+namespace knowrob::mongo {
 	/**
 	 * A class to update the taxonomy in a MongoDB.
 	 */

@@ -6,7 +6,7 @@
 #include "knowrob/db/mongo/MongoTriplePattern.h"
 #include "knowrob/db/mongo/MongoTerm.h"
 
-using namespace knowrob;
+using namespace knowrob::mongo;
 
 #define MONGO_OPERATOR_LTE  "$lte"
 #define MONGO_OPERATOR_GTE  "$gte"
