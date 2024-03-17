@@ -16,14 +16,14 @@ using namespace knowrob;
 MongoTriplePattern::MongoTriplePattern(
 		const FramedTriplePattern &tripleExpression,
 		bool b_isTaxonomicProperty,
-		const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy)
+		const std::shared_ptr<ImportHierarchy> &importHierarchy)
 		: document_(create(tripleExpression, b_isTaxonomicProperty, importHierarchy)) {
 }
 
 bson_t *MongoTriplePattern::create(
 		const FramedTriplePattern &tripleExpression,
 		bool b_isTaxonomicProperty,
-		const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy) {
+		const std::shared_ptr<ImportHierarchy> &importHierarchy) {
 	auto selectorDoc = bson_new();
 	append(selectorDoc, tripleExpression, b_isTaxonomicProperty, importHierarchy);
 	return selectorDoc;
@@ -32,7 +32,7 @@ bson_t *MongoTriplePattern::create(
 void MongoTriplePattern::append(bson_t *selectorDoc,
 								const FramedTriplePattern &tripleExpression,
 								bool b_isTaxonomicProperty,
-								const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy) {
+								const std::shared_ptr<ImportHierarchy> &importHierarchy) {
 	// "s"" field
 	MongoTerm::append(selectorDoc,
 					  "s", tripleExpression.subjectTerm());
@@ -56,13 +56,13 @@ void MongoTriplePattern::append(bson_t *selectorDoc,
 
 void MongoTriplePattern::appendGraphSelector(bson_t *selectorDoc,
 											 const FramedTriplePattern &tripleExpression,
-											 const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy) {
+											 const std::shared_ptr<ImportHierarchy> &importHierarchy) {
 	auto &gt = tripleExpression.graphTerm();
 	if (!gt) return;
 
 	if (gt->termType() == TermType::ATOMIC) {
 		auto graphString = gt.grounded();
-		if (graphString->stringForm() == semweb::ImportHierarchy::ORIGIN_ANY || graphString->stringForm() == "*")
+		if (graphString->stringForm() == ImportHierarchy::ORIGIN_ANY || graphString->stringForm() == "*")
 			return;
 
 		std::vector<TermPtr> childrenNames;

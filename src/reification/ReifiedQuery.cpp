@@ -13,7 +13,7 @@
 
 using namespace knowrob;
 
-ReifiedQuery::ReifiedQuery(const std::shared_ptr<GraphQuery> &nonReified, semweb::VocabularyPtr vocabulary, bool withFullFrame)
+ReifiedQuery::ReifiedQuery(const std::shared_ptr<GraphQuery> &nonReified, VocabularyPtr vocabulary, bool withFullFrame)
 		: GraphQuery(nonReified->ctx()),
 		  vocabulary_(std::move(vocabulary)),
 		  withFullFrame_(withFullFrame),
@@ -21,7 +21,7 @@ ReifiedQuery::ReifiedQuery(const std::shared_ptr<GraphQuery> &nonReified, semweb
 	setNonReified(nonReified->term());
 }
 
-ReifiedQuery::ReifiedQuery(const FramedTriplePattern &nonReified, semweb::VocabularyPtr vocabulary, bool withFullFrame)
+ReifiedQuery::ReifiedQuery(const FramedTriplePattern &nonReified, VocabularyPtr vocabulary, bool withFullFrame)
 		: GraphQuery(),
 		  vocabulary_(std::move(vocabulary)),
 		  withFullFrame_(withFullFrame),

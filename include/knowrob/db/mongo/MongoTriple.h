@@ -16,7 +16,7 @@ namespace knowrob::mongo {
 	 */
 	class MongoTriple {
 	public:
-		MongoTriple(const semweb::VocabularyPtr &vocabulary,
+		MongoTriple(const VocabularyPtr &vocabulary,
 					const FramedTriple &tripleData,
 					const std::string &fallbackOrigin,
 					bool isTaxonomic);
@@ -30,7 +30,7 @@ namespace knowrob::mongo {
 		Document document_;
 
 		static bson_t *createDocument(
-				const semweb::VocabularyPtr &vocabulary,
+				const VocabularyPtr &vocabulary,
 				const FramedTriple &tripleData,
 				const std::string &fallbackOrigin,
 				bool isTaxonomic);

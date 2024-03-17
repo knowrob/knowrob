@@ -20,7 +20,7 @@ namespace knowrob {
 	class ReificationContainer : public semweb::TripleContainer {
 	public:
 		explicit ReificationContainer(semweb::TripleContainerPtr originalTriples,
-									  semweb::VocabularyPtr vocabulary,
+									  VocabularyPtr vocabulary,
 									  ReifiedNames reifiedNames);
 
 		// Override TripleContainer
@@ -28,7 +28,7 @@ namespace knowrob {
 
 	protected:
 		semweb::TripleContainerPtr originalTriples_;
-		semweb::VocabularyPtr vocabulary_;
+		VocabularyPtr vocabulary_;
 		ReifiedNames reifiedNames_;
 	};
 } // knowrob

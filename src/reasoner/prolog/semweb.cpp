@@ -15,8 +15,8 @@
 
 using namespace knowrob;
 
-static inline std::shared_ptr<semweb::ImportHierarchy> getImportHierarchy(term_t t_manager, term_t t_reasoner) {
-	static std::shared_ptr<semweb::ImportHierarchy> null;
+static inline std::shared_ptr<ImportHierarchy> getImportHierarchy(term_t t_manager, term_t t_reasoner) {
+	static std::shared_ptr<ImportHierarchy> null;
 	auto definedReasoner =
 			PrologReasoner::getDefinedReasoner(t_manager, t_reasoner);
 	if (!definedReasoner) return null;
@@ -111,27 +111,27 @@ foreign_t sw_default_graph3(term_t t_manager, term_t t_reasoner, term_t t_graph)
 }
 
 foreign_t sw_origin_any1(term_t t_origin) {
-	return PL_unify_atom_chars(t_origin, semweb::ImportHierarchy::ORIGIN_ANY.data());
+	return PL_unify_atom_chars(t_origin, ImportHierarchy::ORIGIN_ANY.data());
 }
 
 foreign_t sw_origin_system1(term_t t_origin) {
-	return PL_unify_atom_chars(t_origin, semweb::ImportHierarchy::ORIGIN_SYSTEM.data());
+	return PL_unify_atom_chars(t_origin, ImportHierarchy::ORIGIN_SYSTEM.data());
 }
 
 foreign_t sw_origin_session1(term_t t_origin) {
-	return PL_unify_atom_chars(t_origin, semweb::ImportHierarchy::ORIGIN_SESSION.data());
+	return PL_unify_atom_chars(t_origin, ImportHierarchy::ORIGIN_SESSION.data());
 }
 
 foreign_t sw_origin_user1(term_t t_origin) {
-	return PL_unify_atom_chars(t_origin, semweb::ImportHierarchy::ORIGIN_USER.data());
+	return PL_unify_atom_chars(t_origin, ImportHierarchy::ORIGIN_USER.data());
 }
 
 foreign_t sw_origin_reasoner1(term_t t_origin) {
-	return PL_unify_atom_chars(t_origin, semweb::ImportHierarchy::ORIGIN_REASONER.data());
+	return PL_unify_atom_chars(t_origin, ImportHierarchy::ORIGIN_REASONER.data());
 }
 
 foreign_t sw_origin_test1(term_t t_origin) {
-	return PL_unify_atom_chars(t_origin, semweb::ImportHierarchy::ORIGIN_TEST.data());
+	return PL_unify_atom_chars(t_origin, ImportHierarchy::ORIGIN_TEST.data());
 }
 
 foreign_t sw_url_graph2(term_t t_url, term_t t_graph) {

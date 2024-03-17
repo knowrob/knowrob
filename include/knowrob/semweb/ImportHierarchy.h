@@ -1,16 +1,17 @@
-//
-// Created by daniel on 09.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
-#ifndef KNOWROB_SEMWEB_IMPORT_HIERARCHY_H
-#define KNOWROB_SEMWEB_IMPORT_HIERARCHY_H
+#ifndef KNOWROB_IMPORT_HIERARCHY_H
+#define KNOWROB_IMPORT_HIERARCHY_H
 
 #include "string"
 #include "set"
 #include "map"
 #include "CurrentGraph.h"
 
-namespace knowrob::semweb {
+namespace knowrob {
 	/**
 	 * Manages a hierarchy between named triple origins.
 	 * One of the purposes of this hierarchy is to distinguish between triples that are dynamically
@@ -110,6 +111,6 @@ namespace knowrob::semweb {
 		bool isSessionOrigin(CurrentGraph &graph);
 	};
 
-} // knowrob::semweb
+} // knowrob
 
-#endif //KNOWROB_SEMWEB_IMPORT_HIERARCHY_H
+#endif //KNOWROB_IMPORT_HIERARCHY_H

@@ -20,7 +20,7 @@ namespace knowrob {
 		MongoTriplePattern(
 				const FramedTriplePattern &tripleExpression,
 				bool b_isTaxonomicProperty,
-				const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy);
+				const std::shared_ptr<ImportHierarchy> &importHierarchy);
 
 		auto &document() { return document_; }
 
@@ -30,12 +30,12 @@ namespace knowrob {
 				bson_t *selectorDoc,
 				const FramedTriplePattern &tripleExpression,
 				bool b_isTaxonomicProperty,
-				const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy);
+				const std::shared_ptr<ImportHierarchy> &importHierarchy);
 
 		static void appendGraphSelector(
 				bson_t *selectorDoc,
 				const FramedTriplePattern &tripleExpression,
-				const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy);
+				const std::shared_ptr<ImportHierarchy> &importHierarchy);
 
 		static void appendEpistemicSelector(
 				bson_t *selectorDoc,
@@ -51,7 +51,7 @@ namespace knowrob {
 		static bson_t *create(
 				const FramedTriplePattern &tripleExpression,
 				bool b_isTaxonomicProperty,
-				const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy);
+				const std::shared_ptr<ImportHierarchy> &importHierarchy);
 
 		static const char *getOperatorString(knowrob::FramedTriplePattern::OperatorType operatorType);
 	};

@@ -36,7 +36,7 @@ KNOWROB_BUILTIN_REASONER("Prolog", PrologReasoner)
 foreign_t pl_rdf_register_namespace2(term_t prefix_term, term_t uri_term) {
 	char *prefix, *uri;
 	if (PL_get_atom_chars(prefix_term, &prefix) && PL_get_atom_chars(uri_term, &uri)) {
-		semweb::PrefixRegistry::get().registerPrefix(prefix, uri);
+		PrefixRegistry::get().registerPrefix(prefix, uri);
 	}
 	return TRUE;
 }
@@ -102,7 +102,7 @@ bool PrologReasoner::loadConfig(const ReasonerConfig &cfg) {
 		// register RDF namespaces with Prolog.
 		// in particular the ones specified in settings are globally registered with PrefixRegistry.
 		static const auto register_prefix_i = "sw_register_prefix";
-		for (auto &pair: semweb::PrefixRegistry::get()) {
+		for (auto &pair: PrefixRegistry::get()) {
 			const auto &uri = pair.first;
 			const auto &alias = pair.second;
 			PROLOG_REASONER_EVAL(PrologTerm(register_prefix_i, alias, uri + "#"));

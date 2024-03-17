@@ -21,8 +21,8 @@ auto &getBackendFactories() {
 	return x;
 }
 
-BackendManager::BackendManager(const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-							   const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy)
+BackendManager::BackendManager(const std::shared_ptr<Vocabulary> &vocabulary,
+							   const std::shared_ptr<ImportHierarchy> &importHierarchy)
 		: vocabulary_(vocabulary),
 		  importHierarchy_(importHierarchy),
 		  backendIndex_(0) {

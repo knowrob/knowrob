@@ -8,7 +8,7 @@
 using namespace knowrob::mongo;
 using namespace knowrob;
 
-MongoTriple::MongoTriple(const semweb::VocabularyPtr &vocabulary,
+MongoTriple::MongoTriple(const VocabularyPtr &vocabulary,
 						 const FramedTriple &tripleData,
 						 const std::string &fallbackOrigin,
 						 bool isTaxonomic)
@@ -55,7 +55,7 @@ static inline void appendXSDLiteral(bson_t *tripleDoc, const FramedTriple &tripl
 }
 
 bson_t *MongoTriple::createDocument(
-		const semweb::VocabularyPtr &vocabulary,
+		const VocabularyPtr &vocabulary,
 		const FramedTriple &tripleData,
 		const std::string &fallbackOrigin,
 		bool isTaxonomic) {

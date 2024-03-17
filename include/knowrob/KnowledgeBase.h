@@ -126,8 +126,8 @@ namespace knowrob {
 		std::shared_ptr<BackendInterface> edb_;
 		std::shared_ptr<ReasonerManager> reasonerManager_;
 		std::shared_ptr<BackendManager> backendManager_;
-		std::shared_ptr<semweb::Vocabulary> vocabulary_;
-		std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
+		std::shared_ptr<Vocabulary> vocabulary_;
+		std::shared_ptr<ImportHierarchy> importHierarchy_;
 		bool isInitialized_;
 
 		// used to sort dependency nodes in a priority queue.
@@ -146,21 +146,21 @@ namespace knowrob {
 
 		// compares literals
 		struct EDBComparator {
-			explicit EDBComparator(semweb::VocabularyPtr vocabulary)
+			explicit EDBComparator(VocabularyPtr vocabulary)
 					: vocabulary_(std::move(vocabulary)) {}
 
 			bool operator()(const FramedTriplePatternPtr &a, const FramedTriplePatternPtr &b) const;
 
-			semweb::VocabularyPtr vocabulary_;
+			VocabularyPtr vocabulary_;
 		};
 
 		struct IDBComparator {
-			explicit IDBComparator(semweb::VocabularyPtr vocabulary)
+			explicit IDBComparator(VocabularyPtr vocabulary)
 					: vocabulary_(std::move(vocabulary)) {}
 
 			bool operator()(const RDFComputablePtr &a, const RDFComputablePtr &b) const;
 
-			semweb::VocabularyPtr vocabulary_;
+			VocabularyPtr vocabulary_;
 		};
 
 		void configure(const boost::property_tree::ptree &config);

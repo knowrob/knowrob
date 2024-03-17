@@ -119,7 +119,7 @@ namespace {
 }
 
 static std::string createIRI(const std::string &prefix, const std::string &name) {
-    auto uri = semweb::PrefixRegistry::createIRI(prefix, name);
+    auto uri = PrefixRegistry::createIRI(prefix, name);
     if (uri.has_value()) {
         return uri.value();
     } else {

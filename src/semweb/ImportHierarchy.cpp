@@ -7,7 +7,7 @@
 #include "knowrob/semweb/ImportHierarchy.h"
 #include "knowrob/Logger.h"
 
-using namespace knowrob::semweb;
+using namespace knowrob;
 
 ImportHierarchy::ImportHierarchy()
 		: defaultGraph_(ORIGIN_USER) {

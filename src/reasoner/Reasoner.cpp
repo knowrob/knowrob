@@ -37,11 +37,11 @@ ReasonerManager &Reasoner::reasonerManager() const {
 	}
 }
 
-std::shared_ptr<semweb::Vocabulary> Reasoner::vocabulary() const {
+std::shared_ptr<Vocabulary> Reasoner::vocabulary() const {
 	return reasonerManager().kb()->vocabulary();
 }
 
-std::shared_ptr<semweb::ImportHierarchy> Reasoner::importHierarchy() const {
+std::shared_ptr<ImportHierarchy> Reasoner::importHierarchy() const {
 	return reasonerManager().kb()->importHierarchy();
 }
 

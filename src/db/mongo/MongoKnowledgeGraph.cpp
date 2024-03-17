@@ -137,9 +137,9 @@ void MongoKnowledgeGraph::initializeMongo() {
 
 void MongoKnowledgeGraph::dropSessionOrigins() {
 	// TODO: move into KnowledgeBase, and do it for all backends
-	dropOrigin(semweb::ImportHierarchy::ORIGIN_USER);
-	dropOrigin(semweb::ImportHierarchy::ORIGIN_REASONER);
-	dropOrigin(semweb::ImportHierarchy::ORIGIN_SESSION);
+	dropOrigin(ImportHierarchy::ORIGIN_USER);
+	dropOrigin(ImportHierarchy::ORIGIN_REASONER);
+	dropOrigin(ImportHierarchy::ORIGIN_SESSION);
 }
 
 std::shared_ptr<Collection> MongoKnowledgeGraph::connect(
@@ -193,7 +193,7 @@ std::string MongoKnowledgeGraph::getURI(const boost::property_tree::ptree &confi
 
 void MongoKnowledgeGraph::drop() {
 	tripleCollection_->drop();
-	vocabulary_ = std::make_shared<semweb::Vocabulary>();
+	vocabulary_ = std::make_shared<Vocabulary>();
 	importHierarchy_->clear();
 }
 

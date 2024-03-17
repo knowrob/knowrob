@@ -11,6 +11,7 @@
 #include "knowrob/semweb/PrefixProbe.h"
 #include "knowrob/reification/model.h"
 
+using namespace knowrob;
 using namespace knowrob::semweb;
 
 Vocabulary::Vocabulary() {

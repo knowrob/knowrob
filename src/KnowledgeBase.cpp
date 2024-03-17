@@ -54,8 +54,8 @@ namespace knowrob {
 
 KnowledgeBase::KnowledgeBase()
 		: isInitialized_(false) {
-	vocabulary_ = std::make_shared<semweb::Vocabulary>();
-	importHierarchy_ = std::make_shared<semweb::ImportHierarchy>();
+	vocabulary_ = std::make_shared<Vocabulary>();
+	importHierarchy_ = std::make_shared<ImportHierarchy>();
 	// use "system" as default origin until initialization completed
 	importHierarchy_->setDefaultGraph(importHierarchy_->ORIGIN_SYSTEM);
 	backendManager_ = std::make_shared<BackendManager>(vocabulary_, importHierarchy_);
@@ -176,7 +176,7 @@ void KnowledgeBase::configurePrefixes(const boost::property_tree::ptree &config)
 			auto alias = pair.second.get("alias", "");
 			auto uri = pair.second.get("uri", "");
 			if (!alias.empty() && !uri.empty()) {
-				semweb::PrefixRegistry::registerPrefix(alias, uri);
+				PrefixRegistry::registerPrefix(alias, uri);
 			} else {
 				KB_WARN("Invalid entry in semantic-web::prefixes, 'alias' and 'uri' must be defined.");
 			}

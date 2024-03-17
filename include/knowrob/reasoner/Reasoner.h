@@ -70,12 +70,12 @@ namespace knowrob {
 		/**
 		 * @return the vocabulary of this backend.
 		 */
-		std::shared_ptr<semweb::Vocabulary> vocabulary() const;
+		std::shared_ptr<Vocabulary> vocabulary() const;
 
 		/**
 		 * @return the import hierarchy between named graphs.
 		 */
-		std::shared_ptr<semweb::ImportHierarchy> importHierarchy() const;
+		std::shared_ptr<ImportHierarchy> importHierarchy() const;
 
 		/**
 		 * Evaluate a lambda function in a worker thread.

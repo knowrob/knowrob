@@ -3,15 +3,15 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_SEMWEB_PREFIX_REGISTRY_H
-#define KNOWROB_SEMWEB_PREFIX_REGISTRY_H
+#ifndef KNOWROB_PREFIX_REGISTRY_H
+#define KNOWROB_PREFIX_REGISTRY_H
 
 #include <string>
 #include <map>
 #include <functional>
 #include <optional>
 
-namespace knowrob::semweb {
+namespace knowrob {
 	using OptionalStringRef = std::optional<std::reference_wrapper<const std::string>>;
 
 	/**
@@ -86,4 +86,4 @@ namespace knowrob::semweb {
 }
 
 
-#endif //KNOWROB_SEMWEB_PREFIX_REGISTRY_H
+#endif //KNOWROB_PREFIX_REGISTRY_H

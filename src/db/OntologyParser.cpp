@@ -34,7 +34,7 @@ static void procesNamespace([[maybe_unused]] void *userData, raptor_namespace *n
 	if(!r_uri) return;
 	auto r_uriString = raptor_uri_as_string(r_uri);
 
-	semweb::PrefixRegistry::registerPrefix(
+	PrefixRegistry::registerPrefix(
 			std::string_view((const char *) r_prefix),
 			std::string_view((const char *) r_uriString));
 }
@@ -130,7 +130,7 @@ void OntologyParser::add(raptor_statement *statement, const semweb::TripleHandle
 	if (!currentBatch_) {
 		if(origin_.empty()) {
 			KB_WARN("No origin set for ontology parser, falling back to \"user\" origin.");
-			currentBatch_ = std::make_shared<RaptorContainer>(batchSize, semweb::ImportHierarchy::ORIGIN_USER);
+			currentBatch_ = std::make_shared<RaptorContainer>(batchSize, ImportHierarchy::ORIGIN_USER);
 		} else {
 			currentBatch_ = std::make_shared<RaptorContainer>(batchSize, origin_);
 		}

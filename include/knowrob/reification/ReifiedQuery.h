@@ -28,14 +28,14 @@ namespace knowrob {
 		 * @param nonReified a query that is not reified.
 		 * @param vocabulary the vocabulary to use for reification.
 		 */
-		explicit ReifiedQuery(const std::shared_ptr<GraphQuery> &nonReified, semweb::VocabularyPtr vocabulary, bool withFullFrame = false);
+		explicit ReifiedQuery(const std::shared_ptr<GraphQuery> &nonReified, VocabularyPtr vocabulary, bool withFullFrame = false);
 
 		/**
 		 * @param nonReified a query that is not reified.
 		 * @param ctx the query context.
 		 * @param vocabulary the vocabulary to use for reification.
 		 */
-		explicit ReifiedQuery(const FramedTriplePattern &nonReified, semweb::VocabularyPtr vocabulary, bool withFullFrame = false);
+		explicit ReifiedQuery(const FramedTriplePattern &nonReified, VocabularyPtr vocabulary, bool withFullFrame = false);
 
 		/**
 		 * @return true if the query has reifiable patterns.
@@ -49,7 +49,7 @@ namespace knowrob {
 		static int getReificationFlags(const FramedTriplePattern &q);
 
 	protected:
-		semweb::VocabularyPtr vocabulary_;
+		VocabularyPtr vocabulary_;
 		uint32_t varCounter_;
 		bool withFullFrame_;
 

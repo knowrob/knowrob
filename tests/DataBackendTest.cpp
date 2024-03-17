@@ -22,8 +22,8 @@ template<typename T> std::shared_ptr<T> createBackend();
 
 template<> std::shared_ptr<MongoKnowledgeGraph> createBackend<MongoKnowledgeGraph>() {
 	auto kg = std::make_shared<MongoKnowledgeGraph>();
-	kg->setVocabulary(std::make_shared<semweb::Vocabulary>());
-	kg->setImportHierarchy(std::make_shared<semweb::ImportHierarchy>());
+	kg->setVocabulary(std::make_shared<Vocabulary>());
+	kg->setImportHierarchy(std::make_shared<ImportHierarchy>());
 	kg->initializeBackend(
 			MongoKnowledgeGraph::DB_URI_DEFAULT,
 			MongoKnowledgeGraph::DB_NAME_KNOWROB,
@@ -35,8 +35,8 @@ template<> std::shared_ptr<MongoKnowledgeGraph> createBackend<MongoKnowledgeGrap
 
 template<> std::shared_ptr<RedlandModel> createBackend<RedlandModel>() {
 	auto kg = std::make_shared<RedlandModel>();
-	kg->setVocabulary(std::make_shared<semweb::Vocabulary>());
-	kg->setImportHierarchy(std::make_shared<semweb::ImportHierarchy>());
+	kg->setVocabulary(std::make_shared<Vocabulary>());
+	kg->setImportHierarchy(std::make_shared<ImportHierarchy>());
 	kg->setHashesStorage(RedlandHashType::MEMORY);
 	kg->initializeBackend();
 	return kg;
@@ -51,14 +51,14 @@ public:
 	static std::shared_ptr<BackendInterface> backend_;
 
 	static void SetUpTestSuite() {
-		auto vocabulary = std::make_shared<semweb::Vocabulary>();
-		auto importHierarchy = std::make_shared<semweb::ImportHierarchy>();
+		auto vocabulary = std::make_shared<Vocabulary>();
+		auto importHierarchy = std::make_shared<ImportHierarchy>();
 		auto backendManager = std::make_shared<BackendManager>(vocabulary, importHierarchy);
 		backend_ = std::make_shared<BackendInterface>(backendManager);
 		kg_ = createBackend<BackendType>();
 		backendManager->addBackend("test", kg_);
 		queryable_ = kg_;
-		semweb::PrefixRegistry::registerPrefix("swrl_test", "http://knowrob.org/kb/swrl_test#");
+		PrefixRegistry::registerPrefix("swrl_test", "http://knowrob.org/kb/swrl_test#");
 	}
 
 	// void TearDown() override {}

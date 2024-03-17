@@ -113,15 +113,15 @@ namespace knowrob {
 		 */
 		const auto &importHierarchy() const { return importHierarchy_; }
 
-		void setVocabulary(std::shared_ptr<semweb::Vocabulary> vocabulary) { vocabulary_ = std::move(vocabulary); }
+		void setVocabulary(std::shared_ptr<Vocabulary> vocabulary) { vocabulary_ = std::move(vocabulary); }
 
-		void setImportHierarchy(std::shared_ptr<semweb::ImportHierarchy> importHierarchy) {
+		void setImportHierarchy(std::shared_ptr<ImportHierarchy> importHierarchy) {
 			importHierarchy_ = std::move(importHierarchy);
 		}
 
 	protected:
-		std::shared_ptr<semweb::Vocabulary> vocabulary_;
-		std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
+		std::shared_ptr<Vocabulary> vocabulary_;
+		std::shared_ptr<ImportHierarchy> importHierarchy_;
 		BackendFeatures features_;
 
 		void enableFeature(BackendFeature feature) { features_ = features_ | feature; }

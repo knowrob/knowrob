@@ -23,9 +23,9 @@ namespace knowrob::transaction {
 	 */
 	class Transaction {
 	public:
-		Transaction(const std::shared_ptr<QueryableBackend> queryable,
-					const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-					const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy,
+		Transaction(const std::shared_ptr<QueryableBackend> &queryable,
+					const std::shared_ptr<Vocabulary> &vocabulary,
+					const std::shared_ptr<ImportHierarchy> &importHierarchy,
 					bool isRemoval)
 				: queryable_(queryable),
 				  vocabulary_(vocabulary),
@@ -69,8 +69,8 @@ namespace knowrob::transaction {
 		bool commit(const semweb::TripleContainerPtr &triples, const ReifiedNames &reifiedNames);
 
 	protected:
-		std::shared_ptr<semweb::Vocabulary> vocabulary_;
-		std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
+		std::shared_ptr<Vocabulary> vocabulary_;
+		std::shared_ptr<ImportHierarchy> importHierarchy_;
 		std::vector<std::shared_ptr<DefinedBackend>> backends_;
 		std::shared_ptr<QueryableBackend> queryable_;
 		bool isRemoval_;
@@ -93,9 +93,9 @@ namespace knowrob::transaction {
 	 */
 	class Insert : public Transaction {
 	public:
-		Insert(const std::shared_ptr<QueryableBackend> queryable,
-			   const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-			   const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy)
+		Insert(const std::shared_ptr<QueryableBackend> &queryable,
+			   const std::shared_ptr<Vocabulary> &vocabulary,
+			   const std::shared_ptr<ImportHierarchy> &importHierarchy)
 				: Transaction(queryable, vocabulary, importHierarchy, false) {}
 
 	protected:
@@ -111,9 +111,9 @@ namespace knowrob::transaction {
 	 */
 	class Remove : public Transaction {
 	public:
-		Remove(const std::shared_ptr<QueryableBackend> queryable,
-			   const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-			   const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy)
+		Remove(const std::shared_ptr<QueryableBackend> &queryable,
+			   const std::shared_ptr<Vocabulary> &vocabulary,
+			   const std::shared_ptr<ImportHierarchy> &importHierarchy)
 				: Transaction(queryable, vocabulary, importHierarchy, true) {}
 
 	protected:

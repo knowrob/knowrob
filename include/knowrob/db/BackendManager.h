@@ -25,8 +25,8 @@ namespace knowrob {
 		/**
 		 * @param kb the knowledge base this manager is associated with.
 		 */
-		explicit BackendManager(const std::shared_ptr<semweb::Vocabulary> &vocabulary,
-								const std::shared_ptr<semweb::ImportHierarchy> &importHierarchy);
+		explicit BackendManager(const std::shared_ptr<Vocabulary> &vocabulary,
+								const std::shared_ptr<ImportHierarchy> &importHierarchy);
 
 		~BackendManager();
 
@@ -118,8 +118,8 @@ namespace knowrob {
 		auto &importHierarchy() const { return importHierarchy_; }
 
 	private:
-		std::shared_ptr<semweb::Vocabulary> vocabulary_;
-		std::shared_ptr<semweb::ImportHierarchy> importHierarchy_;
+		std::shared_ptr<Vocabulary> vocabulary_;
+		std::shared_ptr<ImportHierarchy> importHierarchy_;
 		// maps backend id to manager
 		static std::map<uint32_t, BackendManager *> backendManagers_;
 		// counts number of initialized managers

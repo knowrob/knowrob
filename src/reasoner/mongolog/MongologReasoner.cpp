@@ -66,8 +66,8 @@ bool MongologReasoner::loadConfig(const ReasonerConfig &reasonerConfiguration) {
 
 	if (!knowledgeGraph_) {
 		knowledgeGraph_ = std::make_shared<MongoKnowledgeGraph>();
-		knowledgeGraph_->setVocabulary(std::make_shared<semweb::Vocabulary>());
-		knowledgeGraph_->setImportHierarchy(std::make_shared<semweb::ImportHierarchy>());
+		knowledgeGraph_->setVocabulary(std::make_shared<Vocabulary>());
+		knowledgeGraph_->setImportHierarchy(std::make_shared<ImportHierarchy>());
 		knowledgeGraph_->initializeBackend(
 				MongoKnowledgeGraph::DB_URI_DEFAULT,
 				MongoKnowledgeGraph::DB_NAME_KNOWROB,

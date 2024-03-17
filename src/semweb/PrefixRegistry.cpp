@@ -7,7 +7,7 @@
 #include "knowrob/semweb/PrefixProbe.h"
 #include "knowrob/Logger.h"
 
-using namespace knowrob::semweb;
+using namespace knowrob;
 
 PrefixRegistry::PrefixRegistry() {
 	registerPrefix_("owl", "http://www.w3.org/2002/07/owl");

@@ -10,7 +10,7 @@
 
 using namespace knowrob;
 
-ReifiedTriple::ReifiedTriple(const FramedTriple &triple, const semweb::VocabularyPtr &vocabulary,
+ReifiedTriple::ReifiedTriple(const FramedTriple &triple, const VocabularyPtr &vocabulary,
 							 const IRIAtomPtr &reifiedName) {
 	auto property = vocabulary->defineProperty(triple.predicate());
 	// map the property to a Relation concept

@@ -274,7 +274,7 @@ bool SPARQLQuery::optional(std::ostream &os, const FramedTriplePattern &triplePa
 
 void SPARQLQuery::iri(std::ostream &os, std::string_view iri) {
 	auto ns = semweb::Resource::iri_ns(iri);
-	auto alias = semweb::PrefixRegistry::uriToAlias(ns);
+	auto alias = PrefixRegistry::uriToAlias(ns);
 	if (alias.has_value()) {
 		auto &v_alias = alias.value().get();
 		os << v_alias << ':' << semweb::Resource::iri_name(iri);

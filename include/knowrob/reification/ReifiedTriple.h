@@ -23,7 +23,7 @@ namespace knowrob {
 		 * @param triple the triple to reify.
 		 * @param vocabulary the vocabulary to use for reification.
 		 */
-		explicit ReifiedTriple(const FramedTriple &triple, const semweb::VocabularyPtr &vocabulary,
+		explicit ReifiedTriple(const FramedTriple &triple, const VocabularyPtr &vocabulary,
 							   const IRIAtomPtr &reifiedName = nullptr);
 
 		/**
@@ -63,7 +63,7 @@ namespace knowrob {
 		static bool isReifiable(const FramedTriple &triple);
 
 	protected:
-		semweb::VocabularyPtr vocabulary_;
+		VocabularyPtr vocabulary_;
 		std::vector<FramedTriplePtr> reified_;
 		knowrob::IRIAtomPtr name_;
 		std::string generatedString_;

@@ -1,15 +1,16 @@
-//
-// Created by daniel on 09.04.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
-#ifndef KNOWROB_SEMWEB_CURRENT_GRAPH_H
-#define KNOWROB_SEMWEB_CURRENT_GRAPH_H
+#ifndef KNOWROB_CURRENT_GRAPH_H
+#define KNOWROB_CURRENT_GRAPH_H
 
 #include "string"
 #include "set"
 #include "map"
 
-namespace knowrob::semweb {
+namespace knowrob {
 	/**
 	 * A named graph currently defined in a knowledge graph.
 	 */
@@ -40,6 +41,6 @@ namespace knowrob::semweb {
 
 		friend class ImportHierarchy;
 	};
-} // knowrob::semweb
+} // knowrob
 
-#endif //KNOWROB_SEMWEB_CURRENT_GRAPH_H
+#endif //KNOWROB_CURRENT_GRAPH_H

@@ -3,8 +3,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_SEMWEB_VOCABULARY_H
-#define KNOWROB_SEMWEB_VOCABULARY_H
+#ifndef KNOWROB_VOCABULARY_H
+#define KNOWROB_VOCABULARY_H
 
 #include <memory>
 #include <string>
@@ -13,7 +13,7 @@
 #include "Property.h"
 #include "Class.h"
 
-namespace knowrob::semweb {
+namespace knowrob {
 	/**
 	 * The vocabulary of a knowledge graph.
 	 * It contains the definitions of classes and properties.
@@ -39,13 +39,13 @@ namespace knowrob::semweb {
 		 * @param iri a IRI
 		 * @return the class defined for the IRI or a null reference
 		 */
-		ClassPtr getDefinedClass(const std::string_view &iri) const;
+		semweb::ClassPtr getDefinedClass(const std::string_view &iri) const;
 
 		/**
 		 * @param prefix a IRI prefix
 		 * @return all known classes with matching prefix
 		 */
-		std::vector<ClassPtr> getDefinedClassesWithPrefix(const std::string_view &prefix) const;
+		std::vector<semweb::ClassPtr> getDefinedClassesWithPrefix(const std::string_view &prefix) const;
 
 		/**
 		 * @param prefix a IRI prefix
@@ -58,7 +58,7 @@ namespace knowrob::semweb {
 		 * @param iri a IRI
 		 * @return the class defined for the IRI
 		 */
-		ClassPtr defineClass(const std::string_view &iri);
+		semweb::ClassPtr defineClass(const std::string_view &iri);
 
 		/**
 		 * Adds subclass-of relation between two classes,
@@ -91,19 +91,19 @@ namespace knowrob::semweb {
 		 * @param iri a IRI
 		 * @return the property defined for the IRI or a null reference
 		 */
-		PropertyPtr getDefinedProperty(const std::string_view &iri) const;
+		semweb::PropertyPtr getDefinedProperty(const std::string_view &iri) const;
 
 		/**
 		 * @param iri a IRI
 		 * @return the property reified by the IRI or a null reference
 		 */
-		PropertyPtr getDefinedReification(const std::string_view &iri) const;
+		semweb::PropertyPtr getDefinedReification(const std::string_view &iri) const;
 
 		/**
 		 * @param prefix a IRI prefix
 		 * @return all known properties with matching prefix
 		 */
-		std::vector<PropertyPtr> getDefinedPropertiesWithPrefix(const std::string_view &prefix) const;
+		std::vector<semweb::PropertyPtr> getDefinedPropertiesWithPrefix(const std::string_view &prefix) const;
 
 		/**
 		 * @param prefix a IRI prefix
@@ -116,14 +116,14 @@ namespace knowrob::semweb {
 		 * @param iri a IRI
 		 * @return the property defined for the IRI
 		 */
-		PropertyPtr defineProperty(const std::string_view &iri);
+		semweb::PropertyPtr defineProperty(const std::string_view &iri);
 
 		/**
 		 * Define a new property if it has not been defined before.
 		 * @param iri a IRI
 		 * @return the property defined for the IRI
 		 */
-		PropertyPtr defineProperty(const IRIAtomPtr &iri);
+		semweb::PropertyPtr defineProperty(const IRIAtomPtr &iri);
 
 		/**
 		 * Adds subproperty-of relation between two properties,
@@ -144,13 +144,13 @@ namespace knowrob::semweb {
 		 * @param iri a property IRI
 		 * @param flag a property flag
 		 */
-		void setPropertyFlag(const std::string_view &iri, PropertyFlag flag);
+		void setPropertyFlag(const std::string_view &iri, semweb::PropertyFlag flag);
 
 		/**
 		 * @param iri a property IRI
 		 * @param flag a property flag
 		 */
-		void setPropertyFlag(const IRIAtomPtr &iri, PropertyFlag flag);
+		void setPropertyFlag(const IRIAtomPtr &iri, semweb::PropertyFlag flag);
 
 		/**
 		 * @param iri a IRI
@@ -200,16 +200,16 @@ namespace knowrob::semweb {
 		uint64_t frequency(const std::string_view &iri) const;
 
 	protected:
-		std::map<std::string_view, ClassPtr, std::less<>> definedClasses_;
-		std::map<std::string_view, PropertyPtr, std::less<>> definedProperties_;
-		std::map<std::string_view, PropertyPtr, std::less<>> definedReifications_;
+		std::map<std::string_view, semweb::ClassPtr, std::less<>> definedClasses_;
+		std::map<std::string_view, semweb::PropertyPtr, std::less<>> definedProperties_;
+		std::map<std::string_view, semweb::PropertyPtr, std::less<>> definedReifications_;
 		std::map<std::string_view, uint64_t> frequency_;
 
-		PropertyPtr defineProperty(const std::shared_ptr<Property> &p);
+		semweb::PropertyPtr defineProperty(const std::shared_ptr<semweb::Property> &p);
 	};
 
 	using VocabularyPtr = std::shared_ptr<Vocabulary>;
 
-} // knowrob::semweb
+} // knowrob
 
-#endif //KNOWROB_SEMWEB_VOCABULARY_H
+#endif //KNOWROB_VOCABULARY_H

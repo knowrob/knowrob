@@ -556,7 +556,7 @@ librdf_node *RedlandModel::getContextNode(const FramedTriple &triple) {
 	return getContextNode(
 			triple.graph() ? triple.graph().value() :
 			origin_.has_value() ? origin_.value() :
-			semweb::ImportHierarchy::ORIGIN_USER);
+			ImportHierarchy::ORIGIN_USER);
 }
 
 RedlandURI &RedlandModel::xsdURI(XSDType xsdType) {

@@ -221,8 +221,8 @@ bool PrologTerm::putTriple(std::string_view functor, const FramedTriple &triple)
 			return false;
 		}
 	} else {
-		KB_WARN("triple has no graph, using fallback origin '{}'.", semweb::ImportHierarchy::ORIGIN_USER);
-		if (!PL_put_atom_chars(pl_arg + 3, semweb::ImportHierarchy::ORIGIN_USER.data())) {
+		KB_WARN("triple has no graph, using fallback origin '{}'.", ImportHierarchy::ORIGIN_USER);
+		if (!PL_put_atom_chars(pl_arg + 3, ImportHierarchy::ORIGIN_USER.data())) {
 			PL_reset_term_refs(pl_arg);
 			return false;
 		}
