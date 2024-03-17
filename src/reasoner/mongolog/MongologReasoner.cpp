@@ -237,7 +237,8 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
 			}
 		}
 
-		mongolog->kb()->insertOne(tripleData);
+		mongolog->kb()->edb()->mergeInsert(mongolog->knowledgeGraph(), tripleData);
+		//mongolog->kb()->insertOne(tripleData);
 		return true;
 	} else {
 		KB_WARN("[mongolog] unable to assert triple: reasoner not found");
@@ -256,6 +257,8 @@ namespace knowrob::testing {
 					MongoKnowledgeGraph::DB_URI_DEFAULT,
 					MongoKnowledgeGraph::DB_NAME_TESTS,
 					MongoKnowledgeGraph::COLL_NAME_TRIPLES);
+			kg->drop();
+			kg->tripleCollection()->createTripleIndex();
 			return kg;
 		}
 
@@ -266,7 +269,6 @@ namespace knowrob::testing {
 			r->setDataBackend(db);
 			kb->reasonerManager()->addReasoner(name, r);
 			r->loadConfig(knowrob::ReasonerConfig());
-			//r->load_rdf_xml("http://www.ease-crc.org/ont/SOMA.owl");
 			return r;
 		}
 
@@ -302,7 +304,9 @@ namespace knowrob::testing {
 				db = createBackend2(ss.str(), kb);
 				reasoner = createReasoner2(ss.str(), kb, db);
 
-				//kb->init();
+				kb->loadCommon();
+				//kb->loadDataSource(std::make_shared<OntologyFile>(URI("http://www.ease-crc.org/ont/SOMA.owl"), "rdf-xml"));
+				kb->init();
 			}
 			return reasoner;
 		}
