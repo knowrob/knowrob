@@ -5,10 +5,44 @@
 
 #include "map"
 #include "knowrob/terms/XSDAtomic.h"
+#include "knowrob/terms/String.h"
+#include "knowrob/terms/Numeric.h"
 #include "knowrob/semweb/xsd.h"
 #include "knowrob/Logger.h"
 #include <boost/python.hpp>
 #include "knowrob/py/utils.h"
+
+using namespace knowrob;
+
+std::shared_ptr<XSDAtomic> XSDAtomic::create(std::string_view lexicalForm, std::string_view xsdTypeIRI) {
+	auto type = xsdTypeFromIRI(xsdTypeIRI);
+	switch (type) {
+		case XSDType::STRING:
+			return std::make_shared<String>(lexicalForm);
+		case XSDType::BOOLEAN:
+			return std::make_shared<Boolean>(lexicalForm);
+		case XSDType::DOUBLE:
+			return std::make_shared<Double>(lexicalForm);
+		case XSDType::FLOAT:
+			return std::make_shared<Float>(lexicalForm);
+		case XSDType::NON_NEGATIVE_INTEGER:
+		case XSDType::INTEGER:
+			return std::make_shared<Integer>(lexicalForm);
+		case XSDType::LONG:
+			return std::make_shared<Long>(lexicalForm);
+		case XSDType::SHORT:
+			return std::make_shared<Short>(lexicalForm);
+		case XSDType::UNSIGNED_LONG:
+			return std::make_shared<UnsignedLong>(lexicalForm);
+		case XSDType::UNSIGNED_INT:
+			return std::make_shared<UnsignedInt>(lexicalForm);
+		case XSDType::UNSIGNED_SHORT:
+			return std::make_shared<UnsignedShort>(lexicalForm);
+		default:
+			KB_ERROR("Unknown XSD type {} treated as string.", static_cast<int>(type));
+			return std::make_shared<String>(lexicalForm);
+	}
+}
 
 namespace knowrob {
 	XSDType xsdTypeFromIRI(std::string_view iri) {

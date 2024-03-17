@@ -20,6 +20,14 @@ namespace knowrob {
 		XSDAtomic() : RDFNode(), Atomic() {}
 
 		/**
+		 * Create an XSDAtomic from a lexical form and an XSD datatype IRI
+		 * @param lexicalForm the lexical form of the RDF literal
+		 * @param xsdTypeIRI the IRI of the XSD datatype
+		 * @return a shared pointer to the XSDAtomic
+		 */
+		static std::shared_ptr<XSDAtomic> create(std::string_view lexicalForm, std::string_view xsdTypeIRI);
+
+		/**
 		 * The IRI of the XSD datatype
 		 * @return the IRI of the XSD datatype of the RDF literal
 		 */

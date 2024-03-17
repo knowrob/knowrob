@@ -113,6 +113,7 @@ static inline void testModal(const FormulaPtr &phi, const std::string &op, const
 TEST_F(QueryParserTest, Numbers) {
     TEST_NO_THROW(testNumber(QueryParser::parseConstant("234"), 234.0))
     TEST_NO_THROW(testNumber(QueryParser::parseConstant("-45"), -45.0))
+    TEST_NO_THROW(testNumber(QueryParser::parseConstant("45^^xsd:integer"), 45))
     TEST_NO_THROW(testNumber(QueryParser::parseConstant("-45.64"), -45.64))
 }
 

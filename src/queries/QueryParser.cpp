@@ -78,6 +78,7 @@ namespace knowrob {
         TermRule options;
         TermRule nil;
         TermRule blank;
+		TermRule xsd_term;
 
         AtomRule atom;
 		AtomRule atom_regular;
@@ -91,6 +92,8 @@ namespace knowrob {
         StringRule rawBlank;
         StringRule atomRaw;
         StringRule atomRawWithIRI;
+		StringRule number_string;
+		StringRule xsd_value;
 
         StringRule iri_raw;
         StringRule iri_ns;
@@ -335,6 +338,7 @@ static std::vector<TermPtr> createTermVector2(const TermPtr &a, const TermPtr &b
 
 static AtomPtr makeAtom(std::string_view stringForm) { return Atom::Tabled(stringForm); }
 static AtomPtr makeIRI(std::string_view stringForm) { return IRIAtom::Tabled(stringForm); }
+static TermPtr makeXSD(std::string_view value, const AtomPtr &typeIRI) { return XSDAtomic::create(value, typeIRI->stringForm()); }
 
 QueryParser::QueryParser() {
     static const std::string equalFunctor = "=";
@@ -348,6 +352,7 @@ QueryParser::QueryParser() {
     bnf_->lowerPrefix %= qi::raw[ascii::lower >> *(ascii::alnum | '_')];
     bnf_->upperPrefix %= qi::raw[ascii::upper >> *(ascii::alnum | '_')];
     bnf_->rawBlank %= qi::raw['_'];
+    bnf_->number_string %= qi::raw[qi::double_];
 
     // atoms are either a single quoted string, or words that start with a lowercase letter.
     bnf_->atomRaw %= (bnf_->singleQuotes | bnf_->lowerPrefix);
@@ -360,11 +365,9 @@ QueryParser::QueryParser() {
     // right part of colon must be an alphanumeric word, or wrapped in single quoted.
     // Note that there is no need to enquote entities whose name starts with an uppercase character.
     bnf_->iri_entity %= (bnf_->singleQuotes | qi::raw[ascii::alpha >> *(ascii::alnum | '_')]);
-    // IRI's are encoded as "ns:entity", ns must be a registered namespace at parse-time
+    // IRIs are encoded as "ns:entity", ns must be a registered namespace at parse-time
     bnf_->iri_raw = ((bnf_->iri_ns >> qi::char_(':') >> bnf_->iri_entity)
             [qi::_val = boost::phoenix::bind(&createIRI, qi::_1, qi::_3)]);
-	// TODO: support explicit typing of IRIs, e.g. iri('..')
-	// TODO: parse string and guess if it is a IRI or not?
     bnf_->iri_atom = (bnf_->iri_raw
             [qi::_val = boost::phoenix::bind(&makeIRI, qi::_1)]);
 
@@ -375,10 +378,12 @@ QueryParser::QueryParser() {
     bnf_->atom %= (bnf_->iri_atom | bnf_->atom_regular);
     bnf_->string = (bnf_->doubleQuotes
             [qi::_val = ptr_<String>()(qi::_1)]);
-	// TODO: support explicit typing of numbers, e.g. `123::int`
     bnf_->number = (qi::double_
             [qi::_val = ptr_<Double>()(qi::_1)]);
     bnf_->blank = (bnf_->rawBlank [qi::_val = ptr_<String>()(qi::_1)]);
+    bnf_->xsd_value %= (bnf_->atomRaw | bnf_->number_string);
+    bnf_->xsd_term = ((bnf_->xsd_value >> "^^" >> bnf_->iri_atom)
+            [qi::_val = boost::phoenix::bind(&makeXSD, qi::_1, qi::_2)]);
 
     ///////////////////////////
     // option lists
@@ -392,7 +397,7 @@ QueryParser::QueryParser() {
 
     ///////////////////////////
     // arguments of predicates: constants or variables
-    bnf_->atomic %= (bnf_->atom | bnf_->string | bnf_->number);
+    bnf_->atomic %= (bnf_->atom | bnf_->string | bnf_->xsd_term | bnf_->number);
     bnf_->list = ((qi::char_('[') >> (bnf_->atomic % ',') >> qi::char_(']'))
             [qi::_val = ptr_<ListTerm>()(qi::_2)]);
     bnf_->variable1 = (bnf_->upperPrefix[qi::_val = ptr_<Variable>()(qi::_1)]);
