@@ -21,10 +21,8 @@ auto &getBackendFactories() {
 	return x;
 }
 
-BackendManager::BackendManager(const std::shared_ptr<Vocabulary> &vocabulary,
-							   const std::shared_ptr<ImportHierarchy> &importHierarchy)
+BackendManager::BackendManager(const std::shared_ptr<Vocabulary> &vocabulary)
 		: vocabulary_(vocabulary),
-		  importHierarchy_(importHierarchy),
 		  backendIndex_(0) {
 	std::lock_guard<std::mutex> scoped_lock(staticMutex_);
 	managerID_ = (managerIDCounter_++);
@@ -82,7 +80,6 @@ DataBackendPtr BackendManager::loadBackend(const boost::property_tree::ptree &co
 
 	// create a new DataBackend instance
 	auto definedBackend = factory->createBackend(backendID);
-	definedBackend->backend()->setImportHierarchy(importHierarchy());
 	definedBackend->backend()->setVocabulary(vocabulary());
 
 	ReasonerConfig reasonerConfig(&config);
@@ -143,7 +140,6 @@ void BackendManager::addBackend(const std::shared_ptr<DefinedBackend> &definedKG
 }
 
 void BackendManager::initBackend(const std::shared_ptr<DefinedBackend> &definedKG) {
-	definedKG->backend()->setImportHierarchy(importHierarchy());
 	definedKG->backend()->setVocabulary(vocabulary());
 	// check if the backend is a QueryableBackend, if so store it in the queryable_ map
 	auto queryable = std::dynamic_pointer_cast<QueryableBackend>(definedKG->backend());

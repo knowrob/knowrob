@@ -22,7 +22,7 @@ static inline std::shared_ptr<ImportHierarchy> getImportHierarchy(term_t t_manag
 	if (!definedReasoner) return null;
 	auto prologReasoner =
 			std::dynamic_pointer_cast<PrologReasoner>(definedReasoner->reasoner());
-	return prologReasoner ? prologReasoner->importHierarchy() : null;
+	return prologReasoner ? prologReasoner->vocabulary()->importHierarchy() : null;
 }
 
 static inline KnowledgeBase *getKnowledgeBase(term_t t_manager, term_t t_reasoner) {

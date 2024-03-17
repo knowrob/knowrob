@@ -21,9 +21,9 @@ std::shared_ptr<transaction::Transaction> BackendInterface::createTransaction(
 		const std::vector<std::shared_ptr<DefinedBackend>> &backends) {
 	std::shared_ptr<transaction::Transaction> transaction;
 	if (transactionType == Insert) {
-		transaction = std::make_shared<transaction::Insert>(queryable, vocabulary(), importHierarchy());
+		transaction = std::make_shared<transaction::Insert>(queryable, vocabulary());
 	} else {
-		transaction = std::make_shared<transaction::Remove>(queryable, vocabulary(), importHierarchy());
+		transaction = std::make_shared<transaction::Remove>(queryable, vocabulary());
 	}
 	if (transactionTargets == Including) {
 		for (auto &backend: backends) {
@@ -81,8 +81,8 @@ bool BackendInterface::removeAllWithOrigin(std::string_view origin) {
 	// and then remove them from the vocabulary.
 	// TODO: only do this if no other backend defines the same origin?
 	// remove origin from import hierarchy
-	if (!importHierarchy()->isReservedOrigin(origin)) {
-		importHierarchy()->removeCurrentGraph(origin);
+	if (!vocabulary()->importHierarchy()->isReservedOrigin(origin)) {
+		vocabulary()->importHierarchy()->removeCurrentGraph(origin);
 	}
 
 	return true;

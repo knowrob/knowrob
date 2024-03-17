@@ -55,10 +55,9 @@ namespace knowrob {
 KnowledgeBase::KnowledgeBase()
 		: isInitialized_(false) {
 	vocabulary_ = std::make_shared<Vocabulary>();
-	importHierarchy_ = std::make_shared<ImportHierarchy>();
 	// use "system" as default origin until initialization completed
-	importHierarchy_->setDefaultGraph(importHierarchy_->ORIGIN_SYSTEM);
-	backendManager_ = std::make_shared<BackendManager>(vocabulary_, importHierarchy_);
+	vocabulary_->importHierarchy()->setDefaultGraph(ImportHierarchy::ORIGIN_SYSTEM);
+	backendManager_ = std::make_shared<BackendManager>(vocabulary_);
 	reasonerManager_ = std::make_shared<ReasonerManager>(this, backendManager_);
 	edb_ = std::make_shared<BackendInterface>(backendManager_);
 }
@@ -81,7 +80,7 @@ KnowledgeBase::~KnowledgeBase() {
 
 void KnowledgeBase::init() {
 	isInitialized_ = true;
-	importHierarchy_->setDefaultGraph(importHierarchy_->ORIGIN_USER);
+	vocabulary_->importHierarchy()->setDefaultGraph(ImportHierarchy::ORIGIN_USER);
 	initBackends();
 	synchronizeBackends();
 	initVocabulary();
@@ -92,7 +91,6 @@ void KnowledgeBase::initBackends() {
 	for (auto &pair: backendManager_->backendPool()) {
 		auto definedBackend = pair.second;
 		definedBackend->backend()->setVocabulary(vocabulary_);
-		definedBackend->backend()->setImportHierarchy(importHierarchy_);
 	}
 }
 
@@ -112,7 +110,7 @@ void KnowledgeBase::initVocabulary() {
 
 		// initialize the import hierarchy
 		for (auto &origin: backend->getOrigins()) {
-			importHierarchy_->addDirectImport(importHierarchy_->ORIGIN_SYSTEM, origin);
+			vocabulary_->importHierarchy()->addDirectImport(vocabulary_->importHierarchy()->ORIGIN_SYSTEM, origin);
 		}
 
 		// iterate over all rdf:type assertions and add them to the vocabulary
@@ -907,9 +905,9 @@ void KnowledgeBase::finishLoad(const std::shared_ptr<OntologySource> &source, st
 
 	// add direct import
 	if (source->parentOrigin().has_value()) {
-		importHierarchy_->addDirectImport(source->parentOrigin().value(), origin);
+		vocabulary_->importHierarchy()->addDirectImport(source->parentOrigin().value(), origin);
 	} else {
-		importHierarchy_->addDirectImport(importHierarchy_->defaultGraph(), origin);
+		vocabulary_->importHierarchy()->addDirectImport(vocabulary_->importHierarchy()->defaultGraph(), origin);
 	}
 }
 

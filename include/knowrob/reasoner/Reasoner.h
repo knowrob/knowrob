@@ -19,7 +19,6 @@
 #include "knowrob/triples/GraphQuery.h"
 #include "knowrob/db/DataSourceHandler.h"
 #include "knowrob/semweb/Vocabulary.h"
-#include "knowrob/semweb/ImportHierarchy.h"
 #include "knowrob/db/DataBackend.h"
 #include "knowrob/terms/Atom.h"
 
@@ -71,11 +70,6 @@ namespace knowrob {
 		 * @return the vocabulary of this backend.
 		 */
 		std::shared_ptr<Vocabulary> vocabulary() const;
-
-		/**
-		 * @return the import hierarchy between named graphs.
-		 */
-		std::shared_ptr<ImportHierarchy> importHierarchy() const;
 
 		/**
 		 * Evaluate a lambda function in a worker thread.

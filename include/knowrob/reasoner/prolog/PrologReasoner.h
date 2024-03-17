@@ -20,7 +20,6 @@
 #include "knowrob/reasoner/LogicProgramReasoner.h"
 #include "knowrob/reasoner/DefinedReasoner.h"
 #include "PrologEngine.h"
-#include "knowrob/semweb/ImportHierarchy.h"
 #include "knowrob/queries/AnswerYes.h"
 #include "PrologBackend.h"
 #include "knowrob/queries/AnswerNo.h"

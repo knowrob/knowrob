@@ -14,7 +14,6 @@
 #include "knowrob/db/mongo/Collection.h"
 #include "knowrob/queries/TokenBuffer.h"
 #include "knowrob/formulas/FirstOrderLiteral.h"
-#include "knowrob/semweb/ImportHierarchy.h"
 #include "BindingsCursor.h"
 #include "MongoTaxonomy.h"
 

@@ -10,7 +10,6 @@
 #include <mutex>
 #include <boost/property_tree/ptree.hpp>
 #include "knowrob/semweb/Vocabulary.h"
-#include "knowrob/semweb/ImportHierarchy.h"
 #include "TypedBackendFactory.h"
 #include "BackendPlugin.h"
 #include "DefinedBackend.h"
@@ -25,8 +24,7 @@ namespace knowrob {
 		/**
 		 * @param kb the knowledge base this manager is associated with.
 		 */
-		explicit BackendManager(const std::shared_ptr<Vocabulary> &vocabulary,
-								const std::shared_ptr<ImportHierarchy> &importHierarchy);
+		explicit BackendManager(const std::shared_ptr<Vocabulary> &vocabulary);
 
 		~BackendManager();
 
@@ -112,14 +110,8 @@ namespace knowrob {
 		 */
 		auto &vocabulary() const { return vocabulary_; }
 
-		/**
-		 * @return the import hierarchy associated with this manager.
-		 */
-		auto &importHierarchy() const { return importHierarchy_; }
-
 	private:
 		std::shared_ptr<Vocabulary> vocabulary_;
-		std::shared_ptr<ImportHierarchy> importHierarchy_;
 		// maps backend id to manager
 		static std::map<uint32_t, BackendManager *> backendManagers_;
 		// counts number of initialized managers

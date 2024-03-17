@@ -187,11 +187,10 @@ std::string MongoKnowledgeGraph::getURI(const boost::property_tree::ptree &confi
 void MongoKnowledgeGraph::drop() {
 	tripleCollection_->drop();
 	vocabulary_ = std::make_shared<Vocabulary>();
-	importHierarchy_->clear();
 }
 
 bool MongoKnowledgeGraph::insertOne(const FramedTriple &tripleData) {
-	auto &fallbackOrigin = importHierarchy_->defaultGraph();
+	auto &fallbackOrigin = vocabulary_->importHierarchy()->defaultGraph();
 	bool isTaxonomic = vocabulary_->isTaxonomicProperty(tripleData.predicate());
 	MongoTriple mngTriple(vocabulary_, tripleData, fallbackOrigin, isTaxonomic);
 	tripleCollection_->storeOne(mngTriple.document());
@@ -207,7 +206,7 @@ bool MongoKnowledgeGraph::insertOne(const FramedTriple &tripleData) {
 
 bool MongoKnowledgeGraph::insertAll(const TripleContainerPtr &triples) {
 	// only used in case triples do not specify origin field
-	auto &fallbackOrigin = importHierarchy_->defaultGraph();
+	auto &fallbackOrigin = vocabulary_->importHierarchy()->defaultGraph();
 	auto bulk = tripleCollection_->createBulkOperation();
 	struct TaxonomyAssertions {
 		std::vector<MongoTaxonomy::StringPair> subClassAssertions;
@@ -237,7 +236,7 @@ bool MongoKnowledgeGraph::removeOne(const FramedTriple &triple) {
 	MongoTriplePattern mngQuery(
 			FramedTriplePattern(triple),
 			vocabulary_->isTaxonomicProperty(triple.predicate()),
-			importHierarchy_);
+			vocabulary_->importHierarchy());
 	tripleCollection_->removeOne(mngQuery.document());
 	return true;
 }
@@ -249,7 +248,7 @@ bool MongoKnowledgeGraph::removeAll(const TripleContainerPtr &triples) {
 					  MongoTriplePattern mngQuery(
 							  FramedTriplePattern(*data),
 					  vocabulary_->isTaxonomicProperty(data->predicate()),
-							  importHierarchy_);
+							  vocabulary_->importHierarchy());
 					  bulk->pushRemoveOne(mngQuery.bson());
 				  });
 	bulk->execute();
@@ -308,7 +307,7 @@ void MongoKnowledgeGraph::match(const FramedTriplePattern &query, const TripleVi
 	}
 	TripleCursor cursor(tripleCollection_);
 	// filter documents by triple pattern
-	MongoTriplePattern mngQuery(query, b_isTaxonomicProperty, importHierarchy_);
+	MongoTriplePattern mngQuery(query, b_isTaxonomicProperty, vocabulary_->importHierarchy());
 	cursor.filter(mngQuery.bson());
 	// iterate over matching documents
 	FramedTripleView tripleData;
@@ -355,11 +354,11 @@ static inline BindingsCursorPtr doLookup(const T &query, const TripleStore &stor
 }
 
 BindingsCursorPtr MongoKnowledgeGraph::lookup(const FramedTriplePattern &query) {
-	return doLookup(query, mongo::TripleStore(tripleCollection_, oneCollection_, vocabulary_, importHierarchy_));
+	return doLookup(query, mongo::TripleStore(tripleCollection_, oneCollection_, vocabulary_));
 }
 
 BindingsCursorPtr MongoKnowledgeGraph::lookup(const GraphTerm &query) {
-	return doLookup(query, mongo::TripleStore(tripleCollection_, oneCollection_, vocabulary_, importHierarchy_));
+	return doLookup(query, mongo::TripleStore(tripleCollection_, oneCollection_, vocabulary_));
 }
 
 void MongoKnowledgeGraph::query(const GraphQueryPtr &q, const BindingsHandler &callback) {

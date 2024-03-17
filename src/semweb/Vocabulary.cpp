@@ -14,7 +14,8 @@
 using namespace knowrob;
 using namespace knowrob::semweb;
 
-Vocabulary::Vocabulary() {
+Vocabulary::Vocabulary()
+	: importHierarchy_(std::make_shared<ImportHierarchy>()) {
 	setPropertyFlag(rdfs::comment, ANNOTATION_PROPERTY);
 	setPropertyFlag(rdfs::seeAlso, ANNOTATION_PROPERTY);
 	setPropertyFlag(rdfs::label, ANNOTATION_PROPERTY);

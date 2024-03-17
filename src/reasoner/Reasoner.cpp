@@ -41,10 +41,6 @@ std::shared_ptr<Vocabulary> Reasoner::vocabulary() const {
 	return reasonerManager().kb()->vocabulary();
 }
 
-std::shared_ptr<ImportHierarchy> Reasoner::importHierarchy() const {
-	return reasonerManager().kb()->importHierarchy();
-}
-
 namespace knowrob {
 	class ReasonerTask : public ThreadPool::Runner {
 	public:

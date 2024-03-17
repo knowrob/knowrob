@@ -11,7 +11,6 @@
 #include "knowrob/triples/FramedTriple.h"
 #include "knowrob/triples/TripleContainer.h"
 #include "knowrob/semweb/Vocabulary.h"
-#include "knowrob/semweb/ImportHierarchy.h"
 #include "knowrob/reasoner/ReasonerConfig.h"
 #include "knowrob/ThreadPool.h"
 #include "DataSourceHandler.h"
@@ -108,20 +107,10 @@ namespace knowrob {
 		 */
 		const auto &vocabulary() const { return vocabulary_; }
 
-		/**
-		 * @return the import hierarchy between named graphs.
-		 */
-		const auto &importHierarchy() const { return importHierarchy_; }
-
 		void setVocabulary(std::shared_ptr<Vocabulary> vocabulary) { vocabulary_ = std::move(vocabulary); }
-
-		void setImportHierarchy(std::shared_ptr<ImportHierarchy> importHierarchy) {
-			importHierarchy_ = std::move(importHierarchy);
-		}
 
 	protected:
 		std::shared_ptr<Vocabulary> vocabulary_;
-		std::shared_ptr<ImportHierarchy> importHierarchy_;
 		BackendFeatures features_;
 
 		void enableFeature(BackendFeature feature) { features_ = features_ | feature; }

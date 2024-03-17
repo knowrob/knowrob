@@ -67,7 +67,6 @@ bool MongologReasoner::loadConfig(const ReasonerConfig &reasonerConfiguration) {
 	if (!knowledgeGraph_) {
 		knowledgeGraph_ = std::make_shared<MongoKnowledgeGraph>();
 		knowledgeGraph_->setVocabulary(std::make_shared<Vocabulary>());
-		knowledgeGraph_->setImportHierarchy(std::make_shared<ImportHierarchy>());
 		knowledgeGraph_->initializeBackend(
 				MongoKnowledgeGraph::DB_URI_DEFAULT,
 				MongoKnowledgeGraph::DB_NAME_KNOWROB,
@@ -201,7 +200,7 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
 			if (graphTerm->termType() != TermType::ATOMIC) throw QueryError("invalid property term {}", *graphTerm);
 			tripleData.setGraph(((Atomic *) graphTerm.get())->stringForm());
 		} else {
-			tripleData.setGraph(mongolog->importHierarchy()->defaultGraph());
+			tripleData.setGraph(mongolog->vocabulary()->importHierarchy()->defaultGraph());
 		}
 
 		// "c" field

@@ -25,11 +25,9 @@ namespace knowrob::transaction {
 	public:
 		Transaction(const std::shared_ptr<QueryableBackend> &queryable,
 					const std::shared_ptr<Vocabulary> &vocabulary,
-					const std::shared_ptr<ImportHierarchy> &importHierarchy,
 					bool isRemoval)
 				: queryable_(queryable),
 				  vocabulary_(vocabulary),
-				  importHierarchy_(importHierarchy),
 				  isRemoval_(isRemoval) {}
 
 		/**
@@ -70,7 +68,6 @@ namespace knowrob::transaction {
 
 	protected:
 		std::shared_ptr<Vocabulary> vocabulary_;
-		std::shared_ptr<ImportHierarchy> importHierarchy_;
 		std::vector<std::shared_ptr<DefinedBackend>> backends_;
 		std::shared_ptr<QueryableBackend> queryable_;
 		bool isRemoval_;
@@ -94,9 +91,8 @@ namespace knowrob::transaction {
 	class Insert : public Transaction {
 	public:
 		Insert(const std::shared_ptr<QueryableBackend> &queryable,
-			   const std::shared_ptr<Vocabulary> &vocabulary,
-			   const std::shared_ptr<ImportHierarchy> &importHierarchy)
-				: Transaction(queryable, vocabulary, importHierarchy, false) {}
+			   const std::shared_ptr<Vocabulary> &vocabulary)
+				: Transaction(queryable, vocabulary, false) {}
 
 	protected:
 		bool doCommit(const FramedTriple &triple, const DataBackendPtr &backend) override;
@@ -112,9 +108,8 @@ namespace knowrob::transaction {
 	class Remove : public Transaction {
 	public:
 		Remove(const std::shared_ptr<QueryableBackend> &queryable,
-			   const std::shared_ptr<Vocabulary> &vocabulary,
-			   const std::shared_ptr<ImportHierarchy> &importHierarchy)
-				: Transaction(queryable, vocabulary, importHierarchy, true) {}
+			   const std::shared_ptr<Vocabulary> &vocabulary)
+				: Transaction(queryable, vocabulary, true) {}
 
 	protected:
 		bool doCommit(const FramedTriple &triple, const DataBackendPtr &backend) override;

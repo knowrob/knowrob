@@ -10,6 +10,7 @@
 #include "knowrob/reification/UnReificationContainer.h"
 #include "knowrob/reification/ReifiedQuery.h"
 #include "knowrob/triples/GraphBuiltin.h"
+#include "knowrob/semweb/ImportHierarchy.h"
 
 using namespace knowrob;
 

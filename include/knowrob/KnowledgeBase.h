@@ -71,11 +71,6 @@ namespace knowrob {
 		bool isMaterializedInEDB(std::string_view property) const;
 
 		/**
-		 * @return import hierarchy of named graphs
-		 */
-		auto &importHierarchy() const { return importHierarchy_; }
-
-		/**
 		 * Evaluate a query represented as a vector of literals.
 		 * The call is non-blocking and returns a stream of answers.
 		 * @param literals a vector of literals
@@ -127,7 +122,6 @@ namespace knowrob {
 		std::shared_ptr<ReasonerManager> reasonerManager_;
 		std::shared_ptr<BackendManager> backendManager_;
 		std::shared_ptr<Vocabulary> vocabulary_;
-		std::shared_ptr<ImportHierarchy> importHierarchy_;
 		bool isInitialized_;
 
 		// used to sort dependency nodes in a priority queue.

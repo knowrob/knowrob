@@ -183,7 +183,7 @@ static void nonTransitiveLookup(
 		auto matchStage = lookupPipeline.appendStageBegin("$match");
 		if (b_skipInputGroundings) {
 			MongoTriplePattern::append(matchStage, *lookupData.expr, b_isTaxonomicProperty,
-									   tripleStore.importHierarchy);
+									   tripleStore.vocabulary->importHierarchy());
 		} else {
 			// need to match with potential groundings of variables from previous steps these are stored in the "v_VARS" field.
 			bson_t andArray, tripleDoc, variablesDoc;
@@ -191,7 +191,7 @@ static void nonTransitiveLookup(
 			{
 				BSON_APPEND_DOCUMENT_BEGIN(&andArray, "0", &tripleDoc);
 				MongoTriplePattern::append(&tripleDoc, *lookupData.expr, b_isTaxonomicProperty,
-										   tripleStore.importHierarchy);
+										   tripleStore.vocabulary->importHierarchy());
 				bson_append_document_end(&andArray, &tripleDoc);
 
 				// match triple values with previously grounded variables
@@ -322,7 +322,7 @@ static void transitiveLookup(
 		MongoTerm::append(&restrictSearchDoc,
 						  (b_isTaxonomicProperty ? "p" : "p*"),
 						  lookupData.expr->propertyTerm());
-		MongoTriplePattern::appendGraphSelector(&restrictSearchDoc, *lookupData.expr, tripleStore.importHierarchy);
+		MongoTriplePattern::appendGraphSelector(&restrictSearchDoc, *lookupData.expr, tripleStore.vocabulary->importHierarchy());
 		MongoTriplePattern::appendEpistemicSelector(&restrictSearchDoc, *lookupData.expr);
 		MongoTriplePattern::appendTimeSelector(&restrictSearchDoc, *lookupData.expr);
 	}

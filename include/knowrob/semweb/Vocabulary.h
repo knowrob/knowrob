@@ -12,6 +12,7 @@
 #include <map>
 #include "Property.h"
 #include "Class.h"
+#include "ImportHierarchy.h"
 
 namespace knowrob {
 	/**
@@ -199,11 +200,17 @@ namespace knowrob {
 		 */
 		uint64_t frequency(const std::string_view &iri) const;
 
+		/**
+		 * @return the import hierarchy of this vocabulary
+		 */
+		const std::shared_ptr<ImportHierarchy> &importHierarchy() const { return importHierarchy_; }
+
 	protected:
 		std::map<std::string_view, semweb::ClassPtr, std::less<>> definedClasses_;
 		std::map<std::string_view, semweb::PropertyPtr, std::less<>> definedProperties_;
 		std::map<std::string_view, semweb::PropertyPtr, std::less<>> definedReifications_;
 		std::map<std::string_view, uint64_t> frequency_;
+		std::shared_ptr<ImportHierarchy> importHierarchy_;
 
 		semweb::PropertyPtr defineProperty(const std::shared_ptr<semweb::Property> &p);
 	};

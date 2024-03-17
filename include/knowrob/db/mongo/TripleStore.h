@@ -19,17 +19,14 @@ namespace knowrob::mongo {
 	struct TripleStore {
 		TripleStore(std::shared_ptr<knowrob::mongo::Collection> tripleCollection,
 					std::shared_ptr<knowrob::mongo::Collection> oneCollection,
-					std::shared_ptr<knowrob::Vocabulary> vocabulary,
-					std::shared_ptr<knowrob::ImportHierarchy> importHierarchy)
+					std::shared_ptr<knowrob::Vocabulary> vocabulary)
 				: tripleCollection(std::move(tripleCollection)),
 				  oneCollection(std::move(oneCollection)),
-				  vocabulary(std::move(vocabulary)),
-				  importHierarchy(std::move(importHierarchy)) {}
+				  vocabulary(std::move(vocabulary)) {}
 
 		std::shared_ptr<knowrob::mongo::Collection> tripleCollection;
 		std::shared_ptr<knowrob::mongo::Collection> oneCollection;
 		std::shared_ptr<knowrob::Vocabulary> vocabulary;
-		std::shared_ptr<knowrob::ImportHierarchy> importHierarchy;
 	};
 }
 

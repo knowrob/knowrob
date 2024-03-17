@@ -202,7 +202,7 @@ void Insert::updateVocabulary(const FramedTriple &triple) {
 		auto resolvedImport = URI::resolve(triple.valueAsString());
 		auto importedGraph = DataSource::getNameFromURI(resolvedImport);
 		if (triple.graph()) {
-			importHierarchy_->addDirectImport(triple.graph().value(), importedGraph);
+			vocabulary_->importHierarchy()->addDirectImport(triple.graph().value(), importedGraph);
 		} else {
 			KB_WARN("import statement without graph");
 		}

@@ -39,11 +39,6 @@ namespace knowrob {
 		auto &vocabulary() const { return backendManager_->vocabulary(); }
 
 		/**
-		 * @return the import hierarchy.
-		 */
-		auto &importHierarchy() const { return backendManager_->importHierarchy(); }
-
-		/**
 		 * @return the backend manager.
 		 */
 		auto &backendManager() const { return backendManager_; }
