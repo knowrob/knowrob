@@ -29,6 +29,11 @@ namespace knowrob {
 		~BackendManager();
 
 		/**
+		 * @return the vocabulary associated with this manager.
+		 */
+		auto &vocabulary() const { return vocabulary_; }
+
+		/**
 		 * @param managerID the ID of a backend manager
 		 * @return the backend manager, or nullptr if ID is unknown
 		 */
@@ -105,11 +110,6 @@ namespace knowrob {
 		 */
 		auto managerID() const { return managerID_; }
 
-		/**
-		 * @return the vocabulary associated with this manager.
-		 */
-		auto &vocabulary() const { return vocabulary_; }
-
 	private:
 		std::shared_ptr<Vocabulary> vocabulary_;
 		// maps backend id to manager
@@ -142,9 +142,9 @@ namespace knowrob {
 	};
 }
 
-	// a macro for static registration of a knowledge graph type.
-	// knowledge graph types registered with this macro are builtin knowledge graphs that are not
-	// loaded from a plugin.
+// a macro for static registration of a knowledge graph type.
+// knowledge graph types registered with this macro are builtin knowledge graphs that are not
+// loaded from a plugin.
 #define KNOWROB_BUILTIN_BACKEND(Name, Type) class Type ## _Registration{ static bool isRegistered; }; \
         bool Type ## _Registration::isRegistered = knowrob::BackendManager::addFactory<Type>(Name);
 

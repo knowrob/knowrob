@@ -59,6 +59,17 @@ namespace knowrob {
 		explicit DataBackend(BackendFeatures features = BackendFeature::NothingSpecial) : features_(features) {}
 
 		/**
+		 * @return the vocabulary of this backend.
+		 */
+		const auto &vocabulary() const { return vocabulary_; }
+
+		/**
+		 * Set the vocabulary of this backend.
+		 * @param vocabulary a vocabulary.
+		 */
+		void setVocabulary(std::shared_ptr<Vocabulary> vocabulary) { vocabulary_ = std::move(vocabulary); }
+
+		/**
 		 * @return true if the backend supports re-assignment of variables within query pipelines.
 		 */
 		bool supports(BackendFeature feature) const { return features_ & feature; }
@@ -101,13 +112,6 @@ namespace knowrob {
 		 * @return true on success
 		 */
 		virtual bool initializeBackend(const ReasonerConfig &config) = 0;
-
-		/**
-		 * @return the vocabulary of this backend.
-		 */
-		const auto &vocabulary() const { return vocabulary_; }
-
-		void setVocabulary(std::shared_ptr<Vocabulary> vocabulary) { vocabulary_ = std::move(vocabulary); }
 
 	protected:
 		std::shared_ptr<Vocabulary> vocabulary_;

@@ -238,7 +238,7 @@ void SPARQLQuery::doFilter(std::ostream &os, std::string_view varName, const std
 		os << '"' << *atomic << '"' << "^^";
 		iri(os, xsdTypeToIRI(std::static_pointer_cast<XSDAtomic>(atomic)->xsdType()));
 	}
-	else if (atomic->isNumeric()) {
+	else if (atomic->isString()) {
 		os << *atomic << "^^";
 		iri(os, xsdTypeToIRI(std::static_pointer_cast<XSDAtomic>(atomic)->xsdType()));
 	} else {

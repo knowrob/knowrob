@@ -64,6 +64,10 @@ namespace knowrob {
 		 */
 		auto &vocabulary() const { return vocabulary_; }
 
+		auto &edb() const { return edb_; }
+
+		QueryableBackendPtr getBackendForQuery() const;
+
 		/**
 		 * @param property a property IRI
 		 * @return true if the property is materialized in the EDB
@@ -112,10 +116,6 @@ namespace knowrob {
 		bool removeAll(const std::vector<FramedTriplePtr> &triples);
 
 		bool removeAllWithOrigin(std::string_view origin);
-
-		auto &edb() const { return edb_; }
-
-		QueryableBackendPtr getBackendForQuery() const;
 
 	protected:
 		std::shared_ptr<BackendInterface> edb_;

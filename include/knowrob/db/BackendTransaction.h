@@ -68,8 +68,8 @@ namespace knowrob::transaction {
 
 	protected:
 		std::shared_ptr<Vocabulary> vocabulary_;
-		std::vector<std::shared_ptr<DefinedBackend>> backends_;
 		std::shared_ptr<QueryableBackend> queryable_;
+		std::vector<std::shared_ptr<DefinedBackend>> backends_;
 		bool isRemoval_;
 
 		virtual bool doCommit(const FramedTriple &triple, const DataBackendPtr &backend) = 0;
@@ -90,8 +90,7 @@ namespace knowrob::transaction {
 	 */
 	class Insert : public Transaction {
 	public:
-		Insert(const std::shared_ptr<QueryableBackend> &queryable,
-			   const std::shared_ptr<Vocabulary> &vocabulary)
+		Insert(const std::shared_ptr<QueryableBackend> &queryable, const std::shared_ptr<Vocabulary> &vocabulary)
 				: Transaction(queryable, vocabulary, false) {}
 
 	protected:
@@ -107,8 +106,7 @@ namespace knowrob::transaction {
 	 */
 	class Remove : public Transaction {
 	public:
-		Remove(const std::shared_ptr<QueryableBackend> &queryable,
-			   const std::shared_ptr<Vocabulary> &vocabulary)
+		Remove(const std::shared_ptr<QueryableBackend> &queryable, const std::shared_ptr<Vocabulary> &vocabulary)
 				: Transaction(queryable, vocabulary, true) {}
 
 	protected:

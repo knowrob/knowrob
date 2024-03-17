@@ -36,25 +36,24 @@ static inline void testNumber(const TermPtr &t, const double &expected) {
     }
 }
 
-template<typename ConstantType, typename PrimitiveType>
-static inline void testConstant(const TermPtr &t, const AtomicType &atomicType, const std::string &expected) {
+static inline void testConstant(const TermPtr &t, const AtomicType &atomicType, std::string_view expected) {
     EXPECT_NE(t.get(), nullptr);
     if (t) {
         EXPECT_EQ(t->termType(), TermType::ATOMIC);
         if(t->termType() == TermType::ATOMIC) {
 			auto *a = (Atomic*) t.get();
 			EXPECT_EQ(a->atomicType(), atomicType);
+			EXPECT_EQ(a->stringForm(), expected);
 		}
-		EXPECT_EQ(readString(*t), expected);
     }
 }
 
 static inline void testAtom(const TermPtr &t, const std::string &expected) {
-    testConstant<Atom, std::string>(t, AtomicType::ATOM, expected);
+    testConstant(t, AtomicType::ATOM, expected);
 }
 
 static inline void testString(const TermPtr &t, const std::string &expected) {
-    testConstant<String, std::string>(t, AtomicType::STRING, expected);
+    testConstant(t, AtomicType::STRING, expected);
 }
 
 static inline void testPredicate(
@@ -129,7 +128,7 @@ TEST_F(QueryParserTest, Atoms) {
     TEST_NO_THROW(testAtom(QueryParser::parseConstant("p"), "p"))
     TEST_NO_THROW(testAtom(QueryParser::parseConstant("p2"), "p2"))
     TEST_NO_THROW(testAtom(QueryParser::parseConstant("pSDd2"), "pSDd2"))
-    TEST_NO_THROW(testAtom(QueryParser::parseConstant("'Foo'"), "'Foo'"))
+    TEST_NO_THROW(testAtom(QueryParser::parseConstant("'Foo'"), "Foo"))
     TEST_NO_THROW(testAtom(QueryParser::parseConstant("'x#/&%s'"), "x#/&%s"))
     TEST_NO_THROW(testAtom(QueryParser::parseConstant("owl:foo"), "http://www.w3.org/2002/07/owl#foo"))
     TEST_NO_THROW(testAtom(QueryParser::parseConstant("owl:Foo"), "http://www.w3.org/2002/07/owl#Foo"))
@@ -137,8 +136,8 @@ TEST_F(QueryParserTest, Atoms) {
 }
 
 TEST_F(QueryParserTest, Strings) {
-    TEST_NO_THROW(testString(QueryParser::parseConstant("\"Foo\""), "\"Foo\""))
-    TEST_NO_THROW(testString(QueryParser::parseConstant("\"x#/&%s\""), "\"x#/&%s\""))
+    TEST_NO_THROW(testString(QueryParser::parseConstant("\"Foo\""), "Foo"))
+    TEST_NO_THROW(testString(QueryParser::parseConstant("\"x#/&%s\""), "x#/&%s"))
 }
 
 TEST_F(QueryParserTest, InvalidConstant) {

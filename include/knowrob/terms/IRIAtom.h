@@ -45,6 +45,10 @@ namespace knowrob {
 
 		// override Term
 		bool isIRI() const override { return true; }
+
+	protected:
+		// override Term
+		void write(std::ostream &os) const override;
 	};
 
 	using IRIAtomPtr = std::shared_ptr<IRIAtom>;

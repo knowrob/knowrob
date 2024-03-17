@@ -6,6 +6,8 @@
 #include <boost/python.hpp>
 #include "knowrob/terms/IRIAtom.h"
 #include "knowrob/py/utils.h"
+#include "knowrob/semweb/Resource.h"
+#include "knowrob/semweb/PrefixRegistry.h"
 
 using namespace knowrob;
 
@@ -34,6 +36,21 @@ std::shared_ptr<knowrob::IRIAtom> IRIAtom::Tabled(std::string_view name) {
 		throw std::runtime_error("Failed to lock IRIAtom");
 	}
 	return std::static_pointer_cast<IRIAtom>(locked);
+}
+
+void IRIAtom::write(std::ostream &os) const {
+	auto ns = semweb::Resource::iri_ns(stringForm_);
+	if (!ns.empty()) {
+		auto alias = PrefixRegistry::uriToAlias(ns);
+		if (alias.has_value()) {
+			auto name = semweb::Resource::iri_name(stringForm_);
+			if (!name.empty()) {
+				os << alias.value().get() << ":" << name;
+				return;
+			}
+		}
+	}
+	Atom::write(os);
 }
 
 namespace knowrob::py {
