@@ -223,15 +223,15 @@ test('since(+Triple,+Instant)') :-
 		triple(test:'Lea', test:hasNumber, '+499955247') since 600)).
 
 test('until(+Triple,+Instant)') :-
-	% before project until=inf
-	assert_true(mongolog_call(
-		triple(test:'Lea', test:hasNumber, '+499955247') until 1000)),
-	assert_true(mongolog_call(project(
-		triple(test:'Lea', test:hasNumber, '+499955247') until 900))),
-	% after project until=900
-	assert_true(mongolog_call(
-		triple(test:'Lea', test:hasNumber, '+499955247') until 900)),
 	assert_false(mongolog_call(
-		triple(test:'Lea', test:hasNumber, '+499955247') until 1000)).
+		triple(test:'Lea', test:hasNumber, '+499955248') until 600)),
+	assert_true(mongolog_call(project(
+		triple(test:'Lea', test:hasNumber, '+499955248') until 600))),
+	assert_true(mongolog_call(
+		triple(test:'Lea', test:hasNumber, '+499955248') until 600)),
+	assert_true(mongolog_call(
+		triple(test:'Lea', test:hasNumber, '+499955248') until 100)),
+	assert_false(mongolog_call(
+		triple(test:'Lea', test:hasNumber, '+499955248') until 1000)).
 
 :- end_mongolog_tests('mongolog_temporal').
