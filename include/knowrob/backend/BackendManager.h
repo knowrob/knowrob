@@ -47,7 +47,7 @@ namespace knowrob {
 		 * @param factory a backend factory
 		 * @return true if the factory was added, false otherwise
 		 */
-		static bool addFactory(const std::string &typeName, const std::shared_ptr<BackendFactory> &factory);
+		static bool addFactory(std::string_view typeName, const std::shared_ptr<BackendFactory> &factory);
 
 		/**
 		 * Add a typed backend factory to the manager.
@@ -56,7 +56,7 @@ namespace knowrob {
 		 * @return true if the factory was added, false otherwise
 		 */
 		template<class T>
-		static bool addFactory(const std::string &typeName) {
+		static bool addFactory(std::string_view typeName) {
 			return addFactory(typeName, std::make_shared<TypedBackendFactory<T>>(typeName));
 		}
 
@@ -81,8 +81,7 @@ namespace knowrob {
 		 * Add a backend to this manager.
 		 * @reasoner a defined backend.
 		 */
-		std::shared_ptr<DefinedBackend> addBackend(
-				const std::string &reasonerID, const DataBackendPtr &backend);
+		std::shared_ptr<DefinedBackend> addBackend(std::string_view reasonerID, const DataBackendPtr &backend);
 
 		/**
 		 * Add a backend to this manager.
@@ -130,7 +129,7 @@ namespace knowrob {
 		// an identifier for this manager
 		uint32_t managerID_;
 
-		std::shared_ptr<BackendPlugin> loadBackendPlugin(const std::string &path);
+		std::shared_ptr<BackendPlugin> loadBackendPlugin(std::string_view path);
 
 		/**
 		 * Remove a reasoner from this manager.

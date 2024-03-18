@@ -8,11 +8,11 @@
 
 using namespace knowrob;
 
-BackendPlugin::BackendPlugin(std::string dllPath)
+BackendPlugin::BackendPlugin(std::string_view dllPath)
 		: handle_(nullptr),
 		  create_(nullptr),
 		  get_name_(nullptr),
-		  dllPath_(std::move(dllPath)) {
+		  dllPath_(dllPath) {
 }
 
 BackendPlugin::~BackendPlugin() {
@@ -39,6 +39,6 @@ bool BackendPlugin::loadDLL() {
 	}
 }
 
-std::shared_ptr<DefinedBackend> BackendPlugin::createBackend(const std::string &reasonerID) {
+std::shared_ptr<DefinedBackend> BackendPlugin::createBackend(std::string_view reasonerID) {
 	return std::make_shared<DefinedBackend>(reasonerID, create_());
 }

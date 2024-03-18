@@ -21,8 +21,8 @@ namespace knowrob {
 		 * @param name the name of the backend, unique within manager
 		 * @param backend the KG instance
 		 */
-		DefinedBackend(std::string name, const std::shared_ptr<DataBackend> &backend)
-		: name_(std::move(name)), backend_(backend) {}
+		DefinedBackend(std::string_view name, const std::shared_ptr<DataBackend> &backend)
+		: name_(name), backend_(backend) {}
 
 		/**
 		 * @return the backend instance

@@ -69,12 +69,11 @@ bool ReasonerModule::loadModule() {
 	return isLoaded();
 }
 
-std::shared_ptr<Reasoner> ReasonerModule::createReasoner(const std::string &reasonerID) {
+std::shared_ptr<Reasoner> ReasonerModule::createReasoner(std::string_view reasonerID) {
 	try {
 		// create a reasoner object
-		// TODO: for some reason it does not fly below if the Python reasoner has
-		//   both Reasoner and DataBackend as base classes. Hence, the introduction of ReasonerWithBackend
-		//   as a workaround.
+		// note: for some reason it does not fly below if the Python reasoner has both Reasoner and
+		// DataBackend as base classes. Hence, the introduction of ReasonerWithBackend as a workaround.
 		// TODO: plugins also receive reasoner id as argument, include it for modules too.
 		//python::object pyReasoner = pyReasonerType_(reasonerID);
 		python::object pyReasoner = pyReasonerType_();

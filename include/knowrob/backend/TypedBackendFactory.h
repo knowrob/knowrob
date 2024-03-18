@@ -24,14 +24,14 @@ namespace knowrob {
 		/**
 		 * @param name name of the backend type for which the factory can create instances.
 		 */
-		explicit TypedBackendFactory(std::string name) : name_(std::move(name)) {}
+		explicit TypedBackendFactory(std::string_view name) : name_(name) {}
 
 		// Override BackendFactory
-		std::shared_ptr<DefinedBackend> createBackend(const std::string &backendID) override
+		std::shared_ptr<DefinedBackend> createBackend(std::string_view backendID) override
 		{ return std::make_shared<DefinedBackend>(backendID, std::make_shared<T>()); }
 
 		// Override BackendFactory
-		const std::string& name() const override {  return name_; }
+		std::string_view name() const override {  return name_; }
 	protected:
 		std::string name_;
 	};

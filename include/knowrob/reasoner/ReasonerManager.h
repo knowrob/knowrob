@@ -42,7 +42,7 @@ namespace knowrob {
 		 * @param typeName the name of the reasoner type
 		 * @param factory a reasoner factory
 		 */
-		static bool addReasonerFactory(const std::string &typeName, const std::shared_ptr<ReasonerFactory> &factory);
+		static bool addReasonerFactory(std::string_view typeName, const std::shared_ptr<ReasonerFactory> &factory);
 
 		/**
 		 * Add a typed reasoner factory to the manager.
@@ -50,7 +50,7 @@ namespace knowrob {
 		 * @param factory a reasoner factory
 		 */
 		template<class T>
-		static bool addReasonerFactory(const std::string &typeName) {
+		static bool addReasonerFactory(std::string_view typeName) {
 			return addReasonerFactory(typeName, std::make_shared<TypedReasonerFactory<T>>(typeName));
 		}
 
@@ -90,8 +90,7 @@ namespace knowrob {
 		 * Add a reasoner to this manager.
 		 * @reasoner a reasoner.
 		 */
-		std::shared_ptr<DefinedReasoner> addReasoner(
-				const std::string &reasonerID, const std::shared_ptr<Reasoner> &reasoner);
+		std::shared_ptr<DefinedReasoner> addReasoner(std::string_view reasonerID, const std::shared_ptr<Reasoner> &reasoner);
 
 		/**
 		 * @return map of all reasoner defined by this manager.
@@ -112,7 +111,7 @@ namespace knowrob {
 		KnowledgeBase *kb_;
 		std::shared_ptr<BackendManager> backendManager_;
 		// maps reasoner type name to factory used to create instances of that type
-		static std::map<std::string, std::shared_ptr<ReasonerFactory>> reasonerFactories_;
+		static std::map<std::string, std::shared_ptr<ReasonerFactory>, std::less<>> reasonerFactories_;
 		// maps manager id to manager
 		static std::map<uint32_t, ReasonerManager *> reasonerManagers_;
 		// counts number of initialized managers
@@ -123,8 +122,8 @@ namespace knowrob {
 		// maps reasoner ID to reasoner instance.
 		std::map<std::string, std::shared_ptr<DefinedReasoner>, std::less<>> reasonerPool_;
 		// maps plugin names to factories used to create reasoner instances
-		std::map<std::string, std::shared_ptr<ReasonerPlugin>> loadedPlugins_;
-		std::map<std::string, std::shared_ptr<ReasonerModule>> loadedModules_;
+		std::map<std::string, std::shared_ptr<ReasonerPlugin>, std::less<>> loadedPlugins_;
+		std::map<std::string, std::shared_ptr<ReasonerModule>, std::less<>> loadedModules_;
 		// maps reasoner to their backends
 		std::map<std::string_view, std::shared_ptr<DataBackend>, std::less<>> reasonerBackends_;
 		// a counter used to generate unique IDs
@@ -132,9 +131,9 @@ namespace knowrob {
 		// an identifier for this manager
 		uint32_t managerID_;
 
-		std::shared_ptr<ReasonerPlugin> loadReasonerPlugin(const std::string &path);
+		std::shared_ptr<ReasonerPlugin> loadReasonerPlugin(std::string_view path);
 
-		std::shared_ptr<ReasonerModule> loadReasonerModule(const std::string &path, const std::string &type);
+		std::shared_ptr<ReasonerModule> loadReasonerModule(std::string_view path, std::string_view type);
 
 		void setDataBackend(const std::shared_ptr<Reasoner> &reasoner, const std::shared_ptr<DataBackend> &dataBackend);
 
@@ -144,12 +143,12 @@ namespace knowrob {
 		 */
 		void removeReasoner(const std::shared_ptr<DefinedReasoner> &reasoner);
 	};
+}
 
-	// a macro for static registration of a reasoner type.
-	// reasoner types registered with this macro are builtin reasoners that are not
-	// loaded from a plugin.
+// a macro for static registration of a reasoner type.
+// reasoner types registered with this macro are builtin reasoners that are not
+// loaded from a plugin.
 #define KNOWROB_BUILTIN_REASONER(Name, Type) class Type ## _Registration{ static bool isRegistered; }; \
         bool Type ## _Registration::isRegistered = ReasonerManager::addReasonerFactory<Type>(Name);
-}
 
 #endif //KNOWROB_REASONER_MANAGER_H_

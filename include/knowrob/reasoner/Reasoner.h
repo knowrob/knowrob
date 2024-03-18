@@ -25,6 +25,7 @@
 namespace knowrob {
 	// forward declarations
 	class KnowledgeBase;
+
 	class ReasonerManager;
 
 	using InferredTripleContainer = std::shared_ptr<std::vector<std::shared_ptr<FramedTriple>>>;
@@ -53,7 +54,7 @@ namespace knowrob {
 		/**
 		 * @return a term representing the reasoner name.
 		 */
-		auto& reasonerNameTerm() const { return t_reasonerName_; }
+		auto &reasonerNameTerm() const { return t_reasonerName_; }
 
 		/**
 		 * @return the reasoner manager associated with this reasoner.
@@ -165,12 +166,14 @@ namespace knowrob {
 
 		struct InferredComparator {
 			bool operator()(const std::shared_ptr<FramedTriple> &v0,
-			                const std::shared_ptr<FramedTriple> &v1) const;
+							const std::shared_ptr<FramedTriple> &v1) const;
 		};
+
 		using InferredeSet = std::set<std::shared_ptr<FramedTriple>, InferredComparator>;
 		InferredeSet inferredTriples_;
 
 		friend class ReasonerManager;
+
 		ReasonerManager *reasonerManager_;
 
 		void setReasonerManager(ReasonerManager *reasonerManager);

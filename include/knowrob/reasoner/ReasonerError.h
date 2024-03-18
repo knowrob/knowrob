@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -23,11 +20,11 @@ namespace knowrob {
 		 * @param args list of arguments used to instantiate the pattern.
 		 */
 		template<typename ... Args>
-		explicit ReasonerError(const char *fmt, Args&& ... args)
-		: std::runtime_error(fmt::format(fmt, args...)) {}
+		explicit ReasonerError(const char *fmt, Args &&... args)
+				: std::runtime_error(fmt::format(fmt, args...)) {}
 
 		explicit ReasonerError(const std::string &msg)
-		: std::runtime_error(msg) {}
+				: std::runtime_error(msg) {}
 	};
 }
 

@@ -27,12 +27,12 @@ namespace knowrob {
 		 * @param backendID the ID of the backend in the knowledge base.
 		 * @return the reasoner created.
 		 */
-		virtual std::shared_ptr<DefinedBackend> createBackend(const std::string &backendID) = 0;
+		virtual std::shared_ptr<DefinedBackend> createBackend(std::string_view backendID) = 0;
 
 		/**
 		 * @return name of the KG type for which the factory can create instances.
 		 */
-		virtual const std::string& name() const = 0;
+		virtual std::string_view name() const = 0;
 	};
 }
 

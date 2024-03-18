@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -11,43 +8,37 @@
 
 using namespace knowrob;
 
-ReasonerPlugin::ReasonerPlugin(std::string dllPath)
+ReasonerPlugin::ReasonerPlugin(std::string_view dllPath)
 		: handle_(nullptr),
 		  create_(nullptr),
 		  get_name_(nullptr),
-		  dllPath_(std::move(dllPath))
-{
+		  dllPath_(dllPath) {
 }
 
-ReasonerPlugin::~ReasonerPlugin()
-{
-	if(handle_) {
+ReasonerPlugin::~ReasonerPlugin() {
+	if (handle_) {
 		dlclose(handle_);
 		handle_ = nullptr;
 	}
 }
 
-bool ReasonerPlugin::isLoaded()
-{
+bool ReasonerPlugin::isLoaded() {
 	return (create_ != nullptr && get_name_ != nullptr);
 }
 
-bool ReasonerPlugin::loadDLL()
-{
+bool ReasonerPlugin::loadDLL() {
 	handle_ = dlopen(dllPath_.c_str(), RTLD_LAZY);
-	if(handle_ != nullptr) {
-		create_ = (std::shared_ptr<Reasoner> (*)(const std::string&))
+	if (handle_ != nullptr) {
+		create_ = (std::shared_ptr<Reasoner> (*)(std::string_view))
 				dlsym(handle_, "knowrob_createReasoner");
-		get_name_ = (char* (*)())
+		get_name_ = (char *(*)())
 				dlsym(handle_, "knowrob_getPluginName");
 		return isLoaded();
-	}
-	else {
+	} else {
 		return false;
 	}
 }
 
-std::shared_ptr<Reasoner> ReasonerPlugin::createReasoner(const std::string &reasonerID)
-{
+std::shared_ptr<Reasoner> ReasonerPlugin::createReasoner(std::string_view reasonerID) {
 	return create_(reasonerID);
 }

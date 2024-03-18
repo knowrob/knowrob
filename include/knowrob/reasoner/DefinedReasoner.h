@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -23,8 +20,8 @@ namespace knowrob {
 		 * @param name the name of the reasoner, unique within manager
 		 * @param reasoner the reasoner instance
 		 */
-		DefinedReasoner(std::string name, const std::shared_ptr<Reasoner> &reasoner)
-		: name_(std::move(name)), reasoner_(reasoner) {}
+		DefinedReasoner(std::string_view name, const std::shared_ptr<Reasoner> &reasoner)
+		: name_(name), reasoner_(reasoner) {}
 
 		/**
 		 * @return the reasoner instance

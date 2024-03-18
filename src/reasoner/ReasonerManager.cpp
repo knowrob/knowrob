@@ -12,7 +12,7 @@
 
 using namespace knowrob;
 
-std::map<std::string, std::shared_ptr<ReasonerFactory>> ReasonerManager::reasonerFactories_ = {};
+std::map<std::string, std::shared_ptr<ReasonerFactory>, std::less<>> ReasonerManager::reasonerFactories_ = {};
 std::map<uint32_t, ReasonerManager *> ReasonerManager::reasonerManagers_ = {};
 uint32_t ReasonerManager::managerIDCounter_ = 0;
 
@@ -97,7 +97,7 @@ std::shared_ptr<DefinedReasoner> ReasonerManager::loadReasoner(const boost::prop
 	if (name.has_value()) {
 		reasonerID = name.value();
 	} else {
-		reasonerID = factory->name() + std::to_string(reasonerIndex_);
+		reasonerID = std::string(factory->name()) + std::to_string(reasonerIndex_);
 	}
 	KB_INFO("Using reasoner `{}` with type `{}`.", reasonerID, factory->name());
 	// create a new reasoner instance
@@ -143,11 +143,11 @@ std::shared_ptr<DefinedReasoner> ReasonerManager::loadReasoner(const boost::prop
 	return definedReasoner;
 }
 
-std::shared_ptr<ReasonerPlugin> ReasonerManager::loadReasonerPlugin(const std::string &path) {
+std::shared_ptr<ReasonerPlugin> ReasonerManager::loadReasonerPlugin(std::string_view path) {
 	auto absPath = std::filesystem::absolute(path);
 	auto it = loadedPlugins_.find(absPath);
 	if (it == loadedPlugins_.end()) {
-		auto p = std::make_shared<ReasonerPlugin>(absPath);
+		auto p = std::make_shared<ReasonerPlugin>(absPath.c_str());
 		auto jt = loadedPlugins_.insert(std::pair<std::string,
 				std::shared_ptr<ReasonerPlugin>>(absPath, p));
 		if (jt.first->second->loadDLL()) {
@@ -160,7 +160,7 @@ std::shared_ptr<ReasonerPlugin> ReasonerManager::loadReasonerPlugin(const std::s
 	return {};
 }
 
-std::shared_ptr<ReasonerModule> ReasonerManager::loadReasonerModule(const std::string &path, const std::string &type) {
+std::shared_ptr<ReasonerModule> ReasonerManager::loadReasonerModule(std::string_view path, std::string_view type) {
 	auto it = loadedModules_.find(path);
 	if (it == loadedModules_.end()) {
 		auto p = std::make_shared<ReasonerModule>(path, type);
@@ -176,21 +176,20 @@ std::shared_ptr<ReasonerModule> ReasonerManager::loadReasonerModule(const std::s
 	return {};
 }
 
-bool ReasonerManager::addReasonerFactory(const std::string &typeName, const std::shared_ptr<ReasonerFactory> &factory) {
+bool ReasonerManager::addReasonerFactory(std::string_view typeName, const std::shared_ptr<ReasonerFactory> &factory) {
 	if (reasonerFactories_.find(typeName) != reasonerFactories_.end()) {
 		KB_WARN("overwriting factory for reasoner type '{}'", typeName);
 	}
-	reasonerFactories_[typeName] = factory;
+	reasonerFactories_.emplace(typeName, factory);
 	return true;
 }
 
-std::shared_ptr<DefinedReasoner> ReasonerManager::addReasoner(
-		const std::string &reasonerID, const std::shared_ptr<Reasoner> &reasoner) {
+std::shared_ptr<DefinedReasoner> ReasonerManager::addReasoner(std::string_view reasonerID, const std::shared_ptr<Reasoner> &reasoner) {
 	if (reasonerPool_.find(reasonerID) != reasonerPool_.end()) {
 		KB_WARN("overwriting reasoner with name '{}'", reasonerID);
 	}
 	auto managedReasoner = std::make_shared<DefinedReasoner>(reasonerID, reasoner);
-	reasonerPool_[reasonerID] = managedReasoner;
+	reasonerPool_.emplace(reasonerID, managedReasoner);
 	reasoner->setReasonerManager(this);
 	reasoner->setReasonerName(reasonerID);
 	// indicate that the origin `reasonerID` is a reasoner, and thus belongs to the session

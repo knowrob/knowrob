@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2023, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -67,12 +64,12 @@ namespace knowrob {
 		/**
 		 * @return set of initial nodes.
 		 */
-		const NodeList& initialNodes() const { return initialNodes_; }
+		const NodeList &initialNodes() const { return initialNodes_; }
 
 		/**
 		 * @return set of terminal nodes.
 		 */
-		const NodeList& terminalNodes() const { return terminalNodes_; }
+		const NodeList &terminalNodes() const { return terminalNodes_; }
 
 		/**
 		 * A node in an evaluation graph.
@@ -113,7 +110,7 @@ namespace knowrob {
 			/**
 			 * @return the formula associated to this node.
 			 */
-			const std::shared_ptr<Formula>& phi() const { return phi_; }
+			const std::shared_ptr<Formula> &phi() const { return phi_; }
 
 			/**
 			 * @return the predicate type associated to this node.
@@ -123,17 +120,17 @@ namespace knowrob {
 			/**
 			 * @return the reasoner associated to this node.
 			 */
-			const std::set<std::shared_ptr<DefinedReasoner>>& reasonerAlternatives() { return reasonerAlternatives_; }
+			const std::set<std::shared_ptr<DefinedReasoner>> &reasonerAlternatives() { return reasonerAlternatives_; }
 
 			/**
 			 * @return list of node successors.
 			 */
-			const NodeList& successors() const { return successors_; }
+			const NodeList &successors() const { return successors_; }
 
 			/**
 			 * @return list of node predecessors.
 			 */
-			const NodeList& predecessors() const { return  predecessors_; }
+			const NodeList &predecessors() const { return predecessors_; }
 
 		protected:
 			std::shared_ptr<Formula> phi_;
@@ -141,13 +138,16 @@ namespace knowrob {
 			std::set<std::shared_ptr<DefinedReasoner>> reasonerAlternatives_;
 			std::list<std::shared_ptr<Node>> successors_;
 			std::list<std::shared_ptr<Node>> predecessors_;
+
 			friend class ReasoningGraph;
 		};
+
 	protected:
 		NodeList initialNodes_;
 		NodeList terminalNodes_;
 
 		static bool isEdgeNeeded(const NodePtr &a, const NodePtr &b);
+
 		void addConjunctiveNode(const NodePtr &a, const NodePtr &b);
 	};
 }

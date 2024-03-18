@@ -29,7 +29,7 @@ namespace knowrob {
 		/**
 		 * Cannot be copy-assigned.
 		 */
-		ReasonerModule(const ReasonerModule&) = delete;
+		ReasonerModule(const ReasonerModule &) = delete;
 
 		/**
 		 * @return true if the module was loaded successfully.
@@ -43,10 +43,10 @@ namespace knowrob {
 		bool loadModule();
 
 		// Override ReasonerFactory
-		std::shared_ptr<Reasoner> createReasoner(const std::string &reasonerID) override;
+		std::shared_ptr<Reasoner> createReasoner(std::string_view reasonerID) override;
 
 		// Override ReasonerFactory
-		const std::string& name() const override {  return name_; };
+		std::string_view name() const override { return name_; };
 
 	protected:
 		const std::string modulePath_;

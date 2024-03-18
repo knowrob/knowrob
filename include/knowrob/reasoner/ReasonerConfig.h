@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -29,7 +26,7 @@ namespace knowrob {
 		 * Load a reasoner configuration from a property tree.
 		 * @param ptree a property tree.
 		 */
-        explicit ReasonerConfig(const boost::property_tree::ptree *ptree);
+		explicit ReasonerConfig(const boost::property_tree::ptree *ptree);
 
 		/**
 		 * key-value pairs of settings where the key uses "." as separator of levels in the tree.
@@ -50,6 +47,7 @@ namespace knowrob {
 		 * @return the begin iterator of the key-value pairs.
 		 */
 		auto begin() const { return properties_.begin(); }
+
 		/**
 		 * @return the end iterator of the key-value pairs.
 		 */
@@ -58,7 +56,7 @@ namespace knowrob {
 		/**
 		 * @return the list of data sources that should be imported into the reasoner backend.
 		 */
-		auto& dataSources() const { return dataSources_; }
+		auto &dataSources() const { return dataSources_; }
 
 		/**
 		 * @return the property tree used to generate this configuration.
@@ -67,6 +65,7 @@ namespace knowrob {
 
 	private:
 		void loadProperty(const std::string &key, const boost::property_tree::ptree &ptree);
+
 		void loadRemainder(const std::string &key, const boost::property_tree::ptree &ptree);
 
 		std::map<std::string, std::string> properties_;

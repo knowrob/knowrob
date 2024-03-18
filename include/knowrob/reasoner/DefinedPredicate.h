@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -14,8 +11,7 @@
 
 namespace knowrob {
 	/**
-	 * A predicate description with associated reasoners that can
-	 * submitQuery the predicate.
+	 * A predicate description with associated reasoners that can evaluate the predicate.
 	 */
 	class DefinedPredicate {
 	public:
@@ -41,7 +37,7 @@ namespace knowrob {
 		/**
 		 * @return set of reasoners associated to this description.
 		 */
-		const std::set<std::shared_ptr<DefinedReasoner>>& reasonerEnsemble() const { return reasonerEnsemble_; }
+		const std::set<std::shared_ptr<DefinedReasoner>> &reasonerEnsemble() const { return reasonerEnsemble_; }
 
 	protected:
 		const std::shared_ptr<PredicateIndicator> indicator_;

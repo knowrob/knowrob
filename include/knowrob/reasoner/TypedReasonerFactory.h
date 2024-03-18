@@ -6,8 +6,6 @@
 #ifndef KNOWROB_TYPED_REASONER_FACTORY_H_
 #define KNOWROB_TYPED_REASONER_FACTORY_H_
 
-#include <string>
-#include <memory>
 #include "knowrob/reasoner/Reasoner.h"
 #include "knowrob/reasoner/ReasonerFactory.h"
 
@@ -22,14 +20,14 @@ namespace knowrob {
 		/**
 		 * @param name name of the reasoner type for which the factory can create instances.
 		 */
-		explicit TypedReasonerFactory(std::string name) : name_(std::move(name)) {}
+		explicit TypedReasonerFactory(std::string_view name) : name_(name) {}
 
 		// Override ReasonerFactory
 		std::shared_ptr<Reasoner>
-		createReasoner(const std::string &reasonerID) override { return std::make_shared<T>(); }
+		createReasoner(std::string_view reasonerID) override { return std::make_shared<T>(); }
 
 		// Override ReasonerFactory
-		const std::string &name() const override { return name_; }
+		std::string_view name() const override { return name_; }
 
 	protected:
 		std::string name_;

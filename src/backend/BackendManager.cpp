@@ -17,7 +17,7 @@ std::map<uint32_t, BackendManager *> BackendManager::backendManagers_ = {};
 uint32_t BackendManager::managerIDCounter_ = 0;
 
 auto &getBackendFactories() {
-	static std::map<std::string, std::shared_ptr<BackendFactory>> x;
+	static std::map<std::string, std::shared_ptr<BackendFactory>, std::less<>> x;
 	return x;
 }
 
@@ -74,7 +74,7 @@ DataBackendPtr BackendManager::loadBackend(const boost::property_tree::ptree &co
 	if (name.has_value()) {
 		backendID = name.value();
 	} else {
-		backendID = factory->name() + std::to_string(backendIndex_);
+		backendID = std::string(factory->name()) + std::to_string(backendIndex_);
 	}
 	KB_INFO("Using backend `{}` with type `{}`.", backendID, factory->name());
 
@@ -94,11 +94,11 @@ DataBackendPtr BackendManager::loadBackend(const boost::property_tree::ptree &co
 	return definedBackend->backend();
 }
 
-std::shared_ptr<BackendPlugin> BackendManager::loadBackendPlugin(const std::string &path) {
+std::shared_ptr<BackendPlugin> BackendManager::loadBackendPlugin(std::string_view path) {
 	auto absPath = std::filesystem::absolute(path);
 	auto it = loadedPlugins_.find(absPath);
 	if (it == loadedPlugins_.end()) {
-		auto p = std::make_shared<BackendPlugin>(absPath);
+		auto p = std::make_shared<BackendPlugin>(absPath.c_str());
 		auto jt = loadedPlugins_.insert(std::pair<std::string,
 				std::shared_ptr<BackendPlugin>>(absPath, p));
 		if (jt.first->second->loadDLL()) {
@@ -111,22 +111,21 @@ std::shared_ptr<BackendPlugin> BackendManager::loadBackendPlugin(const std::stri
 	return {};
 }
 
-bool BackendManager::addFactory(const std::string &typeName, const std::shared_ptr<BackendFactory> &factory) {
+bool BackendManager::addFactory(std::string_view typeName, const std::shared_ptr<BackendFactory> &factory) {
 	auto &backendFactories = getBackendFactories();
 	if (backendFactories.find(typeName) != backendFactories.end()) {
 		KB_WARN("overwriting factory for backend type '{}'", typeName);
 	}
-	backendFactories[typeName] = factory;
+	backendFactories.emplace(typeName, factory);
 	return true;
 }
 
-std::shared_ptr<DefinedBackend> BackendManager::addBackend(
-		const std::string &backendID, const DataBackendPtr &backend) {
+std::shared_ptr<DefinedBackend> BackendManager::addBackend(std::string_view backendID, const DataBackendPtr &backend) {
 	if (backendPool_.find(backendID) != backendPool_.end()) {
 		KB_WARN("overwriting backend with name '{}'", backendID);
 	}
 	auto managedBackend = std::make_shared<DefinedBackend>(backendID, backend);
-	backendPool_[backendID] = managedBackend;
+	backendPool_.emplace(backendID, managedBackend);
 	initBackend(managedBackend);
 	return managedBackend;
 }

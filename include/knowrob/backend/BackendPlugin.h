@@ -25,7 +25,7 @@ namespace knowrob {
 		/**
 		 * @param dllPath the name or path of the shared library.
 		 */
-		explicit BackendPlugin(std::string dllPath);
+		explicit BackendPlugin(std::string_view dllPath);
 
 		~BackendPlugin() override;
 
@@ -48,10 +48,10 @@ namespace knowrob {
 		bool loadDLL();
 
 		// Override BackendFactory
-		std::shared_ptr<DefinedBackend> createBackend(const std::string &reasonerID) override;
+		std::shared_ptr<DefinedBackend> createBackend(std::string_view reasonerID) override;
 
 		// Override BackendFactory
-		const std::string& name() const override {  return name_; };
+		std::string_view name() const override {  return name_; };
 
 	protected:
 		const std::string dllPath_;
