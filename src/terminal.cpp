@@ -30,6 +30,7 @@
 #include "knowrob/queries/QueryTree.h"
 #include "knowrob/queries/Answer.h"
 #include "knowrob/queries/AnswerYes.h"
+#include "knowrob/queries/FormulaQuery.h"
 
 using namespace knowrob;
 namespace po = boost::program_options;
