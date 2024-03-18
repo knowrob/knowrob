@@ -126,7 +126,7 @@ std::shared_ptr<DefinedReasoner> ReasonerManager::loadReasoner(const boost::prop
 	}
 	auto definedReasoner = addReasoner(reasonerID, reasoner);
 
-	ReasonerConfig reasonerConfig(&config);
+	PropertyTree reasonerConfig(&config);
 	if (!reasoner->loadConfig(reasonerConfig)) {
 		KB_WARN("Reasoner `{}` failed to loadConfig.", reasonerID);
 	} else {

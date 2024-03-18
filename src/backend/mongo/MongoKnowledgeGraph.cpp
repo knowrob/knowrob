@@ -70,7 +70,7 @@ bool MongoKnowledgeGraph::initializeBackend(std::string_view db_uri, std::string
 	}
 }
 
-bool MongoKnowledgeGraph::initializeBackend(const ReasonerConfig &config) {
+bool MongoKnowledgeGraph::initializeBackend(const PropertyTree &config) {
 	auto ptree = config.ptree();
 	if (!ptree) {
 		tripleCollection_ = connect(DB_URI_DEFAULT, DB_NAME_KNOWROB, COLL_NAME_TESTS);

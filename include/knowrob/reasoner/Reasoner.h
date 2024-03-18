@@ -11,7 +11,7 @@
 #include <fmt/core.h>
 
 #include "knowrob/terms/Term.h"
-#include "knowrob/reasoner/ReasonerConfig.h"
+#include "knowrob/PropertyTree.h"
 #include "knowrob/sources//DataSource.h"
 #include "knowrob/queries/TokenBuffer.h"
 #include "knowrob/formulas/FirstOrderLiteral.h"
@@ -88,7 +88,7 @@ namespace knowrob {
 		 * The knowledge base system only calls this function once for each reasoner instance.
 		 * @param config a ReasonerConfig object.
 		 */
-		virtual bool loadConfig(const ReasonerConfig &config) = 0;
+		virtual bool loadConfig(const PropertyTree &config) = 0;
 
 		/**
 		 * Get the description of a predicate currently defined by this reasoner.

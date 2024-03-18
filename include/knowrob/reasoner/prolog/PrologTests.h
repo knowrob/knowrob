@@ -29,7 +29,7 @@ namespace knowrob {
 		static std::shared_ptr<BackendType> createBackend(const std::string &name, const std::shared_ptr<KnowledgeBase> &kb) {
 			auto db = std::make_shared<BackendType>();
 			kb->backendManager()->addBackend(name, db);
-			db->initializeBackend(knowrob::ReasonerConfig());
+			db->initializeBackend(knowrob::PropertyTree());
 			return db;
 		}
 
@@ -37,7 +37,7 @@ namespace knowrob {
 			auto r = std::make_shared<ReasonerType>();
 			kb->reasonerManager()->addReasoner(name, r);
 			r->setDataBackend(db);
-			r->loadConfig(knowrob::ReasonerConfig());
+			r->loadConfig(knowrob::PropertyTree());
 			return r;
 		}
 

@@ -22,7 +22,7 @@ namespace knowrob {
 	class PrologBackend : public DataBackend {
 	public:
 		// override DataBackend
-		bool initializeBackend(const ReasonerConfig &cfg) override;
+		bool initializeBackend(const PropertyTree &cfg) override;
 
 		// override DataBackend
 		bool insertOne(const FramedTriple &triple) override;

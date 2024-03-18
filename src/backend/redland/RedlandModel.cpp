@@ -215,7 +215,7 @@ bool RedlandModel::initializeBackend() {
 	return true;
 }
 
-bool RedlandModel::initializeBackend(const ReasonerConfig &config) {
+bool RedlandModel::initializeBackend(const PropertyTree &config) {
 	if (isInitialized()) {
 		KB_WARN("RedlandModel already initialized.");
 		return false;

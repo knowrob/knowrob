@@ -137,7 +137,7 @@ namespace knowrob {
 		bool initializeBackend();
 
 		// override DataBackend
-		bool initializeBackend(const ReasonerConfig &config) override;
+		bool initializeBackend(const PropertyTree &config) override;
 
 		/**
 		 * Load an URI into the model.

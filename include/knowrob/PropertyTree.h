@@ -3,8 +3,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_REASONER_CONFIGURATION_H_
-#define KNOWROB_REASONER_CONFIGURATION_H_
+#ifndef KNOWROB_PROPERTY_TREE_H_
+#define KNOWROB_PROPERTY_TREE_H_
 
 #include <list>
 #include <map>
@@ -18,15 +18,15 @@ namespace knowrob {
 	/**
 	 * Properties of a reasoner.
 	 */
-	class ReasonerConfig {
+	class PropertyTree {
 	public:
-		ReasonerConfig();
+		PropertyTree();
 
 		/**
 		 * Load a reasoner configuration from a property tree.
 		 * @param ptree a property tree.
 		 */
-		explicit ReasonerConfig(const boost::property_tree::ptree *ptree);
+		explicit PropertyTree(const boost::property_tree::ptree *ptree);
 
 		/**
 		 * key-value pairs of settings where the key uses "." as separator of levels in the tree.
@@ -74,4 +74,4 @@ namespace knowrob {
 	};
 }
 
-#endif //KNOWROB_REASONER_CONFIGURATION_H_
+#endif //KNOWROB_PROPERTY_TREE_H_

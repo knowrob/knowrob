@@ -30,7 +30,7 @@ namespace knowrob {
 
 		//bool importData(const std::filesystem::path &path) override;
 
-		bool loadConfig(const ReasonerConfig &cfg) override;
+		bool loadConfig(const PropertyTree &cfg) override;
 
 		void setDataBackend(const DataBackendPtr &backend) override;
 

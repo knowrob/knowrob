@@ -19,7 +19,7 @@ namespace knowrob {
 //    https://www.swi-prolog.org/pldoc/man?section=semweb-graphs
 //    Potentially we could use this to store the whole KnowRob frame of a triple.
 
-bool PrologBackend::initializeBackend(const ReasonerConfig &cfg) {
+bool PrologBackend::initializeBackend(const PropertyTree &cfg) {
 	return true;
 }
 

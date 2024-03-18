@@ -40,7 +40,7 @@ public:
 	TestReasoner(const std::string_view &p, const std::string_view &s, const std::string_view &o)
 	: knowrob::Reasoner(), p_(p), s_(s), o_(o) {}
 
-	bool loadConfig(const ReasonerConfig &cfg) override { return true; }
+	bool loadConfig(const PropertyTree &cfg) override { return true; }
 	void setDataBackend(const DataBackendPtr &backend) override {}
 	void start() override {}
 	void stop() override {}

@@ -3,17 +3,17 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob/reasoner/ReasonerConfig.h"
+#include "knowrob/PropertyTree.h"
 #include "knowrob/formulas/Predicate.h"
 #include "knowrob/terms/Atom.h"
 #include "knowrob/terms/Function.h"
 
 using namespace knowrob;
 
-ReasonerConfig::ReasonerConfig()
+PropertyTree::PropertyTree()
 		: ptree_(nullptr) {}
 
-ReasonerConfig::ReasonerConfig(const boost::property_tree::ptree *ptree)
+PropertyTree::PropertyTree(const boost::property_tree::ptree *ptree)
 		: ptree_(ptree) {
 	static const std::string formatDefault = {};
 
@@ -37,7 +37,7 @@ ReasonerConfig::ReasonerConfig(const boost::property_tree::ptree *ptree)
 	}
 }
 
-void ReasonerConfig::loadProperty( //NOLINT
+void PropertyTree::loadProperty( //NOLINT
 		const std::string &key, const boost::property_tree::ptree &remainder) {
 	if (remainder.empty()) {
 		properties_.emplace(key, remainder.get_value<std::string>());
@@ -46,7 +46,7 @@ void ReasonerConfig::loadProperty( //NOLINT
 	}
 }
 
-void ReasonerConfig::loadRemainder( //NOLINT
+void PropertyTree::loadRemainder( //NOLINT
 		const std::string &key1, const boost::property_tree::ptree &remainder) {
 	static auto colon_f = std::make_shared<PredicateIndicator>(":", 2);
 
@@ -74,7 +74,7 @@ void ReasonerConfig::loadRemainder( //NOLINT
 	}
 }
 
-std::string_view ReasonerConfig::get(std::string_view key, std::string_view defaultValue) const {
+std::string_view PropertyTree::get(std::string_view key, std::string_view defaultValue) const {
 	auto it = properties_.find(key.data());
 	if (it != properties_.end()) {
 		return it->second;
@@ -83,7 +83,7 @@ std::string_view ReasonerConfig::get(std::string_view key, std::string_view defa
 	}
 }
 
-TermPtr ReasonerConfig::createKeyTerm(std::string_view key, std::string_view delimiter) const {
+TermPtr PropertyTree::createKeyTerm(std::string_view key, std::string_view delimiter) const {
 	TermPtr last_key, next_key;
 
 	size_t pos_start = 0, pos_end, delim_len = delimiter.length();

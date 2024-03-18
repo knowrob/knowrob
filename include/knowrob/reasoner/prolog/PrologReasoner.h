@@ -72,7 +72,7 @@ namespace knowrob {
 		std::list<TermPtr> runTests(const std::string &target);
 
 		// Override Reasoner
-		bool loadConfig(const ReasonerConfig &cfg) override;
+		bool loadConfig(const PropertyTree &cfg) override;
 
 		// Override Reasoner
 		void setDataBackend(const DataBackendPtr &backend) override;

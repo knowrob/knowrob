@@ -147,7 +147,7 @@ namespace knowrob::py {
 			call_method<void>(self, "setDataBackend", backend);
 		}
 
-		bool loadConfig(const ReasonerConfig &config) override {
+		bool loadConfig(const PropertyTree &config) override {
 			return call_method<bool>(self, "loadConfig", config);
 		}
 
@@ -178,11 +178,11 @@ namespace knowrob::py {
 		//    It seems boost::python::extract<T> can only retrieve one type of an object,
 		//    so a workaround is needed.
 
-		bool loadConfig(const ReasonerConfig &config) override {
+		bool loadConfig(const PropertyTree &config) override {
 			return knowrob::py::call_method<bool>(self, "loadConfig", config);
 		}
 
-		bool initializeBackend(const ReasonerConfig &config) override {
+		bool initializeBackend(const PropertyTree &config) override {
 			return knowrob::py::call_method<bool>(self, "initializeBackend", config);
 		}
 
@@ -225,10 +225,10 @@ namespace knowrob::py {
 	template<>
 	void createType<Reasoner>() {
 		using namespace boost::python;
-		class_<ReasonerConfig, std::shared_ptr<ReasonerConfig>>("ReasonerConfiguration", init<>())
-				.def("__iter__", range(&ReasonerConfig::begin, &ReasonerConfig::end))
-				.def("get", &ReasonerConfig::get)
-				.def("dataSources", &ReasonerConfig::dataSources, return_value_policy<copy_const_reference>());
+		class_<PropertyTree, std::shared_ptr<PropertyTree>>("ReasonerConfiguration", init<>())
+				.def("__iter__", range(&PropertyTree::begin, &PropertyTree::end))
+				.def("get", &PropertyTree::get)
+				.def("dataSources", &PropertyTree::dataSources, return_value_policy<copy_const_reference>());
 		class_<Reasoner, std::shared_ptr<ReasonerWrap>, bases<DataSourceHandler>, boost::noncopyable>
 				("Reasoner", init<>())
 				.def("createTriples", &ReasonerWrap::createTriples)

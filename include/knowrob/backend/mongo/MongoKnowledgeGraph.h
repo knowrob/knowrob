@@ -43,7 +43,7 @@ namespace knowrob {
 							   std::string_view collectionName = "triples");
 
 		// Override DataBackend
-		bool initializeBackend(const ReasonerConfig &config) override;
+		bool initializeBackend(const PropertyTree &config) override;
 
 		/**
 		 * @return the name of the database.

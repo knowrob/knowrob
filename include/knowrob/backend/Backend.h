@@ -11,7 +11,7 @@
 #include "knowrob/triples/FramedTriple.h"
 #include "knowrob/triples/TripleContainer.h"
 #include "knowrob/semweb/Vocabulary.h"
-#include "knowrob/reasoner/ReasonerConfig.h"
+#include "knowrob/PropertyTree.h"
 #include "knowrob/ThreadPool.h"
 #include "knowrob/sources/DataSourceHandler.h"
 
@@ -111,7 +111,7 @@ namespace knowrob {
 		 * @param config a property tree.
 		 * @return true on success
 		 */
-		virtual bool initializeBackend(const ReasonerConfig &config) = 0;
+		virtual bool initializeBackend(const PropertyTree &ptree) = 0;
 
 	protected:
 		std::shared_ptr<Vocabulary> vocabulary_;

@@ -223,7 +223,7 @@ add_library(knowrob SHARED
 		src/reasoner/ReasonerPlugin.cpp
 		src/reasoner/Reasoner.cpp
 		src/reasoner/ReasonerManager.cpp
-		src/reasoner/ReasonerConfiguration.cpp
+        src/PropertyTree.cpp
         src/reasoner/prolog/PrologEngine.cpp
 		src/reasoner/prolog/PrologReasoner.cpp
 		src/reasoner/prolog/PrologTests.cpp

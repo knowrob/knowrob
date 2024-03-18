@@ -15,7 +15,7 @@ namespace knowrob::py {
 	struct DataBackendWrap : public DataBackend, boost::python::wrapper<DataBackend> {
 		explicit DataBackendWrap(PyObject *p) : self(p), DataBackend() {}
 
-		bool initializeBackend(const ReasonerConfig &config) override {
+		bool initializeBackend(const PropertyTree &config) override {
 			return call_method<bool>(self, "initializeBackend", config);
 		}
 

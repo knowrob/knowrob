@@ -78,7 +78,7 @@ bool PrologReasoner::initializeGlobalPackages() {
 				   "user", false);
 }
 
-bool PrologReasoner::loadConfig(const ReasonerConfig &cfg) {
+bool PrologReasoner::loadConfig(const PropertyTree &cfg) {
 	// call PL_initialize
 	PrologEngine::initializeProlog();
 
