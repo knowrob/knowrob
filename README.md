@@ -139,14 +139,6 @@ More documentation can be found in the following subpages:
 - [Reasoner](reasoner/README.md)
 - [Alignment](alignment/README.md)
 - [ROS](ros/README.md)
-\if DOXYGEN_RUNNING
-- \subpage ontologies
-- \subpage queries
-- \subpage backends
-- \subpage reasoner
-- \subpage alignment
-- \subpage ros
-\endif
 
 In addition, the following resources are available:
 - Sourcecode documentation is available [here](https://knowrob.github.io/knowrob/)
