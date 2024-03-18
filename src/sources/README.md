@@ -1,5 +1,4 @@
-KnowRob Model
-=======
+\page ontologies Ontologies
 
 KnowRob supports the Resource Description Framework (RDF) which is similar to
 classical modelling approaches such as entity-relationship and class diagrams.

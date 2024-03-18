@@ -131,8 +131,17 @@ More complete information about reasoning in KnowRob can be found
 
 ## Further Information
 
+More documentation can be found in the following subpages:
+- \subpage ontologies
+- \subpage queries
+- \subpage backends
+- \subpage reasoner
+- \subpage alignment
+- \subpage ros
+
+In addition, the following resources are available:
 - Sourcecode documentation is available [here](https://knowrob.github.io/knowrob/)
-- A blog and more wiki pages are avaiabale at [knowrob.org](http://www.knowrob.org)
+- A blog and more wiki pages are available at [knowrob.org](http://www.knowrob.org)
 
 ### Installation of SWI-Prolog and MongoDB
 

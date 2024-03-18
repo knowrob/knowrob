@@ -1,5 +1,4 @@
-A mongo DB client for Prolog
-===
+\page mongodb_backend MongoDB Backend
 
 This package implements a mongo client using libmongoc-1.0.0,
 and declares a couple of Prolog predicates to interact with mongo DB

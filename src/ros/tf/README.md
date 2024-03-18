@@ -1,5 +1,4 @@
-TF integration
-=======
+\page ros_tf TF integration
 
 KnowRob stores the most recent transforms in local memory.
 This is also the source of data for a TF publisher running in this module.

@@ -1,7 +1,6 @@
-srdl
-===
+\page srdl SRDL
 
-The Semantic Robot Description Language (SRDL) extends KnowRob with representations for robot hardware,
+Semantic Robot Description Language (SRDL) extends KnowRob with representations for robot hardware,
 robot software and robot capabilities. The hardware models can automatically be
 [imported from a URDF description](http://knowrob.org/doc/create_srdl_model),
 and are annotated with additional semantic information.

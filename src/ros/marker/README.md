@@ -1,5 +1,4 @@
-Marker visualization
-=======
+\page ros_marker Marker visualization
 
 The ROS-based tool RViz defines a commonly used message format
 for 3D scene visualization supported by KnowRob.

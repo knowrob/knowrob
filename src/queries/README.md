@@ -1,5 +1,4 @@
-KnowRob Language
-=======
+\page querying Querying
 
 The KnowRob query language supports logic programming syntax.
 However, language expressions are potentially compiled by KnowRob into other

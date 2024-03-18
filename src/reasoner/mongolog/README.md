@@ -1,5 +1,4 @@
-mongolog
-=======
+\page mongolog MongoLog
 
 The main purpose of `mongolog` is to run logic programs
 with facts that are stored in a mongo database.

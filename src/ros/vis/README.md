@@ -1,5 +1,4 @@
-knowrob_vis
-===
+\page ros_vis Marker Visualization
 
 Utilities for the visualization of knowledge pieces.
 This package follows a client-server scheme:
