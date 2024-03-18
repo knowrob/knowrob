@@ -10,19 +10,64 @@
 #include <optional>
 
 namespace knowrob {
+	/**
+	 * A runtime error that is thrown when an error occurs in KnowRob.
+	 */
 	class KnowRobError : public std::runtime_error {
 	public:
-		explicit KnowRobError(std::string_view exc_type, std::string_view msg);
+		/**
+		 * @param exc_type A short description of the exception type.
+		 * @param msg A message describing the error.
+		 */
+		KnowRobError(std::string_view exc_type, std::string_view msg);
+
+		/**
+		 * @param exc_type A short description of the exception type.
+		 * @param msg A message describing the error.
+		 * @param trace A stack trace.
+		 */
 		KnowRobError(std::string_view exc_type, std::string_view msg, std::string_view trace);
+
+		/**
+		 * @param exc_type A short description of the exception type.
+		 * @param msg A message describing the error.
+		 * @param file The file where the error occurred.
+		 * @param line The line where the error occurred.
+		 */
 		KnowRobError(std::string_view exc_type, std::string_view msg, std::string_view file, int line);
+
+		/**
+		 * @param exc_type A short description of the exception type.
+		 * @param msg A message describing the error.
+		 * @param file The file where the error occurred.
+		 * @param line The line where the error occurred.
+		 * @param trace A stack trace.
+		 */
 		KnowRobError(std::string_view exc_type, std::string_view msg, std::string_view file, int line, std::string_view trace);
 
+		/**
+		 * @param file The file where the error occurred.
+		 */
 		void setFile(std::string_view file) { file_ = file; }
+
+		/**
+		 * @param line The line where the error occurred.
+		 */
 		void setLine(int line) { line_ = line; }
 
+		/**
+		 * @return the file where the error occurred.
+		 */
 		auto file() const { return file_; }
+
+		/**
+		 * @return the line where the error occurred.
+		 */
 		auto line() const { return line_; }
 
+		/**
+		 * @return true if the error has a file, false otherwise.
+		 */
 		bool hasFile() const { return file_.has_value(); }
 
 	protected:

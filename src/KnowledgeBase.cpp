@@ -20,7 +20,6 @@
 #include "knowrob/queries/NegationStage.h"
 #include "knowrob/queries/ModalStage.h"
 #include "knowrob/queries/QueryError.h"
-#include "knowrob/KnowledgeBaseError.h"
 #include "knowrob/queries/RedundantAnswerFilter.h"
 #include "knowrob/queries/DisjunctiveBroadcaster.h"
 #include "knowrob/queries/AnswerYes.h"

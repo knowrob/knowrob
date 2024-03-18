@@ -4,7 +4,7 @@
  */
 
 #include "knowrob/sources/SPARQLService.h"
-#include "knowrob/KnowledgeBaseError.h"
+#include "knowrob/backend/BackendError.h"
 
 using namespace knowrob;
 
@@ -22,11 +22,11 @@ SPARQLService::SPARQLService(const URI &uri, std::string_view format)
 	model_.setStorageType(RedlandStorageType::MEMORY);
 	model_.setOrigin(origin_);
 	if (!model_.initializeBackend()) {
-		throw KnowledgeBaseError("Failed to initialize Redland backend for SPARQL endpoint at \"{}\".", uri());
+		throw BackendError("Failed to initialize Redland backend for SPARQL endpoint at \"{}\".", uri());
 	}
 	// set up the model to interface with the SPARQL endpoint
 	if (!model_.load(uri, semweb::tripleFormatFromString(format))) {
-		throw KnowledgeBaseError("Failed to load URI of SPARQL endpoint at \"{}\".", uri());
+		throw BackendError("Failed to load URI of SPARQL endpoint at \"{}\".", uri());
 	}
 }
 

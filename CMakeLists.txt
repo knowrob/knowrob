@@ -191,7 +191,6 @@ add_library(knowrob SHARED
 		src/formulas/Top.cpp
 		src/formulas/ModalFormula.cpp
         src/formulas/FirstOrderLiteral.cpp
-		src/queries/QueryError.cpp
 		src/queries/Answer.cpp
 		src/queries/TokenStream.cpp
 		src/queries/TokenQueue.cpp

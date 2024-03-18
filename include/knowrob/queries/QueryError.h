@@ -11,33 +11,22 @@
 
 #include <string>
 #include <fmt/core.h>
-#include "knowrob/terms/Term.h"
-#include <knowrob/queries/FormulaQuery.h>
+#include "knowrob/KnowRobError.h"
 
 namespace knowrob {
 	/**
 	 * A querying-related runtime error.
 	 */
-	class QueryError : public std::runtime_error {
+	class QueryError : public KnowRobError {
 	public:
 		/**
 		 * @tparam Args fmt-printable arguments.
 		 * @param fmt A fmt string pattern.
 		 * @param args list of arguments used to instantiate the pattern.
 		 */
-		template<typename ... Args> explicit QueryError(const char *fmt, Args&& ... args)
-		: std::runtime_error(fmt::format(fmt, args...))
-		{}
-
-		/**
-		 * @param erroneousQuery the query that caused an error
-		 * @param errorTerm a term denoting the error
-		 */
-		QueryError(const Query &erroneousQuery, const Term &errorTerm);
-	
-	protected:
-		
-		static std::string formatErrorString(const Query &erroneousQuery, const Term &errorTerm);
+		template<typename ... Args>
+		explicit QueryError(const char *fmt, Args &&... args)
+				: KnowRobError("QueryError", fmt::format(fmt, args...)) {}
 	};
 }
 

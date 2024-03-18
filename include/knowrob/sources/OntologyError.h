@@ -3,17 +3,17 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#ifndef KNOWROB_REASONER_ERROR_H_
-#define KNOWROB_REASONER_ERROR_H_
+#ifndef KNOWROB_ONTOLOGY_ERROR_H_
+#define KNOWROB_ONTOLOGY_ERROR_H_
 
 #include <fmt/core.h>
 #include <knowrob/KnowRobError.h>
 
 namespace knowrob {
 	/**
-	 * A reasoner-related runtime error.
+	 * A data backend-related runtime error.
 	 */
-	class ReasonerError : public KnowRobError {
+	class OntologyError : public KnowRobError {
 	public:
 		/**
 		 * @tparam Args fmt-printable arguments.
@@ -21,9 +21,9 @@ namespace knowrob {
 		 * @param args list of arguments used to instantiate the pattern.
 		 */
 		template<typename ... Args>
-		explicit ReasonerError(const char *fmt, Args &&... args)
-				: KnowRobError("ReasonerError", fmt::format(fmt, args...)) {}
+		explicit OntologyError(const char *fmt, Args&& ... args)
+			: KnowRobError("OntologyError", fmt::format(fmt, args...)) {}
 	};
 }
 
-#endif //KNOWROB_REASONER_ERROR_H_
+#endif //KNOWROB_ONTOLOGY_ERROR_H_

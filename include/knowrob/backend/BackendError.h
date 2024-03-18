@@ -7,12 +7,13 @@
 #define KNOWROB_BACKEND_ERROR_H_
 
 #include <fmt/core.h>
+#include <knowrob/KnowRobError.h>
 
 namespace knowrob {
 	/**
 	 * A data backend-related runtime error.
 	 */
-	class BackendError : public std::runtime_error {
+	class BackendError : public KnowRobError {
 	public:
 		/**
 		 * @tparam Args fmt-printable arguments.
@@ -21,7 +22,7 @@ namespace knowrob {
 		 */
 		template<typename ... Args>
 		explicit BackendError(const char *fmt, Args&& ... args)
-		: std::runtime_error(fmt::format(fmt, args...)) {}
+			: KnowRobError("BackendError", fmt::format(fmt, args...)) {}
 	};
 }
 

@@ -5,7 +5,7 @@
 
 #include <filesystem>
 #include "knowrob/sources/OntologyParser.h"
-#include "knowrob/KnowledgeBaseError.h"
+#include "knowrob/sources/OntologyError.h"
 #include "knowrob/semweb/owl.h"
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/semweb/ImportHierarchy.h"
@@ -92,7 +92,7 @@ raptor_world *OntologyParser::createWorld() {
 	// redirect log messages to the knowrob logger
 	raptor_world_set_log_handler(world, nullptr, raptor_log);
 	if (raptor_world_open(world) != 0) {
-		throw KnowledgeBaseError("failed to initialize raptor library.");
+		throw OntologyError("failed to initialize raptor library.");
 	}
 	return world;
 }
