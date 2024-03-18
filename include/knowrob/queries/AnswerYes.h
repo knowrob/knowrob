@@ -7,7 +7,6 @@
 #define KNOWROB_POSITIVE_ANSWER_H
 
 #include "Answer.h"
-#include "knowrob/terms/PredicateInstance.h"
 #include "knowrob/formulas/FirstOrderLiteral.h"
 #include "knowrob/formulas/FramedPredicate.h"
 
