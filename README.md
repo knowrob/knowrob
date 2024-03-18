@@ -133,12 +133,12 @@ More complete information about reasoning in KnowRob can be found
 
 More documentation can be found in the following subpages:
 
-- [Ontologies](sources/README.md)
-- [Querying](queries/README.md)
-- [Backends](backend/README.md)
-- [Reasoner](reasoner/README.md)
-- [Alignment](alignment/README.md)
-- [ROS](ros/README.md)
+- [Ontologies](src/sources/README.md)
+- [Querying](src/queries/README.md)
+- [Backends](src/backend/README.md)
+- [Reasoner](src/reasoner/README.md)
+- [Alignment](src/alignment/README.md)
+- [ROS](src/ros/README.md)
 
 In addition, the following resources are available:
 - Sourcecode documentation is available [here](https://knowrob.github.io/knowrob/)
