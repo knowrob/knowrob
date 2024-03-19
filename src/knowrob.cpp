@@ -6,6 +6,7 @@
 #include <boost/python.hpp>
 #include <knowrob/knowrob.h>
 #include <knowrob/Logger.h>
+#include <knowrob/ThreadPool.h>
 #include <filesystem>
 #include <iostream>
 #include <locale>
@@ -58,7 +59,6 @@ namespace knowrob {
 		// Allow Python to load modules KnowRob-related directories.
 		InitPythonPath();
 		// start a Python interpreter
-		// NOTE: Py_Finalize() should not be called when using boost python according to docs.
 		Py_Initialize();
 		KB_INFO("[KnowRob] static initialization done.");
 		KB_DEBUG("[KnowRob] executable: {}", getNameOfExecutable());
@@ -67,7 +67,11 @@ namespace knowrob {
 		KB_DEBUG("[KnowRob] build directory: {}", KNOWROB_BUILD_DIR);
 	}
 
-	// TODO: add a finalize function that makes sure worker threads are stopped, and joined.
-	//		there is e.g. problem with spdlog being used in a worker thread after the main thread
-	//      has already been exited (it seems).
+	void ShutdownKnowledgeBase() {
+		// NOTE: Py_Finalize() should not be called when using boost python according to docs.
+		//Py_Finalize();
+		// stop the thread pool, join all remaining threads
+		DefaultThreadPool()->shutdown();
+		KB_INFO("[KnowRob] shutdown complete.");
+	}
 }

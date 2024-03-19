@@ -41,6 +41,14 @@ namespace knowrob {
 		ThreadPool(const ThreadPool &) = delete;
 
 		/**
+		 * Shutdown the thread pool.
+		 * Joining all the worker threads. If one of them is busy, this
+		 * call will block until the worker has finished its work, and can
+		 * gracefully exit.
+		 */
+		void shutdown();
+
+		/**
 		 * Pushes a goal for a worker.
 		 * The goal is assigned to a worker thread when one is available.
 		 * @goal the work goal

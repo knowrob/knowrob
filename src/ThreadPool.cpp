@@ -34,6 +34,10 @@ ThreadPool::ThreadPool(uint32_t maxNumThreads)
 }
 
 ThreadPool::~ThreadPool() {
+	shutdown();
+}
+
+void ThreadPool::shutdown() {
 	for (Worker *t: workerThreads_) {
 		t->hasTerminateRequest_ = true;
 	}
@@ -112,15 +116,10 @@ void ThreadPool::Worker::run() {
 				return hasTerminateRequest_ || !threadPool_->workQueue_.empty();
 			});
 			threadPool_->numActiveWorker_ += 1;
-			// FIXME: for some reason this creates random SIGSEGV in spdlog when exiting the application.
-			//  seems there are some resources of spdlog bound to the main thread.
-			//  @see https://github.com/gabime/spdlog/issues/2280
-			//  best way to fix it is to join the worker threads before exiting the application.
-			//KB_DEBUG("Worker woke up.");
+			KB_DEBUG("Worker woke up.");
 		}
 		if (hasTerminateRequest_) {
-			// FIXME: see above
-			//KB_DEBUG("Worker has terminate request.");
+			KB_DEBUG("Worker has terminate request.");
 			break;
 		}
 
@@ -143,8 +142,7 @@ void ThreadPool::Worker::run() {
 	// note: counter indicates that there are finished threads in workerThreads_ list.
 	threadPool_->numFinishedThreads_ += 1;
 	threadPool_->numActiveWorker_ -= 1;
-	// FIXME: see above
-	//KB_DEBUG("Worker terminated.");
+	KB_DEBUG("Worker terminated.");
 }
 
 

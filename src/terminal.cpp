@@ -664,11 +664,14 @@ int run(int argc, char **argv) {
 
 int main(int argc, char **argv) {
 	InitKnowledgeBase(argc, argv);
+	int status;
 	try {
-		return run(argc, argv);
+		status = run(argc, argv);
 	}
 	catch (std::exception &e) {
 		KB_ERROR("a '{}' exception occurred in main loop: {}.", typeid(e).name(), e.what());
-		return EXIT_FAILURE;
+		status = EXIT_FAILURE;
 	}
+	ShutdownKnowledgeBase();
+	return status;
 }

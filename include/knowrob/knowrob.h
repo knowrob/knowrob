@@ -21,6 +21,16 @@ namespace knowrob {
 	void InitKnowledgeBase(int argc, char **argv);
 
 	/**
+	 * Shutdown the knowledge base.
+	 * This will ensure that all worker threads in the global DefaultThreadPool
+	 * are joined.
+	 * It is best to call this before exiting an application to avoid
+	 * shutdown-crashes due to static resources associated with the main thread
+	 * being destroyed before the worker threads (this is the case for spdlog).
+	 */
+	void ShutdownKnowledgeBase();
+
+	/**
 	 * @return the name of the executable in which the knowledge base is running.
 	 */
 	char *getNameOfExecutable();
