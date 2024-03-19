@@ -24,9 +24,11 @@ bool Atom::isSameAtom(const Atom &other) const {
 }
 
 void Atom::write(std::ostream &os) const {
-	if (std::islower(stringForm_[0])) {
+	if (stringForm_.empty()) {
+		os << "''";
+	} else if (std::islower(stringForm_[0]) &&
+	           std::all_of(stringForm_.begin(), stringForm_.end(), ::isalnum)) {
 		// avoid single quotes
-		// FIXME: but single quotes are required for atoms with non alpha-numeric characters
 		os << stringForm_;
 	} else {
 		os << '\'' << stringForm_ << '\'';
