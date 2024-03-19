@@ -13,7 +13,6 @@ using namespace knowrob;
 
 static inline bool has_intersection(const std::set<std::string_view> &a, const std::set<std::string_view> &b)
 {
-    // TODO: is there a more standard way of doing this?
     const std::set<std::string_view> &smaller = (a.size()<b.size() ? a : b);
     const std::set<std::string_view> &larger = ((&smaller == &a) ? b : a);
     return std::any_of(smaller.cbegin(), smaller.cend(),

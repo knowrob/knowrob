@@ -3,6 +3,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
+#include <utility>
+
 #include "knowrob/formulas/Predicate.h"
 #include "knowrob/terms/Function.h"
 #include "knowrob/py/utils.h"
@@ -13,9 +15,9 @@ Predicate::Predicate(std::string_view functor, const std::vector<TermPtr> &argum
 		: Predicate(Atom::Tabled(functor), arguments) {
 }
 
-Predicate::Predicate(const AtomPtr &functor, const std::vector<TermPtr> &arguments)
+Predicate::Predicate(AtomPtr functor, const std::vector<TermPtr> &arguments)
 		: Formula(FormulaType::PREDICATE),
-		  functor_(functor),
+		  functor_(std::move(functor)),
 		  arguments_(arguments),
 		  variables_(getVariables1()) {
 }
@@ -57,11 +59,11 @@ size_t Predicate::hash() const {
 }
 
 void Predicate::write(std::ostream &os) const {
-	// TODO: some predicates should be written in infix notation, e.g. '=', 'is', ...
+	static const auto a_triple = Atom::Tabled("triple");
 
 	if (arity() == 3 &&
 		arguments_[1]->termType() != TermType::VARIABLE &&
-		functor_->stringForm() == "triple") {
+		*functor_ == *a_triple) {
 		os << *arguments_[1] << '(' << *arguments_[0] << ',' << *arguments_[2] << ')';
 	} else {
 		os << *functor_;

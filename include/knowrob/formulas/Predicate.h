@@ -32,7 +32,7 @@ namespace knowrob {
 		 * @functor the functor name.
 		 * @arguments vector of predicate arguments.
 		 */
-		explicit Predicate(const AtomPtr &functor, const std::vector<TermPtr> &arguments = {});
+		explicit Predicate(AtomPtr functor, const std::vector<TermPtr> &arguments = {});
 
 		/**
 		 * Get the functor of this predicate.

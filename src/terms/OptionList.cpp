@@ -36,7 +36,6 @@ void OptionList::readOption(const TermPtr &option) {
 		// an option of the form `Key = Value`
 		auto keyTerm = fn->arguments()[0];
 		auto valTerm = fn->arguments()[1];
-		// TODO: rather allow nullary predicate here?
 		if (keyTerm->isAtom()) {
 			auto keyAtom = std::static_pointer_cast<Atom>(keyTerm);
 			options_[std::string(keyAtom->stringForm())] = valTerm;
