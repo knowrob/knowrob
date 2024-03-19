@@ -6,6 +6,8 @@
 #ifndef KNOWROB_PERSPECTIVE_H
 #define KNOWROB_PERSPECTIVE_H
 
+#include <utility>
+
 #include "memory"
 #include "map"
 #include "string"
@@ -25,6 +27,12 @@ namespace knowrob {
 		explicit Perspective(std::string_view iri);
 
 		/**
+		 * Create a new perspective with the given IRI atom.
+		 * @param atom the IRI atom of the perspective
+		 */
+		explicit Perspective(IRIAtomPtr atom) : atom_(std::move(atom)) {}
+
+		/**
 		 * @return the IRI of the perspective
 		 */
 		auto iri() const { return atom_->stringForm(); }
@@ -35,14 +43,14 @@ namespace knowrob {
 		auto atom() const { return atom_; }
 
 		/**
-		 * The ego perspective is a special perspective taken by the agent running the knowledge base.
-		 * @return the ego perspective
+		 * The egoIRI perspective is a special perspective taken by the agent running the knowledge base.
+		 * @return the egoIRI perspective
 		 */
 		static std::shared_ptr<Perspective> getEgoPerspective();
 
 		/**
 		 * @param iri an IRI
-		 * @return true if the IRI denotes the ego perspective
+		 * @return true if the IRI denotes the egoIRI perspective
 		 */
 		static bool isEgoPerspective(std::string_view iri);
 

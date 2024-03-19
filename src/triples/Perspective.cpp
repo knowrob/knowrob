@@ -5,9 +5,7 @@
 
 #include "knowrob/triples/Perspective.h"
 #include "knowrob/py/utils.h"
-
-// TODO: rather let the user configure the ego perspective IRI, or else use fallback
-#define EGO_PERSPECTIVE_IRI "http://knowrob.org/kb/knowrob.owl#Self"
+#include "knowrob/knowrob.h"
 
 using namespace knowrob;
 
@@ -20,14 +18,14 @@ Perspective::Perspective(std::string_view iri)
 std::shared_ptr<Perspective> Perspective::getEgoPerspective() {
 	static std::shared_ptr<Perspective> egoPerspective;
 	if (egoPerspective == nullptr) {
-		egoPerspective = std::make_shared<Perspective>(EGO_PERSPECTIVE_IRI);
+		egoPerspective = std::make_shared<Perspective>(GlobalSettings::egoIRI());
 		perspectiveMap_[egoPerspective->iri()] = egoPerspective;
 	}
 	return egoPerspective;
 }
 
 bool Perspective::isEgoPerspective(std::string_view iri) {
-	return iri.empty() || iri == EGO_PERSPECTIVE_IRI;
+	return iri.empty() || iri == GlobalSettings::egoIRI()->stringForm();
 }
 
 std::shared_ptr<Perspective> Perspective::get(std::string_view iri) {

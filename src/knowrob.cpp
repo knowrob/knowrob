@@ -12,7 +12,10 @@
 #include <locale>
 #include "knowrob/py/PythonError.h"
 
-uint32_t knowrob::GlobalSettings::batchSize_ = 500;
+uint32_t knowrob::GlobalSettings::batchSize_ = 500u;
+
+knowrob::IRIAtomPtr knowrob::GlobalSettings::egoIRI_ =
+	IRIAtom::Tabled("http://knowrob.org/kb/knowrob.owl#Self");
 
 namespace knowrob {
 	// stores the name of the executable as provided in argv[0]

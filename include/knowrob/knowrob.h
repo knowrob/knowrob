@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <sstream>
 #include <string>
+#include "knowrob/terms/IRIAtom.h"
 
 namespace knowrob {
 	/**
@@ -71,8 +72,20 @@ namespace knowrob {
 		 */
 		static void setBatchSize(uint32_t batchSize) { batchSize_ = batchSize; }
 
+		/**
+		 * @return the egoIRI atom.
+		 */
+		static IRIAtomPtr egoIRI() { return egoIRI_; }
+
+		/**
+		 * Set the egoIRI atom.
+		 * @param ego the egoIRI atom.
+		 */
+		static void setEgoIRI(const IRIAtomPtr &egoIRI) { egoIRI_ = egoIRI; }
+
 	protected:
 		static uint32_t batchSize_;
+		static IRIAtomPtr egoIRI_;
 	};
 }
 
