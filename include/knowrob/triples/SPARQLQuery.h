@@ -70,10 +70,11 @@ namespace knowrob {
 		SPARQLFlags flags_;
 		uint32_t varCounter_;
 		std::map<std::string_view, std::string_view> aliases_;
+		std::set<std::string_view> variables_;
 		std::string queryString_;
 		std::string lastVar_;
 
-		static void selectBegin(std::ostream &os);
+		void selectBegin(std::ostream &os);
 
 		static void selectEnd(std::ostream &os);
 

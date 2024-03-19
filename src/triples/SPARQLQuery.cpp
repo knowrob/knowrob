@@ -12,14 +12,6 @@
 
 using namespace knowrob;
 
-// TODO: build a SELECT pattern rather then using "*" to return all variables.
-
-SPARQLFlag knowrob::operator|(SPARQLFlag a, SPARQLFlag b)
-{ return static_cast<SPARQLFlag>(static_cast<std::uint8_t>(a) | static_cast<std::uint8_t>(b)); }
-
-bool knowrob::operator&(SPARQLFlag a, SPARQLFlag b)
-{ return static_cast<std::uint8_t>(a) & static_cast<std::uint8_t>(b); }
-
 SPARQLQuery::SPARQLQuery(const FramedTriplePattern &triplePattern, SPARQLFlag flags)
 		: varCounter_(0), flags_(flags) {
 	std::stringstream os, os_query;
@@ -35,14 +27,16 @@ SPARQLQuery::SPARQLQuery(const FramedTriplePattern &triplePattern, SPARQLFlag fl
 SPARQLQuery::SPARQLQuery(const std::shared_ptr<GraphQuery> &query, SPARQLFlag flags)
 		: varCounter_(0), flags_(flags) {
 	std::stringstream os_query;
-	selectBegin(os_query);
 	add(os_query, query->term());
-	selectEnd(os_query);
 
 	std::stringstream os;
 	appendPrefixes(os);
+	selectBegin(os);
 	os << os_query.str();
-	if (query->ctx()->queryFlags & QUERY_FLAG_ONE_SOLUTION) os << "\nLIMIT 1";
+	selectEnd(os);
+	if (query->ctx()->queryFlags & QUERY_FLAG_ONE_SOLUTION) {
+		os << "\nLIMIT 1";
+	}
 
 	queryString_ = os.str();
 }
@@ -189,7 +183,16 @@ void SPARQLQuery::add(std::ostream &os, const GraphBuiltin &builtin) {
 }
 
 void SPARQLQuery::selectBegin(std::ostream &os) {
-	os << "SELECT *\nWHERE {\n";
+	if (variables_.empty()) {
+		os << "SELECT * ";
+	} else {
+		os << "SELECT ";
+		for (const auto &var: variables_) {
+			os << '?' << var << ' ';
+		}
+	}
+	os << '\n';
+	os << "WHERE {\n";
 }
 
 void SPARQLQuery::selectEnd(std::ostream &os) {
@@ -310,6 +313,7 @@ bool SPARQLQuery::where(std::ostream &os, const FramedTriplePattern &triplePatte
 	} else if (triplePattern.objectVariable()) {
 		// value, operator and variable are provided in the pattern
 		lastVar_ = triplePattern.objectVariable()->name();
+		variables_.insert(triplePattern.objectVariable()->name());
 		os << "?" << lastVar_ << " . ";
 		return true;
 	} else {
@@ -326,9 +330,12 @@ bool SPARQLQuery::where(std::ostream &os, const FramedTriplePattern &triplePatte
 
 void SPARQLQuery::where(std::ostream &os, const TermPtr &term) {
 	switch (term->termType()) {
-		case TermType::VARIABLE:
-			os << "?" << ((Variable *) term.get())->name() << " ";
+		case TermType::VARIABLE: {
+			auto var = std::static_pointer_cast<Variable>(term);
+			variables_.insert(var->name());
+			os << "?" << var->name() << " ";
 			break;
+		}
 		case TermType::ATOMIC: {
 			if (term->isIRI()) {
 				iri(os, std::static_pointer_cast<Atomic>(term)->stringForm());
@@ -355,4 +362,12 @@ void SPARQLQuery::where(std::ostream &os, const TermPtr &term) {
 			}
 			break;
 	}
+}
+
+SPARQLFlag knowrob::operator|(SPARQLFlag a, SPARQLFlag b) {
+	return static_cast<SPARQLFlag>(static_cast<std::uint8_t>(a) | static_cast<std::uint8_t>(b));
+}
+
+bool knowrob::operator&(SPARQLFlag a, SPARQLFlag b) {
+	return static_cast<std::uint8_t>(a) & static_cast<std::uint8_t>(b);
 }
