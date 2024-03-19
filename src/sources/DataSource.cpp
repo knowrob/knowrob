@@ -38,7 +38,6 @@ std::string DataSource::getVersionFromURI(const std::string &uriString) {
 
 	// check if it is a local existing file and use file modification time
 	// as version in this case.
-	// FIXME: creates confusion if a local file is switched to a new remote version.
 	if (exists(p)) {
 		std::ostringstream oss;
 		auto stamp = last_write_time(p);

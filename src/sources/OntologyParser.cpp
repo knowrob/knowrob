@@ -157,11 +157,7 @@ void OntologyParser::flush(const TripleHandler &callback) {
 	// reduce vector size to actual number of elements
 	currentBatch_->shrink();
 	// call the callback with the current batch, note that the callback
-	// holds a reference on the batch which is only deleted after the callback
-	// lifts the reference.
-	// TODO: this might block the parser, but we could continue already filling the next batch
-	//       on the other hand, if the callback is executed by a worker, maybe too many batches will be queued.
-	//       but we could have a max num of batches in the queue, and use join to wait for the a worker to be done if too many.
+	// holds a reference on the batch which is only deleted after the callback lifts the reference.
 	//KB_DEBUG("flushing {} triples with origin {}", currentBatch_->size(), currentBatch_->origin());
 	callback(currentBatch_);
 	currentBatch_ = nullptr;
