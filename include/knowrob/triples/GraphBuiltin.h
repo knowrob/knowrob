@@ -92,7 +92,8 @@ namespace knowrob {
 				: GraphTerm(GraphTermType::Builtin),
 				  Function(functor, arguments),
 				  builtinType_(builtinType),
-				  bindVar_(std::move(bindVar)) {}
+				  bindVar_(std::move(bindVar)),
+				  isOptional_(true) {}
 
 		/**
 		 * @return the builtin type.
@@ -213,11 +214,24 @@ namespace knowrob {
 					std::vector<TermPtr>{a, b});
 		}
 
+		/**
+		 * @return true if the builtin is optional, false otherwise.
+		 */
+		bool isOptional() const { return isOptional_; }
+
+		/**
+		 * Set the optional flag of the builtin.
+		 * @param isOptional the optional flag.
+		 */
+		void setOptional(bool isOptional) { isOptional_ = isOptional; }
+
+		// Overwritten from GraphTerm
 		void write(std::ostream &os) const override { Function::write(os); }
 
 	protected:
 		GraphBuiltinType builtinType_;
 		VariablePtr bindVar_;
+		bool isOptional_;
 	};
 } // knowrob
 

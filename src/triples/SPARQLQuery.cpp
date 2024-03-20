@@ -116,12 +116,13 @@ void SPARQLQuery::comparison(std::ostream &os, const GraphBuiltin &builtin, cons
 	// Filter using a comparison operator, also succeed if one of the arguments is not bound.
 	// e.g. `FILTER (!BOUND(?begin) || !BOUND(?end) || ?begin < ?end)`
 	os << "  FILTER ( ";
-	// TODO: make this optional
-	if (builtin.arguments()[0]->isVariable()) {
-		os << "!BOUND(?" << std::static_pointer_cast<Variable>(builtin.arguments()[0])->name() << ") || ";
-	}
-	if (builtin.arguments()[1]->isVariable()) {
-		os << "!BOUND(?" << std::static_pointer_cast<Variable>(builtin.arguments()[1])->name() << ") || ";
+	if (builtin.isOptional()) {
+		if (builtin.arguments()[0]->isVariable()) {
+			os << "!BOUND(?" << std::static_pointer_cast<Variable>(builtin.arguments()[0])->name() << ") || ";
+		}
+		if (builtin.arguments()[1]->isVariable()) {
+			os << "!BOUND(?" << std::static_pointer_cast<Variable>(builtin.arguments()[1])->name() << ") || ";
+		}
 	}
 	os << '(';
 	where(os, builtin.arguments()[0]);
