@@ -5,8 +5,11 @@
 
 #include "knowrob/alignment/GraphRenaming.h"
 #include <utility>
+#include <fstream>
 
 using namespace knowrob;
+
+#define GRAPH_RENAMING_SETTING_FILE "file"
 
 GraphRenaming::GraphRenaming(GraphRenamingMap renaming)
 		: renaming_(std::move(renaming)) {
@@ -17,8 +20,35 @@ void GraphRenaming::addRenaming(std::string_view from, std::string_view to) {
 }
 
 bool GraphRenaming::configure(const boost::property_tree::ptree &opts) {
-	// TODO: support some file formats for loading key-value pairs
-	return true;
+	auto o_user = opts.get_optional<std::string>(GRAPH_RENAMING_SETTING_FILE);
+	bool status = true;
+	if (o_user) {
+		try {
+			status = readRenamingFile(*o_user);
+		} catch (const std::exception &e) {
+			KB_WARN("Error reading renaming from file {}: {}", *o_user, e.what());
+			status = false;
+		}
+	}
+	return status;
+}
+
+bool GraphRenaming::readRenamingFile(const std::string& filename) {
+    std::ifstream file(filename);
+    std::string line;
+
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string key, value;
+
+        if (!(iss >> key >> value)) {
+            KB_WARN("Error reading renaming from file {}: Unexpected file format.", filename);
+            return false;
+        }
+
+        renaming_[key] = value;
+    }
+    return true;
 }
 
 std::string_view GraphRenaming::rename(const std::string_view &entity) {
