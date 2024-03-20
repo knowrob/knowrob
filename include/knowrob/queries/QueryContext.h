@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include "knowrob/modalities/ModalOperator.h"
+#include "knowrob/formulas/ModalOperator.h"
 #include "knowrob/triples/GraphSelector.h"
 
 namespace knowrob {

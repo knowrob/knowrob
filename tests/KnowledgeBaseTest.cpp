@@ -12,7 +12,7 @@
 #include "knowrob/reasoner/ReasonerManager.h"
 
 using namespace knowrob;
-using namespace knowrob::modality;
+using namespace knowrob::modals;
 
 #define KB_TEST_SETTINGS_FILE "tests/settings/kb-test.json"
 

@@ -6,22 +6,19 @@
 #include <utility>
 
 #include "knowrob/formulas/ModalFormula.h"
-#include "knowrob/modalities/BeliefModality.h"
-#include "knowrob/modalities/KnowledgeModality.h"
-#include "knowrob/modalities/PastModality.h"
 #include "knowrob/py/utils.h"
+#include "knowrob/terms/Numeric.h"
 
 using namespace knowrob;
 
-ModalFormula::ModalFormula(const ModalOperatorPtr &modalOperator, const FormulaPtr &formula)
+ModalFormula::ModalFormula(ModalOperatorPtr modalOperator, const FormulaPtr &formula)
 		: CompoundFormula(FormulaType::MODAL, {formula}),
-		  modalOperator_(modalOperator) {
+		  modalOperator_(std::move(modalOperator)) {
 }
 
 bool ModalFormula::isEqual(const Formula &other) const {
 	const auto &x = static_cast<const ModalFormula &>(other); // NOLINT
-	return (modalOperator()->isSameModalOperator(*x.modalOperator())) &&
-		   (*modalFormula()) == (*x.modalFormula());
+	return (*modalOperator() == *x.modalOperator()) &&  (*modalFormula()) == (*x.modalFormula());
 }
 
 bool ModalFormula::isModalNecessity() const {
@@ -29,11 +26,7 @@ bool ModalFormula::isModalNecessity() const {
 }
 
 const char *ModalFormula::operator_symbol() const {
-	if (isModalNecessity()) {
-		return modalOperator_->modality().necessity_symbol();
-	} else {
-		return modalOperator_->modality().possibility_symbol();
-	}
+	return modalOperator_->symbol();
 }
 
 void ModalFormula::write(std::ostream &os) const {
@@ -41,23 +34,80 @@ void ModalFormula::write(std::ostream &os) const {
 	os << *(formulae_[0].get());
 }
 
-namespace knowrob::modality {
+namespace knowrob::modals {
 	std::shared_ptr<ModalFormula> B(const FormulaPtr &phi) {
-		return std::make_shared<ModalFormula>(BeliefModality::B(), phi);
+		return std::make_shared<ModalFormula>(B(), phi);
 	}
 
 	std::shared_ptr<ModalFormula> K(const FormulaPtr &phi) {
-		return std::make_shared<ModalFormula>(KnowledgeModality::K(), phi);
+		return std::make_shared<ModalFormula>(K(), phi);
 	}
 
 	std::shared_ptr<ModalFormula> P(const FormulaPtr &phi) {
-		return std::make_shared<ModalFormula>(PastModality::P(), phi);
+		return std::make_shared<ModalFormula>(P(), phi);
 	}
 
 	std::shared_ptr<ModalFormula> H(const FormulaPtr &phi) {
-		return std::make_shared<ModalFormula>(PastModality::H(), phi);
+		return std::make_shared<ModalFormula>(H(), phi);
 	}
-} // knowrob::modality
+
+	ModalOperatorPtr K() {
+		static auto k_withoutArgs = std::make_shared<ModalOperator>(ModalType::KNOWLEDGE);
+		return k_withoutArgs;
+	}
+
+	ModalOperatorPtr K(std::string_view perspective) {
+		auto op = std::make_shared<ModalOperator>(ModalType::KNOWLEDGE);
+		op->setPerspective(perspective);
+		return op;
+	}
+
+	ModalOperatorPtr B() {
+		static auto beliefOperator = std::make_shared<ModalOperator>(ModalType::BELIEF);
+		return beliefOperator;
+	}
+
+	ModalOperatorPtr B(std::string_view perspective) {
+		auto op = std::make_shared<ModalOperator>(ModalType::BELIEF);
+		op->setPerspective(perspective);
+		return op;
+	}
+
+	ModalOperatorPtr B(std::string_view perspective, double confidence) {
+		auto op = std::make_shared<ModalOperator>(ModalType::BELIEF);
+		op->setPerspective(perspective);
+		op->setConfidence(confidence);
+		return op;
+	}
+
+	ModalOperatorPtr B(double confidence) {
+		auto op = std::make_shared<ModalOperator>(ModalType::BELIEF);
+		op->setConfidence(confidence);
+		return op;
+	}
+
+	ModalOperatorPtr P() {
+		static auto op = std::make_shared<ModalOperator>(ModalType::SOMETIMES);
+		return op;
+	}
+
+	ModalOperatorPtr P(const TimeInterval &timeInterval) {
+		auto op = std::make_shared<ModalOperator>(ModalType::SOMETIMES);
+		op->setTimeInterval(timeInterval);
+		return op;
+	}
+
+	ModalOperatorPtr H() {
+		static auto op = std::make_shared<ModalOperator>(ModalType::ALWAYS);
+		return op;
+	}
+
+	ModalOperatorPtr H(const TimeInterval &timeInterval) {
+		auto op = std::make_shared<ModalOperator>(ModalType::ALWAYS);
+		op->setTimeInterval(timeInterval);
+		return op;
+	}
+} // knowrob::modals
 
 namespace knowrob::py {
 	template<>

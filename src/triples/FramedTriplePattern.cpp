@@ -6,7 +6,6 @@
 #include "knowrob/triples/FramedTriplePattern.h"
 #include "knowrob/Logger.h"
 #include "knowrob/queries/QueryError.h"
-#include "knowrob/modalities/BeliefModality.h"
 #include "knowrob/terms/Atomic.h"
 #include "knowrob/terms/Numeric.h"
 #include "knowrob/terms/Atom.h"

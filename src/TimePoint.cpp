@@ -5,7 +5,7 @@
 
 #include <chrono>
 #include <cmath>
-#include "knowrob/modalities/TimePoint.h"
+#include "knowrob/TimePoint.h"
 
 using namespace knowrob;
 

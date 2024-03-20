@@ -10,6 +10,7 @@
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/semweb/ImportHierarchy.h"
 #include "knowrob/knowrob.h"
+#include "knowrob/Logger.h"
 
 namespace fs = std::filesystem;
 using namespace knowrob;

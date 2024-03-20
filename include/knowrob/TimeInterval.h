@@ -39,6 +39,11 @@ namespace knowrob {
 		 */
 		static TimeInterval currently();
 
+		/**
+		 * @param begin the begin time point of the interval
+		 * @param end the end time point of the interval
+		 * @return a time interval that is valid between the given time points
+		 */
 		static TimeInterval during(const TimePoint &begin, const TimePoint &end);
 
 		/**
@@ -47,8 +52,14 @@ namespace knowrob {
 		 */
 		std::shared_ptr<TimeInterval> intersectWith(const TimeInterval &other) const;
 
+		/**
+		 * @return the begin time point of the interval
+		 */
 		const auto &since() const { return since_; }
 
+		/**
+		 * @return the end time point of the interval
+		 */
 		const auto &until() const { return until_; }
 
 	protected:

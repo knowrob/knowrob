@@ -5,6 +5,7 @@
 
 #include "knowrob/triples/FramedTriple.h"
 #include "knowrob/py/utils.h"
+#include "knowrob/Logger.h"
 
 using namespace knowrob;
 

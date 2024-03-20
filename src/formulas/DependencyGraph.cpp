@@ -6,8 +6,9 @@
 #include <gtest/gtest.h>
 
 #include "knowrob/formulas/DependencyGraph.h"
+#include "knowrob/formulas/ModalOperator.h"
 #include "knowrob/queries/QueryParser.h"
-#include "knowrob/modalities/KnowledgeModality.h"
+#include "knowrob/formulas/ModalFormula.h"
 
 using namespace knowrob;
 
@@ -105,7 +106,7 @@ namespace knowrob::testing {
 			s_ = std::make_shared<FirstOrderLiteral>(QueryParser::parsePredicate("s(b,a)"), false);
 
 			auto x = std::make_shared<ModalIteration>();
-			*x += KnowledgeModality::K();
+			*x += modals::K();
 		}
 
 		void TearDown() override {}

@@ -16,20 +16,17 @@
 #include "knowrob/formulas/Negation.h"
 #include "knowrob/formulas/ModalFormula.h"
 #include "knowrob/terms/ListTerm.h"
-#include "knowrob/modalities/KnowledgeModality.h"
+#include "knowrob/terms/Term.h"
 #include "knowrob/terms/Numeric.h"
-#include "knowrob/modalities/TimeInterval.h"
-#include "knowrob/modalities/BeliefModality.h"
-#include "knowrob/modalities/PastModality.h"
+#include "knowrob/TimeInterval.h"
+#include "knowrob/Logger.h"
 
 #define RETURN_FORMULA_RULE(expr) static FormulaRule r(expr); return r
 #define RETURN_PREDICATE_RULE(expr) static PredicateRule r(expr); return r
 
-using namespace knowrob;
+#define REPORT_UNRECOGNIZED(opt) throw QueryError("Unrecognized option ({}) in modal operator.", *(opt))
 
-static void reportUnrecognized(const TermPtr &option) {
-	throw QueryError("Unrecognized option ({}) in modal operator.", *option);
-}
+using namespace knowrob;
 
 static ModalOperatorPtr createK(const TermPtr &optionsTerm) {
 	static const auto a_agent1 = Atom::Tabled("agent");
@@ -60,15 +57,15 @@ static ModalOperatorPtr createK(const TermPtr &optionsTerm) {
 					}
 				}
 			}
-			reportUnrecognized(option);
+			REPORT_UNRECOGNIZED(option);
 		}
 
 		// create a parametrized modal operator
 		if (agentName.has_value() && agentName.value() != "self") {
-			return KnowledgeModality::K(agentName.value());
+			return modals::K(agentName.value());
 		}
 	}
-	return KnowledgeModality::K();
+	return modals::K();
 }
 
 static ModalOperatorPtr createB(const TermPtr &optionsTerm) {
@@ -111,22 +108,22 @@ static ModalOperatorPtr createB(const TermPtr &optionsTerm) {
 					}
 				}
 			}
-			reportUnrecognized(option);
+			REPORT_UNRECOGNIZED(option);
 		}
 
 		if (agentName.has_value() && agentName.value() == "self") agentName = std::nullopt;
 		// create a parametrized modal operator
 		if (agentName.has_value()) {
 			if (confidenceValue.has_value()) {
-				return BeliefModality::B(agentName.value(), confidenceValue.value());
+				return modals::B(agentName.value(), confidenceValue.value());
 			} else {
-				return BeliefModality::B(agentName.value());
+				return modals::B(agentName.value());
 			}
 		} else if (confidenceValue.has_value()) {
-			return BeliefModality::B(confidenceValue.value());
+			return modals::B(confidenceValue.value());
 		}
 	}
-	return BeliefModality::B();
+	return modals::B();
 }
 
 static inline std::optional<TimeInterval> readTimeInterval(ListTerm *options) {
@@ -176,7 +173,7 @@ static inline std::optional<TimeInterval> readTimeInterval(ListTerm *options) {
 			nextIsBegin = false;
 			continue;
 		}
-		reportUnrecognized(option);
+		REPORT_UNRECOGNIZED(option);
 	}
 
 	if (beginTime.has_value() || endTime.has_value()) {
@@ -191,10 +188,10 @@ static ModalOperatorPtr createP(const TermPtr &optionsTerm) {
 		auto listTerm = (ListTerm *) optionsTerm.get();
 		auto timeInterval = readTimeInterval(listTerm);
 		if (timeInterval.has_value()) {
-			return PastModality::P(timeInterval.value());
+			return modals::P(timeInterval.value());
 		}
 	}
-	return PastModality::P();
+	return modals::P();
 }
 
 static ModalOperatorPtr createH(const TermPtr &optionsTerm) {
@@ -202,10 +199,10 @@ static ModalOperatorPtr createH(const TermPtr &optionsTerm) {
 		auto listTerm = (ListTerm *) optionsTerm.get();
 		auto timeInterval = readTimeInterval(listTerm);
 		if (timeInterval.has_value()) {
-			return PastModality::H(timeInterval.value());
+			return modals::H(timeInterval.value());
 		}
 	}
-	return PastModality::H();
+	return modals::H();
 }
 
 namespace knowrob::parsers::formula {

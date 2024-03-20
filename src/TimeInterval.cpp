@@ -3,7 +3,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob/modalities/TimeInterval.h"
+#include "knowrob/TimeInterval.h"
 
 using namespace knowrob;
 

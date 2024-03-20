@@ -9,11 +9,9 @@
 #include "knowrob/Logger.h"
 #include "knowrob/queries/QueryTree.h"
 #include "knowrob/formulas/Top.h"
-#include "knowrob/modalities/KnowledgeModality.h"
-#include "knowrob/modalities/BeliefModality.h"
 
 using namespace knowrob;
-using namespace knowrob::modality;
+using namespace knowrob::modals;
 
 QueryTree::QueryTree(const FormulaPtr &query)
 : rootNode_(new Node(nullptr, query, false))

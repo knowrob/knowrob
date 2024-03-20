@@ -166,14 +166,8 @@ add_library(knowrob SHARED
 		src/KnowledgeBase.cpp
         src/sources/DataSource.cpp
 		src/URI.cpp
-        src/modalities/TimePoint.cpp
-		src/modalities/TimeInterval.cpp
-		src/modalities/BeliefModality.cpp
-		src/modalities/KnowledgeModality.cpp
-		src/modalities/PastModality.cpp
-		src/modalities/ModalOperator.cpp
-		src/modalities/EpistemicModality.cpp
-		src/modalities/TemporalModality.cpp
+        src/TimePoint.cpp
+		src/TimeInterval.cpp
 		src/terms/Term.cpp
 		src/terms/Variable.cpp
 		src/terms/ListTerm.cpp
@@ -190,6 +184,7 @@ add_library(knowrob SHARED
 		src/formulas/Bottom.cpp
 		src/formulas/Top.cpp
 		src/formulas/ModalFormula.cpp
+		src/formulas/ModalOperator.cpp
         src/formulas/FirstOrderLiteral.cpp
 		src/queries/Answer.cpp
 		src/queries/TokenStream.cpp
@@ -292,7 +287,6 @@ add_library(knowrob SHARED
         src/terms/String.cpp
         src/backend/DataBackend.cpp
         src/queries/QueryContext.cpp
-        src/modalities/Modality.cpp
         src/triples/SPARQLQuery.cpp
         src/triples/TripleContainer.cpp
         src/KnowRobError.cpp

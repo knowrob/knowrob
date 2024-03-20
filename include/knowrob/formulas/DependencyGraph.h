@@ -6,6 +6,7 @@
 #ifndef KNOWROB_DEPENDENCY_GRAPH_H
 #define KNOWROB_DEPENDENCY_GRAPH_H
 
+#include <list>
 #include "knowrob/formulas/FirstOrderLiteral.h"
 
 namespace knowrob {

@@ -5,6 +5,7 @@
 
 #include "knowrob/backend/redland/RaptorContainer.h"
 #include "knowrob/terms/XSDAtomic.h"
+#include "knowrob/Logger.h"
 
 using namespace knowrob;
 

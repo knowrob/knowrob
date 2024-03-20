@@ -9,6 +9,7 @@
 #include <memory>
 #include <sstream>
 #include "Variable.h"
+#include "knowrob/Logger.h"
 
 namespace knowrob {
 	/**

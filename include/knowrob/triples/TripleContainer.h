@@ -6,8 +6,11 @@
 #ifndef KNOWROB_TRIPLE_CONTAINER_H
 #define KNOWROB_TRIPLE_CONTAINER_H
 
+#include <boost/iterator/iterator_facade.hpp>
 #include <utility>
 #include <vector>
+#include <memory>
+#include <functional>
 #include "knowrob/triples/FramedTriple.h"
 
 namespace knowrob {

@@ -3,7 +3,6 @@
 #include "knowrob/queries/ModalStage.h"
 #include "knowrob/formulas/ModalFormula.h"
 #include "knowrob/queries/QueryError.h"
-#include "knowrob/modalities/PastModality.h"
 
 using namespace knowrob;
 
@@ -27,13 +26,12 @@ ModalStage::ModalStage(
 	auto &modalOperator = modalFormula_->modalOperator();
 
 	// modify the knowledge graph selector for the evaluation of the modal formula.
-	switch (modalOperator->modality().modalityType()) {
-		case ModalityType::Epistemic: {
+	switch (modalOperator->modalType()) {
+		case ModalType::KNOWLEDGE:
+		case ModalType::BELIEF:
 			// epistemic states of different agents are stored in a single KG where triples are labeled by the agent.
 			// These states are assumed to be generated from the perspective of a "self", i.e. the agent
 			// that runs the knowledge base and its information about the other agents.
-			auto *em = (EpistemicModality *) &modalOperator->modality();
-
 			if (ctx->selector.perspective.has_value() && ctx->selector.perspective.value() != Perspective::getEgoPerspective()) {
 				// For now higher-level epistemic states are not allowed in queries,
 				// e.g. `B_a1(B_a2(x))` where `a1` is not the agent that runs the knowledge base is an example
@@ -42,39 +40,19 @@ ModalStage::ModalStage(
 				throw QueryError("epistemic formula {} is embedded within epistemic context of another agent.",
 								 *modalFormula_);
 			}
-
+			modalContext->selector.perspective = modalOperator->perspective();
 			modalContext->selector.uncertain = !modalOperator->isModalNecessity();
-			// TODO: handle confidence parameter of modality operator
-			modalContext->selector.confidence = std::nullopt;
-			if (em->agent().has_value()) {
-				modalContext->selector.perspective = em->agent();
-			} else {
-				modalContext->selector.perspective = std::nullopt;
+			if(modalContext->selector.uncertain) {
+				modalContext->selector.confidence = modalOperator->confidence();
 			}
 			break;
-		}
 
-		case ModalityType::Temporal_Past: {
-			auto *pm = (PastModality *) &modalOperator->modality();
-
+		case ModalType::ALWAYS:
+		case ModalType::SOMETIMES:
 			modalContext->selector.occasional = !modalOperator->isModalNecessity();
-
-			// TODO: any special treatment for time interval in nested context?
-			//		e.g. P(x & P(y)) could only be restricted in evaluation below not here.
-			auto &ti = pm->timeInterval();
-			if (ti.has_value()) {
-				auto &since = ti->since();
-				auto &until = ti->until();
-				if (since.has_value()) modalContext->selector.begin = time::toSeconds(since.value());
-				else modalContext->selector.begin = std::nullopt;
-				if (until.has_value()) modalContext->selector.end = time::toSeconds(until.value());
-				else modalContext->selector.end = std::nullopt;
-			} else {
-				modalContext->selector.begin = std::nullopt;
-				modalContext->selector.end = std::nullopt;
-			}
+			modalContext->selector.begin = modalOperator->begin();
+			modalContext->selector.end = modalOperator->end();
 			break;
-		}
 	}
 }
 
@@ -126,20 +104,15 @@ TokenBufferPtr ModalStage::submitQuery(const FormulaPtr &phi) {
 
 	// FIXME: the frame of answers that go out this stage need to be manipulated
 
-	switch (modalFormula_->modalOperator()->modality().modalityType()) {
-		case ModalityType::Epistemic:
-			if (modalFormula_->modalOperator()->isModalNecessity()) {
-				return submitQuery_K(phi);
-			} else {
-				return submitQuery_B(phi);
-			}
-
-		case ModalityType::Temporal_Past:
-			if (modalFormula_->modalOperator()->isModalNecessity()) {
-				return submitQuery_P(phi);
-			} else {
-				return submitQuery_H(phi);
-			}
+	switch (modalFormula_->modalOperator()->modalType()) {
+		case ModalType::KNOWLEDGE:
+			return submitQuery_K(phi);
+		case ModalType::BELIEF:
+			return submitQuery_B(phi);
+		case ModalType::ALWAYS:
+			return submitQuery_H(phi);
+		case ModalType::SOMETIMES:
+			return submitQuery_P(phi);
 	}
 
 	throw QueryError("unexpected modality type in query '{}'.", *modalFormula_);

@@ -4,6 +4,7 @@
  */
 
 #include "knowrob/alignment/GraphTransformation.h"
+#include "knowrob/Logger.h"
 
 using namespace knowrob;
 

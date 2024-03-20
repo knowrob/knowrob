@@ -23,6 +23,7 @@
 #include "knowrob/reasoner/ReasonerError.h"
 #include "knowrob/queries/AnswerNo.h"
 #include "knowrob/terms/Numeric.h"
+#include "knowrob/TimePoint.h"
 
 using namespace knowrob;
 

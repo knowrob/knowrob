@@ -8,6 +8,7 @@
 #include "iomanip"
 #include "knowrob/queries/AnswerYes.h"
 #include "knowrob/knowrob.h"
+#include "knowrob/Logger.h"
 
 using namespace knowrob;
 

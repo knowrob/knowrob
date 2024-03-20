@@ -8,8 +8,6 @@
 
 #include "optional"
 #include "variant"
-#include "knowrob/modalities/TemporalModality.h"
-#include "knowrob/modalities/EpistemicModality.h"
 #include "knowrob/terms/XSDType.h"
 
 namespace knowrob {

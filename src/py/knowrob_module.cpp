@@ -24,7 +24,6 @@
 #include "knowrob/formulas/Implication.h"
 #include "knowrob/formulas/ModalFormula.h"
 #include "knowrob/formulas/PredicateDescription.h"
-#include "knowrob/modalities/EpistemicModality.h"
 #include "knowrob/queries/QueryContext.h"
 #include "knowrob/reasoner/Reasoner.h"
 
@@ -37,7 +36,6 @@ using namespace knowrob;
 static inline void register_common_types() {
 	py::createType<Logger>();
 	py::createType<Perspective>();
-	py::createType<Modality>();
 	py::createType<ModalOperator>();
 }
 
@@ -139,8 +137,6 @@ BOOST_PYTHON_MODULE (knowrob) {
 	/////////////////////////////////////////////////////
 	// Note: At the moment each optional must be listed individually in the module declaration.
 	//       It would be nice if this could be avoided...
-	python_optional<TemporalOperator>();
-	python_optional<EpistemicOperator>();
 	python_optional<XSDType>();
 	python_optional<std::string_view>();
 	python_optional<double>();

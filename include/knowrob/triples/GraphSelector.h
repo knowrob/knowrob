@@ -7,8 +7,6 @@
 #define KNOWROB_GRAPH_SELECTOR_H
 
 #include "optional"
-#include "knowrob/modalities/TemporalModality.h"
-#include "knowrob/modalities/EpistemicModality.h"
 #include "Perspective.h"
 
 namespace knowrob {

@@ -7,6 +7,7 @@
 #define KNOWROB_GRAPH_TRANSFORMATION_H
 
 #include <functional>
+#include <boost/property_tree/ptree.hpp>
 #include "knowrob/triples/TripleContainer.h"
 
 namespace knowrob {

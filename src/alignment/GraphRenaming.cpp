@@ -4,6 +4,7 @@
  */
 
 #include "knowrob/alignment/GraphRenaming.h"
+#include "knowrob/Logger.h"
 #include <utility>
 #include <fstream>
 

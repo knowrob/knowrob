@@ -7,6 +7,7 @@
 #include "knowrob/reification/model.h"
 #include "knowrob/semweb/rdf.h"
 #include "knowrob/semweb/Property.h"
+#include "knowrob/triples/Perspective.h"
 
 using namespace knowrob;
 
