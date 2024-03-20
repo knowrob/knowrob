@@ -199,8 +199,7 @@ void SPARQLQuery::selectEnd(std::ostream &os) {
 	os << "}";
 }
 
-void SPARQLQuery::filter_optional(std::ostream &os, std::string_view varName, const TermPtr &term,
-								  FramedTriplePattern::OperatorType operatorType) {
+void SPARQLQuery::filter_optional(std::ostream &os, std::string_view varName, const TermPtr &term, FilterType operatorType) {
 	if (!term->isAtomic()) return;
 	os << "FILTER (";
 	os << " !BOUND(?" << varName << ") || ";
@@ -208,8 +207,7 @@ void SPARQLQuery::filter_optional(std::ostream &os, std::string_view varName, co
 	os << ") ";
 }
 
-void SPARQLQuery::filter(std::ostream &os, std::string_view varName, const TermPtr &term,
-						 FramedTriplePattern::OperatorType operatorType) {
+void SPARQLQuery::filter(std::ostream &os, std::string_view varName, const TermPtr &term, FilterType operatorType) {
 	if (!term->isAtomic()) return;
 	auto atomic = std::static_pointer_cast<Atomic>(term);
 	os << "FILTER (";
@@ -217,24 +215,26 @@ void SPARQLQuery::filter(std::ostream &os, std::string_view varName, const TermP
 	os << ") ";
 }
 
-void SPARQLQuery::doFilter(std::ostream &os, std::string_view varName, const std::shared_ptr<Atomic> &atomic,
-						   FramedTriplePattern::OperatorType operatorType) {
+void SPARQLQuery::doFilter(std::ostream &os, std::string_view varName, const std::shared_ptr<Atomic> &atomic, FilterType operatorType) {
 	os << '?' << varName;
 	switch (operatorType) {
-		case FramedTriplePattern::OperatorType::LT:
+		case FilterType::LT:
 			os << " < ";
 			break;
-		case FramedTriplePattern::OperatorType::GT:
+		case FilterType::GT:
 			os << " > ";
 			break;
-		case FramedTriplePattern::OperatorType::LEQ:
+		case FilterType::LEQ:
 			os << " <= ";
 			break;
-		case FramedTriplePattern::OperatorType::GEQ:
+		case FilterType::GEQ:
 			os << " >= ";
 			break;
-		case FramedTriplePattern::EQ:
+		case FilterType::EQ:
 			os << " = ";
+			break;
+		case FilterType::NEQ:
+			os << " != ";
 			break;
 	}
 	if (atomic->isNumeric()) {
@@ -259,10 +259,17 @@ void SPARQLQuery::negationViaNotExists(std::ostream &os, const FramedTriplePatte
 void SPARQLQuery::negationViaOptional(std::ostream &os, const FramedTriplePattern &triplePattern) {
 	if (triplePattern.objectTerm()->isVariable()) {
 		bool hasObjectOperator = optional(os, triplePattern);
-		// TODO: Handle object operators here. Best would be to use filter with inverse operator instead of BOUND below.
-		os << "FILTER ( !BOUND(";
-		where(os, triplePattern.objectTerm());
-		os << ")) ";
+		os << "FILTER (";
+		if (hasObjectOperator) {
+			auto inverseOperator = inverseFilterType(triplePattern.objectOperator());
+			auto atomic = std::static_pointer_cast<Atomic>(triplePattern.objectTerm());
+			doFilter(os, lastVar_, atomic, inverseOperator);
+		} else {
+			os << " !BOUND(";
+			where(os, triplePattern.objectTerm());
+			os << ") ";
+		}
+		os << ") ";
 	} else {
 		KB_WARN("Negation via optional is only supported for variable objects.");
 	}
@@ -298,8 +305,7 @@ bool SPARQLQuery::where(std::ostream &os, const FramedTriplePattern &triplePatte
 
 	where(os, triplePattern.subjectTerm());
 	where(os, triplePattern.propertyTerm());
-	if (triplePattern.objectTerm()->isVariable() ||
-		triplePattern.objectOperator() == FramedTriplePattern::OperatorType::EQ) {
+	if (triplePattern.objectTerm()->isVariable() || triplePattern.objectOperator() == FilterType::EQ) {
 		if (!triplePattern.objectTerm()->isVariable() && triplePattern.objectVariable()) {
 			where(os, triplePattern.objectVariable());
 			os << ". ";

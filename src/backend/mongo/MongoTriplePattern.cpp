@@ -12,6 +12,7 @@ using namespace knowrob::mongo;
 #define MONGO_OPERATOR_GTE  "$gte"
 #define MONGO_OPERATOR_LT   "$lt"
 #define MONGO_OPERATOR_GT   "$gt"
+#define MONGO_OPERATOR_NEQ  "$ne"
 
 MongoTriplePattern::MongoTriplePattern(
 		const FramedTriplePattern &tripleExpression,
@@ -182,17 +183,19 @@ void MongoTriplePattern::appendTimeSelector(bson_t *selectorDoc, const FramedTri
 	}
 }
 
-const char *MongoTriplePattern::getOperatorString(knowrob::FramedTriplePattern::OperatorType operatorType) {
+const char *MongoTriplePattern::getOperatorString(knowrob::FilterType operatorType) {
 	switch (operatorType) {
-		case FramedTriplePattern::EQ:
+		case FilterType::EQ:
 			return nullptr;
-		case FramedTriplePattern::LEQ:
+		case FilterType::NEQ:
+			return MONGO_OPERATOR_NEQ;
+		case FilterType::LEQ:
 			return MONGO_OPERATOR_LTE;
-		case FramedTriplePattern::GEQ:
+		case FilterType::GEQ:
 			return MONGO_OPERATOR_GTE;
-		case FramedTriplePattern::LT:
+		case FilterType::LT:
 			return MONGO_OPERATOR_LT;
-		case FramedTriplePattern::GT:
+		case FilterType::GT:
 			return MONGO_OPERATOR_GT;
 	}
 	return nullptr;

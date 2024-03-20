@@ -16,12 +16,30 @@
 
 using namespace knowrob;
 
+FilterType knowrob::inverseFilterType(FilterType op) {
+	switch (op) {
+		case FilterType::EQ:
+			return FilterType::NEQ;
+		case FilterType::NEQ:
+			return FilterType::EQ;
+		case FilterType::LT:
+			return FilterType::GEQ;
+		case FilterType::GT:
+			return FilterType::LEQ;
+		case FilterType::LEQ:
+			return FilterType::GT;
+		case FilterType::GEQ:
+			return FilterType::LT;
+	}
+	return FilterType::EQ;
+}
+
 FramedTriplePattern::FramedTriplePattern(const FramedTriple &triple, bool isNegated)
 		: FirstOrderLiteral(getRDFPredicate(triple), isNegated),
 		  subjectTerm_(predicate_->arguments()[0]),
 		  propertyTerm_(predicate_->arguments()[1]),
 		  objectTerm_(predicate_->arguments()[2]),
-		  objectOperator_(EQ),
+		  objectOperator_(FilterType::EQ),
 		  isOptional_(false) {
 	if (triple.confidence().has_value()) {
 		confidenceTerm_ = std::make_shared<Double>(triple.confidence().value());
@@ -51,7 +69,7 @@ FramedTriplePattern::FramedTriplePattern(const PredicatePtr &pred, bool isNegate
 		  subjectTerm_(predicate_->arguments()[0]),
 		  propertyTerm_(predicate_->arguments()[1]),
 		  objectTerm_(predicate_->arguments()[2]),
-		  objectOperator_(EQ),
+		  objectOperator_(FilterType::EQ),
 		  isOptional_(false) {
 }
 
@@ -60,7 +78,7 @@ FramedTriplePattern::FramedTriplePattern(const TermPtr &s, const TermPtr &p, con
 		  subjectTerm_(s),
 		  propertyTerm_(p),
 		  objectTerm_(o),
-		  objectOperator_(EQ),
+		  objectOperator_(FilterType::EQ),
 		  isOptional_(false) {
 }
 
@@ -190,32 +208,36 @@ static bool filterString(std::string_view value, const FramedTriplePattern &quer
 	if (!q_term->isAtomic()) return false;
 	auto q_atomic = std::static_pointer_cast<Atomic>(q_term);
 	switch (query.objectOperator()) {
-		case FramedTriplePattern::EQ:
+		case FilterType::EQ:
 			return value == q_atomic->stringForm();
-		case FramedTriplePattern::LEQ:
+		case FilterType::NEQ:
+			return value != q_atomic->stringForm();
+		case FilterType::LEQ:
 			return value <= q_atomic->stringForm();
-		case FramedTriplePattern::GEQ:
+		case FilterType::GEQ:
 			return value >= q_atomic->stringForm();
-		case FramedTriplePattern::GT:
+		case FilterType::GT:
 			return value > q_atomic->stringForm();
-		case FramedTriplePattern::LT:
+		case FilterType::LT:
 			return value < q_atomic->stringForm();
 	}
 	return false;
 }
 
 template<typename NumType>
-bool filterNumeric(const NumType &a, const NumType &b, FramedTriplePattern::OperatorType op) {
+bool filterNumeric(const NumType &a, const NumType &b, FilterType op) {
 	switch (op) {
-		case FramedTriplePattern::EQ:
+		case FilterType::EQ:
 			return a == b;
-		case FramedTriplePattern::LEQ:
+		case FilterType::NEQ:
+			return a != b;
+		case FilterType::LEQ:
 			return a <= b;
-		case FramedTriplePattern::GEQ:
+		case FilterType::GEQ:
 			return a >= b;
-		case FramedTriplePattern::GT:
+		case FilterType::GT:
 			return a > b;
-		case FramedTriplePattern::LT:
+		case FilterType::LT:
 			return a < b;
 	}
 	return false;

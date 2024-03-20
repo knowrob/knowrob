@@ -18,18 +18,30 @@
 
 namespace knowrob {
 	/**
+	 * Unary operators that can be applied on terms.
+	 */
+	enum class FilterType {
+		EQ = 0,
+		NEQ,
+		LT,
+		GT,
+		LEQ,
+		GEQ
+	};
+
+	/**
+	 * Compute the inverse of a filter type.
+	 * @param op a filter type.
+	 * @return the inverse of op.
+	 */
+	FilterType inverseFilterType(FilterType op);
+
+	/**
 	 * A triple expression where subject, predicate and object are
 	 * represented as a term, and an additional unary operator can be applied to the object.
 	 */
 	class FramedTriplePattern : public FirstOrderLiteral {
 	public:
-		/**
-		 * Unary operators that can be applied on terms.
-		 */
-		enum OperatorType {
-			EQ, LT, GT, LEQ, GEQ
-		};
-
 		/**
 		 * Copy char data of StatementData object into Term data structures.
 		 * @param tripleData input data, can be deleted afterwards.
@@ -172,7 +184,7 @@ namespace knowrob {
 		 * Set the operator for the object of the triple.
 		 * @param objectOperator the operator.
 		 */
-		void setObjectOperator(OperatorType objectOperator) { objectOperator_ = objectOperator; }
+		void setObjectOperator(FilterType objectOperator) { objectOperator_ = objectOperator; }
 
 		/**
 		 * @return the isOccasional term of this expression.
@@ -237,7 +249,7 @@ namespace knowrob {
 		TermPtr propertyTerm_;
 		TermPtr objectTerm_;
 		VariablePtr objectVariable_;
-		OperatorType objectOperator_;
+		FilterType objectOperator_;
 		bool isOptional_;
 
 		// below are treated as optional

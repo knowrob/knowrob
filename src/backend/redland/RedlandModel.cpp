@@ -474,7 +474,7 @@ void RedlandModel::match(const FramedTriplePattern &query, const TripleVisitor &
 		triples->add(rdf_statement->subject, rdf_statement->predicate, rdf_statement->object);
 		auto &triple = *triples->begin()->ptr;
 
-		if (query.objectOperator() != FramedTriplePattern::EQ) {
+		if (query.objectOperator() != FilterType::EQ) {
 			if (query.filter(triple)) visitor(triple);
 		} else {
 			visitor(triple);
@@ -592,7 +592,7 @@ void RedlandModel::knowrobToRaptor(const FramedTriplePattern &pat, raptor_statem
 		predicate = knowrobToRaptor(pat.propertyTerm());
 		librdf_statement_set_predicate(raptorTriple, predicate);
 	}
-	if (pat.objectTerm() && pat.objectOperator() == FramedTriplePattern::EQ) {
+	if (pat.objectTerm() && pat.objectOperator() == FilterType::EQ) {
 		object = knowrobToRaptor(pat.objectTerm());
 		librdf_statement_set_object(raptorTriple, object);
 	}

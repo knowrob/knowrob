@@ -163,14 +163,14 @@ std::shared_ptr<GraphTerm> ReifiedQuery::reifiedPatternSequence(const FramedTrip
 
 	if (nonReified.confidenceTerm().has_grounding()) {
 		auto x = addPattern(seq, name, reification::hasConfidence, nonReified.confidenceTerm().grounded(), g);
-		x->setObjectOperator(FramedTriplePattern::GEQ);
+		x->setObjectOperator(FilterType::GEQ);
 		x->setIsOptional(true);
 	} else if (nonReified.confidenceTerm().has_variable()) {
 		auto x = addPattern(seq, name, reification::hasConfidence, nonReified.confidenceTerm().variable(), g);
 		x->setIsOptional(true);
 	} else if (includeOnlyCertain) {
 		auto x = addPattern(seq, name, reification::hasConfidence, fullyConfident, g);
-		x->setObjectOperator(FramedTriplePattern::GEQ);
+		x->setObjectOperator(FilterType::GEQ);
 		x->setIsOptional(true);
 	}
 
@@ -209,11 +209,11 @@ std::shared_ptr<GraphTerm> ReifiedQuery::reifiedPatternSequence(const FramedTrip
 	if (nonReified.beginTerm().has_grounding()) {
 		if (includeOccasional) {
 			auto x = addPattern(seq, name, reification::hasEndTime, nonReified.beginTerm().grounded(), g);
-			x->setObjectOperator(FramedTriplePattern::GEQ);
+			x->setObjectOperator(FilterType::GEQ);
 			x->setIsOptional(true);
 		} else {
 			auto x = addPattern(seq, name, reification::hasBeginTime, nonReified.beginTerm().grounded(), g);
-			x->setObjectOperator(FramedTriplePattern::LEQ);
+			x->setObjectOperator(FilterType::LEQ);
 			x->setIsOptional(true);
 		}
 	} else if (nonReified.beginTerm().has_variable()) {
@@ -227,11 +227,11 @@ std::shared_ptr<GraphTerm> ReifiedQuery::reifiedPatternSequence(const FramedTrip
 	if (nonReified.endTerm().has_grounding()) {
 		if (includeOccasional) {
 			auto x = addPattern(seq, name, reification::hasBeginTime, nonReified.endTerm().grounded(), g);
-			x->setObjectOperator(FramedTriplePattern::LEQ);
+			x->setObjectOperator(FilterType::LEQ);
 			x->setIsOptional(true);
 		} else {
 			auto x = addPattern(seq, name, reification::hasEndTime, nonReified.endTerm().grounded(), g);
-			x->setObjectOperator(FramedTriplePattern::GEQ);
+			x->setObjectOperator(FilterType::GEQ);
 			x->setIsOptional(true);
 		}
 	} else if (nonReified.endTerm().has_variable()) {

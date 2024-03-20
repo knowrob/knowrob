@@ -53,7 +53,7 @@ namespace knowrob::mongo {
 				bool b_isTaxonomicProperty,
 				const std::shared_ptr<ImportHierarchy> &importHierarchy);
 
-		static const char *getOperatorString(knowrob::FramedTriplePattern::OperatorType operatorType);
+		static const char *getOperatorString(knowrob::FilterType operatorType);
 	};
 
 } // knowrob
