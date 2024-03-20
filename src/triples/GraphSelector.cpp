@@ -44,7 +44,6 @@ bool GraphSelector::mergeWith(const GraphSelector &other) {
 	}
 
 	// smaller confidence is more restrictive
-	// FIXME: using the min confidence is not correct, but it is a good approximation for the moment...
 	if (other.confidence.has_value() && (!confidence.has_value() || other.confidence.value() < confidence.value())) {
 		confidence = other.confidence;
 	}
@@ -89,7 +88,6 @@ std::ostream &GraphSelector::write(std::ostream &os) const {
 	}
 	if (perspective.has_value() && !Perspective::isEgoPerspective(perspective.value()->iri())) {
 		if (!hasEpistemicOperator) {
-			hasEpistemicOperator = true;
 			os << 'K';
 		}
 		os << '[' << perspective.value()->iri() << ']';
@@ -102,7 +100,6 @@ std::ostream &GraphSelector::write(std::ostream &os) const {
 	}
 	if (begin.has_value() || end.has_value()) {
 		if (!hasTemporalOperator) {
-			hasTemporalOperator = true;
 			os << 'H';
 		}
 		os << '[';
