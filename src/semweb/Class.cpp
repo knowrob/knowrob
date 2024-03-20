@@ -23,6 +23,10 @@ void Class::addDirectParent(const std::shared_ptr<Class> &directParent) {
 	directParents_.insert(directParent);
 }
 
+void Class::removeDirectParent(const std::shared_ptr<Class> &directParent) {
+	directParents_.erase(directParent);
+}
+
 bool Class::isDirectSubClassOf(const std::shared_ptr<Class> &directParent) {
 	return directParents_.count(directParent) > 0;
 }

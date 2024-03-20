@@ -244,6 +244,8 @@ namespace knowrob {
 		bool instantiateInto(FramedTriple &triple,
 							 const std::shared_ptr<const Bindings> &bindings = Bindings::emptyBindings()) const;
 
+		static std::shared_ptr<Predicate> getRDFPredicate(const PredicatePtr &predicate);
+
 	protected:
 		TermPtr subjectTerm_;
 		TermPtr propertyTerm_;
@@ -266,8 +268,6 @@ namespace knowrob {
 		static std::shared_ptr<Predicate> getRDFPredicate(const TermPtr &s, const TermPtr &p, const TermPtr &o);
 
 		static std::shared_ptr<Predicate> getRDFPredicate(const FramedTriple &data);
-
-		static std::shared_ptr<Predicate> getRDFPredicate(const PredicatePtr &predicate);
 	};
 
 	/**

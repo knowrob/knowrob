@@ -65,7 +65,7 @@ namespace knowrob {
 	protected:
 		GraphRenamingMap renaming_;
 
-		bool readRenamingFile(const std::string& filename);
+		bool readFromFile(const std::string& filename);
 	};
 
 } // knowrob

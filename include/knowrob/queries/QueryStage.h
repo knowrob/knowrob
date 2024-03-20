@@ -91,6 +91,37 @@ namespace knowrob {
 		// needed for "weak ref hack"
 		friend class KnowledgeBase;
 	};
+
+	/**
+	 * A typed query stage that submits instances of a specific query type.
+	 */
+	template<class QueryType>
+	class TypedQueryStage : public QueryStage {
+	public:
+		/**
+		 * A lambda expression used to submit instances of the input query.
+		 */
+		using QuerySubmitter = std::function<TokenBufferPtr(const std::shared_ptr<QueryType> &)>;
+
+		TypedQueryStage(const QueryContextPtr &ctx,
+		                std::shared_ptr<QueryType> query,
+		                const QuerySubmitter &submitter)
+				: QueryStage(ctx),
+				  query_(std::move(query)),
+				  submitter_(submitter) {}
+
+	protected:
+		const std::shared_ptr<QueryType> query_;
+		QuerySubmitter submitter_;
+
+		// override QueryStage
+		TokenBufferPtr submitQuery(const Bindings &substitution) override {
+			// apply the substitution mapping
+			auto instance = applyBindings(query_, substitution);
+			// submit a query
+			return submitter_(instance);
+		}
+	};
 } // knowrob
 
 #endif //KNOWROB_QUERY_STAGE_H

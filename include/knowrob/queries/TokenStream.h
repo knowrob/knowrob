@@ -83,6 +83,16 @@ namespace knowrob {
 			bool isOpened() const;
 
 			/**
+			 * @return true if the iterator is valid
+			 */
+			bool hasValidIterator() const { return hasValidIterator_; }
+
+			/**
+			 * Invalidate the iterator of this channel
+			 */
+			void invalidateIterator() { hasValidIterator_ = false; }
+
+			/**
 			 * @return the id of this channel
 			 */
 			uint32_t id() const;
@@ -94,6 +104,7 @@ namespace knowrob {
 			std::list<std::shared_ptr<Channel>>::iterator iterator_;
 			// flag indicating whether channel is open (i.e., no EOS received so far)
 			std::atomic<bool> isOpened_;
+			std::atomic<bool> hasValidIterator_;
 
 			friend class TokenStream;
 		};
@@ -104,7 +115,7 @@ namespace knowrob {
 		std::mutex channel_mutex_;
 		//uint32_t numCompletedChannels_;
 
-		virtual void push(const Channel &channel, const TokenPtr &tok);
+		virtual void push(Channel &channel, const TokenPtr &tok);
 
 		virtual void push(const TokenPtr &tok) = 0;
 	};

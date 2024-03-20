@@ -96,8 +96,6 @@ bool AnswerYes::mergeWith(const AnswerYes &other, bool ignoreInconsistencies) {
 
 size_t AnswerYes::hash() const {
 	size_t val = Answer::hash();
-	hashCombine(val, frame_->hash());
-	// TODO: maybe it would be good to hash the predicate instances instead of the substitution mapping.
 	hashCombine(val, substitution_->hash());
 	return val;
 }

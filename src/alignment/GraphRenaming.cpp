@@ -24,7 +24,7 @@ bool GraphRenaming::configure(const boost::property_tree::ptree &opts) {
 	bool status = true;
 	if (o_user) {
 		try {
-			status = readRenamingFile(*o_user);
+			status = readFromFile(*o_user);
 		} catch (const std::exception &e) {
 			KB_WARN("Error reading renaming from file {}: {}", *o_user, e.what());
 			status = false;
@@ -33,7 +33,7 @@ bool GraphRenaming::configure(const boost::property_tree::ptree &opts) {
 	return status;
 }
 
-bool GraphRenaming::readRenamingFile(const std::string& filename) {
+bool GraphRenaming::readFromFile(const std::string& filename) {
     std::ifstream file(filename);
     std::string line;
 

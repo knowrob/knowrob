@@ -56,9 +56,6 @@ namespace knowrob {
 		bool mergeWith(const AnswerNo &other);
 
 		// override Token
-		size_t hash() const override;
-
-		// override Token
 		std::ostream &write(std::ostream &os) const override;
 
 		// override Answer

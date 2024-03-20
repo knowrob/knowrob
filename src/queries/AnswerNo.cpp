@@ -31,13 +31,6 @@ void AnswerNo::addUngrounded(const std::shared_ptr<Predicate> &predicate, bool i
 	}
 }
 
-size_t AnswerNo::hash() const {
-	size_t val = Answer::hash();
-	hashCombine(val, frame_->hash());
-	// FIXME: must include predicates in hash. best to keep them in a sorted container.
-	return val;
-}
-
 bool AnswerNo::mergeWith(const AnswerNo &other) {
 	reasonerTerm_ = {};
 	if (!frame_->mergeWith(*other.frame_)) {

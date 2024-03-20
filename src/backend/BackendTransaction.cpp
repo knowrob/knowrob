@@ -10,6 +10,7 @@
 #include "knowrob/semweb/owl.h"
 #include "knowrob/semweb/rdf.h"
 #include "knowrob/reification/ReifiedQuery.h"
+#include "knowrob/knowrob.h"
 
 using namespace knowrob;
 using namespace knowrob::transaction;
@@ -86,9 +87,13 @@ bool Transaction::commit(const FramedTriple &triple, const IRIAtomPtr &reifiedNa
 bool Transaction::commit(const TripleContainerPtr &triples) {
 	static auto v_reification = std::make_shared<Variable>("reification");
 	if (isRemoval_) {
-		// TODO: add size method to container and reserve space for names instead of resizing in the loop below
-		// TODO: query multiple names at once, should be faster.
+		// Note: the container type does not provide a size method because it internally uses a generator
+		// without knowing when it will end. Also, container with additional filtering could be implemented.
+		// So we need to resize the reifiedNames vector while looping over the triples, but we can use
+		// the default batch size as initial size.
+		auto estimatedSize = GlobalSettings::batchSize();
 		ReifiedNames reifiedNames = std::make_shared<std::vector<IRIAtomPtr>>();
+		reifiedNames->reserve(estimatedSize);
 		for (auto &triple: *triples) {
 			if (ReifiedTriple::isReifiable(*triple)) {
 				reifiedNames->push_back(queryReifiedName(*triple));
@@ -96,6 +101,10 @@ bool Transaction::commit(const TripleContainerPtr &triples) {
 				reifiedNames->push_back(nullptr);
 			}
 		}
+		// If fewer elements were added, resize the vector
+    	if (reifiedNames->size() < estimatedSize) {
+        	reifiedNames->resize(reifiedNames->size());
+    	}
 		return commit(triples, reifiedNames);
 	} else {
 		return commit(triples, {});
@@ -213,6 +222,20 @@ void Insert::updateVocabulary(const FramedTriple &triple) {
 	}
 }
 
-void Remove::updateVocabulary(const FramedTriple &tripleData) {
-	// TODO: implement
+void Remove::updateVocabulary(const FramedTriple &triple) {
+	// TODO: a triple can have multiple origins, so updating the vocabulary on removal is not safe without
+	//  knowing if the triple has other origins. But (1) there is no interface yet to query for the origins of
+	//  a triple, and (2) maybe it can be avoided to do additional querying here.
+#if 0
+	// remove subclass and subproperty relations from the vocabulary.
+	if (isSubClassOfIRI(triple.predicate())) {
+		auto sub = vocabulary_->defineClass(triple.subject());
+		auto sup = vocabulary_->defineClass(triple.valueAsString());
+		sub->removeDirectParent(sup);
+	} else if (isSubPropertyOfIRI(triple.predicate())) {
+		auto sub = vocabulary_->defineProperty(triple.subject());
+		auto sup = vocabulary_->defineProperty(triple.valueAsString());
+		sub->removeDirectParent(sup);
+	}
+#endif
 }

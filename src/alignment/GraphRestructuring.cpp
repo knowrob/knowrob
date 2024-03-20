@@ -5,8 +5,12 @@
 
 #include "knowrob/alignment/GraphRestructuring.h"
 #include "knowrob/triples/SPARQLQuery.h"
+#include "knowrob/queries/QueryParser.h"
+#include <fstream>
 
 using namespace knowrob;
+
+#define GRAPH_RESTRUCTURING_SETTING_FILE "file"
 
 GraphRestructuring::GraphRestructuring()
 		: GraphTransformation(),
@@ -18,8 +22,84 @@ void GraphRestructuring::addRule(std::shared_ptr<GraphTransformationRule> rule) 
 }
 
 bool GraphRestructuring::configure(const boost::property_tree::ptree &opts) {
-	// TODO: support some file formats for loading graph transformation rules
-	return true;
+	auto o_user = opts.get_optional<std::string>(GRAPH_RESTRUCTURING_SETTING_FILE);
+	bool status = true;
+	if (o_user) {
+		try {
+			status = readFromFile(*o_user);
+		} catch (const std::exception &e) {
+			KB_WARN("Error reading renaming from file {}: {}", *o_user, e.what());
+			status = false;
+		}
+	}
+	return status;
+}
+
+bool GraphRestructuring::readFromFile(const std::string& filename) {
+    std::ifstream file(filename);
+    std::string line, entry;
+
+    while (std::getline(file, line, '.')) {
+        entry += line;
+        if (file.peek() != '\n') continue;
+
+		file.ignore();
+		std::stringstream ss(entry);
+		std::string part1, part2;
+
+		// split the entry into two parts at the '<-' separator
+		std::getline(ss, part1, '<');
+		ss.ignore(2); // ignore the '-' and ' '
+		std::getline(ss, part2);
+		if (part1.size()<5 || part2.size()<5) {
+			KB_WARN("Error reading transformation from file {}: Invalid Syntax.", filename);
+			return false;
+		}
+
+		// remove the brackets
+		part1 = part1.substr(1, part1.size() - 2);
+		part2 = part2.substr(1, part2.size() - 2);
+
+		std::vector<FramedTriplePatternPtr> x, y;
+		std::stringstream ss1(part1), ss2(part2);
+		std::string item;
+
+		while (std::getline(ss1, item, ',')) {
+			auto pat = readTriplePattern(item);
+			if (pat) {
+				x.push_back(pat);
+			} else {
+				KB_WARN("Error reading transformation from file {}: Invalid triple pattern \"{}\".", filename, item);
+				return false;
+			}
+		}
+		while (std::getline(ss2, item, ',')) {
+			auto pat = readTriplePattern(item);
+			if (pat) {
+				y.push_back(pat);
+			} else {
+				KB_WARN("Error reading transformation from file {}: Invalid triple pattern \"{}\".", filename, item);
+				return false;
+			}
+		}
+		addRule(std::make_shared<GraphTransformationRule>(x, y));
+
+		entry.clear();
+    }
+
+    return true;
+}
+
+FramedTriplePatternPtr GraphRestructuring::readTriplePattern(const std::string& stringForm) {
+	auto p = QueryParser::parsePredicate(stringForm);
+	if (!p) return nullptr;
+	try {
+		auto p_rdf = FramedTriplePattern::getRDFPredicate(p);
+		return std::make_shared<FramedTriplePattern>(p_rdf);
+	} catch (const std::exception &e) {
+		KB_WARN("Error reading transformation from file: {}", e.what());
+		return nullptr;
+	}
 }
 
 void GraphRestructuring::initializeTransformation() {

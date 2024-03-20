@@ -102,6 +102,7 @@ namespace knowrob {
 		/**
 		 * Get the description of the predicate which is associated with a literal.
 		 * A null reference will be returned in case that the property term of the literal is a variable.
+		 * TODO: revise this interface, maybe better that reasoner explicitly register defined predicates.
 		 * @param literal a literal.
 		 * @return a predicate description or a null reference.
 		 */

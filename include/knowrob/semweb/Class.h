@@ -39,6 +39,11 @@ namespace knowrob::semweb {
 		void addDirectParent(const std::shared_ptr<Class> &directParent);
 
 		/**
+		 * @param directParent a direct super class.
+		 */
+		void removeDirectParent(const std::shared_ptr<Class> &directParent);
+
+		/**
 		 * @return all direct super classes of this class.
 		 */
 		const auto &directParents() const { return directParents_; }
@@ -67,7 +72,6 @@ namespace knowrob::semweb {
 		struct Comparator {
 			bool operator()(const std::shared_ptr<Class> &lhs, const std::shared_ptr<Class> &rhs) const;
 		};
-
 		std::set<std::shared_ptr<Class>, Comparator> directParents_;
 	};
 

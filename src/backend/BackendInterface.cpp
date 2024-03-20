@@ -77,9 +77,6 @@ bool BackendInterface::removeAllWithOrigin(std::string_view origin) {
 	// wait for all transactions to finish
 	for (auto &transaction: transactions) transaction->join();
 
-	// update vocabulary: select all terms that are defined in a given origin,
-	// and then remove them from the vocabulary.
-	// TODO: only do this if no other backend defines the same origin?
 	// remove origin from import hierarchy
 	if (!vocabulary()->importHierarchy()->isReservedOrigin(origin)) {
 		vocabulary()->importHierarchy()->removeCurrentGraph(origin);

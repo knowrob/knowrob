@@ -34,16 +34,20 @@ bool TokenStream::isOpened() const {
 	return isOpened_;
 }
 
-void TokenStream::push(const Channel &channel, const TokenPtr &tok) {
+void TokenStream::push(Channel &channel, const TokenPtr &tok) {
 	if (tok->indicatesEndOfEvaluation()) {
 		bool doPushMsg = true;
 		if (isOpened()) {
-			// prevent channels from being created while processing EOS message
-			std::lock_guard<std::mutex> lock(channel_mutex_);
-			// close this stream if no channels are left
-			// FIXME: what if a channel sends EOS twice?
-			channels_.erase(channel.iterator_);
-			doPushMsg = channels_.empty();
+			if (channel.hasValidIterator()) {
+				// prevent channels from being created while processing EOS message
+				std::lock_guard<std::mutex> lock(channel_mutex_);
+				// close this stream if no channels are left
+				channels_.erase(channel.iterator_);
+				channel.invalidateIterator();
+				doPushMsg = channels_.empty();
+			} else {
+				KB_WARN("ignoring attempt to write to a channel with a singular iterator.");
+			}
 		}
 		// send EOS on this stream if no channels are left
 		if (doPushMsg) {
@@ -60,7 +64,8 @@ void TokenStream::push(const Channel &channel, const TokenPtr &tok) {
 
 TokenStream::Channel::Channel(const std::shared_ptr<TokenStream> &stream)
 		: stream_(stream),
-		  isOpened_(true) {
+		  isOpened_(true),
+		  hasValidIterator_(true) {
 }
 
 TokenStream::Channel::~Channel() {

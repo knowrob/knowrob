@@ -15,8 +15,7 @@
 #include "knowrob/queries/QueryParser.h"
 #include "knowrob/queries/QueryTree.h"
 #include "knowrob/queries/ConjunctiveBroadcaster.h"
-#include "knowrob/queries/IDBStage.h"
-#include "knowrob/queries/EDBStage.h"
+#include "knowrob/queries/QueryStage.h"
 #include "knowrob/queries/NegationStage.h"
 #include "knowrob/queries/ModalStage.h"
 #include "knowrob/queries/QueryError.h"
@@ -408,7 +407,12 @@ void KnowledgeBase::createComputationPipeline(
 		}
 		if (isEDBStageNeeded) {
 			auto edb = getBackendForQuery();
-			auto edbStage = std::make_shared<EDBStage>(edb_, edb, lit, ctx);
+			auto edbStage = std::make_shared<TypedQueryStage<FramedTriplePattern>>(
+					ctx,
+					lit,
+					[&](const FramedTriplePatternPtr &q) {
+						return edb_->getAnswerCursor(edb, std::make_shared<GraphPathQuery>(q, ctx));
+					});
 			edbStage->selfWeakRef_ = edbStage;
 			stepInput >> edbStage;
 			edbStage >> stepOutput;
@@ -420,7 +424,11 @@ void KnowledgeBase::createComputationPipeline(
 		// To this end add an IDB stage for each reasoner that defines the literal.
 		// --------------------------------------
 		for (auto &r: lit->reasonerList()) {
-			auto idbStage = std::make_shared<IDBStage>(r, lit, ctx);
+			auto idbStage = std::make_shared<TypedQueryStage<FramedTriplePattern>>(
+					ctx, lit,
+					[&r,&ctx](const FramedTriplePatternPtr &q) {
+						return r->submitQuery(q, ctx);
+					});
 			idbStage->selfWeakRef_ = idbStage;
 			stepInput >> idbStage;
 			idbStage >> stepOutput;
@@ -581,7 +589,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const GraphPathQueryPtr &graphQuery) {
 	std::shared_ptr<TokenBroadcaster> lastStage;
 	if (!negativeLiterals.empty()) {
 		// run a dedicated stage where negated literals can be evaluated in parallel
-		auto negStage = std::make_shared<LiteralNegationStage>(
+		auto negStage = std::make_shared<PredicateNegationStage>(
 				this, graphQuery->ctx(), negativeLiterals);
 		idbOut >> negStage;
 		lastStage = negStage;
@@ -702,7 +710,7 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 		// --------------------------------------
 		if (!negLiterals.empty()) {
 			// run a dedicated stage where negated literals can be evaluated in parallel
-			auto negLiteralStage = std::make_shared<LiteralNegationStage>(
+			auto negLiteralStage = std::make_shared<PredicateNegationStage>(
 					this, ctx, negLiterals);
 			lastStage >> negLiteralStage;
 			lastStage = negLiteralStage;

@@ -16,6 +16,10 @@ Property::Property(std::string_view iri)
 Property::Property(const IRIAtomPtr &iri)
 		: Resource(iri), reification_(std::make_shared<Class>(reifiedIRI(iri->stringForm()))), flags_(0) {}
 
+bool Property::Comparator::operator()(const std::shared_ptr<Property> &lhs, const std::shared_ptr<Property> &rhs) const {
+	return lhs->iri() < rhs->iri();
+}
+
 knowrob::IRIAtomPtr Property::reifiedIRI(std::string_view iri) {
 	// split the IRI at the last '#' and insert 'Reified' in between
 	auto pos = iri.rfind('#');
@@ -54,8 +58,13 @@ knowrob::IRIAtomPtr Property::unReifiedIRI(std::string_view iri) {
 }
 
 void Property::addDirectParent(const std::shared_ptr<Property> &directParent) {
-	directParents_.push_back(directParent);
+	directParents_.insert(directParent);
 	reification_->addDirectParent(directParent->reification_);
+}
+
+void Property::removeDirectParent(const std::shared_ptr<Property> &directParent) {
+	directParents_.erase(directParent);
+	reification_->removeDirectParent(directParent->reification_);
 }
 
 void Property::setInverse(const std::shared_ptr<Property> &inverse) {

@@ -8,7 +8,6 @@
 #include "knowrob/queries/NegationStage.h"
 #include "knowrob/KnowledgeBase.h"
 #include "knowrob/formulas/ModalFormula.h"
-#include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/backend/BackendInterface.h"
 
 using namespace knowrob;
@@ -22,26 +21,21 @@ void NegationStage::pushToBroadcast(const TokenPtr &tok) {
 	if (tok->type() == TokenType::ANSWER_TOKEN) {
 		auto answer = std::static_pointer_cast<const Answer>(tok);
 		if (answer->isPositive()) {
-			if (succeeds(std::static_pointer_cast<const AnswerYes>(answer))) {
-				// TODO: evaluation of negation should augment the answer
-				TokenBroadcaster::pushToBroadcast(answer);
+			if (!succeeds(std::static_pointer_cast<const AnswerYes>(answer))) {
 				return;
 			}
-		} else if (answer->isNegative()) {
-			TokenBroadcaster::pushToBroadcast(tok);
 		}
-	} else {
-		TokenBroadcaster::pushToBroadcast(tok);
 	}
+	TokenBroadcaster::pushToBroadcast(tok);
 }
 
-LiteralNegationStage::LiteralNegationStage(KnowledgeBase *kb,
-										   const QueryContextPtr &ctx,
-										   const std::vector<FramedTriplePatternPtr> &negatedLiterals)
+PredicateNegationStage::PredicateNegationStage(KnowledgeBase *kb,
+											   const QueryContextPtr &ctx,
+											   const std::vector<FramedTriplePatternPtr> &negatedLiterals)
 		: NegationStage(kb, ctx),
 		  negatedLiterals_(negatedLiterals) {}
 
-bool LiteralNegationStage::succeeds(const AnswerYesPtr &answer) {
+bool PredicateNegationStage::succeeds(const AnswerYesPtr &answer) {
 	// here the idea is to issue individual queries for each negative literal.
 	// each query produces an AnswerBufferPtr object.
 	// the set of all results can then be checked for a certain property, e.g. that none or all
@@ -50,25 +44,24 @@ bool LiteralNegationStage::succeeds(const AnswerYesPtr &answer) {
 
 	auto kg = kb_->getBackendForQuery();
 
-	for (auto &lit: negatedLiterals_) {
-		auto lit1 = applyBindings(lit, *answer->substitution());
+	for (auto &pat: negatedLiterals_) {
+		auto pat1 = applyBindings(pat, *answer->substitution());
 
-		// create an instance of the literal based on given substitution
+		// create an instance of the pattern based on given substitution
 		auto instance = std::make_shared<FramedTriplePattern>(
-				lit1->predicate(), lit1->isNegated());
+				pat1->predicate(), pat1->isNegated());
 		instance->setTripleFrame(ctx_->selector);
-		// for now evaluate positive variant of the literal.
+		// for now evaluate positive variant of the pattern.
 		// NOTE: for open-world semantics this cannot be done. open-world reasoner
 		//       would need to receive negative literal instead.
 		instance->setIsNegated(false);
 
 		// check if the EDB contains positive lit, if so negation cannot be true
-		results.push_back(kb_->edb()->getAnswerCursor(kg,
-													  std::make_shared<GraphPathQuery>(instance, ctx_)));
+		results.push_back(kb_->edb()->getAnswerCursor(
+			kg, std::make_shared<GraphPathQuery>(instance, ctx_)));
 
 		// next check if positive lit is an IDB predicate, if so negation cannot be true.
 		// get list of reasoner that define the literal
-		// TODO: could be done faster through interface in manager
 		std::vector<std::shared_ptr<Reasoner>> l_reasoner;
 		for (auto &pair: kb_->reasonerManager()->reasonerPool()) {
 			auto &r = pair.second->reasoner();

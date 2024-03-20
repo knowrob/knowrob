@@ -11,7 +11,8 @@ ModalStage::ModalStage(
 		KnowledgeBase *kb,
 		const std::shared_ptr<ModalFormula> &modal,
 		const QueryContextPtr &ctx)
-		: QueryStageFormula(modal->modalFormula(), ctx),
+		: TypedQueryStage(ctx, modal->modalFormula(),
+		         [this](auto && PH1) { return submitQuery(std::forward<decltype(PH1)>(PH1)); }),
 		  kb_(kb),
 		  modalFormula_(modal) {
 	// this modal stage could be embedded into another modal expression.

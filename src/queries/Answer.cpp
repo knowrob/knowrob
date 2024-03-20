@@ -59,6 +59,16 @@ size_t Answer::hash() const {
 	} else {
 		hashCombine(val, 2);
 	}
+	if(reasonerTerm_) {
+		hashCombine(val, reasonerTerm_->hash());
+	} else {
+		hashCombine(val, 0);
+	}
+	if(frame_) {
+		hashCombine(val, frame_->hash());
+	} else {
+		hashCombine(val, 0);
+	}
 	return val;
 }
 

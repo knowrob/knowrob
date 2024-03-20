@@ -203,9 +203,7 @@ add_library(knowrob SHARED
         src/triples/GraphQuery.cpp
 		src/queries/Query.cpp
 		src/queries/RedundantAnswerFilter.cpp
-		src/queries/EDBStage.cpp
 		src/queries/QueryStage.cpp
-		src/queries/IDBStage.cpp
 		src/queries/QueryPipeline.cpp
 		src/queries/NegationStage.cpp
 		src/semweb/PrefixRegistry.cpp
@@ -268,8 +266,6 @@ add_library(knowrob SHARED
 		src/queries/Token.cpp
 		src/triples/GraphSelector.cpp
 		src/queries/AnswerMerger.cpp
-		src/queries/QueryStageLiteral.cpp
-		src/queries/QueryStageFormula.cpp
 		src/py/utils.cpp
         src/triples/FramedTriple.cpp
         src/triples/TripleFormat.cpp

@@ -360,9 +360,6 @@ bool RedlandModel::insertOne(const FramedTriple &knowrobTriple) {
 bool RedlandModel::insertAll(const TripleContainerPtr &triples) {
 	// insert all triples into an in-memory model.
 	// only after all triples are inserted, the model is transformed and then pushed to the next stage.
-	// TODO: we could create a stream here over the iterator interface of triple container.
-	//       stream can be created with librdf_new_stream, and then librdf_model_context_add_statements can be used.
-	//       same in removeAll.
 	auto raptorTriple = librdf_new_statement(world_);
 	for (auto &knowrobTriple: *triples) {
 		// map the knowrob triple into a raptor triple

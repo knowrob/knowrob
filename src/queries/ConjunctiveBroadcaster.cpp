@@ -14,15 +14,12 @@
 
 using namespace knowrob;
 
-// TODO: check if using std::set is faster
-//using AnswerMap = std::map<uint32_t, AnswerSet>;
-
 ConjunctiveBroadcaster::ConjunctiveBroadcaster(bool ignoreInconsistentAnswers)
 		: TokenBroadcaster(),
 		  ignoreInconsistentAnswers_(ignoreInconsistentAnswers),
 		  hasSolution_(false) {}
 
-void ConjunctiveBroadcaster::push(const Channel &channel, const TokenPtr &tok) {
+void ConjunctiveBroadcaster::push(Channel &channel, const TokenPtr &tok) {
 	if (tok->type() == TokenType::ANSWER_TOKEN) {
 		auto answer = std::static_pointer_cast<const Answer>(tok);
 		if (answer->isPositive()) {

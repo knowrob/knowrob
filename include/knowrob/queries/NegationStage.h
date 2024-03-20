@@ -30,11 +30,11 @@ namespace knowrob {
 		virtual bool succeeds(const AnswerYesPtr &answer) = 0;
 	};
 
-	class LiteralNegationStage : public NegationStage {
+	class PredicateNegationStage : public NegationStage {
 	public:
-		LiteralNegationStage(KnowledgeBase *kb,
-							 const QueryContextPtr &ctx,
-							 const std::vector<FramedTriplePatternPtr> &negatedLiterals);
+		PredicateNegationStage(KnowledgeBase *kb,
+							   const QueryContextPtr &ctx,
+							   const std::vector<FramedTriplePatternPtr> &negatedLiterals);
 
 	protected:
 		const std::vector<FramedTriplePatternPtr> negatedLiterals_;
