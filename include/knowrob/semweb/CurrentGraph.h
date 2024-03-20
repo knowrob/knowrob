@@ -20,6 +20,14 @@ namespace knowrob {
 				: name_(name) {}
 
 		/**
+		 * @param other another graph
+		 * @return true if the graphs have the same name
+		 */
+		bool operator==(const CurrentGraph &other) const {
+			return name_ == other.name_;
+		}
+
+		/**
 		 * @return the name of the graph.
 		 */
 		const auto &name() const { return name_; }

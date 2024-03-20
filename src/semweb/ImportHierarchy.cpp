@@ -29,12 +29,12 @@ bool ImportHierarchy::isCurrentGraph(std::string_view graphName) const {
 
 bool ImportHierarchy::isSystemOrigin(CurrentGraph &graph) {
 	auto originSystem = getCurrentGraph(ORIGIN_SYSTEM);
-	return originSystem.imports_.count(&graph) > 0;
+	return graph == originSystem || originSystem.imports_.count(&graph) > 0;
 }
 
 bool ImportHierarchy::isSessionOrigin(CurrentGraph &graph) {
-	auto originSystem = getCurrentGraph(ORIGIN_SESSION);
-	return originSystem.imports_.count(&graph) > 0;
+	auto originSession = getCurrentGraph(ORIGIN_SESSION);
+	return graph == originSession || originSession.imports_.count(&graph) > 0;
 }
 
 void ImportHierarchy::addCurrentGraph(std::string_view graphName) {
@@ -69,14 +69,14 @@ void ImportHierarchy::addDirectImport(std::string_view importerGraphName, std::s
 	auto &g_importer = getCurrentGraph(importerGraphName);
 	auto &g_imported = getCurrentGraph(importedGraphName);
 
-	// TODO: if a system graph imports a session graph, remove the session graph from the session
-	//       before adding to the system. And if a session graph imports a system graph, ignore the import.
-	//if (isSystemOrigin(g_importer) && isSessionOrigin(g_imported)) {
-	//	removeCurrentGraph(g_imported);
-	//} else if (isSessionOrigin(g_importer) && isSystemOrigin(g_imported)) {
-	//	KB_WARN("Session graph \"{}\" imports system graph \"{}\".", importerGraphName, importedGraphName);
-	//	return;
-	//}
+	// if a system graph imports a session graph, remove the session graph from the session
+	// before adding to the system. And if a session graph imports a system graph, ignore the import.
+	if (isSystemOrigin(g_importer) && isSessionOrigin(g_imported)) {
+		removeCurrentGraph(importedGraphName);
+	} else if (isSessionOrigin(g_importer) && isSystemOrigin(g_imported)) {
+		KB_WARN("Ignoring session graph \"{}\" import of system graph \"{}\".", importerGraphName, importedGraphName);
+		return;
+	}
 
 	KB_DEBUG("Graph \"{}\" imports \"{}\".", importerGraphName, importedGraphName);
 	// g_importer.directlyImports += [g_imported]
@@ -107,7 +107,6 @@ void ImportHierarchy::removeCurrentGraph(std::string_view graphName) {
 			gx.directImports_.erase(&ga);
 			gx.imports_.erase(&ga);
 			// gx.directlyImports += [ga.directImports]
-			// TODO: this is a bit questionable, probably better to not add ga's direct imports to gx.
 			gx.directImports_.insert(ga.directImports_.begin(), ga.directImports_.end());
 		}
 	}

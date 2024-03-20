@@ -189,8 +189,6 @@ bool Vocabulary::isTaxonomicProperty(const std::string_view &iri) {
 		   isTypeIRI(iri);
 }
 
-// FIXME: the frequency of parent/child properties and classes should be managed too!
-
 void Vocabulary::setFrequency(const std::string_view &iri, uint64_t frequency) {
 	if (frequency == 0) {
 		frequency_.erase(iri);
@@ -205,7 +203,7 @@ void Vocabulary::setFrequency(const std::string_view &iri, uint64_t frequency) {
 			frequency_[c_it->second->iri()] = frequency;
 			return;
 		}
-		KB_WARN("cannot set frequency for unknown IRI '{}'", iri);
+		KB_WARN("cannot set frequency of unknown resource '{}'", iri);
 	}
 }
 
@@ -223,7 +221,6 @@ uint64_t Vocabulary::frequency(const std::string_view &iri) const {
 	if (it == frequency_.end()) return 0;
 	else return it->second;
 }
-
 
 void Vocabulary::addResourceType(const std::string_view &resource_iri, const std::string_view &type_iri) {
 	if (isObjectPropertyIRI(type_iri))

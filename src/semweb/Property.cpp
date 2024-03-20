@@ -67,7 +67,6 @@ bool Property::hasFlag(PropertyFlag flag) const {
 }
 
 void Property::setFlag(PropertyFlag flag) {
-	// TODO: consider translating property flags to OWL axioms that describe the *reification* of the property.
 	flags_ |= flag;
 }
 
