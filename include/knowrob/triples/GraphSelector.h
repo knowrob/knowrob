@@ -26,7 +26,7 @@ namespace knowrob {
 		/**
 		 * The name of the graph, usually reflects the name of an ontology.
 		 */
-		const char *graph; // TODO: rename to "ontology" ?
+		const char *graph;
 		/**
 		 * The perspective of statement.
 		 */
