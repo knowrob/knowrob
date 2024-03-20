@@ -11,11 +11,13 @@
 using namespace knowrob;
 
 bool GraphSelector::mergeWith(const GraphSelector &other) {
-	// TODO: not sure how this field should be handled
-	static const char *mergedGraph = "merged";
-	graph = mergedGraph;
 	uncertain = uncertain || other.uncertain;
 	occasional = occasional || other.occasional;
+
+	// graph selector changes to wildcard if graph of the other selector is different
+	if (!graph || !other.graph || std::string_view(graph) != std::string_view(other.graph)) {
+		graph = nullptr;
+	}
 
 	// agent cannot be changed in merge operation.
 	// So GraphSelector can only be merged within a modal in which both are embedded.
