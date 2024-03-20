@@ -9,6 +9,7 @@
 #include <string>
 #include <ostream>
 #include "Term.h"
+#include "Atom.h"
 
 namespace knowrob {
 	/**
@@ -38,7 +39,12 @@ namespace knowrob {
 		/**
 		 * @return the name of this variable.
 		 */
-		std::string_view name() const { return name_; }
+		std::string_view name() const { return nameAtom_->stringForm(); }
+
+		/**
+		 * @return the name of this variable.
+		 */
+		const AtomPtr &nameAtom() const { return nameAtom_; }
 
 		// Override Term
 		TermType termType() const final { return TermType::VARIABLE; }
@@ -50,12 +56,10 @@ namespace knowrob {
 		const std::set<std::string_view> &variables() const override { return variables_; }
 
 		// Override Term
-		size_t hash() const override { return std::hash<std::string>{}(name_); }
+		size_t hash() const override { return nameAtom_->hash(); }
 
 	protected:
-		// TODO: should really each variable have its own copy? better support string_view too,
-		//        or maybe simply use a tabled atom?
-		const std::string name_;
+		const AtomPtr nameAtom_;
 		const std::set<std::string_view> variables_;
 
 		// Override Term

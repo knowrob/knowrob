@@ -12,20 +12,20 @@ using namespace knowrob;
 
 Variable::Variable(std::string_view name)
 		: Term(),
-		  name_(name),
-		  variables_({name_}) {
+		  nameAtom_(Atom::Tabled(name)),
+		  variables_({nameAtom_->stringForm()}) {
 }
 
 bool Variable::isSameVariable(const Variable &other) const {
-	return name_ == other.name_;
+	return *nameAtom_ == *other.nameAtom_;
 }
 
 bool Variable::operator<(const Variable &other) const {
-	return (this->name_ < other.name_);
+	return (this->nameAtom_->stringForm() < other.nameAtom_->stringForm());
 }
 
 void Variable::write(std::ostream &os) const {
-	os << name_;
+	os << nameAtom_->stringForm();
 }
 
 namespace knowrob::py {
