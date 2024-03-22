@@ -71,6 +71,14 @@ bool QueryableBackend::contains(const FramedTriple &triple) {
 	return hasTriple;
 }
 
+void QueryableBackend::foreach(const TripleVisitor &visitor) const {
+	batch([&](const TripleContainerPtr &container) {
+		for (auto &triple: *container) {
+			visitor(*triple);
+		}
+	});
+}
+
 std::shared_ptr<AnswerYes> QueryableBackend::yes(const GraphQueryExpansionPtr &expanded, const BindingsPtr &bindings) {
 	static const auto edbTerm = Atom::Tabled("EDB");
 

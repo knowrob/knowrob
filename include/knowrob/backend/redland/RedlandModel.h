@@ -173,9 +173,6 @@ namespace knowrob {
 		bool contains(const FramedTriple &triple) override;
 
 		// Override QueryableBackend
-		void foreach(const TripleVisitor &visitor) const override;
-
-		// Override QueryableBackend
 		void batch(const TripleHandler &callback) const override;
 
 		// Override QueryableBackend

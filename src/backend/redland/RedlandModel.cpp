@@ -414,14 +414,6 @@ bool RedlandModel::removeAllWithOrigin(std::string_view origin) {
 	return true;
 }
 
-void RedlandModel::foreach(const TripleVisitor &visitor) const {
-	batch([&](const TripleContainerPtr &container) {
-		for (auto &triple: *container) {
-			visitor(*triple);
-		}
-	});
-}
-
 void RedlandModel::batch(const TripleHandler &callback) const {
 	auto triples = std::make_shared<RaptorContainer>(GlobalSettings::batchSize());
 	auto contexts = librdf_model_get_contexts(model_);

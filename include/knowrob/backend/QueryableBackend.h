@@ -37,7 +37,7 @@ namespace knowrob {
 		 * @param callback the callback to handle the triples.
 		 * @return true if the iteration was successful.
 		 */
-		virtual void foreach(const TripleVisitor &visitor) const = 0;
+		virtual void foreach(const TripleVisitor &visitor) const;
 
 		/**
 		 * Iterate over all triples in the model.
