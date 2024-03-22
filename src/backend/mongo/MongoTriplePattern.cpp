@@ -434,9 +434,10 @@ static void transitiveLookup(
 		const semweb::PropertyPtr &definedProperty) {
 	bool b_isTaxonomicProperty = (definedProperty &&
 								  tripleStore.vocabulary->isTaxonomicProperty(definedProperty->iri()));
-	// TODO: start with object in case it is known to be grounded before at runtime
-	bool b_startWithSubject = lookupData.expr->subjectTerm()->isGround() ||
-							  !lookupData.expr->objectTerm()->isGround();
+	// start with object in case it is known to be grounded before at runtime
+	bool b_objectIsKnownGrounded = lookupData.expr->objectTerm()->isVariable() &&
+			lookupData.knownGroundedVariables.count(std::static_pointer_cast<Variable>(lookupData.expr->objectTerm())->name()) > 0;
+	bool b_startWithSubject = lookupData.expr->subjectTerm()->isGround() || !b_objectIsKnownGrounded;
 
 	auto startTerm = (b_startWithSubject ?
 					  lookupData.expr->subjectTerm() : lookupData.expr->objectTerm());
