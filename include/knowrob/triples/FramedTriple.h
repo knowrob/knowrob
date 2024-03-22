@@ -356,6 +356,13 @@ namespace knowrob {
 		FramedTripleTemplate()
 				: FramedTriple() {}
 
+		FramedTripleTemplate(std::string_view subject_iri, std::string_view predicate_iri)
+				: FramedTriple(),
+				  subject_(subject_iri),
+				  predicate_(predicate_iri) {
+			xsdType_ = std::nullopt;
+		}
+
 		FramedTripleTemplate(std::string_view subject_iri, std::string_view predicate_iri, std::string_view object_iri)
 				: FramedTriple(),
 				  subject_(subject_iri),
