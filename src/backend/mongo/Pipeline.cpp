@@ -133,7 +133,7 @@ aggregate_disjunction(FindallStages, StepVars, Pipeline, StepVars) :-
 		Pipeline
 	).
 	 */
-	KB_WARN("Union not supported in pipeline yet");
+	KB_WARN("Union not supported in pipeline yet {}", builtin);
 }
 
 void Pipeline::appendBuiltin(const knowrob::GraphBuiltin &builtin) {

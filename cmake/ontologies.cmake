@@ -1,5 +1,8 @@
 include(CMakeParseArguments)
 
+# TODO: there is a similar macros called FetchContent_* shipped with CMake.
+#   Have a look if install_ontology can use it or be replaced with it.
+
 macro(install_ontology)
 	# parse options
 	set(prefix ARG_)

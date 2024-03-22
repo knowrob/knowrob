@@ -44,18 +44,9 @@ include_directories(include ${RAPTOR_INCLUDE_DIRS})
 pkg_check_modules(REDLAND REQUIRED redland)
 include_directories(include ${REDLAND_INCLUDE_DIRS})
 
-# install additional Prolog code
-# FIXME: is added by rosprolog
-#install_prolog_pack(list_util
-#	URL "https://github.com/mndrix/list_util/archive/v0.13.0.zip")
-#install_prolog_pack(delay
-#	URL "https://github.com/mndrix/delay/archive/v0.3.3.zip")
-
 # install ontologies hosted on http servers.
 # copy them into the workspace such the we can load them
 # from a local source at runtime.
-# TODO: there is a similar macros called FetchContent_* shipped with CMake.
-#       Have a look if install_ontology can use it or be replaced with it.
 install_ontology(
 		URL		  "http://www.ease-crc.org/ont/DUL.owl"
 		VERSION   "3.34")
