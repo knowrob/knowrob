@@ -154,7 +154,7 @@ namespace knowrob {
 		std::string_view stringForm() const override {
 			if (!stringForm_) {
 				std::ostringstream oss;
-				oss << std::fixed << *numericForm_;
+				oss << std::fixed << std::boolalpha << *numericForm_;
 				stringForm_ = oss.str();
 			}
 			return *stringForm_;
