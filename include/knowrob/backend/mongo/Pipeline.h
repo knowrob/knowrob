@@ -35,7 +35,7 @@ namespace knowrob::mongo {
 
 		bson_t *appendStageBegin();
 
-		bson_t *appendStageBegin(const char *stageOperator);
+		bson_t *appendStageBegin(std::string_view stageOperator);
 
 		void appendStageEnd(bson_t *stage);
 
@@ -55,19 +55,19 @@ namespace knowrob::mongo {
 		 * Append a $unwind stage.
 		 * @param field an array value
 		 */
-		void unwind(const std::string_view &field, bool preserveNullAndEmptyArrays = false);
+		void unwind(std::string_view field, bool preserveNullAndEmptyArrays = false);
 
 		/**
 		 * Append a $unset stage.
 		 * @param field a document field
 		 */
-		void unset(const std::string_view &field);
+		void unset(std::string_view field);
 
 		/**
 		 * Append a $project stage.
 		 * @param field a document field to include in output documents
 		 */
-		void project(const std::string_view &field);
+		void project(std::string_view field);
 
 		/**
 		 * Append a $project stage.
@@ -79,32 +79,32 @@ namespace knowrob::mongo {
 		 * Append a $replaceRoot stage.
 		 * @param newRootField a document field
 		 */
-		void replaceRoot(const std::string_view &newRootField);
+		void replaceRoot(std::string_view newRootField);
 
 		/**
 		 * Append a $merge stage.
 		 * @param collection the output collection
 		 */
-		void merge(const std::string_view &collection);
+		void merge(std::string_view collection);
 
 		/**
 		 * Append a $sort stage with ascending sort order.
 		 * @param newRootField a document field
 		 */
-		void sortAscending(const std::string_view &field);
+		void sortAscending(std::string_view field);
 
 		/**
 		 * Append a $sort stage with descending sort order.
 		 * @param newRootField a document field
 		 */
-		void sortDescending(const std::string_view &field);
+		void sortDescending(std::string_view field);
 
 		/**
 		 * Append a ($set o $setUnion) stage.
 		 * @param field a field to store the union of array
 		 * @param sets list of array values
 		 */
-		void setUnion(const std::string_view &field, const std::vector<std::string_view> &sets);
+		void setUnion(std::string_view field, const std::vector<std::string_view> &sets);
 
 		/**
 		 * Add an element to an array.
@@ -112,8 +112,13 @@ namespace knowrob::mongo {
 		 * @param arrayKey input array field
 		 * @param elementKey field of an additional element
 		 */
-		void
-		addToArray(const std::string_view &key, const std::string_view &arrayKey, const std::string_view &elementKey);
+		void addToArray(std::string_view key, std::string_view arrayKey, std::string_view elementKey);
+
+		/**
+		 * Match an empty array.
+		 * @param arrayKey the array field
+		 */
+		void matchEmptyArray(std::string_view arrayKey);
 
 		/**
 		 * Load a pipeline from a JSON file.

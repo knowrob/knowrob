@@ -531,9 +531,6 @@ get_unique_name(Prefix, Name) :-
 	randseq(8, 25, Seq_random),
 	maplist(plus(65), Seq_random, Alpha_random),
 	atom_codes(Sub, Alpha_random),
-	% TODO: what IRI prefix? Currently we re-use the one of the type.
-	%        but that seems not optimal. Probably best to
-	%        have this in query context, and some meaningful default.
 	atomic_list_concat([Prefix,'_',Sub], IRI),
 	% check if there is no triple with this identifier as subject or object yet
 	(	is_unique_name(IRI)

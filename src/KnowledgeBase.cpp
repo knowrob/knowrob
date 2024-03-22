@@ -754,10 +754,6 @@ TokenBufferPtr KnowledgeBase::submitQuery(const FormulaPtr &phi, const QueryCont
 	finalStage >> out;
 	outStream->stopBuffering();
 
-	// TODO: how could we catch exceptions that occur in the pipeline?
-	//       It would be good is the token queue which is processed in the main thread
-	//       can re-throw any exception that occurred in the pipeline.
-
 	return out;
 }
 
@@ -920,7 +916,6 @@ void KnowledgeBase::finishLoad(const std::shared_ptr<OntologySource> &source, st
 
 bool KnowledgeBase::loadOntologyFile(const std::shared_ptr<OntologyFile> &source, bool followImports) {
 	std::queue<std::string> ontologyURIs;
-	// TODO resolve needed here, DS does it already or?
 	ontologyURIs.push(URI::resolve(source->uri()));
 
 	while (!ontologyURIs.empty()) {

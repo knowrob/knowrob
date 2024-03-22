@@ -62,14 +62,12 @@ namespace knowrob::mongo {
 		explicit TripleLookupData(const FramedTriplePattern *expr)
 				: expr(expr),
 				  maxNumOfTriples(0),
-				  mayHasMoreGroundings(true),
-				  forceTransitiveLookup(false) {}
+				  mayHasMoreGroundings(true) {}
 
 		const FramedTriplePattern *expr;
 		uint32_t maxNumOfTriples;
 		std::set<std::string_view> knownGroundedVariables;
 		bool mayHasMoreGroundings;
-		bool forceTransitiveLookup;
 	};
 
 	void lookupTriple(Pipeline &pipeline, const TripleStore &tripleStore, const TripleLookupData &lookupData);

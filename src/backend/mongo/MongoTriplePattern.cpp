@@ -203,17 +203,7 @@ const char *MongoTriplePattern::getOperatorString(knowrob::FilterType operatorTy
 	return nullptr;
 }
 
-static inline void matchEmptyArray(Pipeline &pipeline, const char *arrayKey) {
-	bson_t emptyArray;
-	auto matchStage = pipeline.appendStageBegin("$match");
-	BSON_APPEND_ARRAY_BEGIN(matchStage, arrayKey, &emptyArray);
-	bson_append_array_end(matchStage, &emptyArray);
-	pipeline.appendStageEnd(matchStage);
-}
-
-static inline void appendSetVariable(bson_t *doc,
-									 const std::string_view &varName,
-									 const std::string_view &newValue) {
+static inline void appendSetVariable(bson_t *doc, std::string_view varName, std::string_view newValue) {
 	const auto varKey = MongoTerm::variableKey(varName);
 	const auto varValue = std::string("$") + varKey;
 	bson_t condDoc, condArray, notOperator, notArray;
@@ -236,8 +226,8 @@ static inline void appendSetVariable(bson_t *doc,
 }
 
 static inline void appendMatchVariable(bson_t *doc,
-									   const std::string_view &fieldValue,
-									   const std::string_view &varName,
+									   std::string_view fieldValue,
+									   std::string_view varName,
 									   const TripleLookupData &lookupData) {
 	const auto varKey = MongoTerm::variableKey(varName);
 	const auto varLetValue = std::string("$$") + varKey;
@@ -277,9 +267,7 @@ static inline void appendMatchVariable(bson_t *doc,
 	bson_append_document_end(doc, &exprDoc);
 }
 
-static void setTripleVariables(
-		Pipeline &pipeline,
-		const TripleLookupData &lookupData) {
+static void setTripleVariables(Pipeline &pipeline, const TripleLookupData &lookupData) {
 	std::list<std::pair<const char *, Variable *>> varList;
 
 	// the object can be specified as a triple (Value, Operator, ActualValue) such that
@@ -411,19 +399,18 @@ static void nonTransitiveLookup(
 	bson_append_array_end(lookupStage, &lookupArray);
 	pipeline.appendStageEnd(lookupStage);
 
+	// at this point the 'next' field holds an array of matching documents, if any.
 	if (lookupData.expr->isNegated()) {
-		// following closed-world assumption succeed if no solutions have been found for
-		// the formula which appears negated in the queried literal
-		matchEmptyArray(pipeline, "next");
+		// following closed-world assumption succeed if no solutions are found
+		pipeline.matchEmptyArray("next");
 	} else {
-		// at this point the 'next' field holds an array of matching documents.
-		// Unwind it, and set preserveEmpty=true if lookupData.expr->isOptional().
+		// Unwind, and set preserveEmpty=true if lookupData.expr->isOptional().
 		pipeline.unwind("$next", lookupData.expr->isOptional());
 		// project new variable groundings
 		setTripleVariables(pipeline, lookupData);
 	}
 
-	// remove next field again: { $unset: "next" }
+	// finally, remove next field: { $unset: "next" }
 	pipeline.unset("next");
 }
 
@@ -541,7 +528,7 @@ void mongo::lookupTriple(Pipeline &pipeline, const TripleStore &tripleStore, con
 
 	bool b_isTransitiveProperty = (definedProperty && definedProperty->hasFlag(
 			semweb::PropertyFlag::TRANSITIVE_PROPERTY));
-	if (b_isTransitiveProperty || lookupData.forceTransitiveLookup)
+	if (b_isTransitiveProperty)
 		transitiveLookup(pipeline, tripleStore, lookupData, definedProperty);
 	else
 		nonTransitiveLookup(pipeline, tripleStore, lookupData, definedProperty);

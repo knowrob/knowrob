@@ -32,12 +32,12 @@ bson_t *Pipeline::appendStageBegin() {
 	return &stage.bson;
 }
 
-bson_t *Pipeline::appendStageBegin(const char *stageOperatorString) {
+bson_t *Pipeline::appendStageBegin(std::string_view stageOperatorString) {
 	auto arrayKey = std::to_string(numStages_++);
 	bson_wrapper &stage = stages_.emplace_back();
 	bson_wrapper &stageOperator = stageOperators_.emplace_back();
 	BSON_APPEND_DOCUMENT_BEGIN(arrayDocument_, arrayKey.c_str(), &stage.bson);
-	BSON_APPEND_DOCUMENT_BEGIN(&stage.bson, stageOperatorString, &stageOperator.bson);
+	BSON_APPEND_DOCUMENT_BEGIN(&stage.bson, stageOperatorString.data(), &stageOperator.bson);
 	lastOperator_ = &stageOperator.bson;
 	lastStage_ = &stage.bson;
 	return &stageOperator.bson;
@@ -77,8 +77,10 @@ void Pipeline::appendTerm_recursive(const knowrob::GraphTerm &query, // NOLINT
 			lookupData.mayHasMoreGroundings = false;
 			lookupData.knownGroundedVariables = groundedVariables;
 			// remember variables in tripleExpression, they have a grounding in next step
-			for (auto &var: expr->getVariables()) {
-				groundedVariables.insert(var->name());
+			if (!expr->isOptional()) {
+				for (auto &var: expr->getVariables()) {
+					groundedVariables.insert(var->name());
+				}
 			}
 			lookupTriple(*this, tripleStore, lookupData);
 			break;
@@ -226,7 +228,7 @@ void Pipeline::limit(uint32_t maxDocuments) {
 	appendStageEnd(unwindStage);
 }
 
-void Pipeline::unwind(const std::string_view &field, bool preserveNullAndEmptyArrays) {
+void Pipeline::unwind(std::string_view field, bool preserveNullAndEmptyArrays) {
 	if (preserveNullAndEmptyArrays) {
 		auto unwindStage = appendStageBegin("$unwind");
 		BSON_APPEND_BOOL(unwindStage, "preserveNullAndEmptyArrays", 1);
@@ -238,31 +240,31 @@ void Pipeline::unwind(const std::string_view &field, bool preserveNullAndEmptyAr
 	}
 }
 
-void Pipeline::unset(const std::string_view &field) {
+void Pipeline::unset(std::string_view field) {
 	auto unwindStage = appendStageBegin();
 	BSON_APPEND_UTF8(unwindStage, "$unset", field.data());
 	appendStageEnd(unwindStage);
 }
 
-void Pipeline::replaceRoot(const std::string_view &newRootField) {
+void Pipeline::replaceRoot(std::string_view newRootField) {
 	auto unwindStage = appendStageBegin("$replaceRoot");
 	BSON_APPEND_UTF8(unwindStage, "newRoot", newRootField.data());
 	appendStageEnd(unwindStage);
 }
 
-void Pipeline::sortAscending(const std::string_view &field) {
+void Pipeline::sortAscending(std::string_view field) {
 	auto sortStage = appendStageBegin("$sort");
 	BSON_APPEND_INT32(sortStage, field.data(), 1);
 	appendStageEnd(sortStage);
 }
 
-void Pipeline::sortDescending(const std::string_view &field) {
+void Pipeline::sortDescending(std::string_view field) {
 	auto sortStage = appendStageBegin("$sort");
 	BSON_APPEND_INT32(sortStage, field.data(), -1);
 	appendStageEnd(sortStage);
 }
 
-void Pipeline::merge(const std::string_view &collection) {
+void Pipeline::merge(std::string_view collection) {
 	auto unwindStage = appendStageBegin("$merge");
 	BSON_APPEND_UTF8(unwindStage, "into", collection.data());
 	BSON_APPEND_UTF8(unwindStage, "on", "_id");
@@ -270,7 +272,7 @@ void Pipeline::merge(const std::string_view &collection) {
 	appendStageEnd(unwindStage);
 }
 
-void Pipeline::project(const std::string_view &field) {
+void Pipeline::project(std::string_view field) {
 	auto projectStage = appendStageBegin("$project");
 	BSON_APPEND_INT32(projectStage, field.data(), 1);
 	appendStageEnd(projectStage);
@@ -284,7 +286,7 @@ void Pipeline::project(const std::vector<std::string_view> &fields) {
 	appendStageEnd(projectStage);
 }
 
-void Pipeline::setUnion(const std::string_view &field, const std::vector<std::string_view> &sets) {
+void Pipeline::setUnion(std::string_view field, const std::vector<std::string_view> &sets) {
 	bson_t unionOperator, unionArray;
 	uint32_t numElements = 0;
 	auto setStage = appendStageBegin("$set");
@@ -303,8 +305,7 @@ void Pipeline::setUnion(const std::string_view &field, const std::vector<std::st
 	appendStageEnd(setStage);
 }
 
-void Pipeline::addToArray(const std::string_view &key, const std::string_view &arrayKey,
-						  const std::string_view &elementKey) {
+void Pipeline::addToArray(std::string_view key, std::string_view arrayKey, std::string_view elementKey) {
 	bson_t concatOperator, concatArray, concatArray1;
 	auto setStage1 = appendStageBegin("$set");
 	BSON_APPEND_DOCUMENT_BEGIN(setStage1, key.data(), &concatOperator);
@@ -322,6 +323,14 @@ void Pipeline::addToArray(const std::string_view &key, const std::string_view &a
 	}
 	bson_append_document_end(setStage1, &concatOperator);
 	appendStageEnd(setStage1);
+}
+
+void Pipeline::matchEmptyArray(std::string_view arrayKey) {
+	bson_t emptyArray;
+	auto matchStage = appendStageBegin("$match");
+	BSON_APPEND_ARRAY_BEGIN(matchStage, arrayKey.data(), &emptyArray);
+	bson_append_array_end(matchStage, &emptyArray);
+	appendStageEnd(matchStage);
 }
 
 void replaceAll(std::string &str, const std::string &from, const std::string &to) {
