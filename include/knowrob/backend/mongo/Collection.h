@@ -11,27 +11,20 @@
 #include "BulkOperation.h"
 #include "Document.h"
 #include "Connection.h"
+#include "Index.h"
 
 namespace knowrob::mongo {
 	/**
-	 * Configures an index key.
-	 */
-	struct IndexKey {
-		explicit IndexKey(const char *key, const bool ascending = true)
-				: value(key), ascending(true) {};
-		const char *value;
-		const bool ascending;
-	};
-
-	/**
 	 * A named collection in Mongo DB.
+	 * Note that a Mongo DB instance may contain multiple databases, each of which
+	 * may contain multiple collections. This class represents a single collection.
 	 */
 	class Collection {
 	public:
 		Collection(
 				const std::shared_ptr<Connection> &connection,
-				const std::string_view &databaseName,
-				const std::string_view &collectionName);
+				std::string_view databaseName,
+				std::string_view collectionName);
 
 		Collection(const Collection &collection) = delete;
 

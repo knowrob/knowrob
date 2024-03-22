@@ -11,7 +11,7 @@
 
 namespace knowrob::mongo {
 	/**
-	 * A getAnswerCursor that iterates over bindings computed through an aggregation
+	 * A Cursor that iterates over bindings computed through an aggregation
 	 * pipeline which uses a special field in documents to store variable
 	 * bindings throughout the pipeline.
 	 */
@@ -19,6 +19,10 @@ namespace knowrob::mongo {
 	public:
 		explicit BindingsCursor(const std::shared_ptr<Collection> &collection);
 
+		/**
+		 * @param bindings the bindings to fill with the next result.
+		 * @return true if there is a next result, false otherwise.
+		 */
 		bool nextBindings(const std::shared_ptr<Bindings> &bindings);
 
 	protected:
@@ -31,6 +35,6 @@ namespace knowrob::mongo {
 	};
 
 	using BindingsCursorPtr = std::shared_ptr<BindingsCursor>;
-} // mongo
+} // knowrob::mongo
 
 #endif //KNOWROB_MONGO_BINDINGS_CURSOR_H

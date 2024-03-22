@@ -25,26 +25,42 @@ namespace knowrob::mongo {
      */
     class QueryWatch {
     public:
-        explicit QueryWatch(mongoc_client_pool_t *client_pool);
+		QueryWatch();
 
         QueryWatch(const QueryWatch&) = delete;
 
         ~QueryWatch();
 
-        long watch(const std::string_view &database,
-                   const std::string_view &collection,
+        /**
+         * The query watch actively polls change streams in this interval.
+         * @param rate the rate in milliseconds.
+         */
+        void setWatchRate(uint32_t rate) { watchRate_ = rate; }
+
+        /**
+		 * Watch for changes in a collection.
+		 * @param collection the collection to watch.
+		 * @param query the query to watch.
+		 * @param callback the callback to invoke for each change.
+		 * @return a watcher id that can be used to unwatch.
+		 */
+        long watch(const std::shared_ptr<Collection> &collection,
                    const bson_t *query,
                    const ChangeStreamCallback &callback);
 
+		/**
+		 * Stop watching a collection.
+		 * @param watcher_id the watcher id returned by watch.
+		 */
         void unwatch(long watcher_id);
 
     protected:
-        mongoc_client_pool_t *client_pool_;
         std::map<long, std::unique_ptr<ChangeStream>> watcher_map_;
 
         std::thread *thread_;
         bool isRunning_;
         std::mutex lock_;
+		uint32_t watchRate_;
         static std::atomic<long> id_counter_;
 
         void startWatchThread();

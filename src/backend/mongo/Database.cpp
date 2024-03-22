@@ -8,10 +8,10 @@
 
 using namespace knowrob::mongo;
 
-Database::Database(mongoc_client_pool_t *pool, const std::string &db_name)
+Database::Database(mongoc_client_pool_t *pool, std::string_view db_name)
 		: pool_(pool) {
 	client_ = mongoc_client_pool_pop(pool_);
-	db_ = mongoc_client_get_database(client_, db_name.c_str());
+	db_ = mongoc_client_get_database(client_, db_name.data());
 }
 
 Database::~Database() {
@@ -19,24 +19,14 @@ Database::~Database() {
 	mongoc_client_pool_push(pool_, client_);
 }
 
-bool Database::create_index(const char *coll_name, const PlTerm &keys_pl) {
-	static const PlAtom ATOM_minus("-");
-
+bool Database::create_index(const char *coll_name, const std::vector<IndexKey> &indexes) {
 	bson_t reply;
 	bson_error_t err;
 	bson_t keys;
 	//
 	bson_init(&keys);
-	PlTail pl_list(keys_pl);
-	PlTerm pl_member;
-	while (pl_list.next(pl_member)) {
-		const PlAtom mode_atom(pl_member.name());
-		const PlTerm &pl_value = pl_member[1];
-		if (mode_atom == ATOM_minus) {
-			BSON_APPEND_INT32(&keys, (char *) pl_value, -1);
-		} else {
-			BSON_APPEND_INT32(&keys, (char *) pl_value, 1);
-		}
+	for (auto &is : indexes) {
+		BSON_APPEND_INT32(&keys, is.value.c_str(), (int)is.type);
 	}
 	char *index_name = mongoc_collection_keys_to_index_string(&keys);
 	//

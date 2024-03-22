@@ -9,7 +9,7 @@
 
 using namespace knowrob::mongo;
 
-Connection::Connection(const std::string &uri_string)
+Connection::Connection(std::string_view uri_string)
 		: uri_string_(uri_string) {
 	bson_error_t err;
 	uri_ = mongoc_uri_new_with_error(uri_string_.c_str(), &err);

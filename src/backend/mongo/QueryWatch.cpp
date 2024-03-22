@@ -8,31 +8,15 @@
 #include "knowrob/backend/mongo/MongoException.h"
 #include "knowrob/reasoner/mongolog/bson_pl.h"
 #include <iostream>
-#include <utility>
-// SWI Prolog
-#define PL_SAFE_ARG_MACROS
-
-#include <SWI-cpp.h>
-
-// TODO: make configurable
-#define WATCH_RATE_MS 200
 
 using namespace knowrob::mongo;
 
 std::atomic<long> QueryWatch::id_counter_ = 0;
 
-QueryWatch::QueryWatch(mongoc_client_pool_t *client_pool)
-		: client_pool_(client_pool),
-		  isRunning_(false),
-		  thread_(nullptr) {
-	// TODO: consider using one thread per collection,
-	//       _and_ one stream per collection.
-	//       then build a composite $match covering all
-	//       watch requests.
-	//       finally do some processing client side to decide
-	//       which callback must be notified.
-	// TODO: special handling for remove events as they do not
-	//       provide the values $match cannot be used
+QueryWatch::QueryWatch()
+		: isRunning_(false),
+		  thread_(nullptr),
+		  watchRate_(200) {
 }
 
 QueryWatch::~QueryWatch() {
@@ -61,17 +45,14 @@ void QueryWatch::stopWatchThread() {
 }
 
 long QueryWatch::watch(
-		const std::string_view &database,
-		const std::string_view &collection,
+		const std::shared_ptr<Collection> &collection,
 		const bson_t *query,
 		const ChangeStreamCallback &callback) {
 	auto next_id = (id_counter_++);
 	// add to map
 	{
 		std::lock_guard<std::mutex> guard(lock_);
-		watcher_map_.emplace(next_id, std::make_unique<ChangeStream>(
-				client_pool_, database, collection,
-				next_id, query, callback));
+		watcher_map_.emplace(next_id, std::make_unique<ChangeStream>(collection, query, callback));
 	}
 	// start the thread when the first watch is added
 	startWatchThread();
@@ -90,13 +71,6 @@ void QueryWatch::unwatch(long watcher_id) {
 }
 
 void QueryWatch::loop() {
-	// bind a Prolog engine to this thread.
-	// this is needed as callback's are predicates in the
-	// Prolog knowledge base.
-	if (!PL_thread_attach_engine(nullptr)) {
-		KB_ERROR("failed to attach engine!");
-		isRunning_ = false;
-	}
 	// loop as long isRunning_=true
 	auto next = std::chrono::system_clock::now();
 	while (isRunning_) {
@@ -112,7 +86,7 @@ void QueryWatch::loop() {
 			}
 		}
 		// try to run at constant rate
-		next += std::chrono::milliseconds(WATCH_RATE_MS);
+		next += std::chrono::milliseconds(watchRate_);
 		std::this_thread::sleep_until(next);
 	}
 }

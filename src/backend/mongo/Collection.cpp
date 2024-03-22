@@ -18,8 +18,8 @@ static const mongoc_update_flags_t UPDATE_NO_VALIDATE_FLAG =
 
 Collection::Collection(
 		const std::shared_ptr<Connection> &connection,
-		const std::string_view &databaseName,
-		const std::string_view &collectionName)
+		std::string_view databaseName,
+		std::string_view collectionName)
 		: connection_(connection),
 		  name_(collectionName),
 		  dbName_(databaseName),
@@ -212,11 +212,11 @@ void Collection::createAscendingIndex(const std::vector<const char *> &keys) {
 void Collection::createIndex(const std::vector<IndexKey> &keys) {
 	bson_t b_keys;
 	bson_init(&b_keys);
-	for (auto key: keys) {
-		if (key.ascending) {
-			BSON_APPEND_INT32(&b_keys, key.value, 1);
+	for (auto &key: keys) {
+		if (key.type == IndexType::ASCENDING) {
+			BSON_APPEND_INT32(&b_keys, key.value.c_str(), 1);
 		} else {
-			BSON_APPEND_INT32(&b_keys, key.value, -1);
+			BSON_APPEND_INT32(&b_keys, key.value.c_str(), -1);
 		}
 	}
 	createIndex_internal(b_keys);

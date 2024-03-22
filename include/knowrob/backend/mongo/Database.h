@@ -1,7 +1,4 @@
-/* 
- * Copyright (c) 2020, Daniel Beßler
- * All rights reserved.
- * 
+/*
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -12,21 +9,20 @@
 #include <memory>
 #include <string>
 #include <mongoc.h>
-#define PL_SAFE_ARG_MACROS
-#include <SWI-cpp.h>
+#include "Index.h"
 
 namespace knowrob::mongo {
     /**
-     * A MongoDB database that can be accessed via a URI.
+     * A named database in a Mongo DB instance.
      */
     class Database {
     public:
-        Database(mongoc_client_pool_t *pool, const std::string &db_name);
+        Database(mongoc_client_pool_t *pool, std::string_view db_name);
         ~Database();
 
         mongoc_database_t* db() { return db_; }
 
-        bool create_index(const char *coll_name, const PlTerm &keys_pl);
+        bool create_index(const char *coll_name, const std::vector<IndexKey> &indexes);
 
     private:
         mongoc_client_pool_t *pool_;

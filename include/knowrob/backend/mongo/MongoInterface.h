@@ -1,7 +1,4 @@
-/* 
- * Copyright (c) 2020, Daniel Beßler
- * All rights reserved.
- * 
+/*
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -44,9 +41,6 @@ namespace knowrob::mongo {
         void cursor_destroy(const char *curser_id);
 
         std::shared_ptr<Cursor> cursor(const char *curser_id);
-
-
-
 
     private:
         MongoInterface();

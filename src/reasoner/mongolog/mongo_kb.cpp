@@ -84,7 +84,22 @@ PREDICATE(mng_distinct_values_json,4) {
 }
 
 PREDICATE(mng_index_create_core, 3) {
-	return MongoInterface::get().connect(PL_A1)->create_index((char*)PL_A2,PL_A3);
+	static const PlAtom ATOM_minus("-");
+
+	std::vector<mongo::IndexKey> indexes;
+	PlTail pl_list(PL_A3);
+	PlTerm pl_member;
+	while (pl_list.next(pl_member)) {
+		const PlAtom mode_atom(pl_member.name());
+		const PlTerm &pl_value = pl_member[1];
+		if (mode_atom == ATOM_minus) {
+			indexes.emplace_back((char *) pl_value, mongo::IndexType::DESCENDING);
+		} else {
+			indexes.emplace_back((char *) pl_value, mongo::IndexType::ASCENDING);
+		}
+	}
+
+	return MongoInterface::get().connect(PL_A1)->create_index((char*)PL_A2,indexes);
 }
 
 

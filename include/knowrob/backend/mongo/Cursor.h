@@ -13,7 +13,7 @@
 
 namespace knowrob::mongo {
 	/**
-	 * A getAnswerCursor that iterates over different results of a query.
+	 * An abstraction for MongoDB answer cursors.
 	 */
 	class Cursor {
 	public:
@@ -24,12 +24,12 @@ namespace knowrob::mongo {
 		~Cursor();
 
 		/**
-		 * @return the unique id of this getAnswerCursor.
+		 * @return the unique id of this Cursor.
 		 */
 		const auto &id() { return id_; };
 
 		/**
-		 * Limit results produced by this getAnswerCursor.
+		 * Limit results produced by this Cursor.
 		 * @param limit the maximum number of results.
 		 */
 		void limit(unsigned int limit);
@@ -53,7 +53,7 @@ namespace knowrob::mongo {
 		void filter(const bson_t *query_doc);
 
 		/**
-		 * Run an aggregation pipeline to obtain results for this getAnswerCursor.
+		 * Run an aggregation pipeline to obtain results for this Cursor.
 		 * @param query_doc
 		 */
 		void aggregate(const bson_t *query_doc);
@@ -67,13 +67,13 @@ namespace knowrob::mongo {
 		bool next(const bson_t **doc, bool ignore_empty = false);
 
 		/**
-		 * Erase all documents that are result documents of this getAnswerCursor.
+		 * Erase all documents that are result documents of this Cursor.
 		 * @return true on success.
 		 */
 		bool erase();
 
 		/**
-		 * @return the bson_t object associated to this getAnswerCursor.
+		 * @return the bson_t object associated to this Cursor.
 		 */
 		const auto *query() const { return query_; }
 

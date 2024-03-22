@@ -3,7 +3,6 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <sstream>
 #include "knowrob/backend/mongo/aggregation/triples.h"
 #include "knowrob/semweb/ImportHierarchy.h"
 #include "knowrob/Logger.h"
@@ -262,16 +261,6 @@ static void nonTransitiveLookup(
 		// TODO: set ignoreEmpty=true if lookupData.expr->isOptional(), but it might be that some of below code will
 		//       fail if next has no triple data.
 		pipeline.unwind("$next");
-		// compute the intersection of time interval so far with time interval of next triple.
-		// note that the operations works fine in case the time interval is undefined.
-		// TODO: below time interval computation is only ok assuming the statements are not "occasional"
-		//intersectTimeInterval(pipeline,
-		//					  "$next.scope.time.since",
-		//					  "$next.scope.time.until");
-		// then verify that the scope is non-empty.
-		//matchSinceBeforeUntil(pipeline);
-		// remember if one of the statements used to draw the answer is uncertain
-		//updateUncertainFlag(pipeline);
 		// project new variable groundings
 		setTripleVariables(pipeline, lookupData);
 	}
@@ -398,14 +387,6 @@ static void transitiveLookup(
 		pipeline.appendStageEnd(matchEnd);
 	}
 
-	// compute the intersection of time interval so far with time interval of next triple.
-	// note that the operations work fine in case the time interval is undefined.
-	// FIXME: intersection need to be performed over all transitions in graph lookup
-	//intersectTimeInterval(pipeline,
-	//					  "$next.scope.time.since",
-	//					  "$next.scope.time.until");
-	// then verify that the scope is non-empty.
-	//matchSinceBeforeUntil(pipeline);
 	// project new variable groundings
 	setTripleVariables(pipeline, lookupData);
 	// remove next field again: { $unset: "next" }

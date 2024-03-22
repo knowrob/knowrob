@@ -282,7 +282,6 @@ mng_dump(DB,Dir) :-
 	mng_dump(DB,Dir,_).
 
 mng_dump(DB,Dir,Output) :-
-    % TODO should be moved into mongolog
 	mongolog_database:mongolog_uri(URI),
 	process_create(path(mongodump),
 		[ '--uri', URI, '--db', DB, '--out', Dir ],
@@ -319,7 +318,6 @@ mng_restore(DB,Dir) :-
 	mng_restore(DB,Dir,_).
 
 mng_restore(DB,Dir,Output) :-
-    % TODO should be moved into mongolog
 	mongolog_database:mongolog_uri(URI),
 	process_create(path(mongorestore),
 		[ '--uri', URI, '--db', DB, '--dir', Dir, '--quiet' ],
