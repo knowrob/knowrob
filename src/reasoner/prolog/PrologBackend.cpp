@@ -146,5 +146,16 @@ void PrologBackend::query(const GraphQueryPtr &query, const BindingsHandler &cal
 }
 
 void PrologBackend::count(const ResourceCounter &callback) const {
-	// TODO: implement PrologBackend::count
+	// :- sw_resource_frequency(-Resource, -Frequency)
+	static const auto freq_f = "sw_resource_frequency";
+	static auto var_res = std::make_shared<Variable>("resource");
+	static auto var_freq = std::make_shared<Variable>("frequency");
+
+	PROLOG_ENGINE_QUERY(PrologTerm(freq_f), [&callback](const BindingsPtr &bindings) {
+		auto val_res = bindings->getAtomic(var_res->name());
+		auto val_freq = bindings->getAtomic(var_freq->name());
+		if (val_res && val_freq && val_freq->isNumeric()) {
+			callback(val_res->stringForm(), std::static_pointer_cast<Numeric>(val_freq)->asInteger());
+		}
+	});
 }

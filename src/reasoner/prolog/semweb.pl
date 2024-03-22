@@ -34,6 +34,10 @@
       sw_literal_max/3,         % +Literal1, +Literal2, ?Max
       sw_literal_min/3,         % +Literal1, +Literal2, ?Min
 
+      sw_resource_frequency/2,  % ?Resource, ?Frequency
+      sw_class_frequency/2,     % ?Cls, ?Frequency
+      sw_property_frequency/2,  % ?Property, ?Frequency
+
       sw_origin_any/1,          % ?Origin
       sw_origin_system/1, 		% ?Origin
       sw_origin_session/1, 		% ?Origin
@@ -206,6 +210,28 @@ sw_literal_max(Literal1, Literal2, Max) :-
 	->  Max=Literal1
 	;   Max=Literal2
 	).
+
+%% sw_resource_frequency(?Resource, -Frequency) is nondet.
+%
+sw_resource_frequency(Resource, Frequency) :-
+	sw_class_frequency(Resource, Frequency) ;
+	sw_property_frequency(Resource, Frequency).
+
+%% sw_class_frequency(?Cls, -Frequency) is nondet.
+%
+sw_class_frequency(Cls, Frequency) :-
+	rdf_has(Cls, rdf:type, owl:'Class'),
+	findall([S,P], rdf_has(S, P, Cls), Xs),
+	length(Xs, Frequency).
+
+%% sw_property_frequency(?Property, -Frequency) is nondet.
+%
+sw_property_frequency(Property, Frequency) :-
+	( rdf_has(Property, rdf:type, owl:'ObjectProperty')
+	; rdf_has(Property, rdf:type, owl:'DatatypeProperty')
+	),
+	findall([S,O], rdf_has(S, Property, O), Xs),
+	length(Xs, Frequency).
 
 %%
 %post_graph(Subject, RealPredicate, Object) :-
