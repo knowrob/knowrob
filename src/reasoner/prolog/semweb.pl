@@ -12,10 +12,8 @@
 
       sw_assert_triple(r,t,t),     % +Subject, +Predicate, +Object
       sw_assert_triple(r,t,t,r),   % +Subject, +Predicate, +Object, +Graph
-      sw_assert_triple(r,t,t,r,t), % +Subject, +Predicate, +Object, +Graph, +Scope
       sw_assert_type(r,t),         % +Resource, +Class
       sw_assert_type(r,t,r),       % +Resource, +Class, +Graph
-      sw_assert_type(r,t,r,t),     % +Resource, +Class, +Graph, +Scope
 
       sw_url/4,                    % +URL, ?ResolvedURL, ?OntologyGraph, ?OntologyVersion
       sw_url_graph/2,              % +URL, ?OntologyGraph
@@ -91,8 +89,6 @@ annotation_property('http://www.w3.org/2000/01/rdf-schema#seeAlso').
 annotation_property('http://www.w3.org/2000/01/rdf-schema#label').
 annotation_property('http://www.w3.org/2002/07/owl#versionInfo').
 
-% TODO: support temporally scoped predicates
-% TODO: support fuzzy predicates
 % TODO: set predicate properties, rdf_db supports some
 %   - rdf_predicate_property(?Predicate, ?Property)
 %       - symmetric(Bool), inverse_of(Inverse), transitive(Bool)
@@ -117,7 +113,6 @@ sw_triple(Subject, Predicate, Object) :-
 %
 sw_triple(Subject, Predicate, Object, _Context) :-
     atom(Object),!,
-    % TODO: better check if it is datatype property, and query literal in this case?
     rdf_has(Subject, Predicate, Object).
 
 sw_triple(Subject, Predicate, Object, _Context) :-
@@ -526,8 +521,7 @@ subclass_expr2(min(Card1,Property1), min(Card2,Property2)) :-
 
 %% sw_assert_triple(+Subject, +Predicate, +Object) is det.
 %
-% Same as sw_assert_triple/5 but asserts a universal (unscoped) fact
-% into the default graph (see sw_default_graph/1).
+% Same as sw_assert_triple/4 but asserts into the default graph (see sw_default_graph/1).
 %
 sw_assert_triple(Subject, Predicate, Object) :-
     sw_default_graph(Graph),
@@ -535,19 +529,10 @@ sw_assert_triple(Subject, Predicate, Object) :-
 
 %% sw_assert_triple(+Subject, +Predicate, +Object, +Graph) is det.
 %
-% Same as sw_assert_triple/5 but asserts a universal (unscoped) fact.
-%
-sw_assert_triple(Subject, Predicate, Object, Graph) :-
-    %sw_universal_scope(Scope),
-    sw_assert_triple(Subject, Predicate, Object, Graph, _).
-
-%% sw_assert_triple(+Subject, +Predicate, +Object, +Graph, +Scope) is det.
-%
 % Assert a new triple into the database.
 %
-sw_assert_triple(Subject, Predicate, Object, Graph, _Scope) :-
+sw_assert_triple(Subject, Predicate, Object, Graph) :-
     atom(Subject), atom(Predicate), ground(Object),!,
-    % todo: support scoped assertions
     (  rdfs_individual_of(Predicate,owl:'DatatypeProperty')
     -> sw_assert_dataproperty(Subject, Predicate, Object, Graph)
     ;  sw_assert_objectproperty(Subject, Predicate, Object, Graph)
@@ -584,8 +569,7 @@ sw_assert_dataproperty(Subject, Predicate, Atomic, Graph) :-
 
 %% sw_assert_type(+Resource, +Class) is semidet.
 %
-% Same as sw_assert_type/4 but only asserts universal (unscoped) facts
-% into see default graph (see sw_default_graph/1).
+% Same as sw_assert_type/3 but asserts into see default graph (see sw_default_graph/1).
 %
 sw_assert_type(Resource, Class) :-
     sw_default_graph(Graph),
@@ -593,19 +577,9 @@ sw_assert_type(Resource, Class) :-
 
 %% sw_assert_type(+Resource, +Class, +Graph) is semidet.
 %
-% Same as sw_assert_type/4 but only asserts universal (unscoped) facts.
-%
-sw_assert_type(Resource, Class, Graph) :-
-    %sw_universal_scope(Scope),
-    sw_assert_type(Resource, Class, Graph, _).
-
-%% sw_assert_type(+Resource, +Class, +Graph, +Scope) is semidet.
-%
 % Assert a new triple into the database that uses the rdf:type predicate.
 %
-sw_assert_type(Resource, Class, Graph, _Scope) :-
-    % todo: support class expressions
-    % todo: support scoped classification
+sw_assert_type(Resource, Class, Graph) :-
     atom(Class),
     atom(Resource),!,
     rdf_assert(Resource, rdf:type, Class, Graph).

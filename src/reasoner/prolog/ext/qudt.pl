@@ -35,14 +35,6 @@ qudt_unit(Symbol, Kind, Multiplier, Offset) :-
 	atom_number(MultiplierA,Multiplier),
 	atom_number(OffsetA,Offset).
 
-%%
-% Define SI unit symbols as operator.
-% FIXME: this is a bit risky, I think. Could there be an operator clash?
-%
-:- forall(
-		qudt_unit(Symbol,_,_,_),
-		op(1000, xf, user:(Symbol))).
-
 %% qudt_conv(+SymbolI,+SymbolO,+ValueI,-ValueO) is semidet.
 %
 % Convert a value to another unit of the same kind.

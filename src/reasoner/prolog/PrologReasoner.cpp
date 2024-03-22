@@ -58,7 +58,6 @@ bool PrologReasoner::loadConfig(const PropertyTree &cfg) {
 	// call PL_initialize
 	PrologEngine::initializeProlog();
 
-	// TODO: move below into PrologEngine::initializeProlog
 	if (!isKnowRobInitialized_) {
 		isKnowRobInitialized_ = true;
 		// auto-load some files into "user" module
@@ -251,7 +250,6 @@ AnswerYesPtr PrologReasoner::yes(const FramedTriplePatternPtr &literal,
 
 	// TODO: set flag to indicate if answer is well-founded or not.
 	//       if prolog was using negation as failure, the answer is not well-founded.
-	// TODO: allow frame-specification on per-literal basis?
 
 	// set the solution scope, if reasoner specified it
 	auto answerFrame_rw = createAnswerFrame(answerFrameTerm);

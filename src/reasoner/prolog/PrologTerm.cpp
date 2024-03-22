@@ -359,7 +359,6 @@ bool PrologTerm::putFunction(Function *fn, term_t pl_term) { //NOLINT
 			pl_arg += 1;
 		}
 		// construct output term
-		// TODO: caching result of PL_new_functor() could be a good idea
 		return PL_cons_functor_v(pl_term,
 								 PL_new_functor(
 										 PL_new_atom(fn->functor()->stringForm().data()),
@@ -687,53 +686,6 @@ std::string PrologTerm::getVarName(term_t plTerm) {
 	}
 }
 
-void PrologTerm::readVars(term_t plTerm) {
-	std::stack<term_t> stack;
-	stack.push(plTerm);
-
-	while (!stack.empty()) {
-		term_t t = stack.top();
-		stack.pop();
-
-		switch (PL_term_type(t)) {
-			case PL_VARIABLE: {
-				vars_[getVarName(t)] = t;
-				break;
-			}
-			case PL_DICT: {
-				// TODO: support Prolog dicts. but not sure how to iterate over them. there is just:
-				//       `int PL_get_dict_key(atom_t key, term_t +dict, term_t -value)`
-				//       Maybe PL_get_name_arity and PL_get_arg can be used just like in the compound case below?
-				//       if this is the case both types could be handled in the same way.
-				KB_WARN("PrologTerm::readVars: PL_DICT not supported.");
-				break;
-			}
-			case PL_TERM: { // A compound term
-				size_t arity;
-				atom_t name;
-				if (PL_get_name_arity(t, &name, &arity)) {
-					for (int n = 1; n <= arity; n++) {
-						term_t arg = PL_new_term_ref();
-						if (PL_get_arg(n, t, arg)) {
-							stack.push(arg);
-						}
-					}
-				}
-				break;
-			}
-			case PL_LIST_PAIR: {
-				term_t head = PL_new_term_ref();
-				while (PL_get_list(t, head, t)) {
-					stack.push(head);
-				}
-				break;
-			}
-			default: // grounded term -> no vars
-				break;
-		}
-	}
-}
-
 TermPtr PrologTerm::toKnowRobTerm() const {
 	return toKnowRobTerm(plTerm_);
 }
@@ -823,8 +775,6 @@ TermPtr PrologTerm::toKnowRobTerm(const term_t &t) { //NOLINT
 		case PL_ATOM: {
 			atom_t atom;
 			if (!PL_get_atom(t, &atom)) break;
-			// TODO: maybe below rather needs to be handled in the predicate case?
-			//   not sure if predicates with arity 0 generally appear here as atoms...
 			// map `fail/0` and `false/0` to BottomTerm
 			if (atom == PrologTerm::ATOM_fail() || atom == PrologTerm::ATOM_false()) {
 				return Bottom::get()->functor();
@@ -834,7 +784,6 @@ TermPtr PrologTerm::toKnowRobTerm(const term_t &t) { //NOLINT
 				return Top::get()->functor();
 			} else {
 				std::string_view charForm = PL_atom_chars(atom);
-				// TODO: support that Prolog returns typed literals instead of guessing the type
 				switch (rdfNodeTypeGuess(charForm)) {
 					case RDFNodeType::BLANK:
 						return Blank::Tabled(charForm);

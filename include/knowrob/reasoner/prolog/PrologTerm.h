@@ -264,8 +264,6 @@ namespace knowrob {
 		bool isRDFTerm_ = false;
 		bool isRDFFilter_ = false;
 
-		void readVars(term_t plTerm);
-
 		bool putFormula(const FormulaPtr &phi, term_t plTerm);
 
 		bool putFunction(Function *fn, term_t pl_term);

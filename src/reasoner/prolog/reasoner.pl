@@ -274,12 +274,12 @@ expand_instantiations1(forall(Cond,Action),
 expand_instantiations1(Head, Expanded, Xs-Ys) :-
     % meta predicates like `call/1`, `once/1`, `->\2` that receive a goal as an argument,
     % and where the goal argument can be recursively expanded.
-    % TODO: findall-family of predicates cannot change the list of instantiations in their goal argument.
+    % NOTE: findall-family of predicates cannot change the list of instantiations in their goal argument.
     %   in fact, each predicate would need to appear in the pattern of the findall such that it is
     %   recorded. Hence, findall-family of predicates need in addition a rewriting of the pattern
     %   argument, adding the list of instantiations. but the meaning would not be clear. and also
     %   uses of the list would need to be rewritten. seems difficult.
-    %   currently instantations made during the evaluation of findall predicates
+    %   hence, currently instantations made during the evaluation of findall predicates
     %   are not included in the Instantiations list.
 	user:predicate_property(Head, defined),
 	user:predicate_property(Head, meta_predicate(MetaSpecifier)), !,

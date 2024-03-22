@@ -23,51 +23,37 @@
 % define reasoner settings.
 :- reasoner_setting(swrl:knowledgeGraph, atom, prolog, 'Must be one of `prolog` or `mongolog`').
 
-%% swrl_call(+Goals, +Ctx) is nondet.
+%% swrl_call(+Goals) is nondet.
 %
 % The call is restricted to the current reasoner context.
 % Thus results of other reasoners are only incorparated as long
 % as they are stored in the data backend that is used by the SWRL reasoner.
 %
-/*
-swrl_call(Goals, Ctx) :-
-    reasoner_setting(swrl:backend, mongolog),!,
-    % TODO: check if correct, call comma_list?
-    mongolog:mongolog_call(Goals, Ctx).
-*/
-
-swrl_call(Goals, _Ctx) :-
+swrl_call(Goals) :-
     is_list(Goals),!,
     comma_list(Goal,Goals),
     current_reasoner_module(Reasoner),
-    % TODO: scoped query.
     Reasoner:call(Goal).
 
-swrl_call(Goal, _Ctx) :-
+swrl_call(Goal) :-
     throw(error(type_error(goal, Goal), swrl_call(Goal))).
 
 %%
 % True when S is a currently known subject.
 %
 swrl_subject(Resource) :-
-    % TODO mongolog
-    %kb_call(triple(Iri,rdf:type,_)),
     rdf_subject(Resource),
     !.
 
 %%
 %
 swrl_data_property(P) :-
-    % TODO mongolog
-	%has_type(P, owl:'DatatypeProperty').
     rdfs_individual_of(P, owl:'DatatypeProperty'),
     !.
 
 %%
 %
 swrl_object_property(P) :-
-    % TODO mongolog
-	%has_type(P, owl:'ObjectProperty').
     rdfs_individual_of(P, owl:'ObjectProperty'),
     !.
 
@@ -106,11 +92,7 @@ swrl_fire(Head :- Body, Label) :-
 swrl_fire1(SWRLRule, Label) :-
 	% translate into a Prolog rule
 	swrl_rule_pl_(SWRLRule, Label, (:-(Impl_pl,Cond_pl))),
-	% include all scopes
-	query_scope_now(QScope),
-	% TODO: add graph to call
-	forall(swrl_call(Cond_pl, [query_scope(QScope), solution_scope(FScope)]),
-	       swrl_assert_fact(Impl_pl, FScope)).
+	forall(swrl_call(Cond_pl), swrl_assert_fact(Impl_pl)).
 
 %% swrl_assert_rule(+Rule).
 %
@@ -143,40 +125,24 @@ swrl_assert_rule1(SWRLRule, Label) :-
 	swrl_assert_rule2(Expanded).
 
 %%
-/*
-swrl_assert_rule2(Rule) :-
-    reasoner_setting(swrl:backend, mongolog),!,
-    % TODO: mongolog
-    mongolog:mongolog_assert_rule(Rule).
-*/
-
 swrl_assert_rule2(Rule) :-
 	current_reasoner_module(ReasonerModule),
 	ReasonerModule:assertz(Rule).
 
-%% swrl_assert_fact(+Term, +Scope) is semidet.
+%% swrl_assert_fact(+Term) is semidet.
 %
-/*
-swrl_assert_fact(Term, Scope) :-
-    reasoner_setting(swrl:backend, mongolog),!,
-    % TODO: mongolog
-    mongolog:mongolog_project(Term, Scope).
-*/
-
-swrl_assert_fact(instance_of(S,class(Cls)), Scope) :-
+swrl_assert_fact(instance_of(S,class(Cls))) :-
     !,
-    swrl_assert_fact(instance_of(S,Cls), Scope).
-swrl_assert_fact(instance_of(S,Cls), _Scope) :-
+    swrl_assert_fact(instance_of(S,Cls)).
+swrl_assert_fact(instance_of(S,Cls)) :-
     (atom(Cls);compound(Cls)),!,
-    % TODO: scoped assertion
     sw_assert_type(S,Cls).
 
-swrl_assert_fact(triple(S,P,O), _Scope) :-
+swrl_assert_fact(triple(S,P,O)) :-
     atom(S), atom(P), ground(O),!,
-    % TODO: scoped assertion
     sw_assert_triple(S,P,O).
 
-swrl_assert_fact(Predicate, _Scope) :-
+swrl_assert_fact(Predicate) :-
     throw(error(type_error(predicate, Predicate), swrl_assert_fact(Predicate))).
 
 %% swrl_rule_pl
