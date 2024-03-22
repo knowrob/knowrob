@@ -476,31 +476,18 @@ static void transitiveLookup(
 	pipeline.appendStageEnd(lookupStage);
 
 	// $graphLookup does not ensure order, so we need to order by recursion depth in a separate step
-	// TODO: mongo v5.2 has $sortArray that could replace below $lookup
-	bson_t letDoc, orderingArray;
-	auto orderingStage = pipeline.appendStageBegin("$lookup");
-	BSON_APPEND_UTF8(orderingStage, "from", "one");
-	BSON_APPEND_UTF8(orderingStage, "as", "t_sorted");
-	// pass "t_paths" field to lookup pipeline
-	BSON_APPEND_DOCUMENT_BEGIN(orderingStage, "let", &letDoc);
-	BSON_APPEND_UTF8(&letDoc, "t_paths", "$t_paths");
-	bson_append_document_end(orderingStage, &letDoc);
-	BSON_APPEND_ARRAY_BEGIN(orderingStage, "pipeline", &orderingArray);
-	{
-		Pipeline orderingPipeline(&orderingArray);
-		// { $set: { t_paths: "$$t_paths") } }
-		auto setStage = orderingPipeline.appendStageBegin("$set");
-		BSON_APPEND_UTF8(orderingStage, "t_paths", "$$t_paths");
-		orderingPipeline.appendStageEnd(setStage);
-		// { $unwind: $t_paths }
-		orderingPipeline.unwind("$t_paths");
-		// { $replaceRoot: { newRoot: "$t_paths" } }
-		orderingPipeline.replaceRoot("$t_paths");
-		// { $sort: { depth: 1 } }
-		orderingPipeline.sortAscending("depth");
-	}
-	bson_append_document_end(orderingStage, &orderingArray);
-	pipeline.appendStageEnd(orderingStage);
+	// t_sorted = { $sortArray: { input: "$t_paths", sort: { depth: 1 } } }
+	bson_t setSortedDoc, sortArrayDoc, sortByDoc;
+	auto setSortedStage = pipeline.appendStageBegin("$set");
+	BSON_APPEND_DOCUMENT_BEGIN(setSortedStage, "t_sorted", &setSortedDoc);
+	BSON_APPEND_DOCUMENT_BEGIN(&setSortedDoc, "$sortArray", &sortArrayDoc);
+	BSON_APPEND_UTF8(&sortArrayDoc, "input", "$t_paths");
+	BSON_APPEND_DOCUMENT_BEGIN(&sortArrayDoc, "$sortArray", &sortByDoc);
+	BSON_APPEND_INT32(&sortByDoc, "depth", 1);
+	bson_append_document_end(&sortArrayDoc, &sortByDoc);
+	bson_append_document_end(&setSortedDoc, &sortArrayDoc);
+	bson_append_document_end(setSortedStage, &setSortedDoc);
+	pipeline.appendStageEnd(setSortedStage);
 
 	// { $set: { next: "$t_sorted" } }
 	auto setNext = pipeline.appendStageBegin("$set");
