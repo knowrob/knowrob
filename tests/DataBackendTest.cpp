@@ -13,6 +13,8 @@
 #include "knowrob/reification/ReifiedTriple.h"
 #include "knowrob/reasoner/prolog/PrologEngine.h"
 #include "knowrob/backend/BackendInterface.h"
+#include "knowrob/reasoner/prolog/PrologBackend.h"
+#include "knowrob/reasoner/prolog/PrologReasoner.h"
 
 using namespace knowrob;
 using namespace knowrob::mongo;
@@ -36,6 +38,13 @@ template<> std::shared_ptr<RedlandModel> createBackend<RedlandModel>() {
 	auto kg = std::make_shared<RedlandModel>();
 	kg->setVocabulary(std::make_shared<Vocabulary>());
 	kg->setHashesStorage(RedlandHashType::MEMORY);
+	kg->initializeBackend();
+	return kg;
+}
+
+template<> std::shared_ptr<PrologBackend> createBackend<PrologBackend>() {
+	auto kg = std::make_shared<PrologBackend>();
+	kg->setVocabulary(std::make_shared<Vocabulary>());
 	kg->initializeBackend();
 	return kg;
 }
@@ -113,7 +122,7 @@ static FramedTriplePattern parse(const std::string &str) {
 	return {p->arguments()[0], p->arguments()[1], p->arguments()[2], false};
 }
 
-using TestableBackends = ::testing::Types<RedlandModel, MongoKnowledgeGraph>;
+using TestableBackends = ::testing::Types<RedlandModel, PrologBackend, MongoKnowledgeGraph>;
 TYPED_TEST_SUITE(DataBackendTest, TestableBackends);
 
 #define TEST_LOOKUP(x) DataBackendTest<TypeParam>::lookup(x)

@@ -12,9 +12,14 @@
 #include "knowrob/formulas/CompoundFormula.h"
 #include "knowrob/triples/FramedTriple.h"
 #include "knowrob/triples/FramedTriplePattern.h"
+#include "knowrob/triples/GraphQuery.h"
+#include "knowrob/triples/GraphBuiltin.h"
 #include "knowrob/terms/Function.h"
 #include "knowrob/terms/ListTerm.h"
 #include <iostream>
+
+//#define KNOWROB_USE_PROLOG_RDF11
+#define KNOWROB_USE_PROLOG_RDF_DB
 
 namespace knowrob {
 	/**
@@ -74,6 +79,18 @@ namespace knowrob {
 		PrologTerm();
 
 		/**
+		 * Generates a Prolog term holding a graph term.
+		 * @param kbTerm a graph term
+		 */
+		explicit PrologTerm(const GraphQueryPtr &query);
+
+		/**
+		 * Generates a Prolog term holding a KnowRob term.
+		 * @param kbTerm a KnowRob term
+		 */
+		explicit PrologTerm(const std::shared_ptr<GraphTerm> &kbTerm);
+
+		/**
 		 * Generates a Prolog term holding a KnowRob term.
 		 * @param kbTerm a KnowRob term
 		 */
@@ -88,7 +105,7 @@ namespace knowrob {
 		/**
 		 * @param literal an RDF literal
 		 */
-		explicit PrologTerm(const FramedTriplePattern &literal);
+		explicit PrologTerm(const FramedTriplePattern &literal, const char *triple_functor);
 
 		/**
 		 * Generates a Prolog term holding a KnowRob triple.
@@ -131,6 +148,18 @@ namespace knowrob {
 		PrologTerm operator&(const PrologTerm &other) const;
 
 		/**
+		 * @param other a term handle
+		 * @return the disjunction of the two terms
+		 */
+		PrologTerm operator|(const PrologTerm &other) const;
+
+		/**
+		 * @param other a term handle
+		 * @return the negation of the term
+		 */
+		PrologTerm operator~() const;
+
+		/**
 		 * @param module the module to query
 		 */
 		void setModule(std::string_view module) { module_ = module; }
@@ -152,6 +181,12 @@ namespace knowrob {
 		 * @return true if the term was assigned to the KnowRob term
 		 */
 		bool putTerm(const TermPtr &kbTerm);
+
+		/**
+		 * @param kbTerm a KnowRob term
+		 * @return true if the term was assigned to the KnowRob term
+		 */
+		bool putTerm(const std::shared_ptr<GraphTerm> &kbTerm);
 
 		/**
 		 * @param kbFormula a KnowRob formula
@@ -180,7 +215,7 @@ namespace knowrob {
 		 * @param qid the query id
 		 * @return true if the query has a next solution
 		 */
-		bool nextSolution(qid_t qid) const;
+		static bool nextSolution(qid_t qid) ;
 
 		/**
 		 * @return translates the term to a KnowRob term
@@ -215,10 +250,19 @@ namespace knowrob {
 		 */
 		static PrologTerm nil();
 
+		/**
+		 * @param os an output stream
+		 * @param t a Prolog term
+		 * @return true if the term was displayed
+		 */
+		static bool display(std::ostream &os, term_t t);
+
 	protected:
 		std::map<std::string, term_t, std::less<>> vars_;
 		std::optional<std::string_view> module_;
 		term_t plTerm_;
+		bool isRDFTerm_ = false;
+		bool isRDFFilter_ = false;
 
 		void readVars(term_t plTerm);
 
@@ -231,6 +275,20 @@ namespace knowrob {
 		bool putTerm(const TermPtr &kbTerm, term_t plTerm);
 
 		bool putCompound(CompoundFormula *phi, term_t pl_term, const functor_t &pl_functor);
+
+		bool putCompoundTerm(term_t plTerm, std::string_view functor, const std::vector<PrologTerm> &args);
+
+		bool putTerm(const std::shared_ptr<GraphTerm> &term, term_t plTerm);
+
+		bool putTriplePattern(const FramedTriplePattern &pattern, const char *functor, term_t plTerm);
+
+		static bool putNativeAtomic(const std::shared_ptr<Atomic> &atomic, term_t pl_term);
+
+		bool putRDFAtomic(const std::shared_ptr<Atomic> &atomic, term_t pl_term) const;
+
+		bool putBuiltin(const std::shared_ptr<GraphBuiltin> &builtin, term_t plTerm);
+
+		void unifyVars(const PrologTerm &other);
 
 		template<typename ... Args>
 		std::vector<PrologTerm> readArgs(Args &&... args) {
@@ -250,5 +308,9 @@ namespace knowrob {
 	};
 
 } // knowrob
+
+namespace std {
+	std::ostream &operator<<(std::ostream &os, const knowrob::PrologTerm &t);
+}
 
 #endif //KNOWROB_PROLOG_TERM_H
