@@ -34,30 +34,11 @@ static const int prologQueryFlags = PL_Q_CATCH_EXCEPTION | PL_Q_NODEBUG;
 // make reasoner type accessible
 KNOWROB_BUILTIN_REASONER("Prolog", PrologReasoner)
 
-foreign_t pl_rdf_register_namespace2(term_t prefix_term, term_t uri_term) {
-	char *prefix, *uri;
-	if (PL_get_atom_chars(prefix_term, &prefix) && PL_get_atom_chars(uri_term, &uri)) {
-		PrefixRegistry::get().registerPrefix(prefix, uri);
-	}
-	return TRUE;
-}
-
-foreign_t url_resolve2(term_t t_url, term_t t_resolved) {
-	char *url;
-	if (PL_get_atom_chars(t_url, &url)) {
-		auto resolved = URI::resolve(url);
-		return PL_unify_atom_chars(t_resolved, resolved.c_str());
-	}
-	return false;
-}
-
 bool PrologReasoner::isKnowRobInitialized_ = false;
 
 PrologReasoner::PrologReasoner() : Reasoner() {
 	addDataHandler("prolog", [this]
 			(const DataSourcePtr &dataFile) { return consult(dataFile->uri()); });
-	//addDataHandler(DataSource::RDF_XML_FORMAT, [this]
-	//		(const DataSourcePtr &dataFile) { return load_rdf_xml(dataFile->uri()); });
 }
 
 PrologReasoner::~PrologReasoner() {
@@ -73,12 +54,6 @@ PrologTerm PrologReasoner::transformGoal(const PrologTerm &goal) {
 	return PrologTerm(callFunctor(), goal, PrologTerm::nil());
 }
 
-bool PrologReasoner::initializeGlobalPackages() {
-	// load some default code into user module
-	return consult(std::filesystem::path("reasoner") / "prolog" / "__init__.pl",
-				   "user", false);
-}
-
 bool PrologReasoner::loadConfig(const PropertyTree &cfg) {
 	// call PL_initialize
 	PrologEngine::initializeProlog();
@@ -86,17 +61,6 @@ bool PrologReasoner::loadConfig(const PropertyTree &cfg) {
 	// TODO: move below into PrologEngine::initializeProlog
 	if (!isKnowRobInitialized_) {
 		isKnowRobInitialized_ = true;
-		// register some foreign predicates, i.e. cpp functions that are used to evaluate predicates.
-		// note: the predicates are loaded into module "user"
-		PL_register_foreign("knowrob_register_namespace",
-							2, (pl_function_t) pl_rdf_register_namespace2, 0);
-		PL_register_foreign("url_resolve",
-							2, (pl_function_t) url_resolve2, 0);
-		PL_register_foreign("log_message", 2, (pl_function_t) prolog::log_message2, 0);
-		PL_register_foreign("log_message", 4, (pl_function_t) prolog::log_message4, 0);
-		PL_register_extensions_in_module("algebra", prolog::PL_extension_algebra);
-		PL_register_extensions_in_module("semweb", prolog::PL_extension_semweb);
-		KB_DEBUG("common foreign Prolog modules have been registered.");
 		// auto-load some files into "user" module
 		initializeGlobalPackages();
 
@@ -223,6 +187,7 @@ TokenBufferPtr PrologReasoner::submitQuery(const FramedTriplePatternPtr &literal
 	// context term options:
 	static const auto query_scope_f = "query_scope";
 	static const auto solution_scope_f = "solution_scope";
+	static const auto triple_f = "triple";
 
 	auto answerBuffer = std::make_shared<TokenBuffer>();
 	auto outputChannel = TokenStream::Channel::create(answerBuffer);
@@ -233,7 +198,7 @@ TokenBufferPtr PrologReasoner::submitQuery(const FramedTriplePatternPtr &literal
 				PrologTerm queryFrame, answerFrame;
 				putQueryFrame(queryFrame, ctx->selector);
 
-				PrologTerm rdfGoal(*literal);
+				PrologTerm rdfGoal(*literal, triple_f);
 				// :- ContextTerm = [query_scope(...), solution_scope(Variable)]
 				PrologList contextTerm({
 											   PrologTerm(query_scope_f, queryFrame),
@@ -439,7 +404,7 @@ std::shared_ptr<GraphSelector> PrologReasoner::createAnswerFrame(const PrologTer
 		if (PL_get_dict_key(occasional_key, plTerm(), scope_val)) {
 			atom_t flagAtom;
 			if (PL_term_type(scope_val) == PL_ATOM && PL_get_atom(scope_val, &flagAtom)) {
-				frame->occasional =  (flagAtom == PrologTerm::ATOM_true());
+				frame->occasional = (flagAtom == PrologTerm::ATOM_true());
 			}
 		}
 

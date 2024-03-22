@@ -40,7 +40,6 @@ namespace knowrob {
 		 * @param goal the work goal
 		 * @return true if the goal succeeded
 		 */
-
 		static bool eval(const GoalFactory &goalFactory);
 
 		/**
@@ -48,7 +47,6 @@ namespace knowrob {
 		 * @param goal the work goal
 		 * @return the first solution found or an empty optional
 		 */
-
 		static std::optional<Solution> oneSolution(const GoalFactory &goalFactory);
 
 		/**
@@ -56,8 +54,23 @@ namespace knowrob {
 		 * @param goal the work goal
 		 * @return all solutions found
 		 */
-
 		static std::vector<Solution> allSolutions(const GoalFactory &goalFactory);
+
+		/**
+		 * Evaluate a goal in a thread with a Prolog engine.
+		 * @param goal the work goal
+		 * @param callback a function that handles the solutions
+		 */
+		static void query(const GoalFactory &goalFactory, const BindingsHandler &callback);
+
+		/**
+		 * Consults a Prolog file, i.e. loads facts and rules and executed
+		 * directives in the file.
+		 * May throw an exception if there is no valid Prolog file at the given path.
+		 * @prologFile the local path to the file.
+		 * @return true on success
+		 */
+		static bool consult(const std::filesystem::path &uri, const char *module = {}, bool doTransformQuery = true);
 
 		/**
 		 * Run a goal in a worker thread with a Prolog engine.
@@ -98,10 +111,11 @@ namespace knowrob {
 		// Override ThreadPool
 		void finalizeWorker() override;
 	};
+}
 
 #define PROLOG_ENGINE_EVAL(term) PrologEngine::eval([&]() { return term; })
 #define PROLOG_ENGINE_ONE_SOL(term) PrologEngine::oneSolution([&]() { return term; })
 #define PROLOG_ENGINE_ALL_SOL(term) PrologEngine::allSolutions([&]() { return term; })
-}
+#define PROLOG_ENGINE_QUERY(term,callback) PrologEngine::query([&]() { return term; }, callback)
 
 #endif //KNOWROB_PROLOG_THREAD_POOL_H_

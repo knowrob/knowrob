@@ -12,6 +12,11 @@
 #include "knowrob/reasoner/prolog/PrologEngine.h"
 #include "knowrob/knowrob.h"
 #include "knowrob/queries/QueryError.h"
+#include "knowrob/reasoner/prolog/logging.h"
+#include "knowrob/reasoner/prolog/ext/algebra.h"
+#include "knowrob/reasoner/prolog/semweb.h"
+#include "knowrob/semweb/PrefixRegistry.h"
+#include "knowrob/URI.h"
 
 using namespace knowrob;
 
@@ -37,6 +42,23 @@ bool PrologEngine::initializeWorker() {
 	}
 }
 
+foreign_t pl_rdf_register_namespace2(term_t prefix_term, term_t uri_term) {
+	char *prefix, *uri;
+	if (PL_get_atom_chars(prefix_term, &prefix) && PL_get_atom_chars(uri_term, &uri)) {
+		PrefixRegistry::registerPrefix(prefix, uri);
+	}
+	return TRUE;
+}
+
+foreign_t url_resolve2(term_t t_url, term_t t_resolved) {
+	char *url;
+	if (PL_get_atom_chars(t_url, &url)) {
+		auto resolved = URI::resolve(url);
+		return PL_unify_atom_chars(t_resolved, resolved.c_str());
+	}
+	return false;
+}
+
 void PrologEngine::initializeProlog() {
 	if (isPrologInitialized_) return;
 	// toggle on flag
@@ -46,7 +68,7 @@ void PrologEngine::initializeProlog() {
 	// I experienced unit tests for Redland failing because of this!
 	// Seems like it is related to parsing of numbers. Setting
 	// LC_NUMERIC to "C" before PL_initialise seems to fix the problem.
-    setenv("LC_NUMERIC", "C", 1);
+	setenv("LC_NUMERIC", "C", 1);
 
 	static int pl_ac = 0;
 	static char *pl_av[5];
@@ -58,8 +80,22 @@ void PrologEngine::initializeProlog() {
 	pl_av[pl_ac++] = (char *) "--signals=false";
 	pl_av[pl_ac] = nullptr;
 	PL_initialise(pl_ac, pl_av);
-
 	KB_DEBUG("Prolog has been initialized.");
+
+	// register some foreign predicates, i.e. cpp functions that are used to evaluate predicates.
+	// note: the predicates are loaded into module "user"
+	PL_register_foreign("knowrob_register_namespace",
+						2, (pl_function_t) pl_rdf_register_namespace2, 0);
+	PL_register_foreign("url_resolve",
+						2, (pl_function_t) url_resolve2, 0);
+	PL_register_foreign("log_message", 2, (pl_function_t) prolog::log_message2, 0);
+	PL_register_foreign("log_message", 4, (pl_function_t) prolog::log_message4, 0);
+	PL_register_extensions_in_module("algebra", prolog::PL_extension_algebra);
+	PL_register_extensions_in_module("semweb", prolog::PL_extension_semweb);
+	KB_DEBUG("common foreign Prolog modules have been registered.");
+
+	consult(std::filesystem::path("reasoner") / "prolog" / "__init__.pl", "user", false);
+	KB_DEBUG("KnowRob __init__.pl has been consulted.");
 }
 
 void PrologEngine::finalizeWorker() {
@@ -133,6 +169,37 @@ std::vector<PrologEngine::Solution> PrologEngine::allSolutions(const GoalFactory
 			}));
 
 	return solutions;
+}
+
+void PrologEngine::query(const GoalFactory &goalFactory, const BindingsHandler &callback) {
+	pushGoalAndJoin(std::make_shared<LambdaRunner>(
+			[&goalFactory, &callback](const LambdaRunner::StopChecker &hasStopRequest) {
+				auto goal = goalFactory();
+				auto qid = goal.openQuery(prologQueryFlags);
+				while (!hasStopRequest() && goal.nextSolution(qid)) {
+					auto bindings = std::make_shared<Bindings>();
+					for (auto &var: goal.vars()) {
+						if (PL_term_type(var.second) == PL_VARIABLE) {
+							continue;
+						}
+						bindings->set(std::make_shared<Variable>(var.first),
+									  PrologTerm::toKnowRobTerm(var.second));
+					}
+					callback(bindings);
+				}
+				PL_close_query(qid);
+			}));
+}
+
+bool PrologEngine::consult(const std::filesystem::path &uri, const char *module, bool doTransformQuery) {
+	static auto consult_f = "consult";
+	auto path = PrologEngine::getPrologPath(uri);
+
+	return PrologEngine::eval([&]() {
+		PrologTerm plTerm(consult_f, path.native());
+		if (module) plTerm.setModule(module);
+		return plTerm;
+	});
 }
 
 std::filesystem::path PrologEngine::getPrologPath(const std::filesystem::path &filePath) {

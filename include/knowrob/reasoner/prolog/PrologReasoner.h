@@ -96,7 +96,7 @@ namespace knowrob {
 		// cache of predicate descriptions
 		std::map<PredicateIndicator, std::shared_ptr<PredicateDescription>> predicateDescriptions_;
 
-		virtual bool initializeGlobalPackages();
+		virtual bool initializeGlobalPackages() { return true; }
 
 		virtual bool initializeDefaultPackages() { return true; }
 
