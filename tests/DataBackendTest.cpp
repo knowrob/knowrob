@@ -95,6 +95,7 @@ public:
 		auto origin = DataSource::getNameFromURI(resolved);
 		auto vocab = backend_->vocabulary();
 		OntologyParser parser(resolved, semweb::TripleFormat::RDF_XML);
+		parser.setOrigin(ImportHierarchy::ORIGIN_USER);
 		// filter is called for each triple, if it returns false, the triple is skipped
 		parser.setFilter([vocab](const FramedTriple &triple) {
 			return !vocab->isAnnotationProperty(triple.predicate());

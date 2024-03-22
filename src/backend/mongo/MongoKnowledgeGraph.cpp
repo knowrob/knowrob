@@ -259,7 +259,7 @@ bool MongoKnowledgeGraph::removeAll(const TripleContainerPtr &triples) {
 }
 
 bool MongoKnowledgeGraph::dropOrigin(std::string_view graphName) {
-	KB_INFO("[mongodb] dropping triples with origin \"{}\".", graphName);
+	KB_DEBUG("[mongodb] dropping triples with origin \"{}\".", graphName);
 	tripleCollection_->removeAll(Document(
 			BCON_NEW("graph", BCON_UTF8(graphName.data()))));
 	return true;
