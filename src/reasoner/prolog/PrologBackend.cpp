@@ -151,7 +151,7 @@ void PrologBackend::count(const ResourceCounter &callback) const {
 	static auto var_res = std::make_shared<Variable>("resource");
 	static auto var_freq = std::make_shared<Variable>("frequency");
 
-	PROLOG_ENGINE_QUERY(PrologTerm(freq_f), [&callback](const BindingsPtr &bindings) {
+	PROLOG_ENGINE_QUERY(PrologTerm(freq_f, var_res, var_freq), [&callback](const BindingsPtr &bindings) {
 		auto val_res = bindings->getAtomic(var_res->name());
 		auto val_freq = bindings->getAtomic(var_freq->name());
 		if (val_res && val_freq && val_freq->isNumeric()) {
