@@ -96,7 +96,7 @@ namespace knowrob {
 		 * @var a variable.
 		 * @return a term reference.
 		 */
-		const std::shared_ptr<Atomic> getAtomic(std::string_view varName) const;
+		std::shared_ptr<Atomic> getAtomic(std::string_view varName) const;
 
 		/**
 		 * Returns true if the given var is mapped to a term by this substitution.

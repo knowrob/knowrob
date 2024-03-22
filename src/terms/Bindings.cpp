@@ -66,7 +66,7 @@ const TermPtr &Bindings::get(std::string_view varName) const {
 	}
 }
 
-const std::shared_ptr<Atomic> Bindings::getAtomic(std::string_view varName) const {
+std::shared_ptr<Atomic> Bindings::getAtomic(std::string_view varName) const {
 	static const std::shared_ptr<Atomic> null_term;
 
 	auto term = get(varName);
