@@ -9,11 +9,11 @@
 #include "knowrob/backend/mongo/Pipeline.h"
 #include "knowrob/Logger.h"
 #include "knowrob/URI.h"
-#include "knowrob/backend/mongo/aggregation/triples.h"
 #include "knowrob/triples/GraphPattern.h"
 #include "knowrob/triples/GraphSequence.h"
 #include "knowrob/triples/GraphBuiltin.h"
 #include "knowrob/backend/mongo/MongoTerm.h"
+#include "knowrob/backend/mongo/MongoTriplePattern.h"
 
 using namespace knowrob::mongo;
 
@@ -54,11 +54,11 @@ void Pipeline::appendStageEnd(bson_t *stage) {
 
 void Pipeline::append(const knowrob::FramedTriplePattern &query, const TripleStore &tripleStore) {
 	// append lookup stages to pipeline
-	aggregation::TripleLookupData lookupData(&query);
+	TripleLookupData lookupData(&query);
 	// indicate that no variables in tripleExpression may have been instantiated
 	// by a previous step to allow for some optimizations.
 	lookupData.mayHasMoreGroundings = false;
-	aggregation::lookupTriple(*this, tripleStore, lookupData);
+	lookupTriple(*this, tripleStore, lookupData);
 }
 
 void Pipeline::append(const knowrob::GraphTerm &query, const TripleStore &tripleStore) {
@@ -72,7 +72,7 @@ void Pipeline::appendTerm_recursive(const knowrob::GraphTerm &query, // NOLINT
 	switch (query.termType()) {
 		case knowrob::GraphTermType::Pattern: {
 			auto &expr = ((const GraphPattern &) query).value();
-			aggregation::TripleLookupData lookupData(expr.get());
+			TripleLookupData lookupData(expr.get());
 			// indicate that all previous groundings of variables are known
 			lookupData.mayHasMoreGroundings = false;
 			lookupData.knownGroundedVariables = groundedVariables;
@@ -80,7 +80,7 @@ void Pipeline::appendTerm_recursive(const knowrob::GraphTerm &query, // NOLINT
 			for (auto &var: expr->getVariables()) {
 				groundedVariables.insert(var->name());
 			}
-			aggregation::lookupTriple(*this, tripleStore, lookupData);
+			lookupTriple(*this, tripleStore, lookupData);
 			break;
 		}
 		case knowrob::GraphTermType::Builtin:
@@ -226,10 +226,16 @@ void Pipeline::limit(uint32_t maxDocuments) {
 	appendStageEnd(unwindStage);
 }
 
-void Pipeline::unwind(const std::string_view &field) {
-	auto unwindStage = appendStageBegin();
-	BSON_APPEND_UTF8(unwindStage, "$unwind", field.data());
-	appendStageEnd(unwindStage);
+void Pipeline::unwind(const std::string_view &field, bool preserveNullAndEmptyArrays) {
+	if (preserveNullAndEmptyArrays) {
+		auto unwindStage = appendStageBegin("$unwind");
+		BSON_APPEND_BOOL(unwindStage, "preserveNullAndEmptyArrays", 1);
+		appendStageEnd(unwindStage);
+	} else {
+		auto unwindStage = appendStageBegin();
+		BSON_APPEND_UTF8(unwindStage, "$unwind", field.data());
+		appendStageEnd(unwindStage);
+	}
 }
 
 void Pipeline::unset(const std::string_view &field) {

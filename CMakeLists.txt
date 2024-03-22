@@ -246,7 +246,6 @@ add_library(knowrob SHARED
         src/backend/mongo/Pipeline.cpp
         src/backend/mongo/TripleCursor.cpp
         src/backend/mongo/BindingsCursor.cpp
-        src/backend/mongo/aggregation/triples.cpp
         src/backend/mongo/Connection.cpp
         src/backend/mongo/bson-helper.cpp
 		src/queries/ModalStage.cpp

@@ -55,7 +55,7 @@ namespace knowrob::mongo {
 		 * Append a $unwind stage.
 		 * @param field an array value
 		 */
-		void unwind(const std::string_view &field);
+		void unwind(const std::string_view &field, bool preserveNullAndEmptyArrays = false);
 
 		/**
 		 * Append a $unset stage.

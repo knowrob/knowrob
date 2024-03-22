@@ -10,6 +10,8 @@
 #include "knowrob/triples/FramedTriplePattern.h"
 #include "knowrob/semweb/ImportHierarchy.h"
 #include "Document.h"
+#include "Pipeline.h"
+#include "TripleStore.h"
 
 namespace knowrob::mongo {
 	/**
@@ -55,6 +57,22 @@ namespace knowrob::mongo {
 
 		static const char *getOperatorString(knowrob::FilterType operatorType);
 	};
+
+	struct TripleLookupData {
+		explicit TripleLookupData(const FramedTriplePattern *expr)
+				: expr(expr),
+				  maxNumOfTriples(0),
+				  mayHasMoreGroundings(true),
+				  forceTransitiveLookup(false) {}
+
+		const FramedTriplePattern *expr;
+		uint32_t maxNumOfTriples;
+		std::set<std::string_view> knownGroundedVariables;
+		bool mayHasMoreGroundings;
+		bool forceTransitiveLookup;
+	};
+
+	void lookupTriple(Pipeline &pipeline, const TripleStore &tripleStore, const TripleLookupData &lookupData);
 
 } // knowrob
 

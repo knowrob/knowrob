@@ -10,7 +10,7 @@
 
 using namespace knowrob::mongo;
 
-void MongoTerm::append( //NOLINT
+void MongoTerm::append( //NOLINT(misc-no-recursion)
 		bson_t *doc,
 		const char *key,
 		const TermPtr &term,
@@ -103,7 +103,7 @@ void MongoTerm::appendWithVars(bson_t *doc, const char *key, const TermPtr &term
 	append(doc, key, term, queryOperator, matchNullValue, true);
 }
 
-void MongoTerm::append( // NOLINT
+void MongoTerm::append( // NOLINT(misc-no-recursion)
 		bson_t *doc,
 		const char *key,
 		const std::vector<TermPtr> &terms,
