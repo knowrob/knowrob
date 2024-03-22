@@ -30,6 +30,10 @@
       sw_default_graph/1,          % ?Graph
       sw_current_graph/2,
 
+      sw_literal_compare/3,     % +Operator, +Literal1, +Literal2
+      sw_literal_max/3,         % +Literal1, +Literal2, ?Max
+      sw_literal_min/3,         % +Literal1, +Literal2, ?Min
+
       sw_origin_any/1,          % ?Origin
       sw_origin_system/1, 		% ?Origin
       sw_origin_session/1, 		% ?Origin
@@ -143,6 +147,65 @@ sw_triple(Subject, Predicate, Number, _Context) :-
 sw_triple(Subject, Predicate, Object, _Context) :-
     throw(error(type_error(resource, Object),
                 sw_triple(Subject,Predicate,Object))).
+
+%% sw_literal_compare(+Operator, +Literal1, +Literal2) is nondet.
+%
+% Comparison of typed literals using the given operator.
+% Operator can be one of: ==, !=, >, <, >=, <=, eq, gt, lt, ge, le.
+%
+sw_literal_compare(_Operator, Literal1, Literal2) :-
+	(\+ ground(Literal1) ; \+ ground(Literal2)),
+	% pass through if one of the literals is not ground
+	!.
+sw_literal_compare(Operator, Literal1, Literal2) :-
+	% convert literals to native types
+	(rdf_literal_value(Literal1, Value1) -> true ; Value1=Literal1),
+	(rdf_literal_value(Literal2, Value2) -> true ; Value2=Literal2),
+	% compare values
+	once(sw_literal_compare_(Operator, Value1, Value2)).
+
+sw_literal_compare_('==', Value1, Value2) :- Value1 == Value2.
+sw_literal_compare_('!=', Value1, Value2) :- Value1 \= Value2.
+sw_literal_compare_('>', Value1, Value2) :- Value1 > Value2.
+sw_literal_compare_('<', Value1, Value2) :- Value1 < Value2.
+sw_literal_compare_('>=', Value1, Value2) :- Value1 >= Value2.
+sw_literal_compare_('<=', Value1, Value2) :- Value1 =< Value2.
+sw_literal_compare_('=<', Value1, Value2) :- Value1 =< Value2.
+sw_literal_compare_('eq', Value1, Value2) :- Value1 == Value2.
+sw_literal_compare_('gt', Value1, Value2) :- Value1 > Value2.
+sw_literal_compare_('lt', Value1, Value2) :- Value1 < Value2.
+sw_literal_compare_('ge', Value1, Value2) :- Value1 >= Value2.
+sw_literal_compare_('le', Value1, Value2) :- Value1 =< Value2.
+
+%% sw_literal_min(+Literal1, +Literal2, ?Min) is nondet.
+%
+% Bind the miminum of two literals to Min.
+% A unbound literal is assumed to be the maximum.
+%
+sw_literal_min(Literal1, Min, Min) :- \+ ground(Literal1), !.
+sw_literal_min(Min, Literal2, Min) :- \+ ground(Literal2), !.
+sw_literal_min(Literal1, Literal2, Min) :-
+	(rdf_literal_value(Literal1, Value1) -> true ; Value1=Literal1),
+	(rdf_literal_value(Literal2, Value2) -> true ; Value2=Literal2),
+	(   Value1 < Value2
+	->  Min=Literal1
+	;   Min=Literal2
+	).
+
+%% sw_literal_max(+Literal1, +Literal2, ?Max) is nondet.
+%
+% Bind the maximum of two literals to Max.
+% A unbound literal is assumed to be the minimum.
+%
+sw_literal_max(Literal1, Max, Max) :- \+ ground(Literal1), !.
+sw_literal_max(Max, Literal2, Max) :- \+ ground(Literal2), !.
+sw_literal_max(Literal1, Literal2, Max) :-
+	(rdf_literal_value(Literal1, Value1) -> true ; Value1=Literal1),
+	(rdf_literal_value(Literal2, Value2) -> true ; Value2=Literal2),
+	(   Value1 > Value2
+	->  Max=Literal1
+	;   Max=Literal2
+	).
 
 %%
 %post_graph(Subject, RealPredicate, Object) :-
