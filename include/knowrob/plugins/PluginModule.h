@@ -60,24 +60,11 @@ namespace knowrob {
 				return false;
 			}
 
-			// For now the directory that contains the python source is simply added to the
-			// sys.path of the python interpreter.
-			// TODO: this should be done in a more robust way.
-			auto moduleDir = modulePath.parent_path();
-			auto moduleFile = modulePath.stem();
-
 			try {
-				// make sure that the module directory is only added once
-				if (moduleDirectories_.count(moduleDir) == 0) {
-					moduleDirectories_.insert(moduleDir);
-					// >>> sys.path.append(moduleDir)
-					auto py_sys = boost::python::import("sys");
-					auto py_path = py_sys.attr("path");
-					auto sysPathAppend = py_path.attr("append");
-					sysPathAppend(moduleDir.string());
-				}
-
-				pyModule_ = boost::python::import(moduleFile.c_str());
+				// Make sure module can be imported by possibly extending the sys.path
+				// of the Python interpreter.
+				auto importString = knowrob::py::addToSysPath(modulePath);
+				pyModule_ = boost::python::import(importString.c_str());
 				if (pyModule_.is_none()) {
 					KB_ERROR("Failed to import module '{}'.", modulePath_.c_str());
 					return false;
@@ -116,7 +103,6 @@ namespace knowrob {
 		boost::python::object pyModule_;
 		boost::python::object pyPluginType_;
 		std::string name_;
-		std::set<std::filesystem::path> moduleDirectories_;
 	};
 }
 
