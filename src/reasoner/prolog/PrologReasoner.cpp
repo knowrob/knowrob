@@ -53,7 +53,7 @@ PrologTerm PrologReasoner::transformGoal(const PrologTerm &goal) {
 	return PrologTerm(callFunctor(), goal, PrologTerm::nil());
 }
 
-bool PrologReasoner::loadConfig(const PropertyTree &cfg) {
+bool PrologReasoner::initializeReasoner(const PropertyTree &cfg) {
 	// call PL_initialize
 	PrologEngine::initializeProlog();
 

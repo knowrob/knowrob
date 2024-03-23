@@ -27,8 +27,8 @@ namespace knowrob::py {
 			call_method<void>(self, "setDataBackend", backend);
 		}
 
-		bool loadConfig(const PropertyTree &config) override {
-			return call_method<bool>(self, "loadConfig", config);
+		bool initializeReasoner(const PropertyTree &config) override {
+			return call_method<bool>(self, "initializeReasoner", config);
 		}
 
 		PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override {

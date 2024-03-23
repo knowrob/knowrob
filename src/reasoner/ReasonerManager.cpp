@@ -75,7 +75,7 @@ std::shared_ptr<NamedReasoner> ReasonerManager::loadPlugin(const boost::property
 	auto definedReasoner = addPlugin(reasonerID, reasoner->value());
 
 	PropertyTree pluginConfig(&config);
-	if (!reasoner->value()->loadConfig(pluginConfig)) {
+	if (!reasoner->value()->initializeReasoner(pluginConfig)) {
 		KB_WARN("Reasoner `{}` failed to loadConfig.", reasonerID);
 	} else {
 		// load the reasoner-specific data sources.

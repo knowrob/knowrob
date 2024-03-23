@@ -52,11 +52,10 @@ namespace knowrob {
 		virtual void setDataBackend(const DataBackendPtr &backend) = 0;
 
 		/**
-		 * Load a reasoner configuration.
-		 * The knowledge base system only calls this function once for each reasoner instance.
-		 * @param config a ReasonerConfig object.
+		 * Initialize a reasoner by configuring it with a property tree.
+		 * @param ptree a PropertyTree object.
 		 */
-		virtual bool loadConfig(const PropertyTree &config) = 0;
+		virtual bool initializeReasoner(const PropertyTree &ptree) = 0;
 
 	private:
 		AtomPtr t_reasonerName_;

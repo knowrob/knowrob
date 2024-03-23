@@ -37,7 +37,7 @@ namespace knowrob {
 			auto r = std::make_shared<ReasonerType>();
 			kb->reasonerManager()->addPlugin(name, r);
 			r->setDataBackend(db);
-			r->loadConfig(knowrob::PropertyTree());
+			r->initializeReasoner(knowrob::PropertyTree());
 			return r;
 		}
 

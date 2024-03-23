@@ -49,8 +49,8 @@ namespace knowrob::py {
 			call_method<void>(self, "setDataBackend", backend);
 		}
 
-		bool loadConfig(const PropertyTree &config) override {
-			return call_method<bool>(self, "loadConfig", config);
+		bool initializeReasoner(const PropertyTree &config) override {
+			return call_method<bool>(self, "initializeReasoner", config);
 		}
 
 	private:
@@ -64,7 +64,7 @@ namespace knowrob::py {
 				("Reasoner", init<>())
 				.def("pushWork", +[](Reasoner &x, object &fn) { x.pushWork(fn); })
 						// methods that must be implemented by reasoner plugins
-				.def("loadConfig", &ReasonerWrap::loadConfig)
+				.def("initializeReasoner", &ReasonerWrap::initializeReasoner)
 				.def("setDataBackend", &ReasonerWrap::setDataBackend);
 	}
 }

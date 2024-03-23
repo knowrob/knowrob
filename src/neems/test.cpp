@@ -27,7 +27,7 @@ namespace knowrob::testing {
 			auto r = std::make_shared<MongologReasoner>();
 			r->setDataBackend(db);
 			kb->reasonerManager()->addPlugin(name, r);
-			r->loadConfig(knowrob::PropertyTree());
+			r->initializeReasoner(knowrob::PropertyTree());
 			r->consult(std::filesystem::path("neems") / "__init__.pl", nullptr, false);
 			r->load_rdf_xml("http://www.ease-crc.org/ont/SOMA.owl");
 			return r;

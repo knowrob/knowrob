@@ -98,7 +98,7 @@ class FactxxReasoner(DataDrivenReasoner):
 		self.ignore_bnodes = True
 		self.storage = None
 
-	def loadConfig(self, config: PropertyTree) -> bool:
+	def initializeReasoner(self, ptree: PropertyTree) -> bool:
 		return True
 
 	def setDataBackend(self, storage: DataBackend):

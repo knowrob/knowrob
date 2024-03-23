@@ -61,8 +61,8 @@ bool MongologReasoner::initializeDefaultPackages() {
 	return true;
 }
 
-bool MongologReasoner::loadConfig(const PropertyTree &reasonerConfiguration) {
-	if (!PrologReasoner::loadConfig(reasonerConfiguration)) return false;
+bool MongologReasoner::initializeReasoner(const PropertyTree &reasonerConfiguration) {
+	if (!PrologReasoner::initializeReasoner(reasonerConfiguration)) return false;
 
 	if (!knowledgeGraph_) {
 		knowledgeGraph_ = std::make_shared<MongoKnowledgeGraph>();
@@ -267,7 +267,7 @@ namespace knowrob::testing {
 			auto r = std::make_shared<MongologReasoner>();
 			r->setDataBackend(db);
 			kb->reasonerManager()->addPlugin(name, r);
-			r->loadConfig(knowrob::PropertyTree());
+			r->initializeReasoner(knowrob::PropertyTree());
 			r->load_rdf_xml("http://www.ease-crc.org/ont/SOMA.owl");
 			return r;
 		}
