@@ -38,20 +38,12 @@ public:
 	const std::string s_;
 	const std::string o_;
 	TestReasoner(const std::string_view &p, const std::string_view &s, const std::string_view &o)
-	: knowrob::GoalDrivenReasoner(), p_(p), s_(s), o_(o) {}
+	: knowrob::GoalDrivenReasoner(), p_(p), s_(s), o_(o) {
+		defineRelation(PredicateIndicator(p_, 2));
+	}
 
 	bool initializeReasoner(const PropertyTree &cfg) override { return true; }
 	void setDataBackend(const DataBackendPtr &backend) override {}
-
-	PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override {
-		if(indicator->functor() == p_) {
-			return std::make_shared<PredicateDescription>(
-				std::make_shared<PredicateIndicator>(p_,2), PredicateType::IDB_RELATION);
-		}
-		else {
-			return {};
-		}
-	}
 
 	TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) override {
 		auto answerBuffer = std::make_shared<TokenBuffer>();

@@ -10,27 +10,22 @@
 
 using namespace knowrob;
 
-PredicateIndicator::PredicateIndicator(std::string_view functor, unsigned int arity)
-		: functor_(functor),
-		  arity_(arity) {
-}
-
 bool PredicateIndicator::operator==(const PredicateIndicator &other) const {
-	return arity_ == other.arity_ && functor_ == other.functor_;
+	return arity_ == other.arity_ && *functor_ == *other.functor_;
 }
 
 bool PredicateIndicator::operator<(const PredicateIndicator &other) const {
-	return (other.functor_ < this->functor_) ||
+	return (other.functor_->stringForm() < this->functor_->stringForm()) ||
 		   (other.arity_ < this->arity_);
 }
 
 void PredicateIndicator::write(std::ostream &os) const {
-	os << functor_ << '/' << arity_;
+	os << *functor_ << '/' << arity_;
 }
 
 std::shared_ptr<Term> PredicateIndicator::toTerm() const {
 	return std::make_shared<Function>(Function("/", {
-			Atom::Tabled(functor()),
+			functor(),
 			std::make_shared<Long>(arity())
 	}));
 }

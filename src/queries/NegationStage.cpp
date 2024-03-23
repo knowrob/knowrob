@@ -62,12 +62,15 @@ bool PredicateNegationStage::succeeds(const AnswerYesPtr &answer) {
 
 		// next check if positive lit is an IDB predicate, if so negation cannot be true.
 		// get list of reasoner that define the literal
-		std::vector<std::shared_ptr<Reasoner>> l_reasoner;
-		for (auto &pair: kb_->reasonerManager()->goalDriven()) {
-			auto &r = pair.second;
-			if (r->getLiteralDescription(*instance) != nullptr) {
-				results.push_back(r->submitQuery(instance, ctx_));
-			}
+		auto l_property = instance->propertyTerm();
+		if (!l_property->isAtom()) {
+			KB_WARN("PredicateNegationStage: property term is not an atom, skipping.");
+			continue;
+		}
+		auto l_property_a = std::static_pointer_cast<Atomic>(l_property);
+		auto l_reasoner = kb_->reasonerManager()->getReasonerForRelation(PredicateIndicator(l_property_a->stringForm(), 2));
+		for (auto &r: l_reasoner) {
+			results.push_back(r->submitQuery(instance, ctx_));
 		}
 	}
 

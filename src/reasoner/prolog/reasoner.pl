@@ -2,7 +2,7 @@
     [ current_reasoner_module/1,      % -ReasonerModule
       current_reasoner_manager/1,     % -ReasonerManager
       set_current_reasoner_module/1,  % +ReasonerModule
-      reasoner_defined_predicate/2,   % ?PredicateIndicator, ?PredicateType
+      reasoner_define_relation/2,     % +Relation, +Arity
       reasoner_setting/2,             % +Name, ?Value
       reasoner_setting/4,             % +Name, +Type, +Default, +Comment
       reasoner_set_setting/3,         % +ResonerModule, +Name, +Value
@@ -139,72 +139,15 @@ reasoner_rdf_init(Reasoner) :-
     Reasoner:assert(':-'(triple(S,P,O,Ctx),        semweb:sw_triple(S,P,O,Ctx))),
     Reasoner:assert(':-'(instance_of(S,Cls,Ctx),   semweb:sw_instance_of(S,Cls,Ctx))).
 
-%% reasoner_defined_predicate(?Indicator, ?PredicateType) is nondet.
+%% reasoner_define_relation(+Name, +Arity) is nondet.
 %
-% True if Name/Arity is the indicator of a predicate defined by the
-% current reasoner, and which has the type PredicateType where
-% PredicateType can be one of *built_in* or *relation*.
+% Define a relation in the current reasoner module.
 %
-reasoner_defined_predicate(Name/Arity, PredicateType) :-
-    nonvar(Name),!,
-    functor(Head, Name, Arity),
+reasoner_define_relation(Name, Arity) :-
+    nonvar(Name), nonvar(Arity), !,
     current_reasoner_module(Reasoner),
-    reasoner_defined_predicate_1(Reasoner, Head, PredicateType).
-
-reasoner_defined_predicate(Name/Arity, PredicateType) :-
-    %var(Name),!,
-    reasoner_defined_predicate_2(Name, Arity, PredicateType).
-
-%
-reasoner_defined_predicate_1(_, Head, built_in) :-
-    system:predicate_property(Head, visible), !.
-
-reasoner_defined_predicate_1(_, Head, built_in) :-
-    user:predicate_property(Head, visible), !.
-
-reasoner_defined_predicate_1(Reasoner, Head, relation) :-
-    \+ user:predicate_property(Head, defined),
-    Reasoner:predicate_property(Head, visible), !.
-
-% TODO: rather only yield IDB predicates, remove EDB case below
-%reasoner_defined_predicate_1(Reasoner, Head, relation(idb)) :-
-%    Reasoner:predicate_property(Head, number_of_rules(NumRules)),
-%    NumRules > 0, !.
-
-reasoner_defined_predicate_1(Reasoner, Head, relation) :-
-    % RDF predicates
-    functor(Head, Name, 2),
-    rdf_current_predicate(Name),
-    once((
-        rdf(Name, rdf:type, _, Graph:_),
-        sw_current_graph(Reasoner, Graph)
-    )), !.
-
-%
-reasoner_defined_predicate_2(Name, Arity, built_in) :-
-    system:predicate_property(Head, defined),
-    functor(Head, Name, Arity),
-    \+ sub_atom(Name, 0, _, _, $).
-
-reasoner_defined_predicate_2(Name, Arity, built_in) :-
-    user:predicate_property(Head, defined),
-    \+ system:predicate_property(Head, defined),
-    functor(Head, Name, Arity).
-
-reasoner_defined_predicate_2(Name, Arity, relation) :-
-    current_reasoner_module(Reasoner),
-    Reasoner:predicate_property(Head, defined),
-    \+ user:predicate_property(Head, defined),
-    functor(Head, Name, Arity).
-
-reasoner_defined_predicate_2(Name, 2, relation) :-
-    % RDF predicates
-    current_reasoner_module(Reasoner),
-    rdf_current_predicate(Name),
-    once((
-        rdf(Name, rdf:type, _, Graph:_),
-        sw_current_graph(Reasoner, Graph)
-    )).
+    current_reasoner_manager(ReasonerManager),
+    reasoner_define_relation_cpp(ReasonerManager, Reasoner, Name, Arity).
 
 %% reasoner_call(+Goal, +QueryContext) is nondet.
 %

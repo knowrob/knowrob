@@ -38,6 +38,16 @@ std::shared_ptr<DataBackend> ReasonerManager::getReasonerBackend(const std::shar
 	}
 }
 
+std::vector<GoalDrivenReasonerPtr> ReasonerManager::getReasonerForRelation(const PredicateIndicator &indicator) const {
+	std::vector<GoalDrivenReasonerPtr> reasoners;
+	for (auto &x: goalDriven_) {
+		if (x.second->isRelationDefined(indicator)) {
+			reasoners.push_back(x.second);
+		}
+	}
+	return reasoners;
+}
+
 std::shared_ptr<NamedReasoner> ReasonerManager::loadPlugin(const boost::property_tree::ptree &config) {
 	// get a reasoner factory
 	std::shared_ptr<ReasonerFactory> factory = findFactory(config);
@@ -117,13 +127,13 @@ void ReasonerManager::initPlugin(const std::shared_ptr<NamedReasoner> &namedReas
 	// check if the reasoner is data-driven
 	auto dataDriven = std::dynamic_pointer_cast<DataDrivenReasoner>(namedReasoner->value());
 	if (dataDriven) {
-		KB_INFO("adding data-driven reasoner with id '{}'.", namedReasoner->name());
+		KB_INFO("Using data-driven reasoner with id '{}'.", namedReasoner->name());
 		dataDriven_[namedReasoner->name()] = dataDriven;
 	}
 	// check if the reasoner is goal-driven
 	auto goalDriven = std::dynamic_pointer_cast<GoalDrivenReasoner>(namedReasoner->value());
 	if (goalDriven) {
-		KB_INFO("adding goal-driven reasoner with id '{}'.", namedReasoner->name());
+		KB_INFO("Using goal-driven reasoner with id '{}'.", namedReasoner->name());
 		goalDriven_[namedReasoner->name()] = goalDriven;
 	}
 }

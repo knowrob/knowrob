@@ -23,7 +23,7 @@
 #include "knowrob/formulas/Disjunction.h"
 #include "knowrob/formulas/Implication.h"
 #include "knowrob/formulas/ModalFormula.h"
-#include "knowrob/formulas/PredicateDescription.h"
+#include "knowrob/formulas/PredicateIndicator.h"
 #include "knowrob/queries/QueryContext.h"
 #include "knowrob/reasoner/Reasoner.h"
 #include "knowrob/reasoner/DataDrivenReasoner.h"
@@ -75,7 +75,6 @@ static inline void register_formula_types() {
 	py::createType<ModalFormula>();
 	py::createType<FirstOrderLiteral>();
 	py::createType<PredicateIndicator>();
-	py::createType<PredicateDescription>();
 	// allow conversion between std::vector and python::list for Formula objects.
 	typedef std::vector<FormulaPtr> FormulaList;
 	py::custom_vector_from_seq<FormulaPtr>();

@@ -7,8 +7,8 @@
 #define KNOWROB_GOAL_DRIVEN_REASONER_H
 
 #include "Reasoner.h"
-#include "knowrob/formulas/PredicateDescription.h"
 #include "knowrob/queries/TokenBuffer.h"
+#include "knowrob/formulas/PredicateIndicator.h"
 
 namespace knowrob {
 	/**
@@ -20,23 +20,30 @@ namespace knowrob {
 	 */
 	class GoalDrivenReasoner : public Reasoner {
 	public:
-		/**
-		 * Get the description of a predicate currently defined by this reasoner.
-		 * A predicate is thought to be currently defined if the reasoner can submitQuery it.
-		 *
-		 * @param indicator a predicate indicator
-		 * @return a predicate description if the predicate is a defined one or null otherwise.
-		 */
-		virtual PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) = 0;
+		GoalDrivenReasoner() : Reasoner() {}
 
 		/**
-		 * Get the description of the predicate which is associated with a literal.
-		 * A null reference will be returned in case that the property term of the literal is a variable.
-		 * TODO: revise this interface, maybe better that reasoner explicitly register defined predicates.
-		 * @param literal a literal.
-		 * @return a predicate description or a null reference.
+		 * Find out if the relation is defined by this reasoner.
+		 * A defined relation is a relation that is known to the reasoner, and
+		 * for which the reasoner can provide additional groundings when being queried.
+		 * @param indicator a predicate indicator.
+		 * @return true if the relation is currently defined by this reasoner.
 		 */
-		PredicateDescriptionPtr getLiteralDescription(const FramedTriplePattern &literal);
+		bool isRelationDefined(const PredicateIndicator &indicator) {
+			return definedRelations_.find(indicator) != definedRelations_.end();
+		}
+
+		/**
+		 * Add a defined relation to the reasoner.
+		 * @param indicator a predicate indicator.
+		 */
+		void defineRelation(const PredicateIndicator &indicator) { definedRelations_.emplace(indicator); }
+
+		/**
+		 * Remove a defined relation from the reasoner.
+		 * @param indicator a predicate indicator.
+		 */
+		void unDefineRelation(const PredicateIndicator &indicator) { definedRelations_.erase(indicator); }
 
 		/**
 		 * Submit a query to the reasoner.
@@ -48,6 +55,9 @@ namespace knowrob {
 		 * @return a buffer that can be used to retrieve the results of the query.
 		 */
 		virtual TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) = 0;
+
+	protected:
+		std::set<PredicateIndicator> definedRelations_;
 	};
 
 	using GoalDrivenReasonerPtr = std::shared_ptr<GoalDrivenReasoner>;

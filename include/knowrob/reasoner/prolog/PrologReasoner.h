@@ -78,17 +78,11 @@ namespace knowrob {
 		void setDataBackend(const DataBackendPtr &backend) override;
 
 		// Override Reasoner
-		PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override;
-
-		// Override Reasoner
 		TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) override;
 
 	protected:
 		static bool isKnowRobInitialized_;
 		std::shared_ptr<PrologBackend> knowledgeGraph_;
-
-		// cache of predicate descriptions
-		std::map<PredicateIndicator, std::shared_ptr<PredicateDescription>> predicateDescriptions_;
 
 		virtual bool initializeGlobalPackages() { return true; }
 

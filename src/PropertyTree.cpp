@@ -49,8 +49,6 @@ void PropertyTree::loadProperty( //NOLINT
 
 void PropertyTree::loadRemainder( //NOLINT
 		const std::string &key1, const boost::property_tree::ptree &remainder) {
-	static auto colon_f = std::make_shared<PredicateIndicator>(":", 2);
-
 	for (const auto &key_val: remainder) {
 		if (key_val.first.empty()) {
 			// this indicates a list

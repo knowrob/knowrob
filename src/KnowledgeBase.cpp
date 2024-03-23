@@ -426,7 +426,7 @@ void KnowledgeBase::createComputationPipeline(
 		for (auto &r: lit->reasonerList()) {
 			auto idbStage = std::make_shared<TypedQueryStage<FramedTriplePattern>>(
 					ctx, lit,
-					[&r,&ctx](const FramedTriplePatternPtr &q) {
+					[&r, &ctx](const FramedTriplePatternPtr &q) {
 						return r->submitQuery(q, ctx);
 					});
 			idbStage->selfWeakRef_ = idbStage;
@@ -486,15 +486,14 @@ TokenBufferPtr KnowledgeBase::submitQuery(const GraphPathQueryPtr &graphQuery) {
 	std::vector<FramedTriplePatternPtr> edbOnlyLiterals;
 	std::vector<RDFComputablePtr> computableLiterals;
 	for (auto &l: positiveLiterals) {
-		std::vector<std::shared_ptr<GoalDrivenReasoner>> l_reasoner;
-		for (auto &pair: reasonerManager_->goalDriven()) {
-			auto &r = pair.second;
-			auto descr = r->getLiteralDescription(*l);
-			if (descr) {
-				// TODO: check descr, e.g. about materialization in EDB
-				l_reasoner.push_back(r);
-			}
+		auto property = l->propertyTerm();
+		if (!property->isAtom()) {
+			KB_WARN("Variable predicate in query not supported.");
+			continue;
 		}
+		auto property_a = std::static_pointer_cast<Atomic>(property);
+		auto l_reasoner = reasonerManager_->getReasonerForRelation(
+				PredicateIndicator(property_a->stringForm(), 2));
 		if (l_reasoner.empty()) {
 			edbOnlyLiterals.push_back(l);
 			auto l_p = l->propertyTerm();

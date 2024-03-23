@@ -1,7 +1,4 @@
 /*
- * Copyright (c) 2022, Daniel Beßler
- * All rights reserved.
- *
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
@@ -9,12 +6,11 @@
 #ifndef KNOWROB_PREDICATE_INDICATOR_H_
 #define KNOWROB_PREDICATE_INDICATOR_H_
 
+#include <utility>
 #include <vector>
 #include <memory>
 #include <string>
-#include "Formula.h"
-#include "knowrob/terms/Term.h"
-#include "knowrob/terms/Bindings.h"
+#include "knowrob/terms/Atom.h"
 
 namespace knowrob {
 	/**
@@ -26,7 +22,15 @@ namespace knowrob {
 		 * @functor the functor name.
 		 * @arity thr arity of this predicate.
 		 */
-		PredicateIndicator(std::string_view functor, unsigned int arity);
+		PredicateIndicator(std::string_view functor, uint32_t arity)
+				: functor_(Atom::Tabled(functor)), arity_(arity) {}
+
+		/**
+		 * @functor the functor name.
+		 * @arity thr arity of this predicate.
+		 */
+		PredicateIndicator(AtomPtr functor, uint32_t arity)
+				: functor_(std::move(functor)), arity_(arity) {}
 
 		// Override '==' operator
 		bool operator==(const PredicateIndicator &other) const;
@@ -39,14 +43,14 @@ namespace knowrob {
 		 *
 		 * @return the functor name.
 		 */
-		const std::string &functor() const { return functor_; }
+		auto &functor() const { return functor_; }
 
 		/**
 		 * Get the arity of this predicate.
 		 *
 		 * @return arity of predicate
 		 */
-		unsigned int arity() const { return arity_; }
+		auto arity() const { return arity_; }
 
 		/**
 		 * Convert the predicate indicator to a term of the form `'/'(Functor,Arity)`.
@@ -57,8 +61,8 @@ namespace knowrob {
 		void write(std::ostream &os) const;
 
 	private:
-		const std::string functor_;
-		const unsigned int arity_;
+		const AtomPtr functor_;
+		const uint32_t arity_;
 	};
 
 	using PredicateIndicatorPtr = std::shared_ptr<PredicateIndicator>;

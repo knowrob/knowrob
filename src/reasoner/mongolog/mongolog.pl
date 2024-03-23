@@ -28,7 +28,8 @@
 :- use_module(library('reasoner'),
         [ reasoner_setting/4,
           reasoner_setting/2,
-          current_reasoner_module/1 ]).
+          current_reasoner_module/1,
+          reasoner_define_relation/2 ]).
 
 %% set of registered query commands.
 :- dynamic step_command/2.
@@ -70,11 +71,10 @@ mongolog_current_predicate(PredicateIndicator, PredicateType) :-
 
 %%
 mongolog_current_predicate1(_Module, Functor, _Arity, built_in) :-
-	% TODO: take arity into account
+	% TODO: take arity into account. Same below
     step_command(user, Functor), !.
 
 mongolog_current_predicate1(Module, Functor, _Arity, idb_relation) :-
-	% TODO: take arity into account
     step_command(Module, Functor), !.
 
 mongolog_current_predicate1(Module, Functor, 2, idb_relation) :-
@@ -151,7 +151,10 @@ mongolog_add_rule(Head, Body, ReasonerModule) :-
 	(	mongolog_expand(Body, Expanded) -> true
 	;	log_error_and_fail(mongolog(expansion_failed(Functor)))
 	),
-	assertz(mongolog_rule(ReasonerModule, Functor, Args, Expanded)).
+	assertz(mongolog_rule(ReasonerModule, Functor, Args, Expanded)),
+	%% define the relation with the reasoner
+	length(Args, Arity),
+	reasoner_define_relation(Functor, Arity).
 
 %% mongolog_drop_rule(+Head) is semidet.
 %
@@ -386,9 +389,6 @@ mongolog_call(Goal) :-
 % @param Goal A compound term expanding into an aggregation pipeline
 % @param Options Additional options
 %
-mongolog_call(reasoner_defined_predicate(Indicator,PredicateType), _Ctx) :-
-    !, mongolog_current_predicate(Indicator,PredicateType).
-
 mongolog_call(current_predicate(Predicate), _Ctx) :-
 	!, mongolog_current_predicate(Predicate).
 

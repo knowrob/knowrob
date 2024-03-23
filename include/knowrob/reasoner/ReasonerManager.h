@@ -43,6 +43,12 @@ namespace knowrob {
 		auto &dataDriven() const { return dataDriven_; }
 
 		/**
+		 * @param relationIRI the IRI of a relation.
+		 * @return the reasoners that define the given relation.
+		 */
+		std::vector<GoalDrivenReasonerPtr> getReasonerForRelation(const PredicateIndicator &indicator) const;
+
+		/**
 		 * Return the backend associated with a reasoner if any.
 		 * @param reasoner a defined reasoner.
 		 * @return a backend or a null reference.

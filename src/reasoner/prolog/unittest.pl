@@ -87,7 +87,7 @@ prolog:message(test_blocked(Name,Msg)) -->
 prolog:message(test_fixme(num_tests(1)))   --> [ '[plunit] 1 test is labeled as `fixme`' ].
 prolog:message(test_fixme(num_tests(Num))) --> [ '[plunit] ~p tests are labeled as `fixme`'-[Num] ].
 prolog:message(run_tests(Module)) -->
-    [ '[plunit] testing module "~p"'-[Module] ].
+    [ '[plunit] Testing module "~p".'-[Module] ].
 
 %% Intercept plunit messages, and
 %% create facts using the dynamic "test_*" predicates.
@@ -119,10 +119,9 @@ plunit_message_hook(blocked(FileIndicator, Name, Msg)) :-
 plunit_message_hook(fixme(0, 0, 0)) :- !.
 plunit_message_hook(fixme(Failed, Passed, Nondet)) :-
     Total is Failed + Passed + Nondet,
-    % TODO: add file indicator to log. Unfortunately the msg does not carry context.
+    % TODO: add file indicator to log. Unfortunately the msg does not carry context. Same below.
     log_warning(test_fixme(num_tests(Total))).
 plunit_message_hook(no_tests) :-
-    % TODO: add file indicator to log. Unfortunately the msg does not carry context.
     log_warning(no_tests).
 
 plunit_message_hook(begin(Unit)) :-

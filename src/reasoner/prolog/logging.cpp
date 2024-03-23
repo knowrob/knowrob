@@ -27,8 +27,8 @@ static inline foreign_t pl_log_message_internal(term_t level_term, term_t msg_te
 	// remove single quotes from logged message which are added
 	// by the string conversion of Term objects.
 	std::stringstream ss;
-	{
-		ss << *msg;
+	if (msg->isAtomic()) {
+		ss << std::static_pointer_cast<Atomic>(msg)->stringForm();
 	}
 	std::string msg_str = ss.str();
 	if (msg_str.front() == '\'') {

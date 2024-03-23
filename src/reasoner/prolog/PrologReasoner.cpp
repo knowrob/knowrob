@@ -9,15 +9,12 @@
 #include "knowrob/Logger.h"
 #include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/reasoner/prolog/PrologReasoner.h"
-#include "knowrob/reasoner/prolog/logging.h"
-#include "knowrob/reasoner/prolog/ext/algebra.h"
 #include "knowrob/reasoner/prolog/semweb.h"
 #include "knowrob/terms/ListTerm.h"
 #include "knowrob/formulas/Bottom.h"
 #include "knowrob/queries/TokenQueue.h"
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/semweb/ImportHierarchy.h"
-#include "knowrob/URI.h"
 #include "knowrob/KnowledgeBase.h"
 #include "knowrob/reasoner/prolog/PrologBackend.h"
 #include "knowrob/reasoner/ReasonerError.h"
@@ -36,13 +33,47 @@ KNOWROB_BUILTIN_REASONER("Prolog", PrologReasoner)
 
 bool PrologReasoner::isKnowRobInitialized_ = false;
 
+static inline std::shared_ptr<PrologReasoner> getPrologReasoner(term_t t_reasonerManager, term_t t_reasonerModule) {
+	auto definedReasoner = PrologReasoner::getDefinedReasoner(t_reasonerManager, t_reasonerModule);
+	if (!definedReasoner) {
+		KB_ERROR("unable to find reasoner with id '{}' (manager id: {}).",
+				 *PrologTerm::toKnowRobTerm(t_reasonerModule),
+				 *PrologTerm::toKnowRobTerm(t_reasonerManager));
+		return {};
+	}
+	auto reasoner = definedReasoner->value();
+	auto typedReasoner = std::dynamic_pointer_cast<PrologReasoner>(reasoner);
+	if (!typedReasoner) {
+		KB_ERROR("reasoner with id '{}' (manager id: {}) is not a mongolog reasoner.",
+				 *PrologTerm::toKnowRobTerm(t_reasonerModule),
+				 *PrologTerm::toKnowRobTerm(t_reasonerManager));
+	}
+	return typedReasoner;
+}
+
+namespace knowrob::prolog {
+	static foreign_t
+	reasoner_define_relation4(term_t t_reasonerManager, term_t t_reasonerModule, term_t t_relation, term_t t_arity) {
+		auto reasoner = getPrologReasoner(t_reasonerManager, t_reasonerModule);
+		char *relationName;
+		int64_t arity;
+		if (reasoner &&
+			PL_get_atom_chars(t_relation, &relationName) &&
+			PL_get_int64(t_arity, &arity)) {
+			reasoner->defineRelation(PredicateIndicator(relationName, arity));
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+}
+
 PrologReasoner::PrologReasoner() : GoalDrivenReasoner() {
 	addDataHandler("prolog", [this]
 			(const DataSourcePtr &dataFile) { return consult(dataFile->uri()); });
 }
 
-PrologReasoner::~PrologReasoner() {
-}
+PrologReasoner::~PrologReasoner() = default;
 
 std::string_view PrologReasoner::callFunctor() {
 	static const auto reasoner_call_f = "reasoner_call";
@@ -59,6 +90,9 @@ bool PrologReasoner::initializeReasoner(const PropertyTree &cfg) {
 
 	if (!isKnowRobInitialized_) {
 		isKnowRobInitialized_ = true;
+
+		PL_register_foreign("reasoner_define_relation_cpp", 4, (pl_function_t) prolog::reasoner_define_relation4, 0);
+
 		// auto-load some files into "user" module
 		initializeGlobalPackages();
 
@@ -137,36 +171,6 @@ bool PrologReasoner::load_rdf_xml(const std::filesystem::path &rdfFile) {
 	static auto load_rdf_xml_f = "load_rdf_xml";
 	auto path = PrologEngine::getResourcePath(rdfFile);
 	return PROLOG_REASONER_EVAL(PrologTerm(load_rdf_xml_f, path.native(), reasonerName()));
-}
-
-PredicateDescriptionPtr PrologReasoner::getDescription(const PredicateIndicatorPtr &indicator) {
-	static auto current_predicate_f = "reasoner_defined_predicate";
-
-	// TODO: rather cache predicate descriptions centrally for all reasoner
-	auto it = predicateDescriptions_.find(*indicator);
-	if (it != predicateDescriptions_.end()) {
-		return it->second;
-	} else {
-		// evaluate query
-		auto type_v = std::make_shared<Variable>("Type");
-		TermPtr kbTerm = std::make_shared<Function>(Function(
-				current_predicate_f, {indicator->toTerm(), type_v}));
-		auto solution = PROLOG_ENGINE_ONE_SOL(PrologTerm(kbTerm));
-
-		if (solution.has_value()) {
-			// read type of predicate
-			auto ptype = predicateTypeFromTerm(solution.value()[type_v->name()]);
-			// create a PredicateDescription
-			auto newDescr = std::make_shared<PredicateDescription>(indicator, ptype);
-			predicateDescriptions_[*indicator] = newDescr;
-			return newDescr;
-		} else {
-			// FIXME: this is not safe if files are consulted at runtime
-			static std::shared_ptr<PredicateDescription> nullDescr;
-			predicateDescriptions_[*indicator] = nullDescr;
-			return nullDescr;
-		}
-	}
 }
 
 TokenBufferPtr PrologReasoner::submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) {

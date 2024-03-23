@@ -203,7 +203,6 @@ add_library(knowrob SHARED
 		src/semweb/Class.cpp
         src/triples/FramedTriplePattern.cpp
 		src/semweb/ImportHierarchy.cpp
-		src/reasoner/DefinedPredicate.cpp
 		src/reasoner/Reasoner.cpp
 		src/reasoner/ReasonerManager.cpp
         src/PropertyTree.cpp
@@ -240,7 +239,6 @@ add_library(knowrob SHARED
 		src/queries/ModalStage.cpp
         src/triples/Perspective.cpp
 		src/formulas/PredicateIndicator.cpp
-		src/formulas/PredicateDescription.cpp
 		src/queries/AnswerYes.cpp
 		src/queries/AnswerNo.cpp
 		src/queries/AnswerDontKnow.cpp

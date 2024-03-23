@@ -42,7 +42,7 @@ std::shared_ptr<NamedBackend> BackendManager::loadPlugin(const boost::property_t
 
 std::shared_ptr<NamedBackend> BackendManager::addPlugin(std::string_view backendID, const DataBackendPtr &backend) {
 	if (pluginPool_.find(backendID) != pluginPool_.end()) {
-		KB_WARN("overwriting backend with name '{}'", backendID);
+		KB_WARN("Overwriting backend with name '{}'", backendID);
 	}
 	auto managedBackend = std::make_shared<NamedBackend>(backendID, backend);
 	pluginPool_.emplace(managedBackend->name(), managedBackend);
@@ -52,7 +52,7 @@ std::shared_ptr<NamedBackend> BackendManager::addPlugin(std::string_view backend
 
 void BackendManager::addPlugin(const std::shared_ptr<NamedBackend> &definedKG) {
 	if (pluginPool_.find(definedKG->name()) != pluginPool_.end()) {
-		KB_WARN("overwriting backend with name '{}'", definedKG->name());
+		KB_WARN("Overwriting backend with name '{}'", definedKG->name());
 	}
 	pluginPool_[definedKG->name()] = definedKG;
 	initBackend(definedKG);
@@ -63,12 +63,12 @@ void BackendManager::initBackend(const std::shared_ptr<NamedBackend> &definedKG)
 	// check if the backend is a QueryableBackend, if so store it in the queryable_ map
 	auto queryable = std::dynamic_pointer_cast<QueryableBackend>(definedKG->value());
 	if (queryable) {
-		KB_INFO("adding queryable backend with id '{}'.", definedKG->name());
+		KB_INFO("Using queryable backend with id '{}'.", definedKG->name());
 		queryable_[definedKG->name()] = queryable;
 	}
 	// check if the backend is a PersistentBackend, if so store it in the persistent_ map
 	if (queryable && queryable->isPersistent()) {
-		KB_INFO("adding persistent backend with id '{}'.", definedKG->name());
+		KB_INFO("Using persistent backend with id '{}'.", definedKG->name());
 		persistent_[definedKG->name()] = queryable;
 	}
 }
