@@ -21,13 +21,13 @@
 #include "knowrob/queries/AnswerYes.h"
 #include "PrologBackend.h"
 #include "knowrob/queries/AnswerNo.h"
-#include "knowrob/reasoner/Reasoner.h"
+#include "knowrob/reasoner/GoalDrivenReasoner.h"
 
 namespace knowrob {
 	/**
 	 * A Prolog reasoner that answers queries using SWI Prolog.
 	 */
-	class PrologReasoner : public Reasoner {
+	class PrologReasoner : public GoalDrivenReasoner {
 	public:
 		PrologReasoner();
 
@@ -81,12 +81,6 @@ namespace knowrob {
 		PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override;
 
 		// Override Reasoner
-		void start() override;
-
-		// Override Reasoner
-		void stop() override;
-
-		// Override Reasoner
 		TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) override;
 
 	protected:
@@ -113,8 +107,6 @@ namespace knowrob {
 		static std::shared_ptr<GraphSelector> createAnswerFrame(const PrologTerm &plTerm);
 
 		PrologTerm getReasonerQuery(const PrologTerm &goal);
-
-		void stopPrologReasoner();
 	};
 }
 

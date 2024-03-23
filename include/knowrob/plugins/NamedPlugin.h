@@ -36,7 +36,7 @@ namespace knowrob {
 		/**
 		 * @return the plugin name.
 		 */
-		const std::string &name() const { return name_; }
+		std::string_view name() const { return name_; }
 
 	protected:
 		const std::string name_;

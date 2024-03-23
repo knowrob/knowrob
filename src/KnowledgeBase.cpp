@@ -239,20 +239,20 @@ void KnowledgeBase::loadCommon() {
 }
 
 void KnowledgeBase::startReasoner() {
-	for (auto &pair: reasonerManager_->plugins()) {
+	for (auto &pair: reasonerManager_->dataDriven()) {
 		// TODO: it would be better to remove reasoner and backends if they throw an exception.
 		//       but doing this for e.g. query evaluation is more difficult where exception occur in a worker thread
 		//       as part of a complex query evaluation pipeline.
-		KB_LOGGED_TRY_CATCH(pair.first, "start", {
-			pair.second->value()->start();
+		KB_LOGGED_TRY_CATCH(pair.first.data(), "start", {
+			pair.second->start();
 		});
 	}
 }
 
 void KnowledgeBase::stopReasoner() {
-	for (auto &pair: reasonerManager_->plugins()) {
-		KB_LOGGED_TRY_CATCH(pair.first, "stop", {
-			pair.second->value()->stop();
+	for (auto &pair: reasonerManager_->dataDriven()) {
+		KB_LOGGED_TRY_CATCH(pair.first.data(), "stop", {
+			pair.second->stop();
 		});
 	}
 }
@@ -486,9 +486,9 @@ TokenBufferPtr KnowledgeBase::submitQuery(const GraphPathQueryPtr &graphQuery) {
 	std::vector<FramedTriplePatternPtr> edbOnlyLiterals;
 	std::vector<RDFComputablePtr> computableLiterals;
 	for (auto &l: positiveLiterals) {
-		std::vector<std::shared_ptr<Reasoner>> l_reasoner;
-		for (auto &pair: reasonerManager_->plugins()) {
-			auto &r = pair.second->value();
+		std::vector<std::shared_ptr<GoalDrivenReasoner>> l_reasoner;
+		for (auto &pair: reasonerManager_->goalDriven()) {
+			auto &r = pair.second;
 			auto descr = r->getLiteralDescription(*l);
 			if (descr) {
 				// TODO: check descr, e.g. about materialization in EDB

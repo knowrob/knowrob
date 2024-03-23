@@ -88,7 +88,7 @@ class FactxxBackend(DataBackend):
 # Currently, only the initial loading of OWL files is supported which are then classified and realised
 # by the reasoner. All inferred triples are added to the knowledge base.
 #
-class FactxxReasoner(Reasoner):
+class FactxxReasoner(DataDrivenReasoner):
 	def __init__(self):
 		super(FactxxReasoner, self).__init__()
 		logDebug("FactxxReasoner init.")
@@ -213,12 +213,3 @@ class FactxxReasoner(Reasoner):
 
 	def stop(self):
 		pass
-
-	def getDescription(self, indicator: PredicateIndicator) -> PredicateDescription:
-		# NOTE: inferred triples are added to the knowledge base, so no need to respond to queries
-		return None
-
-	def submitQuery(self, query: FramedTriplePattern, ctx: QueryContext) -> TokenBuffer:
-		# NOTE: inferred triples are added to the knowledge base, so no need to respond to queries
-		logWarn("submitQuery not implemented for FactxxReasoner")
-		return None

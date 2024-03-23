@@ -293,7 +293,9 @@ add_library(knowrob SHARED
         src/backend/SPARQLBackend.cpp
         src/queries/parsers/strings.cpp
         src/queries/parsers/terms.cpp
-        src/queries/parsers/formula.cpp)
+        src/queries/parsers/formula.cpp
+        src/reasoner/GoalDrivenReasoner.cpp
+        src/reasoner/DataDrivenReasoner.cpp)
 set(KNOWROB_LIBRARIES
 		${SWIPL_LIBRARIES}
 		${MONGOC_LIBRARIES}

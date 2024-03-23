@@ -26,7 +26,7 @@ ReasonerManager::~ReasonerManager() {
 void ReasonerManager::setDataBackend(const std::shared_ptr<Reasoner> &reasoner,
 									 const std::shared_ptr<DataBackend> &dataBackend) {
 	reasoner->setDataBackend(dataBackend);
-	reasonerBackends_[reasoner->reasonerName()] = dataBackend;
+	reasonerBackends_[reasoner->reasonerName()->stringForm()] = dataBackend;
 }
 
 std::shared_ptr<DataBackend> ReasonerManager::getReasonerBackend(const std::shared_ptr<NamedReasoner> &reasoner) {
@@ -89,14 +89,16 @@ std::shared_ptr<NamedReasoner> ReasonerManager::loadPlugin(const boost::property
 	return definedReasoner;
 }
 
-std::shared_ptr<NamedReasoner> ReasonerManager::addPlugin(std::string_view reasonerID, const std::shared_ptr<Reasoner> &reasoner) {
+std::shared_ptr<NamedReasoner>
+ReasonerManager::addPlugin(std::string_view reasonerID, const std::shared_ptr<Reasoner> &reasoner) {
 	if (pluginPool_.find(reasonerID) != pluginPool_.end()) {
 		KB_WARN("overwriting reasoner with name '{}'", reasonerID);
 	}
 	auto managedReasoner = std::make_shared<NamedReasoner>(reasonerID, reasoner);
-	pluginPool_.emplace(reasonerID, managedReasoner);
+	pluginPool_.emplace(managedReasoner->name(), managedReasoner);
 	reasoner->setReasonerManager(this);
 	reasoner->setReasonerName(reasonerID);
+	initPlugin(managedReasoner);
 	// indicate that the origin `reasonerID` is a reasoner, and thus belongs to the session
 	backendManager_->vocabulary()->importHierarchy()->addDirectImport(
 			backendManager_->vocabulary()->importHierarchy()->ORIGIN_REASONER, reasonerID);
@@ -109,4 +111,19 @@ std::shared_ptr<NamedReasoner> ReasonerManager::addPlugin(std::string_view reaso
 	}
 
 	return managedReasoner;
+}
+
+void ReasonerManager::initPlugin(const std::shared_ptr<NamedReasoner> &namedReasoner) {
+	// check if the reasoner is data-driven
+	auto dataDriven = std::dynamic_pointer_cast<DataDrivenReasoner>(namedReasoner->value());
+	if (dataDriven) {
+		KB_INFO("adding data-driven reasoner with id '{}'.", namedReasoner->name());
+		dataDriven_[namedReasoner->name()] = dataDriven;
+	}
+	// check if the reasoner is goal-driven
+	auto goalDriven = std::dynamic_pointer_cast<GoalDrivenReasoner>(namedReasoner->value());
+	if (goalDriven) {
+		KB_INFO("adding goal-driven reasoner with id '{}'.", namedReasoner->name());
+		goalDriven_[namedReasoner->name()] = goalDriven;
+	}
 }

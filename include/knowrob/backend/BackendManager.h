@@ -51,8 +51,8 @@ namespace knowrob {
 
 	private:
 		std::shared_ptr<Vocabulary> vocabulary_;
-		std::map<std::string, QueryableBackendPtr> persistent_;
-		std::map<std::string, QueryableBackendPtr> queryable_;
+		std::map<std::string_view, QueryableBackendPtr> persistent_;
+		std::map<std::string_view, QueryableBackendPtr> queryable_;
 
 		void initBackend(const std::shared_ptr<NamedBackend> &definedKG);
 	};

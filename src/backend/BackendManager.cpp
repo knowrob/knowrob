@@ -45,7 +45,7 @@ std::shared_ptr<NamedBackend> BackendManager::addPlugin(std::string_view backend
 		KB_WARN("overwriting backend with name '{}'", backendID);
 	}
 	auto managedBackend = std::make_shared<NamedBackend>(backendID, backend);
-	pluginPool_.emplace(backendID, managedBackend);
+	pluginPool_.emplace(managedBackend->name(), managedBackend);
 	initBackend(managedBackend);
 	return managedBackend;
 }

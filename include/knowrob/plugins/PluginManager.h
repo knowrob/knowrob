@@ -127,7 +127,7 @@ namespace knowrob {
 
 		// pool of all plugin instances created via this manager
 		// maps reasoner ID to reasoner instance.
-		std::map<std::string, std::shared_ptr<NamedPlugin<T>>, std::less<>> pluginPool_;
+		std::map<std::string_view, std::shared_ptr<NamedPlugin<T>>, std::less<>> pluginPool_;
 		// maps plugin names to factories used to create plugin instances
 		std::map<std::string, std::shared_ptr<PluginLibrary<T>>, std::less<>> loadedPlugins_;
 		std::map<std::string, std::shared_ptr<PluginModule<T>>, std::less<>> loadedModules_;

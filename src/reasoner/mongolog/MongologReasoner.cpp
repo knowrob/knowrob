@@ -72,7 +72,7 @@ bool MongologReasoner::loadConfig(const PropertyTree &reasonerConfiguration) {
 				MongoKnowledgeGraph::DB_NAME_KNOWROB,
 				MongoKnowledgeGraph::COLL_NAME_TRIPLES
 		);
-		kb()->backendManager()->addPlugin("mongo", knowledgeGraph_);
+		reasonerManager().kb()->backendManager()->addPlugin("mongo", knowledgeGraph_);
 		KB_WARN("Falling back to default configuration for MongoDB!");
 	}
 
@@ -200,7 +200,7 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
 			if (graphTerm->termType() != TermType::ATOMIC) throw QueryError("invalid property term {}", *graphTerm);
 			tripleData.setGraph(((Atomic *) graphTerm.get())->stringForm());
 		} else {
-			tripleData.setGraph(mongolog->vocabulary()->importHierarchy()->defaultGraph());
+			tripleData.setGraph(mongolog->reasonerManager().kb()->vocabulary()->importHierarchy()->defaultGraph());
 		}
 
 		// "c" field
@@ -236,7 +236,7 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
 			}
 		}
 
-		mongolog->kb()->edb()->mergeInsert(mongolog->knowledgeGraph(), tripleData);
+		mongolog->reasonerManager().kb()->edb()->mergeInsert(mongolog->knowledgeGraph(), tripleData);
 		//mongolog->kb()->insertOne(tripleData);
 		return true;
 	} else {

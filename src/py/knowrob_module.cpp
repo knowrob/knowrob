@@ -26,6 +26,8 @@
 #include "knowrob/formulas/PredicateDescription.h"
 #include "knowrob/queries/QueryContext.h"
 #include "knowrob/reasoner/Reasoner.h"
+#include "knowrob/reasoner/DataDrivenReasoner.h"
+#include "knowrob/reasoner/GoalDrivenReasoner.h"
 
 #include "knowrob/py/converter.h"
 #include "knowrob/py/utils.h"
@@ -107,6 +109,8 @@ static inline void register_db_types() {
 
 static inline void register_reasoner_types() {
 	py::createType<Reasoner>();
+	py::createType<DataDrivenReasoner>();
+	py::createType<GoalDrivenReasoner>();
 }
 
 BOOST_PYTHON_MODULE (knowrob) {

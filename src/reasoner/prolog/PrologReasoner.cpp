@@ -36,13 +36,12 @@ KNOWROB_BUILTIN_REASONER("Prolog", PrologReasoner)
 
 bool PrologReasoner::isKnowRobInitialized_ = false;
 
-PrologReasoner::PrologReasoner() : Reasoner() {
+PrologReasoner::PrologReasoner() : GoalDrivenReasoner() {
 	addDataHandler("prolog", [this]
 			(const DataSourcePtr &dataFile) { return consult(dataFile->uri()); });
 }
 
 PrologReasoner::~PrologReasoner() {
-	stopPrologReasoner();
 }
 
 std::string_view PrologReasoner::callFunctor() {
@@ -170,18 +169,6 @@ PredicateDescriptionPtr PrologReasoner::getDescription(const PredicateIndicatorP
 	}
 }
 
-void PrologReasoner::start() {
-	// nothing to do here, Prolog only runs when queries are submitted
-}
-
-void PrologReasoner::stop() {
-	stopPrologReasoner();
-}
-
-void PrologReasoner::stopPrologReasoner() {
-	// TODO: stop and join all worker threads
-}
-
 TokenBufferPtr PrologReasoner::submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) {
 	// context term options:
 	static const auto query_scope_f = "query_scope";
@@ -246,7 +233,7 @@ AnswerYesPtr PrologReasoner::yes(const FramedTriplePatternPtr &literal,
 
 	// create an answer object given the bindings
 	auto yes = std::make_shared<AnswerYes>(bindings);
-	yes->setReasonerTerm(reasonerNameTerm());
+	yes->setReasonerTerm(reasonerName());
 
 	// TODO: set flag to indicate if answer is well-founded or not.
 	//       if prolog was using negation as failure, the answer is not well-founded.
@@ -273,7 +260,7 @@ AnswerNoPtr PrologReasoner::no(const FramedTriplePatternPtr &rdfLiteral) {
 	KB_DEBUG("Prolog has no solution.");
 	// if no solution was found, indicate that via a NegativeAnswer.
 	auto negativeAnswer = std::make_shared<AnswerNo>();
-	negativeAnswer->setReasonerTerm(reasonerNameTerm());
+	negativeAnswer->setReasonerTerm(reasonerName());
 	// however, as Prolog cannot proof negations such an answer is always not well-founded
 	// and can be overruled by a well-founded one.
 	negativeAnswer->setIsUncertain(true, std::nullopt);
