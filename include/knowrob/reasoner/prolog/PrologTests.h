@@ -28,14 +28,14 @@ namespace knowrob {
 	protected:
 		static std::shared_ptr<BackendType> createBackend(const std::string &name, const std::shared_ptr<KnowledgeBase> &kb) {
 			auto db = std::make_shared<BackendType>();
-			kb->backendManager()->addBackend(name, db);
+			kb->backendManager()->addPlugin(name, db);
 			db->initializeBackend(knowrob::PropertyTree());
 			return db;
 		}
 
 		static std::shared_ptr<ReasonerType> createReasoner(const std::string &name, const std::shared_ptr<KnowledgeBase> &kb, const std::shared_ptr<BackendType> &db) {
 			auto r = std::make_shared<ReasonerType>();
-			kb->reasonerManager()->addReasoner(name, r);
+			kb->reasonerManager()->addPlugin(name, r);
 			r->setDataBackend(db);
 			r->loadConfig(knowrob::PropertyTree());
 			return r;

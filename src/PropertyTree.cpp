@@ -7,6 +7,7 @@
 #include "knowrob/formulas/Predicate.h"
 #include "knowrob/terms/Atom.h"
 #include "knowrob/terms/Function.h"
+#include "knowrob/py/utils.h"
 
 using namespace knowrob;
 
@@ -106,4 +107,15 @@ TermPtr PropertyTree::createKeyTerm(std::string_view key, std::string_view delim
 	}
 
 	return last_key;
+}
+
+namespace knowrob::py {
+	template<>
+	void createType<PropertyTree>() {
+		using namespace boost::python;
+		class_<PropertyTree, std::shared_ptr<PropertyTree>>("PropertyTree", init<>())
+				.def("__iter__", range(&PropertyTree::begin, &PropertyTree::end))
+				.def("get", &PropertyTree::get)
+				.def("dataSources", &PropertyTree::dataSources, return_value_policy<copy_const_reference>());
+	}
 }

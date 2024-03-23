@@ -204,7 +204,6 @@ add_library(knowrob SHARED
         src/triples/FramedTriplePattern.cpp
 		src/semweb/ImportHierarchy.cpp
 		src/reasoner/DefinedPredicate.cpp
-		src/reasoner/ReasonerPlugin.cpp
 		src/reasoner/Reasoner.cpp
 		src/reasoner/ReasonerManager.cpp
         src/PropertyTree.cpp
@@ -220,7 +219,6 @@ add_library(knowrob SHARED
 		src/reasoner/esg/ESGReasoner.cpp
         src/backend/QueryableBackend.cpp
         src/backend/BackendManager.cpp
-        src/backend/BackendPlugin.cpp
         src/sources/DataSourceHandler.cpp
         src/sources/OntologyFile.cpp
         src/sources/OntologyParser.cpp
@@ -243,7 +241,6 @@ add_library(knowrob SHARED
         src/triples/Perspective.cpp
 		src/formulas/PredicateIndicator.cpp
 		src/formulas/PredicateDescription.cpp
-		src/reasoner/ReasonerModule.cpp
 		src/queries/AnswerYes.cpp
 		src/queries/AnswerNo.cpp
 		src/queries/AnswerDontKnow.cpp

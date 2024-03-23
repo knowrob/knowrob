@@ -86,9 +86,9 @@ void KnowledgeBase::init() {
 }
 
 void KnowledgeBase::initBackends() {
-	for (auto &pair: backendManager_->backendPool()) {
+	for (auto &pair: backendManager_->plugins()) {
 		auto definedBackend = pair.second;
-		definedBackend->backend()->setVocabulary(vocabulary_);
+		definedBackend->value()->setVocabulary(vocabulary_);
 	}
 }
 
@@ -185,7 +185,7 @@ void KnowledgeBase::configureBackends(const boost::property_tree::ptree &config)
 	if (backendList) {
 		for (const auto &pair: backendList.value()) {
 			KB_LOGGED_TRY_CATCH(pair.first, "load", {
-				backendManager_->loadBackend(pair.second);
+				backendManager_->loadPlugin(pair.second);
 			});
 		}
 	} else {
@@ -198,11 +198,11 @@ void KnowledgeBase::configureReasoner(const boost::property_tree::ptree &config)
 	if (reasonerList) {
 		for (const auto &pair: reasonerList.value()) {
 			KB_LOGGED_TRY_CATCH(pair.first, "load", {
-				auto definedReasoner = reasonerManager_->loadReasoner(pair.second);
+				auto definedReasoner = reasonerManager_->loadPlugin(pair.second);
 				// if reasoner implements DataBackend class, add it to the backend manager
-				auto reasonerBackend = std::dynamic_pointer_cast<DataBackend>(definedReasoner->reasoner());
+				auto reasonerBackend = std::dynamic_pointer_cast<DataBackend>(definedReasoner->value());
 				if (reasonerBackend) {
-					backendManager_->addBackend(definedReasoner->name(), reasonerBackend);
+					backendManager_->addPlugin(definedReasoner->name(), reasonerBackend);
 				}
 			});
 		}
@@ -239,20 +239,20 @@ void KnowledgeBase::loadCommon() {
 }
 
 void KnowledgeBase::startReasoner() {
-	for (auto &pair: reasonerManager_->reasonerPool()) {
+	for (auto &pair: reasonerManager_->plugins()) {
 		// TODO: it would be better to remove reasoner and backends if they throw an exception.
 		//       but doing this for e.g. query evaluation is more difficult where exception occur in a worker thread
 		//       as part of a complex query evaluation pipeline.
 		KB_LOGGED_TRY_CATCH(pair.first, "start", {
-			pair.second->reasoner()->start();
+			pair.second->value()->start();
 		});
 	}
 }
 
 void KnowledgeBase::stopReasoner() {
-	for (auto &pair: reasonerManager_->reasonerPool()) {
+	for (auto &pair: reasonerManager_->plugins()) {
 		KB_LOGGED_TRY_CATCH(pair.first, "stop", {
-			pair.second->reasoner()->stop();
+			pair.second->value()->stop();
 		});
 	}
 }
@@ -487,8 +487,8 @@ TokenBufferPtr KnowledgeBase::submitQuery(const GraphPathQueryPtr &graphQuery) {
 	std::vector<RDFComputablePtr> computableLiterals;
 	for (auto &l: positiveLiterals) {
 		std::vector<std::shared_ptr<Reasoner>> l_reasoner;
-		for (auto &pair: reasonerManager_->reasonerPool()) {
-			auto &r = pair.second->reasoner();
+		for (auto &pair: reasonerManager_->plugins()) {
+			auto &r = pair.second->value();
 			auto descr = r->getLiteralDescription(*l);
 			if (descr) {
 				// TODO: check descr, e.g. about materialization in EDB
@@ -810,19 +810,19 @@ bool KnowledgeBase::removeAllWithOrigin(std::string_view origin) {
 	return edb_->removeAllWithOrigin(origin);
 }
 
-std::shared_ptr<DefinedBackend> KnowledgeBase::findSourceBackend(const FramedTriple &triple) {
+std::shared_ptr<NamedBackend> KnowledgeBase::findSourceBackend(const FramedTriple &triple) {
 	if (!triple.graph()) return {};
 
-	auto definedBackend_withID = backendManager_->getBackendWithID(triple.graph().value());
+	auto definedBackend_withID = backendManager_->getPluginWithID(triple.graph().value());
 	if (definedBackend_withID) return definedBackend_withID;
 
-	auto definedReasoner = reasonerManager_->getReasonerWithID(triple.graph().value());
+	auto definedReasoner = reasonerManager_->getPluginWithID(triple.graph().value());
 	if (definedReasoner) {
 		auto reasonerBackend = reasonerManager_->getReasonerBackend(definedReasoner);
 		if (reasonerBackend) {
-			for (auto &it: backendManager_->backendPool()) {
+			for (auto &it: backendManager_->plugins()) {
 				auto &definedBackend_ofReasoner = it.second;
-				if (definedBackend_ofReasoner->backend() == reasonerBackend) {
+				if (definedBackend_ofReasoner->value() == reasonerBackend) {
 					return definedBackend_ofReasoner;
 				}
 			}
@@ -862,9 +862,9 @@ bool KnowledgeBase::loadDataSource(const DataSourcePtr &source) {
 }
 
 std::optional<std::string> KnowledgeBase::getVersionOfOrigin(
-		const std::shared_ptr<DefinedBackend> &definedBackend, std::string_view origin) const {
+		const std::shared_ptr<NamedBackend> &definedBackend, std::string_view origin) const {
 	// check if the origin was loaded before in this session
-	auto runtimeVersion = definedBackend->getVersionOfOrigin(origin);
+	auto runtimeVersion = definedBackend->value()->getVersionOfOrigin(origin);
 	if (runtimeVersion) return runtimeVersion;
 	// otherwise check if the backend is persistent and if so, ask the persistent backend
 	auto persistentBackend = backendManager_->persistent().find(definedBackend->name());
@@ -874,10 +874,10 @@ std::optional<std::string> KnowledgeBase::getVersionOfOrigin(
 	return {};
 }
 
-std::vector<std::shared_ptr<DefinedBackend>>
+std::vector<std::shared_ptr<NamedBackend>>
 KnowledgeBase::prepareLoad(std::string_view origin, std::string_view newVersion) const {
-	std::vector<std::shared_ptr<DefinedBackend>> backendsToLoad;
-	for (auto &it: backendManager_->backendPool()) {
+	std::vector<std::shared_ptr<NamedBackend>> backendsToLoad;
+	for (auto &it: backendManager_->plugins()) {
 		// check if the ontology is already loaded by the backend,
 		// and if so whether it has the right version.
 		auto definedBackend = it.second;
@@ -886,7 +886,7 @@ KnowledgeBase::prepareLoad(std::string_view origin, std::string_view newVersion)
 			if (currentVersion.value() != newVersion) {
 				backendsToLoad.emplace_back(it.second);
 				// TODO: rather include this operation as part of the transaction below
-				definedBackend->backend()->removeAllWithOrigin(origin);
+				definedBackend->value()->removeAllWithOrigin(origin);
 			}
 		} else {
 			backendsToLoad.emplace_back(it.second);
@@ -898,8 +898,8 @@ KnowledgeBase::prepareLoad(std::string_view origin, std::string_view newVersion)
 void KnowledgeBase::finishLoad(const std::shared_ptr<OntologySource> &source, std::string_view origin,
 							   std::string_view newVersion) {
 	// update the version triple
-	for (auto &it: backendManager_->backendPool()) {
-		it.second->setVersionOfOrigin(origin, newVersion);
+	for (auto &it: backendManager_->plugins()) {
+		it.second->value()->setVersionOfOrigin(origin, newVersion);
 	}
 	for (auto &it: backendManager_->persistent()) {
 		auto persistentBackend = it.second;
@@ -1011,8 +1011,8 @@ bool KnowledgeBase::loadNonOntologySource(const DataSourcePtr &source) const {
 	bool hasHandler = false;
 	bool allSucceeded = true;
 
-	for (auto &kg_pair: backendManager_->backendPool()) {
-		auto backend = kg_pair.second->backend();
+	for (auto &kg_pair: backendManager_->plugins()) {
+		auto backend = kg_pair.second->value();
 		if (backend->hasDataHandler(source)) {
 			if (!backend->loadDataSource(source)) {
 				allSucceeded = false;

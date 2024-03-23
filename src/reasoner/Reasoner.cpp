@@ -167,68 +167,9 @@ namespace knowrob::py {
 		PyObject *self;
 	};
 
-	struct ReasonerWithBackendWrap :
-			public ReasonerWithBackend,
-			boost::python::wrapper<ReasonerWithBackend> {
-		explicit ReasonerWithBackendWrap(PyObject *p)
-				: self(p), ReasonerWithBackend() {}
-
-		// TODO: below duplicates code of ReasonerWrap and DataBackendWrap.
-		//    I could not find a way to make it work with multiple inheritance.
-		//    It seems boost::python::extract<T> can only retrieve one type of an object,
-		//    so a workaround is needed.
-
-		bool loadConfig(const PropertyTree &config) override {
-			return knowrob::py::call_method<bool>(self, "loadConfig", config);
-		}
-
-		bool initializeBackend(const PropertyTree &config) override {
-			return knowrob::py::call_method<bool>(self, "initializeBackend", config);
-		}
-
-		bool insertOne(const FramedTriple &triple) override {
-			return knowrob::py::call_method<bool>(self, "insertOne", &triple);
-		}
-
-		bool insertAll(const TripleContainerPtr &triples) override {
-			return knowrob::py::call_method<bool>(self, "insertAll", triples);
-		}
-
-		bool removeOne(const FramedTriple &triple) override {
-			return knowrob::py::call_method<bool>(self, "removeOne", &triple);
-		}
-
-		bool removeAll(const TripleContainerPtr &triples) override {
-			return knowrob::py::call_method<bool>(self, "removeAll", triples);
-		}
-
-		bool removeAllWithOrigin(std::string_view origin) override {
-			return knowrob::py::call_method<bool>(self, "removeAllWithOrigin", origin.data());
-		}
-
-		PredicateDescriptionPtr getDescription(const PredicateIndicatorPtr &indicator) override {
-			return knowrob::py::call_method<PredicateDescriptionPtr>(self, "getDescription", indicator);
-		}
-
-		TokenBufferPtr submitQuery(const FramedTriplePatternPtr &literal, const QueryContextPtr &ctx) override {
-			return knowrob::py::call_method<TokenBufferPtr>(self, "submitQuery", literal, ctx);
-		}
-
-		void start() override { knowrob::py::call_method<void>(self, "start"); }
-
-		void stop() override { knowrob::py::call_method<void>(self, "stop"); }
-
-	private:
-		PyObject *self;
-	};
-
 	template<>
 	void createType<Reasoner>() {
 		using namespace boost::python;
-		class_<PropertyTree, std::shared_ptr<PropertyTree>>("ReasonerConfiguration", init<>())
-				.def("__iter__", range(&PropertyTree::begin, &PropertyTree::end))
-				.def("get", &PropertyTree::get)
-				.def("dataSources", &PropertyTree::dataSources, return_value_policy<copy_const_reference>());
 		class_<Reasoner, std::shared_ptr<ReasonerWrap>, bases<DataSourceHandler>, boost::noncopyable>
 				("Reasoner", init<>())
 				.def("createTriples", &ReasonerWrap::createTriples)
@@ -243,8 +184,6 @@ namespace knowrob::py {
 				.def("start", &ReasonerWrap::start)
 				.def("stop", &ReasonerWrap::stop)
 				.def("submitQuery", &ReasonerWrap::submitQuery);
-		class_<ReasonerWithBackend, std::shared_ptr<ReasonerWithBackendWrap>, bases<Reasoner, DataBackend>, boost::noncopyable>
-				("ReasonerWithBackend", init<>());
 
 		using InferredTriples = std::vector<std::shared_ptr<FramedTriple>>;
 		boost::python::register_ptr_to_python<std::shared_ptr<FramedTriple>>();

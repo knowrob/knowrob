@@ -17,11 +17,11 @@
 // KnowRob
 #include "knowrob/ThreadPool.h"
 #include "knowrob/terms/Term.h"
-#include "knowrob/reasoner/DefinedReasoner.h"
 #include "PrologEngine.h"
 #include "knowrob/queries/AnswerYes.h"
 #include "PrologBackend.h"
 #include "knowrob/queries/AnswerNo.h"
+#include "knowrob/reasoner/Reasoner.h"
 
 namespace knowrob {
 	/**
@@ -66,7 +66,7 @@ namespace knowrob {
 
 		PrologTerm transformGoal(const PrologTerm &goal);
 
-		static std::shared_ptr<DefinedReasoner> getDefinedReasoner(
+		static std::shared_ptr<NamedReasoner> getDefinedReasoner(
 				const term_t &t_reasonerManager, const term_t &t_reasonerModule);
 
 		std::list<TermPtr> runTests(const std::string &target);

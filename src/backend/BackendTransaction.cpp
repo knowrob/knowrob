@@ -67,7 +67,7 @@ bool Transaction::commit(const FramedTriple &triple, const IRIAtomPtr &reifiedNa
 	ReifiedTriplePtr reification;
 	bool success = true;
 	for (auto &definedBackend: backends_) {
-		auto &backend = definedBackend->backend();
+		auto &backend = definedBackend->value();
 		if (!backend->supports(BackendFeature::TripleContext) && ReifiedTriple::isReifiable(triple)) {
 			if (!reification) reification = std::make_shared<ReifiedTriple>(triple, vocabulary_, reifiedName);
 			for (auto &reified: *reification) {
@@ -124,7 +124,7 @@ bool Transaction::commit(const TripleContainerPtr &triples, const ReifiedNames &
 										  [this](const FramedTriplePtr &triple) { updateVocabulary(*triple); });
 
 	for (auto &definedBackend: backends_) {
-		auto &backend = definedBackend->backend();
+		auto &backend = definedBackend->value();
 		const TripleContainerPtr *backendTriples;
 		if (!backend->supports(BackendFeature::TripleContext)) {
 			if (!reified) reified = std::make_shared<ReificationContainer>(triples, vocabulary_, reifiedNames);

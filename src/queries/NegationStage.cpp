@@ -63,8 +63,8 @@ bool PredicateNegationStage::succeeds(const AnswerYesPtr &answer) {
 		// next check if positive lit is an IDB predicate, if so negation cannot be true.
 		// get list of reasoner that define the literal
 		std::vector<std::shared_ptr<Reasoner>> l_reasoner;
-		for (auto &pair: kb_->reasonerManager()->reasonerPool()) {
-			auto &r = pair.second->reasoner();
+		for (auto &pair: kb_->reasonerManager()->plugins()) {
+			auto &r = pair.second->value();
 			if (r->getLiteralDescription(*instance) != nullptr) {
 				results.push_back(r->submitQuery(instance, ctx_));
 			}

@@ -14,10 +14,8 @@
 #include "knowrob/queries/QueryPipeline.h"
 #include "knowrob/queries/QueryContext.h"
 #include "knowrob/semweb/RDFComputable.h"
-#include "knowrob/reasoner/DefinedReasoner.h"
 #include "knowrob/sources/OntologyFile.h"
 #include "knowrob/backend/QueryableBackend.h"
-#include "knowrob/backend/DefinedBackend.h"
 #include "knowrob/backend/BackendManager.h"
 #include "knowrob/triples/GraphPathQuery.h"
 #include "knowrob/backend/BackendInterface.h"
@@ -173,7 +171,7 @@ namespace knowrob {
 
 		void synchronizeBackends();
 
-		std::shared_ptr<DefinedBackend> findSourceBackend(const FramedTriple &triple);
+		std::shared_ptr<NamedBackend> findSourceBackend(const FramedTriple &triple);
 
 		static DataSourcePtr createDataSource(const boost::property_tree::ptree &subtree);
 
@@ -181,7 +179,7 @@ namespace knowrob {
 
 		void stopReasoner();
 
-		std::vector<std::shared_ptr<DefinedBackend>>
+		std::vector<std::shared_ptr<NamedBackend>>
 		prepareLoad(std::string_view origin, std::string_view newVersion) const;
 
 		void
@@ -196,7 +194,7 @@ namespace knowrob {
 		static DataSourceType getDataSourceType(const std::string &format, const boost::optional<std::string> &language,
 												const boost::optional<std::string> &type);
 
-		std::optional<std::string> getVersionOfOrigin(const std::shared_ptr<DefinedBackend> &definedBackend,
+		std::optional<std::string> getVersionOfOrigin(const std::shared_ptr<NamedBackend> &definedBackend,
 													  std::string_view origin) const;
 
 		std::vector<RDFComputablePtr> createComputationSequence(

@@ -108,16 +108,16 @@ PrologTerm PrologReasoner::getReasonerQuery(const PrologTerm &goal) {
 		   goal;
 }
 
-std::shared_ptr<DefinedReasoner> PrologReasoner::getDefinedReasoner(
+std::shared_ptr<NamedReasoner> PrologReasoner::getDefinedReasoner(
 		const term_t &t_reasonerManager, const term_t &t_reasonerModule) {
 	int i_reasonerManager;
 	if (!PL_get_integer(t_reasonerManager, &i_reasonerManager)) return {};
-	auto reasonerManager = ReasonerManager::getReasonerManager(i_reasonerManager);
+	auto reasonerManager = ReasonerManager::getManager(i_reasonerManager);
 	if (!reasonerManager) return {};
 
 	char *reasonerModule;
 	if (PL_get_atom_chars(t_reasonerModule, &reasonerModule)) {
-		return reasonerManager->getReasonerWithID(reasonerModule);
+		return reasonerManager->getPluginWithID(reasonerModule);
 	} else {
 		return {};
 	}

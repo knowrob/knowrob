@@ -72,7 +72,7 @@ bool MongologReasoner::loadConfig(const PropertyTree &reasonerConfiguration) {
 				MongoKnowledgeGraph::DB_NAME_KNOWROB,
 				MongoKnowledgeGraph::COLL_NAME_TRIPLES
 		);
-		kb()->backendManager()->addBackend("mongo", knowledgeGraph_);
+		kb()->backendManager()->addPlugin("mongo", knowledgeGraph_);
 		KB_WARN("Falling back to default configuration for MongoDB!");
 	}
 
@@ -101,7 +101,7 @@ static inline std::shared_ptr<MongologReasoner> getMongologReasoner(term_t t_rea
 				 *PrologTerm::toKnowRobTerm(t_reasonerManager));
 		return {};
 	}
-	auto reasoner = definedReasoner->reasoner();
+	auto reasoner = definedReasoner->value();
 	auto mongolog = std::dynamic_pointer_cast<MongologReasoner>(reasoner);
 	if (!mongolog) {
 		KB_ERROR("reasoner with id '{}' (manager id: {}) is not a mongolog reasoner.",
@@ -251,7 +251,7 @@ namespace knowrob::testing {
 		static std::shared_ptr<knowrob::MongoKnowledgeGraph>
 		createBackend2(const std::string &name, const std::shared_ptr<KnowledgeBase> &kb) {
 			auto kg = std::make_shared<MongoKnowledgeGraph>();
-			kb->backendManager()->addBackend(name, kg);
+			kb->backendManager()->addPlugin(name, kg);
 			kg->initializeBackend(
 					MongoKnowledgeGraph::DB_URI_DEFAULT,
 					MongoKnowledgeGraph::DB_NAME_TESTS,
@@ -266,7 +266,7 @@ namespace knowrob::testing {
 						const std::shared_ptr<MongoKnowledgeGraph> &db) {
 			auto r = std::make_shared<MongologReasoner>();
 			r->setDataBackend(db);
-			kb->reasonerManager()->addReasoner(name, r);
+			kb->reasonerManager()->addPlugin(name, r);
 			r->loadConfig(knowrob::PropertyTree());
 			r->load_rdf_xml("http://www.ease-crc.org/ont/SOMA.owl");
 			return r;

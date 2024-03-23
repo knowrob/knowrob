@@ -55,7 +55,7 @@ namespace knowrob {
 				const QueryableBackendPtr &queryable,
 				TransactionType type,
 				BackendSelection mode = Excluding,
-				const std::vector<std::shared_ptr<DefinedBackend>> &transactionBackends = {});
+				const std::vector<std::shared_ptr<NamedBackend>> &transactionBackends = {});
 
 		/**
 		 * Removes all triples with a given origin from all backends.

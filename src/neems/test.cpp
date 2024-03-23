@@ -13,7 +13,7 @@ namespace knowrob::testing {
 		static std::shared_ptr<knowrob::MongoKnowledgeGraph>
 		createBackend(const std::string &name, const std::shared_ptr<KnowledgeBase> &kb) {
 			auto kg = std::make_shared<MongoKnowledgeGraph>();
-			kb->backendManager()->addBackend(name, kg);
+			kb->backendManager()->addPlugin(name, kg);
 			kg->initializeBackend(
 					MongoKnowledgeGraph::DB_URI_DEFAULT,
 					MongoKnowledgeGraph::DB_NAME_TESTS,
@@ -26,7 +26,7 @@ namespace knowrob::testing {
 					   const std::shared_ptr<MongoKnowledgeGraph> &db) {
 			auto r = std::make_shared<MongologReasoner>();
 			r->setDataBackend(db);
-			kb->reasonerManager()->addReasoner(name, r);
+			kb->reasonerManager()->addPlugin(name, r);
 			r->loadConfig(knowrob::PropertyTree());
 			r->consult(std::filesystem::path("neems") / "__init__.pl", nullptr, false);
 			r->load_rdf_xml("http://www.ease-crc.org/ont/SOMA.owl");

@@ -8,55 +8,111 @@ from typing import List, Tuple, Union
 
 import traceback
 
+class FactxxBackend(DataBackend):
+	def __init__(self):
+		super(FactxxBackend, self).__init__()
+		logDebug("FactxxBackend init.")
+		self.is_parse_needed = False
+		self.is_update_needed = False
+		self.crs = coras.Coras()
+		self.bnode_map = {}
+
+	def edb(self) -> ConjunctiveGraph:
+		return self.crs._graph
+
+	def parse(self):
+		self.is_parse_needed = False
+		self.crs.parse()
+
+	def get_blank_node(self, iri: str):
+		if iri not in self.bnode_map:
+			self.bnode_map[iri] = BNode(iri)
+		return self.bnode_map[iri]
+
+	def triple_to_python(self, triple: FramedTriple) -> Tuple[Union[BNode,URIRef], URIRef, Union[URIRef,Literal_rdflib,BNode]]:
+		p_uri = URIRef(triple.predicate())
+		if triple.isSubjectIRI():
+			s_uri = URIRef(triple.subject())
+		else:
+			s_uri = self.get_blank_node(triple.subject())
+		if triple.isObjectIRI():
+			o_uri = URIRef(triple.valueAsString())
+		elif triple.isObjectBlank():
+			o_uri = self.get_blank_node(triple.valueAsString())
+		elif triple.xsdType is XSDType.STRING:
+			o_uri = Literal_rdflib(triple.valueAsString())
+		else:
+			o_uri = Literal_rdflib(triple.createStringValue(), datatype=triple.xsdTypeIRI())
+		return s_uri, p_uri, o_uri
+
+	def initializeBackend(self, config: PropertyTree) -> bool:
+		return True
+
+	def insertOne(self, triple: FramedTriple) -> bool:
+		py_triple = self.triple_to_python(triple)
+		self.edb().add(py_triple)
+		self.is_update_needed = True
+		self.is_parse_needed = True
+		return True
+
+	def insertAll(self, triples: TripleContainer) -> bool:
+		# TODO: use addN instead of add
+		# self.edb().addN(FactxxReasoner.triples_to_python(triples))
+		all_true = True
+		for triple in triples:
+			all_true = self.insertOne(triple.get()) and all_true
+		self.is_update_needed = True
+		self.is_parse_needed = True
+		return all_true
+
+	def removeOne(self, triple: FramedTriple) -> bool:
+		self.edb().remove(self.triple_to_python(triple))
+		self.is_update_needed = True
+		self.is_parse_needed = True
+		return True
+
+	def removeAll(self, triples: TripleContainer) -> bool:
+		all_true = True
+		for triple in triples:
+			all_true = self.removeOne(triple.get()) and all_true
+		self.is_update_needed = True
+		self.is_parse_needed = True
+		return all_true
+
+	def removeAllWithOrigin(self, origin: str) -> bool:
+		logWarn("removeAllWithOrigin not implemented for FactxxReasoner")
+		return False
+
 ## @brief A reasoner that uses the pyfactxx library to perform reasoning on an OWL knowledge base.
 # A reasoner that uses the pyfactxx library to perform reasoning on an OWL knowledge base.
 # Currently, only the initial loading of OWL files is supported which are then classified and realised
 # by the reasoner. All inferred triples are added to the knowledge base.
 #
-class FactxxReasoner(ReasonerWithBackend):
-	"""
-	"""
-
+class FactxxReasoner(Reasoner):
 	def __init__(self):
 		super(FactxxReasoner, self).__init__()
 		logDebug("FactxxReasoner init.")
-
 		# add all inferred triples to the knowledge base?
 		self.synch_to_kb = True
 		# skip inferred triples with blank nodes?
 		self.ignore_bnodes = True
-		self.bnode_map = {}
+		self.storage = None
 
-		self.crs = coras.Coras()
-		self.is_parse_needed = False
-		self.is_update_needed = False
-
-	def loadConfig(self, config: ReasonerConfiguration) -> bool:
+	def loadConfig(self, config: PropertyTree) -> bool:
 		return True
 
-	def initializeBackend(self, config: ReasonerConfiguration) -> bool:
-		return True
-
-	def load_owl(self, uri: str, file_format: str) -> bool:
-		logInfo("pyfactxx loading file {}.".format(uri))
-		self.crs.load(uri, format=file_format)
-		logDebug("pyfactxx file loaded.")
-		self.is_parse_needed = True
-		self.is_update_needed = True
-		return True
+	def setDataBackend(self, storage: DataBackend):
+		# ensure that the storage is a FactxxBackend
+		if not isinstance(storage, FactxxBackend):
+			raise RuntimeError("FactxxReasoner requires a FactxxBackend")
+		logDebug("FactxxBackend storage has been initialized.")
+		self.storage = storage
 
 	def factxx(self):
-		return self.crs.reasoner
-
-	def edb(self) -> ConjunctiveGraph:
-		return self.crs._graph
+		return self.storage.crs.reasoner
 
 	def is_consistent(self) -> bool:
 		return self.factxx().is_consistent()
-
-	def parse(self):
-		self.is_parse_needed = False
-		self.crs.parse()
 
 	def include_triple(self, row: ResultRow):
 		if self.ignore_bnodes:
@@ -86,27 +142,6 @@ class FactxxReasoner(ReasonerWithBackend):
 			return False
 		return True
 
-	def get_blank_node(self, iri: str):
-		if iri not in self.bnode_map:
-			self.bnode_map[iri] = BNode(iri)
-		return self.bnode_map[iri]
-
-	def triple_to_python(self, triple: FramedTriple) -> Tuple[Union[BNode,URIRef], URIRef, Union[URIRef,Literal_rdflib,BNode]]:
-		p_uri = URIRef(triple.predicate())
-		if triple.isSubjectIRI():
-			s_uri = URIRef(triple.subject())
-		else:
-			s_uri = self.get_blank_node(triple.subject())
-		if triple.isObjectIRI():
-			o_uri = URIRef(triple.valueAsString())
-		elif triple.isObjectBlank():
-			o_uri = self.get_blank_node(triple.valueAsString())
-		elif triple.xsdType is XSDType.STRING:
-			o_uri = Literal_rdflib(triple.valueAsString())
-		else:
-			o_uri = Literal_rdflib(triple.createStringValue(), datatype=triple.xsdTypeIRI())
-		return s_uri, p_uri, o_uri
-
 	@staticmethod
 	def triple_from_python(kb_triple: FramedTriple, row: ResultRow):
 		kb_triple.subject = str(row[0])
@@ -124,7 +159,7 @@ class FactxxReasoner(ReasonerWithBackend):
 		# retrieve all inferred triples
 		# NOTE: this also includes the triples that were already inferred before.
 		query = 'SELECT ?a ?b ?c WHERE {?a ?b ?c}'
-		result_rows: List[ResultRow] = self.crs.query(query, scope='inferred')
+		result_rows: List[ResultRow] = self.storage.crs.query(query, scope='inferred')
 
 		# create a vector of KB triples at once
 		filtered_rows = list(filter(self.include_triple, result_rows))
@@ -144,15 +179,15 @@ class FactxxReasoner(ReasonerWithBackend):
 		self.setInferredTriples(kb_triples)
 
 	def update(self):
-		if not self.is_update_needed:
+		if not self.storage.is_update_needed:
 			return
-		self.is_update_needed = False
+		self.storage.is_update_needed = False
 
 		reasoner = self.factxx()
 
-		if self.is_parse_needed:
+		if self.storage.is_parse_needed:
 			try:
-				self.parse()
+				self.storage.parse()
 			except Exception as e:
 				logError("pyfactxx parse failed: " + str(e))
 				traceback.print_exc()
@@ -178,46 +213,6 @@ class FactxxReasoner(ReasonerWithBackend):
 
 	def stop(self):
 		pass
-
-	def insertOne(self, triple: FramedTriple) -> bool:
-		py_triple = self.triple_to_python(triple)
-		self.edb().add(py_triple)
-		self.is_update_needed = True
-		self.is_parse_needed = True
-		return True
-
-	def insertAll(self, triples: TripleContainer) -> bool:
-		# TODO: use addN instead of add
-		# self.edb().addN(FactxxReasoner.triples_to_python(triples))
-		all_true = True
-		for triple in triples:
-			all_true = self.insertOne(triple.get()) and all_true
-		self.is_update_needed = True
-		self.is_parse_needed = True
-		return all_true
-
-	def removeOne(self, triple: FramedTriple) -> bool:
-		self.edb().remove(self.triple_to_python(triple))
-		self.is_update_needed = True
-		self.is_parse_needed = True
-		return True
-
-	def removeAll(self, triples: TripleContainer) -> bool:
-		# TODO: there is no trivial interface to remove all triples from the graph at once.
-		#       however there seems to be a db transaction interface. e.g.:
-		#       self.edb().commit() is there, and rollbacks are supported as well.
-		#       so it should be possible to implement removeAll by using a transaction.
-
-		all_true = True
-		for triple in triples:
-			all_true = self.removeOne(triple.get()) and all_true
-		self.is_update_needed = True
-		self.is_parse_needed = True
-		return all_true
-
-	def removeAllWithOrigin(self, origin: str) -> bool:
-		logWarn("removeAllWithOrigin not implemented for FactxxReasoner")
-		return False
 
 	def getDescription(self, indicator: PredicateIndicator) -> PredicateDescription:
 		# NOTE: inferred triples are added to the knowledge base, so no need to respond to queries

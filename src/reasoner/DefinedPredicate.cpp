@@ -13,7 +13,7 @@ DefinedPredicate::DefinedPredicate(const std::shared_ptr<PredicateIndicator> &in
 }
 
 bool DefinedPredicate::addReasoner(
-		const std::shared_ptr<DefinedReasoner> &managedReasoner,
+		const std::shared_ptr<NamedReasoner> &managedReasoner,
 		const std::shared_ptr<PredicateDescription> &description) {
 	if (reasonerEnsemble_.empty()) {
 		predicateType_ = description->type();

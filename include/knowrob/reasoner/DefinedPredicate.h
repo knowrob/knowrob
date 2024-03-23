@@ -7,7 +7,9 @@
 #define KNOWROB_DEFINED_PREDICATE_H_
 
 #include "knowrob/formulas/Predicate.h"
-#include "knowrob/reasoner/DefinedReasoner.h"
+#include "knowrob/formulas/PredicateDescription.h"
+#include "knowrob/reasoner/Reasoner.h"
+#include "knowrob/plugins/NamedPlugin.h"
 
 namespace knowrob {
 	/**
@@ -26,7 +28,7 @@ namespace knowrob {
 		 * @param definition a predicate description.
 		 * @return true if the reasoner was added successfully.
 		 */
-		bool addReasoner(const std::shared_ptr<DefinedReasoner> &managedReasoner,
+		bool addReasoner(const std::shared_ptr<NamedReasoner> &managedReasoner,
 						 const std::shared_ptr<PredicateDescription> &definition);
 
 		/**
@@ -37,12 +39,12 @@ namespace knowrob {
 		/**
 		 * @return set of reasoners associated to this description.
 		 */
-		const std::set<std::shared_ptr<DefinedReasoner>> &reasonerEnsemble() const { return reasonerEnsemble_; }
+		const std::set<std::shared_ptr<NamedReasoner>> &reasonerEnsemble() const { return reasonerEnsemble_; }
 
 	protected:
 		const std::shared_ptr<PredicateIndicator> indicator_;
 		PredicateType predicateType_;
-		std::set<std::shared_ptr<DefinedReasoner>> reasonerEnsemble_;
+		std::set<std::shared_ptr<NamedReasoner>> reasonerEnsemble_;
 	};
 }
 

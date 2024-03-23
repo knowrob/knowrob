@@ -18,7 +18,7 @@ std::shared_ptr<transaction::Transaction> BackendInterface::createTransaction(
 		const QueryableBackendPtr &queryable,
 		TransactionType transactionType,
 		BackendSelection transactionTargets,
-		const std::vector<std::shared_ptr<DefinedBackend>> &backends) {
+		const std::vector<std::shared_ptr<NamedBackend>> &backends) {
 	std::shared_ptr<transaction::Transaction> transaction;
 	if (transactionType == Insert) {
 		transaction = std::make_shared<transaction::Insert>(queryable, vocabulary());
@@ -30,13 +30,13 @@ std::shared_ptr<transaction::Transaction> BackendInterface::createTransaction(
 			transaction->addBackend(backend);
 		}
 	} else {
-		for (auto &definedBackend: backendManager_->backendPool()) {
-			auto &backend = definedBackend.second->backend();
+		for (auto &definedBackend: backendManager_->plugins()) {
+			auto &backend = definedBackend.second->value();
 
 			bool skip = false;
 			if (transactionTargets == Excluding) {
 				for (auto &excluded: backends) {
-					if (excluded && backend == excluded->backend()) {
+					if (excluded && backend == excluded->value()) {
 						skip = true;
 						break;
 					}
@@ -52,14 +52,14 @@ std::shared_ptr<transaction::Transaction> BackendInterface::createTransaction(
 bool BackendInterface::removeAllWithOrigin(std::string_view origin) {
 	// remove all triples with a given origin from all backends.
 	std::vector<std::shared_ptr<ThreadPool::Runner>> transactions;
-	for (auto &it: backendManager_->backendPool()) {
+	for (auto &it: backendManager_->plugins()) {
 		auto definedBackend = it.second;
 		// create a worker goal that performs the transaction
 		auto transaction = std::make_shared<ThreadPool::LambdaRunner>(
 				[definedBackend, origin](const ThreadPool::LambdaRunner::StopChecker &) {
-					if (definedBackend->backend()->removeAllWithOrigin(origin)) {
+					if (definedBackend->value()->removeAllWithOrigin(origin)) {
 						// unset version of origin in backend
-						definedBackend->setVersionOfOrigin(origin, std::nullopt);
+						definedBackend->value()->setVersionOfOrigin(origin, std::nullopt);
 					} else {
 						KB_WARN("removal of triples with origin '{}' from backend '{}' failed!", origin,
 								definedBackend->name());

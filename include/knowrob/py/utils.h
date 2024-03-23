@@ -32,6 +32,13 @@ namespace knowrob::py {
 	}
 
 	/**
+	 * Resolve a module path to a file path.
+	 * @param modulePath the module path.
+	 * @return the file path.
+	 */
+	std::string resolveModulePath(std::string_view modulePath);
+
+	/**
 	 * A template function to create a new type in Python.
 	 * @tparam T The C++ type to map into Python.
 	 */

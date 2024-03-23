@@ -37,6 +37,7 @@ static inline void register_common_types() {
 	py::createType<Logger>();
 	py::createType<Perspective>();
 	py::createType<ModalOperator>();
+	py::createType<PropertyTree>();
 }
 
 static inline void register_term_types() {

@@ -21,7 +21,7 @@ static inline std::shared_ptr<ImportHierarchy> getImportHierarchy(term_t t_manag
 			PrologReasoner::getDefinedReasoner(t_manager, t_reasoner);
 	if (!definedReasoner) return null;
 	auto prologReasoner =
-			std::dynamic_pointer_cast<PrologReasoner>(definedReasoner->reasoner());
+			std::dynamic_pointer_cast<PrologReasoner>(definedReasoner->value());
 	return prologReasoner ? prologReasoner->vocabulary()->importHierarchy() : null;
 }
 
@@ -29,7 +29,7 @@ static inline KnowledgeBase *getKnowledgeBase(term_t t_manager, term_t t_reasone
 	auto definedReasoner =
 			PrologReasoner::getDefinedReasoner(t_manager, t_reasoner);
 	if (!definedReasoner) return nullptr;
-	return definedReasoner->reasoner()->reasonerManager().kb();
+	return definedReasoner->value()->reasonerManager().kb();
 }
 
 foreign_t sw_current_graph3(term_t t_manager, term_t t_reasoner, term_t t_graph) {

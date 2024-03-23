@@ -10,7 +10,6 @@
 #include "knowrob/ThreadPool.h"
 #include "knowrob/backend/Backend.h"
 #include "knowrob/triples/TripleContainer.h"
-#include "DefinedBackend.h"
 #include "QueryableBackend.h"
 #include "knowrob/reification/ReificationContainer.h"
 
@@ -34,7 +33,7 @@ namespace knowrob::transaction {
 		 * Adds a backend to the transaction.
 		 * @param backend the backend to add.
 		 */
-		void addBackend(const std::shared_ptr<DefinedBackend> &backend) { backends_.push_back(backend); }
+		void addBackend(const std::shared_ptr<NamedBackend> &backend) { backends_.push_back(backend); }
 
 		/**
 		 * Commits a triple to all backends.
@@ -69,7 +68,7 @@ namespace knowrob::transaction {
 	protected:
 		std::shared_ptr<Vocabulary> vocabulary_;
 		std::shared_ptr<QueryableBackend> queryable_;
-		std::vector<std::shared_ptr<DefinedBackend>> backends_;
+		std::vector<std::shared_ptr<NamedBackend>> backends_;
 		bool isRemoval_;
 
 		virtual bool doCommit(const FramedTriple &triple, const DataBackendPtr &backend) = 0;

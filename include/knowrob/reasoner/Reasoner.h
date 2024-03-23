@@ -21,6 +21,7 @@
 #include "knowrob/semweb/Vocabulary.h"
 #include "knowrob/backend/Backend.h"
 #include "knowrob/terms/Atom.h"
+#include "knowrob/plugins/NamedPlugin.h"
 
 namespace knowrob {
 	// forward declarations
@@ -182,18 +183,23 @@ namespace knowrob {
 		void setReasonerName(std::string_view name);
 	};
 
-	/**
-	 * In some cases reasoner and backend cannot really be separated.
-	 * The whole point of the separation is to re-use backends with different reasoners.
-	 * So if this is not possible, then the reasoner can also implement the backend interface.
-	 */
-	class ReasonerWithBackend : public Reasoner, public DataBackend {
-	public:
-		ReasonerWithBackend() : Reasoner(), DataBackend() {}
-
-		// avoid a self-reference
-		void setDataBackend(const DataBackendPtr &backend) final {}
-	};
+	using NamedReasoner = NamedPlugin<Reasoner>;
+	using ReasonerFactory = PluginFactory<Reasoner>;
 }
+
+/**
+ * Define a reasoner plugin.
+ * The macro generates two functions that are used as entry points for loading the plugin.
+ * First, a factory function is defined that creates instances of @classType.
+ * This will only work when @classType has a single argument constructor that
+ * accepts a string as argument (the reasoner instance ID).
+ * Second, a function is generated that exposes the plugin name.
+ * @param classType the type of the reasoner, must be a subclass of IReasoner
+ * @param pluginName a plugin identifier, e.g. the name of the reasoner type.
+ */
+#define REASONER_PLUGIN(classType, pluginName) extern "C" { \
+        std::shared_ptr<knowrob::Reasoner> knowrob_createPlugin(std::string_view componentID) \
+            { return std::make_shared<classType>(componentID); } \
+        const char* knowrob_getPluginName() { return pluginName; } }
 
 #endif //KNOWROB_REASONER_H_

@@ -62,7 +62,7 @@ public:
 		auto backendManager = std::make_shared<BackendManager>(vocabulary);
 		backend_ = std::make_shared<BackendInterface>(backendManager);
 		kg_ = createBackend<BackendType>();
-		backendManager->addBackend("test", kg_);
+		backendManager->addPlugin("test", kg_);
 		queryable_ = kg_;
 		PrefixRegistry::registerPrefix("swrl_test", "http://knowrob.org/kb/swrl_test#");
 	}

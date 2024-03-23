@@ -4,7 +4,6 @@
  */
 
 #include <filesystem>
-#include <utility>
 
 #include "knowrob/Logger.h"
 #include "knowrob/backend/BackendManager.h"
@@ -13,135 +12,56 @@
 
 using namespace knowrob;
 
-std::map<uint32_t, BackendManager *> BackendManager::backendManagers_ = {};
-uint32_t BackendManager::managerIDCounter_ = 0;
-
-auto &getBackendFactories() {
-	static std::map<std::string, std::shared_ptr<BackendFactory>, std::less<>> x;
-	return x;
-}
-
 BackendManager::BackendManager(const std::shared_ptr<Vocabulary> &vocabulary)
-		: vocabulary_(vocabulary),
-		  backendIndex_(0) {
-	std::lock_guard<std::mutex> scoped_lock(staticMutex_);
-	managerID_ = (managerIDCounter_++);
-	backendManagers_[managerID_] = this;
+		: PluginManager(),
+		  vocabulary_(vocabulary) {
 }
 
-BackendManager::~BackendManager() {
-	std::lock_guard<std::mutex> scoped_lock(staticMutex_);
-	backendManagers_.erase(managerID_);
-}
-
-BackendManager *BackendManager::getManager(uint32_t managerID) {
-	auto it = backendManagers_.find(managerID);
-	if (it != backendManagers_.end()) {
-		return it->second;
-	} else {
-		return nullptr;
-	}
-}
-
-DataBackendPtr BackendManager::loadBackend(const boost::property_tree::ptree &config) {
-	auto lib = config.get_optional<std::string>("lib");
-	auto type = config.get_optional<std::string>("type");
-	auto name = config.get_optional<std::string>("name");
-
+std::shared_ptr<NamedBackend> BackendManager::loadPlugin(const boost::property_tree::ptree &config) {
 	// get a backend factory
-	std::shared_ptr<BackendFactory> factory;
-	if (lib.has_value()) {
-		// use factory in DLL
-		factory = loadBackendPlugin(lib.value());
-	} else if (type.has_value()) {
-		auto &backendFactories = getBackendFactories();
-		// map type name to a factory
-		const auto &it = backendFactories.find(type.value());
-		if (it == backendFactories.end()) {
-			KB_WARN("no factory registered for backend with type '{}'.", type.value());
-		} else {
-			factory = it->second;
-		}
-	} else {
-		KB_WARN("missing 'type' or 'lib' key in backend config.");
-	}
+	std::shared_ptr<BackendFactory> factory = findFactory(config);
 	// make sure factory was found above
-	if (!factory) {
-		throw BackendError("failed to load a backend.");
-	}
+	if (!factory) throw BackendError("failed to load a backend.");
 	// create a reasoner id, or use name property
-	std::string backendID;
-	if (name.has_value()) {
-		backendID = name.value();
-	} else {
-		backendID = std::string(factory->name()) + std::to_string(backendIndex_);
-	}
+	std::string backendID = getPluginID(factory, config);
 	KB_INFO("Using backend `{}` with type `{}`.", backendID, factory->name());
 
 	// create a new DataBackend instance
-	auto definedBackend = factory->createBackend(backendID);
-	definedBackend->backend()->setVocabulary(vocabulary());
+	auto definedBackend = factory->create(backendID);
+	definedBackend->value()->setVocabulary(vocabulary());
 
-	PropertyTree reasonerConfig(&config);
-	if (!definedBackend->backend()->initializeBackend(reasonerConfig)) {
+	PropertyTree pluginConfig(&config);
+	if (!definedBackend->value()->initializeBackend(pluginConfig)) {
 		KB_WARN("Backend `{}` failed to loadConfig.", backendID);
 	} else {
-		addBackend(definedBackend);
+		addPlugin(definedBackend);
 	}
-	// increase reasonerIndex_
-	backendIndex_ += 1;
 
-	return definedBackend->backend();
+	return definedBackend;
 }
 
-std::shared_ptr<BackendPlugin> BackendManager::loadBackendPlugin(std::string_view path) {
-	auto absPath = std::filesystem::absolute(path);
-	auto it = loadedPlugins_.find(absPath);
-	if (it == loadedPlugins_.end()) {
-		auto p = std::make_shared<BackendPlugin>(absPath.c_str());
-		auto jt = loadedPlugins_.insert(std::pair<std::string,
-				std::shared_ptr<BackendPlugin>>(absPath, p));
-		if (jt.first->second->loadDLL()) {
-			return jt.first->second;
-		}
-	} else if (it->second->isLoaded()) {
-		return it->second;
-	}
-	KB_WARN("Failed to open backend library at path '{}'.", path);
-	return {};
-}
-
-bool BackendManager::addFactory(std::string_view typeName, const std::shared_ptr<BackendFactory> &factory) {
-	auto &backendFactories = getBackendFactories();
-	if (backendFactories.find(typeName) != backendFactories.end()) {
-		KB_WARN("overwriting factory for backend type '{}'", typeName);
-	}
-	backendFactories.emplace(typeName, factory);
-	return true;
-}
-
-std::shared_ptr<DefinedBackend> BackendManager::addBackend(std::string_view backendID, const DataBackendPtr &backend) {
-	if (backendPool_.find(backendID) != backendPool_.end()) {
+std::shared_ptr<NamedBackend> BackendManager::addPlugin(std::string_view backendID, const DataBackendPtr &backend) {
+	if (pluginPool_.find(backendID) != pluginPool_.end()) {
 		KB_WARN("overwriting backend with name '{}'", backendID);
 	}
-	auto managedBackend = std::make_shared<DefinedBackend>(backendID, backend);
-	backendPool_.emplace(backendID, managedBackend);
+	auto managedBackend = std::make_shared<NamedBackend>(backendID, backend);
+	pluginPool_.emplace(backendID, managedBackend);
 	initBackend(managedBackend);
 	return managedBackend;
 }
 
-void BackendManager::addBackend(const std::shared_ptr<DefinedBackend> &definedKG) {
-	if (backendPool_.find(definedKG->name()) != backendPool_.end()) {
+void BackendManager::addPlugin(const std::shared_ptr<NamedBackend> &definedKG) {
+	if (pluginPool_.find(definedKG->name()) != pluginPool_.end()) {
 		KB_WARN("overwriting backend with name '{}'", definedKG->name());
 	}
-	backendPool_[definedKG->name()] = definedKG;
+	pluginPool_[definedKG->name()] = definedKG;
 	initBackend(definedKG);
 }
 
-void BackendManager::initBackend(const std::shared_ptr<DefinedBackend> &definedKG) {
-	definedKG->backend()->setVocabulary(vocabulary());
+void BackendManager::initBackend(const std::shared_ptr<NamedBackend> &definedKG) {
+	definedKG->value()->setVocabulary(vocabulary());
 	// check if the backend is a QueryableBackend, if so store it in the queryable_ map
-	auto queryable = std::dynamic_pointer_cast<QueryableBackend>(definedKG->backend());
+	auto queryable = std::dynamic_pointer_cast<QueryableBackend>(definedKG->value());
 	if (queryable) {
 		KB_INFO("adding queryable backend with id '{}'.", definedKG->name());
 		queryable_[definedKG->name()] = queryable;
@@ -150,18 +70,5 @@ void BackendManager::initBackend(const std::shared_ptr<DefinedBackend> &definedK
 	if (queryable && queryable->isPersistent()) {
 		KB_INFO("adding persistent backend with id '{}'.", definedKG->name());
 		persistent_[definedKG->name()] = queryable;
-	}
-}
-
-void BackendManager::removeBackend(const std::shared_ptr<DefinedBackend> &backend) {
-	backendPool_.erase(backend->name());
-}
-
-std::shared_ptr<DefinedBackend> BackendManager::getBackendWithID(std::string_view backendID) {
-	auto it = backendPool_.find(backendID);
-	if (it != backendPool_.end()) {
-		return it->second;
-	} else {
-		return {};
 	}
 }

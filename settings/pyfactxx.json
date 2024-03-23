@@ -18,18 +18,24 @@
   "data-backends": [
     {
       "type": "MongoDB",
-      "name": "mongodb",
+      "name": "mongo",
       "host": "localhost",
       "port": 27017,
-      "db": "mongolog1",
+      "db": "factxx",
       "read-only": false
+    },
+    {
+      "name": "factxx",
+      "type": "FactxxBackend",
+      "module": "reasoner/owl/FactxxReasoner.py"
     }
   ],
   "reasoner": [
     {
+      "name": "factxx",
       "type": "FactxxReasoner",
-      "name": "FactxxReasoner",
-      "module": "reasoner/owl/FactxxReasoner.py"
+      "module": "reasoner/owl/FactxxReasoner.py",
+      "data-backend": "factxx"
     }
   ]
 }
