@@ -702,7 +702,7 @@ mongolog_assert(triple(S,P,O), Scope) :-
 	current_reasoner_manager(ReasonerManager),
 	current_reasoner_module(ReasonerModule),
 	sw_default_graph(G),
-	% TODO: include other fields of modal frame!
+	% TODO: include other context parameter
 	mng_assert_triple_cpp(ReasonerManager, ReasonerModule,
 			S, P, O, G,
 			SinceValue, UntilValue, _).
@@ -1260,8 +1260,7 @@ user:term_expansion((?>(Head,Body)), Export) :-
     % note: expansion happens only the first time the file is loaded e.g. via use_module.
     %   a consequitive loading does not trigger expansion again but only makes the predicates
     %   created here available in the module that loads the file again.
-    % FIXME: behavior described above may cause problems in case file is loaded multiple
-    %    times with different reasoner contexts
+    % FIXME: behavior described above may cause problems in case file is loaded multiple times with different reasoner contexts
 	expand_ask_rule_(SourceURL, ReasonerModule, Head, Body, Export).
 
 %%
@@ -1341,7 +1340,7 @@ expand_instantiations(not(Goal), not(Goal)) :- !.
 expand_instantiations(forall(Cond,Action), forall(Cond,Action)) :- !.
 % meta predicates like `,/2`, `call/1`, `once/1`, `->\2` that receive a goal as an argument,
 % and where the goal argument can be expanded.
-% FIXME: findall-family of predicates and instantiations in their goal argument (see blackboard.pl)
+% FIXME: findall-family of predicates and instantiations in their goal argument
 expand_instantiations(Head, Expanded) :-
 	user:predicate_property(Head, meta_predicate(MetaSpecifier)), !,
 	Head =.. [HeadFunctor|Args],

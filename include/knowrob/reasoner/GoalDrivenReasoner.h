@@ -13,8 +13,7 @@
 namespace knowrob {
 	/**
 	 * A reasoner that supports goal-driven reasoning.
-	 * Goal-driven reasoning is a form of reasoning where the reasoner is asked to evaluate a query
-	 * and return the results of the query.
+	 * Goal-driven reasoning is a form of reasoning where the reasoner is asked to evaluate a query.
 	 * This is in contrast to data-driven reasoning, where the reasoner is started and then infers
 	 * additional knowledge from the data.
 	 */

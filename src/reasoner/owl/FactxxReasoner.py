@@ -92,6 +92,7 @@ class FactxxReasoner(DataDrivenReasoner):
 	def __init__(self):
 		super(FactxxReasoner, self).__init__()
 		logDebug("FactxxReasoner init.")
+		self.enableFeature(DataDrivenReasonerFeature.UpdatesItself)
 		# add all inferred triples to the knowledge base?
 		self.synch_to_kb = True
 		# skip inferred triples with blank nodes?
@@ -144,8 +145,8 @@ class FactxxReasoner(DataDrivenReasoner):
 
 	@staticmethod
 	def triple_from_python(kb_triple: FramedTriple, row: ResultRow):
-		kb_triple.subject = str(row[0])
-		kb_triple.predicate = str(row[1])
+		kb_triple.setSubject(str(row[0]))
+		kb_triple.setPredicate(str(row[1]))
 
 		if type(row[2]) is Literal_rdflib:
 			literal: Literal_rdflib = row[2]
@@ -166,17 +167,18 @@ class FactxxReasoner(DataDrivenReasoner):
 		if len(filtered_rows) == 0:
 			logDebug("pyfactxx has no inferences.")
 			return
-		kb_triples = self.createTriples(len(filtered_rows))
+		reasonerEvent = ReplacementEvent(len(filtered_rows))
 
 		# convert result to knowrob triples
 		triple_index = 0
-		for kb_triple, row in zip(kb_triples, filtered_rows):
+		for row in filtered_rows:
+			kb_triple = reasonerEvent.triple(triple_index)
 			self.triple_from_python(kb_triple, row)
 			triple_index += 1
 
 		logDebug("pyfactxx inferred " + str(triple_index) + " triples (without bnodes).")
 		# set the inferred triples in the knowledge base
-		self.setInferredTriples(kb_triples)
+		self.emit(reasonerEvent)
 
 	def update(self):
 		if not self.storage.is_update_needed:
@@ -210,6 +212,3 @@ class FactxxReasoner(DataDrivenReasoner):
 		# start a thread for the reasoner where realise is called.
 		self.pushWork(self.update)
 		#self.update()
-
-	def stop(self):
-		pass

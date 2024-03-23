@@ -600,6 +600,14 @@ namespace knowrob {
 
 		FramedTriple *operator->() const { return ptr; }
 
+		bool operator==(const FramedTriplePtr &other) const {
+			return ptr==other.ptr || (ptr && other.ptr && *ptr == *other.ptr);
+		}
+
+		bool operator<(const FramedTriplePtr &other) const {
+			return (ptr && other.ptr) ? (*ptr < *other.ptr) : (ptr < other.ptr);
+		}
+
 		FramedTriple &get() const { return *ptr; }
 	};
 }

@@ -239,9 +239,6 @@ AnswerYesPtr PrologReasoner::yes(const FramedTriplePatternPtr &literal,
 	auto yes = std::make_shared<AnswerYes>(bindings);
 	yes->setReasonerTerm(reasonerName());
 
-	// TODO: set flag to indicate if answer is well-founded or not.
-	//       if prolog was using negation as failure, the answer is not well-founded.
-
 	// set the solution scope, if reasoner specified it
 	auto answerFrame_rw = createAnswerFrame(answerFrameTerm);
 	GraphSelectorPtr answerFrame_ro;

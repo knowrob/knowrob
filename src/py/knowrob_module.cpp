@@ -110,6 +110,7 @@ static inline void register_reasoner_types() {
 	py::createType<Reasoner>();
 	py::createType<DataDrivenReasoner>();
 	py::createType<GoalDrivenReasoner>();
+	py::createType<reasoner::Event>();
 }
 
 BOOST_PYTHON_MODULE (knowrob) {

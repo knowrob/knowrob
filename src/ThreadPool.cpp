@@ -3,10 +3,8 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-// STD
 #include <stdexcept>
 #include <utility>
-// KnowRob
 #include <knowrob/Logger.h>
 #include <knowrob/ThreadPool.h>
 #include <boost/python/errors.hpp>
@@ -163,11 +161,13 @@ void ThreadPool::Runner::join() {
 }
 
 void ThreadPool::Runner::runInternal() {
+	isTerminated_ = false;
+	hasStopRequest_ = false;
 	// do the work
 	try {
 		run();
 	}
-	catch (const boost::python::error_already_set&) {
+	catch (const boost::python::error_already_set &) {
 		PythonError py_error;
 		if (exceptionHandler_) {
 			exceptionHandler_(py_error);

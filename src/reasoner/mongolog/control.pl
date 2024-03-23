@@ -79,20 +79,6 @@ mongolog:step_expand('->'(If,Then), Epanded) :-
 	% (If -> Then) -> (If -> Then ; fail)
 	mongolog:step_expand(';'('->'(If,Then),fail), Epanded).
 
-%% TODO: :Condition *-> :Action ; :Else
-% This construct implements the so-called‘soft-cut'.
-% The control is defined as follows: If Condition succeeds at least once,
-% the semantics is the same as (call(Condition), Action).
-% If Condition does not succeed, the semantics is that of (\+ Condition, Else).
-% In other words, if Condition succeeds at least once, simply behave as the
-% conjunction of call(Condition) and Action, otherwise execute Else.
-% The construct is known under the name if/3 in some other Prolog implementations. 
-%
-%mongolog:step_expand(
-%		';'('*->'(Condition,Action),Else),
-%		';'(X,Y)) :-
-%	fail.
-	
 %% :Goal1 ; :Goal2
 % Make sure goals of disjunction are expanded.
 %
@@ -315,8 +301,7 @@ get_varkeys(Ctx, ParentVars,
 has_cut('!') :- !.
 has_cut(Goal) :-
 	is_list(Goal), !,
-	% FIXME: cut was replaced with limit before. seems at the moment
-	%        we cannot distinguish cut from regular limit(1) here :/
+	% FIXME: cut was replaced with limit before. seems at the moment we cannot distinguish cut from regular limit(1) here :/
 	memberchk(limit(1,_),Goal).
 has_cut(Goal) :-
 	comma_list(Goal,List),
