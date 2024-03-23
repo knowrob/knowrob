@@ -290,30 +290,24 @@ void MongoKnowledgeGraph::count(const ResourceCounter &callback) const {
 	}
 }
 
-void MongoKnowledgeGraph::foreach(const TripleVisitor &visitor) const {
-	TripleCursor cursor(tripleCollection_);
+void MongoKnowledgeGraph::iterate(TripleCursor &cursor, const TripleVisitor &visitor) {
 	FramedTripleView tripleData;
-	while (cursor.nextTriple(tripleData)) {
-		visitor(tripleData);
+	FramedTriplePtr triplePtr;
+	triplePtr.ptr = &tripleData;
+	// Mongo cursor own the allocation, and the memory of a document will be deallocated by the cursor during iteration.
+	// @see https://mongoc.org/libmongoc/current/mongoc_cursor_next.html
+	// So it cannot be allowed that the visitor takes over ownership, hence owned is set to false.
+	triplePtr.owned = false;
+
+	// iterate over matching documents
+	while (cursor.nextTriple(*triplePtr.ptr)) {
+		visitor(triplePtr);
 	}
 }
 
-void MongoKnowledgeGraph::match(const FramedTriplePattern &query, const TripleVisitor &visitor) {
-	bool b_isTaxonomicProperty;
-	if (query.propertyTerm()->termType() == TermType::ATOMIC) {
-		b_isTaxonomicProperty = vocabulary_->isTaxonomicProperty(((Atomic *) query.propertyTerm().get())->stringForm());
-	} else {
-		b_isTaxonomicProperty = false;
-	}
+void MongoKnowledgeGraph::foreach(const TripleVisitor &visitor) const {
 	TripleCursor cursor(tripleCollection_);
-	// filter documents by triple pattern
-	MongoTriplePattern mngQuery(query, b_isTaxonomicProperty, vocabulary_->importHierarchy());
-	cursor.filter(mngQuery.bson());
-	// iterate over matching documents
-	FramedTripleView tripleData;
-	while (cursor.nextTriple(tripleData)) {
-		visitor(tripleData);
-	}
+	iterate(cursor, visitor);
 }
 
 void MongoKnowledgeGraph::batch(const TripleHandler &callback) const {
@@ -322,7 +316,14 @@ void MongoKnowledgeGraph::batch(const TripleHandler &callback) const {
 	uint32_t currentSize = 0;
 
 	while (true) {
-		if (!cursor.nextTriple(*batchData[currentSize].ptr)) {
+		auto &current = batchData[currentSize];
+		if (current.ptr && current.owned) {
+			delete current.ptr;
+		}
+		current.ptr = new FramedTripleCopy();
+		current.owned = true;
+
+		if (!cursor.nextTriple(*current.ptr)) {
 			break;
 		}
 		currentSize++;
@@ -337,6 +338,20 @@ void MongoKnowledgeGraph::batch(const TripleHandler &callback) const {
 		auto batch = std::make_shared<ProxyTripleContainer>(&batchData);
 		callback(batch);
 	}
+}
+
+void MongoKnowledgeGraph::match(const FramedTriplePattern &query, const TripleVisitor &visitor) {
+	bool b_isTaxonomicProperty;
+	if (query.propertyTerm()->termType() == TermType::ATOMIC) {
+		b_isTaxonomicProperty = vocabulary_->isTaxonomicProperty(((Atomic *) query.propertyTerm().get())->stringForm());
+	} else {
+		b_isTaxonomicProperty = false;
+	}
+	TripleCursor cursor(tripleCollection_);
+	// filter documents by triple pattern
+	MongoTriplePattern mngQuery(query, b_isTaxonomicProperty, vocabulary_->importHierarchy());
+	cursor.filter(mngQuery.bson());
+	iterate(cursor, visitor);
 }
 
 template<typename T>

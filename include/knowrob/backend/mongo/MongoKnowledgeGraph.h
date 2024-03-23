@@ -16,6 +16,7 @@
 #include "knowrob/formulas/FirstOrderLiteral.h"
 #include "BindingsCursor.h"
 #include "MongoTaxonomy.h"
+#include "TripleCursor.h"
 
 namespace knowrob {
 	/**
@@ -125,6 +126,8 @@ namespace knowrob {
 		std::shared_ptr<mongo::Collection> oneCollection_;
 		std::shared_ptr<mongo::MongoTaxonomy> taxonomy_;
 		bool isReadOnly_;
+
+		static void iterate(mongo::TripleCursor &cursor, const TripleVisitor &visitor);
 
 		void initializeMongo();
 

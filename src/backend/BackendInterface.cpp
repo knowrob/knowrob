@@ -91,15 +91,20 @@ bool BackendInterface::mergeInsert(const QueryableBackendPtr &backend, const Fra
 	pat->setIsOccasionalTerm(groundable(Numeric::trueAtom()));
 	// Construct a merged triple
 	FramedTripleView mergedTriple(triple);
-	// TODO: copy of original triples can be avoided by switching to FramedTriplePtr and taking over ownership in the loop.
 	// TODO: query for individual name of reified triple and hand it to remove.
 	//       can be done by using query of original backend, or if the query can be changed to return the id
 	std::vector<FramedTriplePtr> overlappingTriples;
-	match(backend, *pat, [&](const FramedTriple &matchedTriple) {
-		if (mergedTriple.mergeFrame(matchedTriple)) {
+	match(backend, *pat, [&](const FramedTriplePtr &matchedTriple) {
+		if (mergedTriple.mergeFrame(*matchedTriple)) {
 			auto &x = overlappingTriples.emplace_back();
-			x.ptr = new FramedTripleCopy(matchedTriple);
 			x.owned = true;
+			// try to take over ownership of matched triple
+			if (matchedTriple.owned) {
+				x.ptr = matchedTriple.ptr;
+				matchedTriple.owned = false;
+			} else {
+				x.ptr = new FramedTripleCopy(*matchedTriple);
+			}
 		}
 	});
 	if (!overlappingTriples.empty()) {
@@ -139,20 +144,27 @@ void BackendInterface::foreach(const QueryableBackendPtr &backend, const TripleV
 	// the UnReificationContainer uses triple views, but memory of original triples can be
 	// lost in the loop. So we need to store the original triples in a vector, and create
 	// a view on them in the UnReificationContainer.
-	// TODO: copy of original triples can be avoided by switching to FramedTriplePtr and taking over ownership in the loop.
-	std::vector<FramedTripleCopy> originalTriples;
+	std::vector<FramedTriplePtr> originalTriples;
 	// finally loop over all original triples
-	backend->foreach([&](const FramedTriple &triple) {
-		if (ReifiedTriple::isPartOfReification(triple)) {
-			auto &copy = originalTriples.emplace_back(triple);
-			unReifiedTriples.add(copy);
+	backend->foreach([&](const FramedTriplePtr &triple) {
+		if (ReifiedTriple::isPartOfReification(*triple)) {
+			auto &copy = originalTriples.emplace_back();
+			copy.owned = true;
+			// try to take over ownership of triple
+			if (triple.owned) {
+				copy.ptr = triple.ptr;
+				triple.owned = false;
+			} else {
+				copy.ptr = new FramedTripleCopy(*triple.ptr);
+			}
+			unReifiedTriples.add(*copy.ptr);
 		} else {
 			visitor(triple);
 		}
 	});
 	// after looping over all original triples, also visit the un-reified ones
 	for (auto &triple: unReifiedTriples) {
-		visitor(*triple.ptr);
+		visitor(triple);
 	}
 }
 
@@ -262,41 +274,44 @@ void BackendInterface::match(const QueryableBackendPtr &backend, const FramedTri
 			});
 
 			backend->query(reified, [&](const BindingsPtr &bindings) {
-				FramedTripleView triple;
-				if (q.instantiateInto(triple, bindings)) {
+				FramedTriplePtr triple;
+				triple.ptr = new FramedTripleView();
+				triple.owned = true;
+
+				if (q.instantiateInto(*triple, bindings)) {
 					if (bindings->contains(v_begin->name())) {
 						auto &t_begin = bindings->get(v_begin->name());
 						if (t_begin->isNumeric()) {
-							triple.setBegin(std::static_pointer_cast<Numeric>(t_begin)->asDouble());
+							triple->setBegin(std::static_pointer_cast<Numeric>(t_begin)->asDouble());
 						}
 					}
 					if (bindings->contains(v_end->name())) {
 						auto &t_end = bindings->get(v_end->name());
 						if (t_end->isNumeric()) {
-							triple.setEnd(std::static_pointer_cast<Numeric>(t_end)->asDouble());
+							triple->setEnd(std::static_pointer_cast<Numeric>(t_end)->asDouble());
 						}
 					}
 					if (bindings->contains(v_confidence->name())) {
 						auto &t_confidence = bindings->get(v_confidence->name());
 						if (t_confidence->isNumeric()) {
-							triple.setConfidence(std::static_pointer_cast<Numeric>(t_confidence)->asDouble());
+							triple->setConfidence(std::static_pointer_cast<Numeric>(t_confidence)->asDouble());
 						}
 					}
 					if (bindings->contains(v_uncertain->name())) {
 						auto &t_uncertain = bindings->get(v_uncertain->name());
 						if (t_uncertain->isNumeric()) {
-							triple.setIsUncertain(std::static_pointer_cast<Boolean>(t_uncertain)->asBoolean());
+							triple->setIsUncertain(std::static_pointer_cast<Boolean>(t_uncertain)->asBoolean());
 						}
 					} else {
-						triple.setIsUncertain(false);
+						triple->setIsUncertain(false);
 					}
 					if (bindings->contains(v_occasional->name())) {
 						auto &t_occasional = bindings->get(v_occasional->name());
 						if (t_occasional->isNumeric()) {
-							triple.setIsOccasional(std::static_pointer_cast<Boolean>(t_occasional)->asBoolean());
+							triple->setIsOccasional(std::static_pointer_cast<Boolean>(t_occasional)->asBoolean());
 						}
 					} else {
-						triple.setIsOccasional(false);
+						triple->setIsOccasional(false);
 					}
 					visitor(triple);
 				}

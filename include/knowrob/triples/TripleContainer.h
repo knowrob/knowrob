@@ -184,7 +184,7 @@ namespace knowrob {
 
 	using TripleContainerPtr = std::shared_ptr<TripleContainer>;
 	using TripleHandler = std::function<void(const TripleContainerPtr &)>;
-	using TripleVisitor = std::function<void(const FramedTriple &)>;
+	using TripleVisitor = std::function<void(const FramedTriplePtr &)>;
 
 	using MutableTripleContainerPtr = std::shared_ptr<MutableTripleContainer>;
 	using MutableTripleHandler = std::function<void(const MutableTripleContainerPtr &)>;

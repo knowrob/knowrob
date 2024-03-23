@@ -24,7 +24,7 @@ std::vector<std::string> QueryableBackend::getOrigins() {
 	static auto v_version = std::make_shared<Variable>("Version");
 	std::vector<std::string> origins;
 	match(FramedTriplePattern(v_origin, versionProperty, v_version),
-		  [&](const FramedTriple &triple) { origins.emplace_back(triple.subject()); });
+		  [&](const FramedTriplePtr &triple) { origins.emplace_back(triple->subject()); });
 	return origins;
 }
 
@@ -41,7 +41,7 @@ std::optional<std::string> QueryableBackend::getVersionOfOrigin(std::string_view
 	static auto v_version = std::make_shared<Variable>("Version");
 	std::optional<std::string> version;
 	match(FramedTriplePattern(std::make_shared<Atom>(origin), versionProperty, v_version),
-		  [&](const FramedTriple &triple) { version = triple.createStringValue(); });
+		  [&](const FramedTriplePtr &triple) { version = triple->createStringValue(); });
 	return version;
 }
 
@@ -51,20 +51,33 @@ void QueryableBackend::dropSessionOrigins() {
 	removeAllWithOrigin(ImportHierarchy::ORIGIN_SESSION);
 }
 
+namespace knowrob {
+	class FramedTripleView_withBindings : public FramedTripleView {
+	public:
+		explicit FramedTripleView_withBindings(const BindingsPtr &bindings) : bindings_(bindings) {}
+	private:
+		const BindingsPtr &bindings_;
+	};
+}
+
 void QueryableBackend::match(const FramedTriplePattern &q, const TripleVisitor &visitor) {
 	auto graph_query = std::make_shared<GraphQuery>(
 			std::make_shared<GraphPattern>(std::make_shared<FramedTriplePattern>(q)),
 			DefaultQueryContext());
 	query(graph_query, [&](const BindingsPtr &bindings) {
-		FramedTripleView triple;
-		q.instantiateInto(triple, bindings);
-		visitor(triple);
+		FramedTriplePtr triplePtr;
+		// create a triple view that holds a reference to the bindings.
+		// this is done to allow the visitor to take over the ownership of the triple.
+		triplePtr.ptr = new FramedTripleView_withBindings(bindings);
+		triplePtr.owned = true;
+		q.instantiateInto(*triplePtr, bindings);
+		visitor(triplePtr);
 	});
 }
 
 bool QueryableBackend::contains(const FramedTriple &triple) {
 	bool hasTriple = false;
-	match(FramedTriplePattern(triple), [&hasTriple](const FramedTriple &) {
+	match(FramedTriplePattern(triple), [&hasTriple](const FramedTriplePtr &) {
 		hasTriple = true;
 	});
 	return hasTriple;
@@ -73,7 +86,7 @@ bool QueryableBackend::contains(const FramedTriple &triple) {
 void QueryableBackend::foreach(const TripleVisitor &visitor) const {
 	batch([&](const TripleContainerPtr &container) {
 		for (auto &triple: *container) {
-			visitor(*triple);
+			visitor(triple);
 		}
 	});
 }

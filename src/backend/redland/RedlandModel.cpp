@@ -461,10 +461,10 @@ void RedlandModel::match(const FramedTriplePattern &query, const TripleVisitor &
 	while (!librdf_stream_end(stream)) {
 		auto rdf_statement = librdf_stream_get_object(stream);
 		triples->add(rdf_statement->subject, rdf_statement->predicate, rdf_statement->object);
-		auto &triple = *triples->begin()->ptr;
+		auto &triple = *triples->begin();
 
 		if (query.objectOperator() != FilterType::EQ) {
-			if (query.filter(triple)) visitor(triple);
+			if (query.filter(*triple)) visitor(triple);
 		} else {
 			visitor(triple);
 		}
