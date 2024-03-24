@@ -2183,7 +2183,6 @@
         <rdf:type rdf:resource="&srdl2-comp;UrdfLink"/>
         <rdf:type rdf:resource="&srdl2-comp;Camera"/>
         <srdl2-comp:urdfName>kinect_link</srdl2-comp:urdfName>
-        <!-- FIXME(daniel): camera info might be wrong. -->
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.01</srdl2-comp:mass_value>
         <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_ixx>
         <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>
@@ -2714,7 +2713,6 @@
         <rdf:type rdf:resource="&srdl2-comp;Camera"/>
         <srdl2-comp:urdfName>blackfly_camera</srdl2-comp:urdfName>
         <knowrob:pathToCadModel rdf:datatype="&xsd;string">package://saphari_robot_description/meshes/blackfly_camera.stl</knowrob:pathToCadModel>
-        <!-- FIXME(daniel): camera info wrong. -->
         <srdl2-comp:mass_value rdf:datatype="&qudt-unit;Kilogram">0.01</srdl2-comp:mass_value>
         <srdl2-comp:inertia_ixx rdf:datatype="&qudt-unit;Kilogram">0.001</srdl2-comp:inertia_ixx>
         <srdl2-comp:inertia_ixy rdf:datatype="&qudt-unit;Kilogram">0.0</srdl2-comp:inertia_ixy>

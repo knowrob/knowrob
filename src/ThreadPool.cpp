@@ -133,10 +133,9 @@ void ThreadPool::Worker::run() {
 
 	isTerminated_ = true;
 	// tell the thread pool that a worker thread exited
-	// FIXME: seems that during pool destruction, any override of finalizeWorker
-	//   is not called! it's not really critical because it only concerns system shutdown
-	//   as pools are usually used for the whole duration of program execution.
-	threadPool_->finalizeWorker();
+	if (threadPool_->finalizeWorker_) {
+		threadPool_->finalizeWorker_();
+	}
 	// note: counter indicates that there are finished threads in workerThreads_ list.
 	threadPool_->numFinishedThreads_ += 1;
 	threadPool_->numActiveWorker_ -= 1;
@@ -195,8 +194,6 @@ void ThreadPool::Runner::runInternal() {
 
 void ThreadPool::Runner::stop(bool wait) {
 	// toggle stop request flag on
-	// TODO: provide an interface to notify runner implementation about stop request.
-	//    but it wouldn't be of use for PrologReasoner at the moment.
 	hasStopRequest_ = true;
 	// wait for the runner to be finished if requested
 	if (wait) {

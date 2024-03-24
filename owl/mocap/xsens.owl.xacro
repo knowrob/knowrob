@@ -32,7 +32,6 @@
         <owl:imports rdf:resource="package://srdl/owl/srdl2-comp.owl"/>
     </owl:Ontology>
 
-   <!-- TODO: Better Individual Naming!! Avoid name clashes! -->
   <!-- =========================================== -->
   <!-- |   Xacro Macros                          | -->
   <!-- =========================================== -->

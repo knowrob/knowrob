@@ -26,6 +26,11 @@ bool PrologEngine::isPrologInitialized_ = false;
 
 PrologEngine::PrologEngine(uint32_t maxNumThreads)
 		: ThreadPool(maxNumThreads) {
+	finalizeWorker_ = [] {
+		// destroy the engine previously bound to this thread
+		PL_thread_destroy_engine();
+		KB_DEBUG("destroyed Prolog engine");
+	};
 	initializeProlog();
 }
 
@@ -96,12 +101,6 @@ void PrologEngine::initializeProlog() {
 
 	consult(std::filesystem::path("reasoner") / "prolog" / "__init__.pl", "user", false);
 	KB_DEBUG("KnowRob __init__.pl has been consulted.");
-}
-
-void PrologEngine::finalizeWorker() {
-	// destroy the engine previously bound to this thread
-	PL_thread_destroy_engine();
-	KB_DEBUG("destroyed Prolog engine");
 }
 
 void PrologEngine::pushGoal(const std::shared_ptr<ThreadPool::Runner> &goal, const ErrorHandler &errHandler) {

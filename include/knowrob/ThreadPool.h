@@ -157,6 +157,11 @@ namespace knowrob {
 			std::function<void(const StopChecker&)> fn_;
 		};
 
+	protected:
+		// is called to finalize each worker thread
+		// Note: a virtual method is avoided as these cannot be called in destructors.
+		std::function<void()> finalizeWorker_;
+
 	private:
 		// list of threads doing work
 		std::list<Worker *> workerThreads_;
@@ -177,9 +182,6 @@ namespace knowrob {
 
 		// is called initially in each worker thread
 		virtual bool initializeWorker() { return true; }
-
-		// is called to finalize each worker thread
-		virtual void finalizeWorker() {}
 	};
 
 	/**

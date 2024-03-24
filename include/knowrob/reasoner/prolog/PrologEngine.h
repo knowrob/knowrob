@@ -107,9 +107,6 @@ namespace knowrob {
 
 		// Override ThreadPool
 		bool initializeWorker() override;
-
-		// Override ThreadPool
-		void finalizeWorker() override;
 	};
 }
 
