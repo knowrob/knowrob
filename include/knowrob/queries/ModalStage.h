@@ -1,6 +1,7 @@
-//
-// Created by daniel on 31.08.23.
-//
+/*
+ * This file is part of KnowRob, please consult
+ * https://github.com/knowrob/knowrob for license details.
+ */
 
 #ifndef KNOWROB_MODAL_STAGE_H
 #define KNOWROB_MODAL_STAGE_H
