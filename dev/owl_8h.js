@@ -1,0 +1,25 @@
+var owl_8h =
+[
+    [ "isAnnotationPropertyIRI", "owl_8h.html#afbc66b25da18a255701b3012aa948788", null ],
+    [ "isClassIRI", "owl_8h.html#a4cac3fe8e5e50419b6ad1b79f3c285f7", null ],
+    [ "isDatatypePropertyIRI", "owl_8h.html#a84f618800c0ac17c1960cc800a925a29", null ],
+    [ "isInverseOfIRI", "owl_8h.html#abaa1e22d78c06115fcba2cbf7e3c1c86", null ],
+    [ "isObjectPropertyIRI", "owl_8h.html#afe7c22ec9748c826bd60a1a6528fbe53", null ],
+    [ "isReflexivePropertyIRI", "owl_8h.html#aed5b4687b4b0aefccc7b1060f8caf805", null ],
+    [ "isSymmetricPropertyIRI", "owl_8h.html#a74e5779e4f72c4a49e6b59615f834b93", null ],
+    [ "isTransitivePropertyIRI", "owl_8h.html#acdb1fc94cb9bb2e5721da8e5e7ffbaad", null ],
+    [ "AnnotationProperty", "owl_8h.html#ad1f8c86a3dd15b4115e91754cf294481", null ],
+    [ "Class", "owl_8h.html#adb2975fff2389a68feebcebc3ab6dcbd", null ],
+    [ "DatatypeProperty", "owl_8h.html#af8976471ea5a3d7e47ab2cb5654ce312", null ],
+    [ "imports", "owl_8h.html#a8a1cc74b1bdf7bc740a6251cc7dafc14", null ],
+    [ "inverseOf", "owl_8h.html#a08aef27f36c881bf1866dc608c2c2477", null ],
+    [ "NamedIndividual", "owl_8h.html#a60830b899d37180c3d8bc9d26d044c79", null ],
+    [ "ObjectProperty", "owl_8h.html#a2589023a7f06a221210797ad314e0aa6", null ],
+    [ "prefix", "owl_8h.html#a8722f339297a6fa0cb560befcf3e4cf5", null ],
+    [ "ReflexiveProperty", "owl_8h.html#ac02dbed274f47a3f9d1f107c2ff84f44", null ],
+    [ "Restriction", "owl_8h.html#a7b66c67b95518dee5e330e62f32cd287", null ],
+    [ "SymmetricProperty", "owl_8h.html#afedab086a5cb4a8a1beb95a07fe05548", null ],
+    [ "Thing", "owl_8h.html#a883eb3061ec2b85d40d42f247bbea313", null ],
+    [ "TransitiveProperty", "owl_8h.html#a56fe7aa02f53088e32f31d9fad8e3635", null ],
+    [ "versionInfo", "owl_8h.html#a6d4c1329606e02e86bf12a4e390f0f98", null ]
+];

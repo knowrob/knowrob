@@ -1,0 +1,7 @@
+<map id="knowrob::Answer" name="knowrob::Answer">
+<area shape="rect" id="node1" title=" " alt="" coords="240,80,375,107"/>
+<area shape="rect" id="node3" href="$classknowrob_1_1_answer_dont_know.html" title=" " alt="" coords="5,155,207,181"/>
+<area shape="rect" id="node4" href="$classknowrob_1_1_answer_no.html" title=" " alt="" coords="231,155,383,181"/>
+<area shape="rect" id="node5" href="$classknowrob_1_1_answer_yes.html" title=" " alt="" coords="407,155,562,181"/>
+<area shape="rect" id="node2" href="$classknowrob_1_1_token.html" title=" " alt="" coords="246,5,369,32"/>
+</map>

@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DUL.pl -- Predicates for the DOLCE+DnS Ultralite ontology.</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>DUL.pl -- Predicates for the DOLCE+DnS Ultralite ontology.</h1>
+
+<p>
+DUL is a lightweight, easy-to-apply foundational ontology
+for modeling physical and social contexts.</p>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="http://www.ontologydesignpatterns.org/ont/dul/DUL.owl">http://www.ontologydesignpatterns.org/ont/dul/DUL.owl</a></dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_object/1"><b class="pred">is_object</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Object'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_quality/1"><b class="pred">is_quality</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Quality'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_concept/1"><b class="pred">is_concept</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Concept'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_role/1"><b class="pred">is_role</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Role'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_agent/1"><b class="pred">is_agent</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Agent'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_physical_object/1"><b class="pred">is_physical_object</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'PhysicalObject'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_physical_artifact/1"><b class="pred">is_physical_artifact</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'PhysicalArtifact'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_social_object/1"><b class="pred">is_social_object</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'SocialObject'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_quality_type/2"><b class="pred">has_quality_type</b><var class="arglist">(+Entity, ?Type)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Relates an entity to its types that are sub-classes
+of the Quality concept.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- named individual</td></tr>
+<tr><td><var>Type</var></td><td class="argdescr">- class resource</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_object_type/2"><b class="pred">has_object_type</b><var class="arglist">(+Entity, ?Type)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Relates an entity to its types that are sub-classes
+of the Object concept.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- named individual</td></tr>
+<tr><td><var>Type</var></td><td class="argdescr">- class resource</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_location/2"><b class="pred">has_location</b><var class="arglist">(?Object, ?Location)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">A generic, relative spatial location, holding between any entities. E.g.
+<ul>
+<li>'the cat is on the mat',</li>
+<li>'Omar is in Samarcanda',</li>
+<li>'the wound is close to the femural artery'.
+@param <var>Object</var> named individual
+@param <var>Location</var> named individual</li>
+</ul>
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_role/2"><b class="pred">has_role</b><var class="arglist">(?Entity, ?Role)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Relates an object to its roles.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- named individual</td></tr>
+<tr><td><var>Role</var></td><td class="argdescr">- named individual</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_part/2"><b class="pred">has_part</b><var class="arglist">(?Entity, ?Part)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Relates an object to its parts.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- IRI atom</td></tr>
+<tr><td><var>Part</var></td><td class="argdescr">- IRI atom
+
+<p>
+<code class="nofile">TODO</code>: not object related, probably best to add a module <a class="file" href="">DUL.pl</a> and add it there</p></td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_event/1"><b class="pred">is_event</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Event'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_event_type/1"><b class="pred">is_event_type</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'EventType'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_action/1"><b class="pred">is_action</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Action'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_task/1"><b class="pred">is_task</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Task'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_process/1"><b class="pred">is_process</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Process'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_participant/3"><b class="pred">has_participant</b><var class="arglist">(+Evt, ?Participant, ?Class)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">A relation between an object and a process, e.g.
+<ul>
+<li>'John took part in the discussion',</li>
+<li>'a large mass of snow fell during the avalanche', or</li>
+<li>'a cook, some sugar, flour, etc. are all present in the cooking of a cake'.
+@param <var>Evt</var> An individual of type dul:'Event'.
+@param <var>Participant</var> An individual of type dul:'Object'.
+@param <var>Class</var> The most specific type of <var>Participant</var>.</li>
+</ul>
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_classified_by/2"><b class="pred">is_classified_by</b><var class="arglist">(+Evt, ?Tsk)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Evt</var></td><td class="argdescr">- The Event</td></tr>
+<tr><td><var>Task</var></td><td class="argdescr">- The task that classifies the Event</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="executes_task/2"><b class="pred">executes_task</b><var class="arglist">(?Act, ?Tsk)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">A relation between an action and a task, e.g. 'putting some water in a pot
+and putting the pot on a fire until the water starts bubbling'
+executes the task 'boiling'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Act</var></td><td class="argdescr">- An individual of type dul:'Action'.</td></tr>
+<tr><td><var>Tsk</var></td><td class="argdescr">- An individual of type dul:'Task'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="task_role/2"><b class="pred">task_role</b><var class="arglist">(?Tsk, ?Role)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">A relation between roles and tasks, e.g.
+'students have the duty of giving exams'
+(i.e. the <var>Role</var> 'student' hasTask the Task 'giving exams').
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Tsk</var></td><td class="argdescr">- An individual of type dul:'Task'.</td></tr>
+<tr><td><var>Role</var></td><td class="argdescr">- An individual of type dul:'<var>Role</var>'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="task_role_type/3"><b class="pred">task_role_type</b><var class="arglist">(?Tsk, ?Role, ?RoleType)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Same as <a href="DUL.html#task_role/2">task_role/2</a> but in addition unifies the
+type of the parameter with the third argument.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Tsk</var></td><td class="argdescr">- An individual of type dul:'Task'.</td></tr>
+<tr><td><var>Role</var></td><td class="argdescr">- An individual of type dul:'<var>Role</var>'.</td></tr>
+<tr><td><var>RoleType</var></td><td class="argdescr">- A sub-class of dul:'<var>Role</var>'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="task_role_range/3"><b class="pred">task_role_range</b><var class="arglist">(?Tsk, ?Role, ?Range)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Same as <a href="DUL.html#task_role/2">task_role/2</a> but in addition unifies the
+range of the parameter with the third argument.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Tsk</var></td><td class="argdescr">- An individual of type dul:'Task'.</td></tr>
+<tr><td><var>Role</var></td><td class="argdescr">- An individual of type dul:'<var>Role</var>'.</td></tr>
+<tr><td><var>Range</var></td><td class="argdescr">- A sub-class of dul:'Object'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_region/1"><b class="pred">is_region</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Region'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_parameter/1"><b class="pred">is_parameter</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Parameter'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_space_region/1"><b class="pred">is_space_region</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'SpaceRegion'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_amount/1"><b class="pred">is_amount</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Amount'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_physical_attribute/1"><b class="pred">is_physical_attribute</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'PhysicalAttribute'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_social_attribute/1"><b class="pred">is_social_attribute</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'SocialAttribute'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_time_interval/1"><b class="pred">is_time_interval</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'TimeInterval'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_region/2"><b class="pred">has_region</b><var class="arglist">(?Entity, ?Region)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">A relation between entities and regions, e.g.
+<ul>
+<li>'the number of wheels of that truck is 12',</li>
+<li>'the time of the experiment is August 9th, 2004',</li>
+<li>'the whale has been localized at 34 degrees E, 20 degrees S'.
+@param <var>Entity</var> An entity IRI.
+@param <var>Region</var> An region IRI.</li>
+</ul>
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_parameter/2"><b class="pred">has_parameter</b><var class="arglist">(?Entity, ?Param)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">A Concept can have a Parameter that constrains the attributes
+that a classified <var>Entity</var> can have in a certain Situation,
+e.g. a WheelDriver Role definedIn the ItalianTrafficLaw has
+a MinimumAge parameter on the Amount 16.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+<tr><td><var>Param</var></td><td class="argdescr">- An parameter IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_parameter/3"><b class="pred">has_parameter</b><var class="arglist">(?Entity, ?Param, ?ParamType)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Same as <a href="DUL.html#has_parameter/2">has_parameter/2</a> but in addition unifies the
+type of the parameter with the third argument.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- entity IRI.</td></tr>
+<tr><td><var>Param</var></td><td class="argdescr">- parameter IRI.</td></tr>
+<tr><td><var>Param</var></td><td class="argdescr">- parameter type IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_parameter_range/3"><b class="pred">has_parameter_range</b><var class="arglist">(?Entity, ?Param, ?Range)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Same as <a href="DUL.html#has_parameter/2">has_parameter/2</a> but in addition unifies the
+range of the parameter with the third argument.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- entity IRI.</td></tr>
+<tr><td><var>Param</var></td><td class="argdescr">- parameter IRI.</td></tr>
+<tr><td><var>Range</var></td><td class="argdescr">- parameter range IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_assignment/2"><b class="pred">has_assignment</b><var class="arglist">(?Param, ?Region)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Associates a parameter to an assignment.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Param</var></td><td class="argdescr">- parameter IRI.</td></tr>
+<tr><td><var>Region</var></td><td class="argdescr">- region IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_data_value/2"><b class="pred">has_data_value</b><var class="arglist">(?Entity, ?DataValue)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">A datatype property that encodes values from a datatype for an <var>Entity</var>.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- entity IRI.</td></tr>
+<tr><td><var>DataValue</var></td><td class="argdescr">- typed data value.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_time_interval/2"><b class="pred">has_time_interval</b><var class="arglist">(+Entity, ?Interval)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_description/1"><b class="pred">is_description</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Description'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_situation/1"><b class="pred">is_situation</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Situation'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_goal/1"><b class="pred">is_goal</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Goal'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_design/1"><b class="pred">is_design</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Design'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_diagnosis/1"><b class="pred">is_diagnosis</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Diagnosis'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_plan/1"><b class="pred">is_plan</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Plan'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_plan_execution/1"><b class="pred">is_plan_execution</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'PlanExecution'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_norm/1"><b class="pred">is_norm</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Norm'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_transition/1"><b class="pred">is_transition</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of dul:'Transition'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="plan_has_goal/2"><b class="pred">plan_has_goal</b><var class="arglist">(?Plan, ?Goal)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Relates a plan to its goal.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Plan</var></td><td class="argdescr">- An individual of type dul:'<var>Plan</var>'.</td></tr>
+<tr><td><var>Goal</var></td><td class="argdescr">- An individual of type dul:'Description'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="satisfies/2"><b class="pred">satisfies</b><var class="arglist">(?Sit, ?Descr)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">A relation between a Situation and a Description,
+e.g. the execution of a Plan satisfies that plan.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Sit</var></td><td class="argdescr">- An individual of type dul:'Situation'.</td></tr>
+<tr><td><var>Descr</var></td><td class="argdescr">- An individual of type dul:'Description'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_setting_for/2"><b class="pred">is_setting_for</b><var class="arglist">(+Sit, +Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">A relation between situations and entities, e.g.
+'this morning I've prepared my coffee with a new fantastic Arabica',
+i.e.: the preparation of my coffee this morning is the setting
+for (an amount of) a new fantastic Arabica.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Sit</var></td><td class="argdescr">- An individual of type dul:'Situation'.</td></tr>
+<tr><td><var>Entity</var></td><td class="argdescr">- A named individual.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2 class="undoc">Undocumented predicates</h2>
+
+<p>
+The following predicates are exported, but not or incorrectly documented.</p>
+
+<dl class="undoc">
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="has_task_role/2"><b class="pred">has_task_role</b><var class="arglist">(Arg1, Arg2)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="has_participant/2"><b class="pred">has_participant</b><var class="arglist">(Arg1, Arg2)</var></a></dt>
+</dl>
+
+</body>
+</html>

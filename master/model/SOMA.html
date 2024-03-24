@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SOMA.pl -- Predicates for the SOMA ontology.</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>SOMA.pl -- Predicates for the SOMA ontology.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_manipulation_action/1"><b class="pred">is_manipulation_action</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'ManipulationAction'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_mental_action/1"><b class="pred">is_mental_action</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'MentalAction'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_physical_task/1"><b class="pred">is_physical_task</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'PhysicalTask'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_mental_task/1"><b class="pred">is_mental_task</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'MentalTask'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_episode/1"><b class="pred">is_episode</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_performed_by/2"><b class="pred">is_performed_by</b><var class="arglist">(?Act, ?Agent)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Relates an action to the agent that performs it.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Act</var></td><td class="argdescr">- An individual of type dul:'Action'.</td></tr>
+<tr><td><var>Agent</var></td><td class="argdescr">- An individual of type dul:'<var>Agent</var>'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="action_status/2"><b class="pred">action_status</b><var class="arglist">(?Act, ?Status)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Relates an action to its execution status.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Act</var></td><td class="argdescr">- An individual of type dul:'Action'.</td></tr>
+<tr><td><var>Status</var></td><td class="argdescr">- The execution status of <var>Act</var>.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="action_succeeded/1"><b class="pred">action_succeeded</b><var class="arglist">(?Act)</var></a> is <b class="det">det</b></dt><dd class="defbody">Set the execution status of an action to 'succeeded'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Act</var></td><td class="argdescr">- An individual of type dul:'Action'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="action_failed/1"><b class="pred">action_failed</b><var class="arglist">(?Act)</var></a> is <b class="det">det</b></dt><dd class="defbody">Set the execution status of an action to 'failed'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Act</var></td><td class="argdescr">- An individual of type dul:'Action'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="action_active/1"><b class="pred">action_active</b><var class="arglist">(?Act)</var></a> is <b class="det">det</b></dt><dd class="defbody">Set the execution status of an action to 'active'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Act</var></td><td class="argdescr">- An individual of type dul:'Action'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="action_paused/1"><b class="pred">action_paused</b><var class="arglist">(?Act)</var></a> is <b class="det">det</b></dt><dd class="defbody">Set the execution status of an action to 'paused'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Act</var></td><td class="argdescr">- An individual of type dul:'Action'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="action_pending/1"><b class="pred">action_pending</b><var class="arglist">(?Act)</var></a> is <b class="det">det</b></dt><dd class="defbody">Set the execution status of an action to 'planning'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Act</var></td><td class="argdescr">- An individual of type dul:'Action'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="action_cancelled/1"><b class="pred">action_cancelled</b><var class="arglist">(?Act)</var></a> is <b class="det">det</b></dt><dd class="defbody">Set the execution status of an action to 'cancelled'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Act</var></td><td class="argdescr">- An individual of type dul:'Action'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="event_interval/3"><b class="pred">event_interval</b><var class="arglist">(?Event, ?Since, ?Until)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Returns the start and end time of an event
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Evt</var></td><td class="argdescr">- An individual of type dul:'<var>Event</var>'.</td></tr>
+<tr><td><var>Since</var></td><td class="argdescr">- begin of the interval</td></tr>
+<tr><td><var>Until</var></td><td class="argdescr">- end of the interval</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="task_effect/2"><b class="pred">task_effect</b><var class="arglist">(?EventType, ?Effect)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Relates an action or task to roles that imply change,
+and that need to be taken by some object when the task is executed.
+
+<table class="wiki">
+<tr><td><code>created(Type)</code></td><td>An object has been created.</td></tr>
+<tr><td><code>destroyed(Type)</code></td><td>An object has been destroyed.</td></tr>
+<tr><td><code>altered(Type,QualityType)</code></td><td>An object has been changed.</td></tr>
+<tr><td><code>linked(Type)</code></td><td>An object has been linked.</td></tr>
+<tr><td><code>deposited(Type)</code></td><td>An object has been deposited.</td></tr>
+<tr><td><code>commited(Type)</code></td><td>An object has been commited.</td></tr>
+<tr><td><code>included(Type)</code></td><td>An object has been included.</td></tr>
+<tr><td><code>extracted(Type)</code></td><td>An object has been extracted.</td></tr>
+</table>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>ActOrTsk</var></td><td class="argdescr">- An individual of type dul:'Action' or dul:'Task', or a subclass of dul:'Task'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_computational_agent/1"><b class="pred">is_computational_agent</b><var class="arglist">(?Entity)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'ComputationalAgent'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_digital_object/1"><b class="pred">is_digital_object</b><var class="arglist">(?Entity)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'DigitalObject'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_kinematics_file/3"><b class="pred">has_kinematics_file</b><var class="arglist">(?OBJ, ?DOI, ?Format)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_kinematics_file/3"><b class="pred">has_kinematics_file</b><var class="arglist">(?OBJ, ?DOI, ?Format)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Associates an object to KinoDynamicData about the object.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Obj</var></td><td class="argdescr">- An entity IRI.</td></tr>
+<tr><td><var>Identifier</var></td><td class="argdescr">- The <var>DOI</var> of a data file.</td></tr>
+<tr><td><var>Format</var></td><td class="argdescr">- File format identifier string (i.e. the file extension).</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_chemical_process/1"><b class="pred">is_chemical_process</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'ChemicalProcess'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_physical_process/1"><b class="pred">is_physical_process</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'PhysicalProcess'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_process_flow/1"><b class="pred">is_process_flow</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'ProcessFlow'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_process_type/1"><b class="pred">is_process_type</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'ProcessType'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_motion/1"><b class="pred">is_motion</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'Motion'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_force_interaction/1"><b class="pred">is_force_interaction</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'ForceInteraction'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_progression/1"><b class="pred">is_progression</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'Progression'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_process_role/2"><b class="pred">has_process_role</b><var class="arglist">(?ProcType, ?Role)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">A relation between roles and process types.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>ProcType</var></td><td class="argdescr">- An individual of type soma:'ProcessType'.</td></tr>
+<tr><td><var>Role</var></td><td class="argdescr">- An individual of type dul:'<var>Role</var>'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_state/1"><b class="pred">is_state</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'State'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_physical_state/1"><b class="pred">is_physical_state</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'PhysicalState'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_social_state/1"><b class="pred">is_social_state</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'SocialState'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_configuration/1"><b class="pred">is_configuration</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'Configuration'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_state_type/1"><b class="pred">is_state_type</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'StateType'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_subevent/2"><b class="pred">has_subevent</b><var class="arglist">(+Event, ?Sub)</var></a> is <b class="det">nondet</b></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_binding/1"><b class="pred">is_binding</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'Binding'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_succeedence/1"><b class="pred">is_succeedence</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'Succeedence'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="plan_defines_task/2"><b class="pred">plan_defines_task</b><var class="arglist">(?Plan, ?Tsk)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Relates a plan to the task it defines.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Plan</var></td><td class="argdescr">- An individual of type dul:'<var>Plan</var>'.</td></tr>
+<tr><td><var>Tsk</var></td><td class="argdescr">- An individual of type dul:'Task'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="workflow_first_step/2"><b class="pred">workflow_first_step</b><var class="arglist">(?WF, ?Step)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Relates a workflow to the dedicated first step of it.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>WF</var></td><td class="argdescr">- An individual of type dul:'Workflow'.</td></tr>
+<tr><td><var>Step</var></td><td class="argdescr">- An individual of type dul:'Task'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="workflow_constituent/2"><b class="pred">workflow_constituent</b><var class="arglist">(+WF, ?Constituent)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>WF</var></td><td class="argdescr">- A workflow.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="workflow_role_range/3"><b class="pred">workflow_role_range</b><var class="arglist">(?WF, ?Role, ?ObjectType)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Relates a workflow to roles of objects defined by the tasks
+of the workflow, and also infers the required type for fillers
+of the role.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>WF</var></td><td class="argdescr">- An individual of type dul:'Workflow'.</td></tr>
+<tr><td><var>Role</var></td><td class="argdescr">- An individual of type dul:'<var>Role</var>'.</td></tr>
+<tr><td><var>ObjectType</var></td><td class="argdescr">- A sub-class of dul:'Object'.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_feature/1"><b class="pred">is_feature</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'Feature'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="object_feature/2"><b class="pred">object_feature</b><var class="arglist">(+Obj, ?Feature)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Associates an object resource to features it hosts.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Obj</var></td><td class="argdescr">- Object resource</td></tr>
+<tr><td><var>Feature</var></td><td class="argdescr">- <var>Feature</var> resource</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_affordance/1"><b class="pred">is_affordance</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'Affordance'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_disposition/1"><b class="pred">is_disposition</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'Disposition'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_disposition/2"><b class="pred">has_disposition</b><var class="arglist">(?Obj, ?Disposition)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Relates an object to its dispositions.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Obj</var></td><td class="argdescr">- Object resource</td></tr>
+<tr><td><var>Disposition</var></td><td class="argdescr">- <var>Disposition</var> resource</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="disposition_trigger_type/2"><b class="pred">disposition_trigger_type</b><var class="arglist">(?Disposition, ?TriggerType)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Relates a disposition to the type of objects that can be the
+trigger of the disposition.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Disposition</var></td><td class="argdescr">- <var>Disposition</var> resource</td></tr>
+<tr><td><var>TriggerType</var></td><td class="argdescr">- Class resource</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_patient/1"><b class="pred">is_patient</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'Patient'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_instrument/1"><b class="pred">is_instrument</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'Instrument'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_location/1"><b class="pred">is_location</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'Location'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_destination/1"><b class="pred">is_destination</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'Destination'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_origin/1"><b class="pred">is_origin</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'Origin'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_physical_quality/1"><b class="pred">is_physical_quality</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'PhysicalQuality'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_social_quality/1"><b class="pred">is_social_quality</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'SocialQuality'.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_intrinsic/1"><b class="pred">is_intrinsic</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'Intrinsic'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_extrinsic/1"><b class="pred">is_extrinsic</b><var class="arglist">(?Entity)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True iff <var>Entity</var> is an instance of soma:'Extrinsic'.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_interval_begin/2"><b class="pred">has_interval_begin</b><var class="arglist">(I, End)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">The start time of <var>I</var>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>I</var></td><td class="argdescr">- Time point, interval or temporally extended entity</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_interval_end/2"><b class="pred">has_interval_end</b><var class="arglist">(I, End)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">The end time of <var>I</var>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>I</var></td><td class="argdescr">- Time point, interval or temporally extended entity</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_interval_duration/2"><b class="pred">has_interval_duration</b><var class="arglist">(Event, Duration)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Calculate the duration of the the TemporalThing <var>Event</var>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Event</var></td><td class="argdescr">- Identifier of a TemporalThing</td></tr>
+<tr><td><var>Duration</var></td><td class="argdescr">- <var>Duration</var> of the event</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_interval_equal/2"><b class="pred">is_interval_equal</b><var class="arglist">(?I1, ?I2)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Interval <var>I1</var> is equal to <var>I2</var>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>I1</var></td><td class="argdescr">- Instance of a knowrob:TimeInterval</td></tr>
+<tr><td><var>I2</var></td><td class="argdescr">- Instance of a knowrob:TimeInterval</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="object_localization/2"><b class="pred">object_localization</b><var class="arglist">(?Obj, ?Loc)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Relates an object to its localization quality.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Obj</var></td><td class="argdescr">- object resource</td></tr>
+<tr><td><var>Loc</var></td><td class="argdescr">- localization quality</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="object_shape_type/2"><b class="pred">object_shape_type</b><var class="arglist">(?Obj, ?ShapeType)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Relates an object to the type of its <code>shape(s)</code>.
+An object may have multiple shapes associated that
+provide different level of detail.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Obj</var></td><td class="argdescr">- Object resource</td></tr>
+<tr><td><var>ShapeType</var></td><td class="argdescr">- IRI of shape type</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="object_mesh_path/2"><b class="pred">object_mesh_path</b><var class="arglist">(?Obj, -FilePath)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True if <var>FilePath</var> is a path to a mesh file (stl or dae) for <var>Obj</var>.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Obj</var></td><td class="argdescr">- Object resource</td></tr>
+<tr><td><var>FilePath</var></td><td class="argdescr">- the file path</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="object_color_rgb/4"><b class="pred">object_color_rgb</b><var class="arglist">(?Obj, ?R, ?G, ?B)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True if Col is the main color of <var>Obj</var>.
+Col is encoded as as [float red, green, blue], on a scale of 0-1.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Obj</var></td><td class="argdescr">- object resource</td></tr>
+<tr><td><var>Col</var></td><td class="argdescr">- rgb color data</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="object_dimensions/4"><b class="pred">object_dimensions</b><var class="arglist">(?Obj, ?Depth, ?Width, ?Height)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True if <var>Depth</var> x <var>Width</var> x <var>Height</var> are (exactly) the extends of the bounding box of <var>Obj</var>.
+NOTE that we use ROS conventions here: Coordinate systems in ROS are
+always right-handed, with X forward, Y left, and Z up.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Obj</var></td><td class="argdescr">- Object resource</td></tr>
+<tr><td><var>Depth</var></td><td class="argdescr">- <var>Depth</var> of the bounding box (x-dimension)</td></tr>
+<tr><td><var>Width</var></td><td class="argdescr">- <var>Width</var> of the bounding box (y-dimension)</td></tr>
+<tr><td><var>Height</var></td><td class="argdescr">- <var>Height</var> of the bounding box (z-dimension)</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="multidef"><span style="float:right">&nbsp;</span><a name="object_shape/5"><b class="pred">object_shape</b><var class="arglist">(?Obj, ?Frame, ?ShapeTerm, ?ShapeOrigin, ?MaterialTerm)</var></a> is <b class="det">nondet</b><span class="anot" style="float:right">[multifile]</span></dt><dd class="defbody">Relates objects to shapes and their origin (usually a pose relative to the object).
+The shape is represented as a Prolog term that encodes the shape type
+and its geometrical properties.
+
+<p>
+<var>ShapeTerm</var> may be one of:</p>
+
+<dl class="termlist">
+<dt class="term"><b class="pred">mesh</b><var class="arglist">(File, Scale)</var></dt><dd></dd>
+<dt class="term"><b class="pred">box</b><var class="arglist">(X, Y, Z)</var></dt><dd></dd>
+<dt class="term"><b class="pred">cylinder</b><var class="arglist">(Radius, Length)</var></dt><dd></dd>
+<dt class="term"><b class="pred">sphere</b><var class="arglist">(Radius)</var></dt><dd><var>ShapeOrigin</var> is a list of frame-position-quaternion.
+
+<p>
+@param <var>Obj</var> IRI atom
+@param <var>ShapeTerm</var> A shape term
+@param <var>ShapeOrigin</var> The origin of the shape
+@param <var>MaterialTerm</var> List of material properties</p></dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2 class="undoc">Undocumented predicates</h2>
+
+<p>
+The following predicates are exported, but not or incorrectly documented.</p>
+
+<dl class="undoc">
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="has_disposition_type/3"><b class="pred">has_disposition_type</b><var class="arglist">(Arg1, Arg2, Arg3)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="object_feature_type/3"><b class="pred">object_feature_type</b><var class="arglist">(Arg1, Arg2, Arg3)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="is_kino_dynamic_data/1"><b class="pred">is_kino_dynamic_data</b><var class="arglist">(Arg1)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="workflow_step/2"><b class="pred">workflow_step</b><var class="arglist">(Arg1, Arg2)</var></a></dt>
+</dl>
+
+</body>
+</html>

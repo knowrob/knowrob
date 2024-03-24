@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>triple.pl -- Handling of triples in query expressions.</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>triple.pl -- Handling of triples in query expressions.</h1>
+
+<p>
+The following predicates are supported:</p>
+
+<table class="wiki">
+<tr><th>Predicate</th><th>Arguments</th></tr>
+<tr><td class="left"><a href="triple.html#triple/3">triple/3</a></td><td class="left">?Subject, ?Property, ?Value</td></tr>
+</table>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="triple/3"><b class="pred">triple</b><var class="arglist">(?Subject, ?Property, ?Value)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Query values of a property (and their sub-properties) on some subject in the triple DB.
+If the property is rdfs:subPropertyOf or rdf:type the query returns the values for the
+subject and their super-class
+
+<p>
+The property can be wrapped in one of several options:</p>
+
+<dl class="termlist">
+<dt class="term"><b class="pred">transitive</b><var class="arglist">(Property)</var></dt><dd>indicates that the property is transitive</dd>
+<dt class="term"><b class="pred">reflexive</b><var class="arglist">(Property)</var></dt><dd>indicates that the property is reflexive</dd>
+<dt class="term"><b class="pred">pstar</b><var class="arglist">(Property)</var></dt><dd>binds the property to one of the values in the p* field in the mongodb</dd>
+</dl>
+
+<p>
+The value can be wrapped in one of several options:</p>
+
+<dl class="termlist">
+<dt class="term"><b class="pred">ostar</b><var class="arglist">(Value)</var></dt><dd>binds the value to one of the values in the o* field in the mongodb</dd>
+</dl>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Subject</var></td><td class="argdescr">- The subject of a triple.</td></tr>
+<tr><td><var>Property</var></td><td class="argdescr">- The predicate of a triple.</td></tr>
+<tr><td><var>Value</var></td><td class="argdescr">- The object of a triple.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="mng_triple_doc/3"><b class="pred">mng_triple_doc</b><var class="arglist">(+Triple, -Doc, +Context)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Translate a triple term into a mongo query document.</dd>
+</dl>
+
+</body>
+</html>

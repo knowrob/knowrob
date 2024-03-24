@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>src</title>
+
+<link rel="stylesheet" type="text/css" href="pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="wiki">KnowRob</h1>
+
+<p>
+!<a href="https://github.com/knowrob/knowrob/workflows/CI/badge.svg">CI</a></p>
+
+<p>
+KnowRob is a knowledge processing system designed for robots.
+Its purpose is to equip robots with the capability to organize information in re-usable
+knowledge chunks, and to perform reasoning in an expressive logic.
+It further provides a set of tools for visualization and acquisition of knowledge.</p>
+
+<h2 class="wiki">Getting Started</h2>
+
+<p>
+These instructions will get you a copy of KnowRob up and running on your local machine.</p>
+
+<h3 class="wiki">Prerequisites</h3>
+
+<ul>
+<li>ROS (<b>ROS noetic</b> for the master branch)</li>
+<li>SWI Prolog &gt;= 8.2.4 (see <a href="https://github.com/artnie/knowrob/tree/update-setup#further-information">Further Information</a>)</li>
+<li>mongo DB server &gt;= 4.4 and libmongoc (see <a href="https://github.com/artnie/knowrob/tree/update-setup#further-information">Further Information</a>)</li>
+<li><a href="https://github.com/knowrob/rosprolog">rosprolog</a></li>
+</ul>
+
+<h3 class="wiki">Installation</h3>
+
+<p>
+KnowRob uses the <a href="http://wiki.ros.org/catkin">catkin</a> buildsystem that has been the main ROS buildsystem.
+We have prepared different *.rosinstall* setup files that you can add to your ROS workspace as described <a href="http://www.ros.org/wiki/ROS/Tutorials/InstallingandConfiguringROSEnvironment">here</a>.</p>
+
+<pre class="code" ext="Bash">
+rosdep update
+cd ~/catkin_ws/src
+wstool init
+wstool merge https://raw.github.com/knowrob/knowrob/master/rosinstall/knowrob-base.rosinstall
+wstool update
+rosdep install --ignore-src --from-paths .
+cd ~/catkin_ws
+catkin_make</pre>
+
+<p>
+You may further need to set the <b>SWI_HOME_DIR</b> environment variable to the installation location of <b>swipl</b>:</p>
+
+<pre class="code" ext="">
+export SWI_HOME_DIR=/usr/lib/swi-prolog</pre>
+
+<h3 class="wiki">Launching</h3>
+
+<p>
+In order to interact with other robot components,
+the <a href="https://www.ros.org/">Robot Operating System</a> (ROS)
+is used via <a href="https://github.com/knowrob/rosprolog">rosprolog</a>.
+<b>rosprolog</b> provides a ROS node that manages a pool of Prolog engines
+in which KnowRob can be loaded such that its querying interface
+is exposed via the node.
+KnowRob provides a launch file that starts the <b>rosprolog</b> node, and initializes KnowRob:</p>
+
+<pre class="code" ext="">
+roslaunch knowrob knowrob.launch</pre>
+
+<p>
+Please refer to the <b>rosprolog</b> documentation for how to interact with this node.
+However, KnowRob can also be launched without ROS node through a script offered by <b>rosprolog</b>:</p>
+
+<pre class="code" ext="">
+rosrun rosprolog rosprolog knowrob</pre>
+
+<p>
+Launching KnowRob without the ROS node may help debugging (at the moment the GUI tracing tool of SWI Prolog <b>gtrace</b> does not work via the rosprolog node).</p>
+
+<h2 class="wiki">Getting Familiar</h2>
+
+<p>
+Here we provide an overview about functionality of KnowRob.</p>
+
+<h3 class="wiki">Querying</h3>
+
+<p>
+The core of KnowRob is an extendible querying interface that
+provides basic operations <b>ask</b>, <b>tell</b>, <b>forget</b>, and <b>remember</b>.
+Their argument is some statement written in the <a class="file" href="../src/lang/README.md">KnowRob Querying Language</a>.
+Language phrases are terms whose semantics is defined
+in form of Prolog rules using special operators such as *?&gt;* (the ask operator),
+or *+&gt;* (the tell operator).</p>
+
+<p>
+One useful CLI for queries is launched with `rosrun rosprolog rosprolog_commandline.py`</p>
+
+<h3 class="wiki">Model</h3>
+
+<p>
+KnowRob structures knowledge according to models represented using RDF.
+Some models are very basic and domain-independent such as the OWL model
+that e.g. distinguishes between object and datatype properties, or the
+toplevel ontology SOMA which is supported by KnowRob.
+<a class="file" href="../src/model/README.md">KnowRob Models</a> is a collection of such models
+that are explicitely supported by KnowRob.
+However, support for other models may be added through plugins.</p>
+
+<h3 class="wiki">Triple Store and Data Access</h3>
+
+<p>
+Knowledge is represented in form of temporalized triples --
+each subject-predicate-object triple has an additional field
+that restricts the temporal scope in which the statement
+represented by the triple is true.
+A configurable backend is used to store and retrieve temporalized triples --
+as a falback implementation, KnowRob provides a simple MongoDB
+implementation of a temporalized triple store.</p>
+
+<p>
+One important aspect in knowledge representation for robots is that
+a lot of knowledge is <b>implicitly</b> encoded in the control structures
+of the robot. Hence, one goal is to make the knowledge in robot
+control structures <b>explicit</b>.
+KnowRob does that through <b>Ontology-based Data Access</b> (OBDA).
+So called, <b>semantic data accessors</b> are used to map data to symbols in
+an ontology, often by accessing some database, or by reading from
+a message queue, etc.</p>
+
+<p>
+For more information on database backends in KnowRob, please have a look
+<a class="file" href="../src/db/README.md">here</a>.</p>
+
+<h3 class="wiki">Reasoning</h3>
+
+<p>
+KnowRob uses an ensemble of reasoners approach where inferences
+of different reasoners are combined into correlated knowledge pieces.
+The reason for choosing this approach is that there is no single
+formalism that is suited for every reasoning tasks.
+Instead, given a problem, one should decide what the most suitable
+formalism is to tackle it.
+Consequently, KnowRob can be configured to solve specific problems
+by loading corresponding reasoning modules that implement a common interface.
+KnowRob also ships with a set of reasoning modules including
+an (incomplete) OWL reasoner, a SWRL reasoner, and some specialized
+reasoning modules that handle domain-specific problems
+such as reasoning about time intervals using Allen's interval
+calculus.
+More complete information about reasoning in KnowRob can be found
+<a class="file" href="../src/reasoning/README.md">here</a>.</p>
+
+<h2 class="wiki">Further Information</h2>
+
+<ul>
+<li>Sourcecode documentation is available <a href="https://knowrob.github.io/knowrob/">here</a></li>
+<li>A blog and more wiki pages are avaiabale at <a href="http://www.knowrob.org">knowrob.org</a></li>
+</ul>
+
+<h3 class="wiki">Installation of SWI-Prolog and MongoDB</h3>
+
+<ul>
+<li>SWI Prolog latest stable version
+
+<pre class="code" ext="bash">
+# If swi-prolog is already installed, check the version
+swipl --version
+# If it's under 8.2.4, add the ppa of the latest stable version
+sudo apt-add-repository -y ppa:swi-prolog/stable
+# And update it
+sudo apt update
+sudo apt upgrade
+# or install it, if not present before.
+sudo apt install swi-prolog</pre>
+
+</li>
+<li>MongoDB
+
+<pre class="code" ext="bash">
+# Check the mongodb version
+mongod --version
+# If below 4.4, an update is needed.
+# Updating the mongodb requires either wiping all existing DBs or dumping/restoring them.
+# Newer versions are not compatible with old DBs and wouldn't even allow the mongodb service to start
+# Therefore, if you want to keep old DBs, store them BEFORE upgading mongodb.
+# The following procedure reinstalls mongodb completely with the desired version.
+# All previous deps, settings, DBs of mongodb will be lost!
+
+# Stop the service
+sudo systemctl stop mongod.service
+# Remove all DBs
+sudo rm -r /var/log/mongodb
+sudo rm -r /var/lib/mongodb
+# Uninstall all mongo packages
+# Be aware that this also removes unrelated packages starting with 'mongo*'
+sudo apt purge mongo*
+# Fetch the latest packages of mongodb-org
+wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+# Update references and install mongodb
+sudo apt update
+sudo apt install mongodb-org
+
+# Troubleshoot: If dpkg errors occurr, the deps still refer to old versions. Force the new version
+# Replace the &lt;version&gt; with your own new version. To this day it is '4.4.10'.
+sudo dpkg -i --force-overwrite /var/cache/apt/archives/mongodb-org-tools_4.4.&lt;version&gt;_amd64.deb
+
+# Try to run the mongodb service
+sudo systemctl start mongod.service
+# Check if the service is running properly
+sudo systemctl status mongod.service
+# Refer to the mongodb error code explaination for further insight:
+# https://github.com/mongodb/mongo/blob/master/src/mongo/util/exit_code.h
+# Status 62 identifies old DBs in /var/log and /var/lib, so delete them.
+# To instead keep them, you'll need to downgrade mongo, dump DBs, upgrade mongo, recreate DBs.
+# When it fails to open /var/log/mongodb/mongod.log the permissons for that file are incorrect.
+# Either set owner and group of these two paths to mongodb, or reinstall mongodb.</pre>
+
+</li>
+</ul>
+
+<h2 class="wiki subdirs">Sub directories</h2>
+
+<table class="subdirs">
+<tr><td><a class="subdir" href="db/index.html">[dir] db</a></td></tr>
+<tr><td><a class="subdir" href="lang/index.html">[dir] lang</a></td></tr>
+<tr><td><a class="subdir" href="model/index.html">[dir] model</a></td></tr>
+<tr><td><a class="subdir" href="reasoning/index.html">[dir] reasoning</a></td></tr>
+<tr><td><a class="subdir" href="ros/index.html">[dir] ros</a></td></tr>
+<tr><td><a class="subdir" href="utility/index.html">[dir] utility</a></td></tr>
+<tr><td><a class="subdir" href="vis/index.html">[dir] vis</a></td></tr>
+</table>
+
+<h2 class="wiki plfiles">Prolog files</h2>
+
+<table class="summary">
+<tr><th colspan="3" class="file"><span style="float:left"><a href="__init__.html">__init__.pl</a></span><span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="knowrob.html">knowrob.pl</a></span><span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="knowrob.html#knowrob_load_neem/1">knowrob_load_neem/1</a></td><td class="summary">Configure KnowRob to use the DB associated to some NEEM, and initialize position data etc.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SWRL</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="wiki">swrlprolog</h1>
+
+<p>
+Implementation of a Semantic Web Rule Language (SWRL) reasoner in a set of Prolog rules.
+SWRL rules are either described in RDF concrete syntax, or using a custom file
+format.</p>
+
+<h2 class="wiki plfiles">Prolog files</h2>
+
+<table class="summary">
+<tr><th colspan="3" class="file"><span style="float:left"><a href="__init__.html">__init__.pl</a></span><span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="parser.html">parser.pl</a></span>&nbsp; -- Prolog-based SWRL representation.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="parser.html#swrl_file_parse/3">swrl_file_parse/3</a></td><td class="summary">Parses a SWRL file.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="parser.html#swrl_phrase_assert/2">swrl_phrase_assert/2</a></td><td class="summary">Assert SWRL rule in human readable Syntax as native Prolog <code>rule(s)</code>.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="parser.html#swrl_phrase_fire/2">swrl_phrase_fire/2</a></td><td class="summary">Fires SWRL rule given in human readable Syntax.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="parser.html#swrl_file_load/1">swrl_file_load/1</a></td><td class="summary">Loads all or one <code>rule(s)</code> from a SWRL file.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="parser.html#swrl_file_unload/1">swrl_file_unload/1</a></td><td class="summary">Unload previously loaded SWRL file, retracting all the rules that have been asserted so far.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="swrl.html">swrl.pl</a></span>&nbsp; -- Prolog-based SWRL representation.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="swrl.html#swrl_assert/1">swrl_assert/1</a></td><td class="summary">Same as <a href="swrl.html#swrl_assert/2">swrl_assert/2</a> but uses the hash of the rule as label.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="swrl.html#swrl_assert/2">swrl_assert/2</a></td><td class="summary">Assert SWRL rule in the knowledge base.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="swrl.html#swrl_fire/1">swrl_fire/1</a></td><td class="summary">Same as <a href="swrl.html#swrl_fire/2">swrl_fire/2</a> but uses the hash of the rule as label.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="swrl.html#swrl_fire/2">swrl_fire/2</a></td><td class="summary">Fires a rule.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="swrl.html#swrl_rule_hash/2">swrl_rule_hash/2</a></td><td class="summary">Compute the hash a SWRL rule.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="swrlx.html">swrlx.pl</a></span>&nbsp; -- Support for the SWRL Extensions built-in library.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="swrlx.html#swrlx_make_individual/2">swrlx_make_individual/2</a></td><td class="summary">This predicate provides a controlled way of creating OWL individuals in a rule.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+</table>
+
+</body>
+</html>

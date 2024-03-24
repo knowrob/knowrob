@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>temporal</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="dir">temporal</h1>
+
+<h2 class="wiki plfiles">Prolog files</h2>
+
+<table class="summary">
+<tr><th colspan="3" class="file"><span style="float:left"><a href="__init__.html">__init__.pl</a></span><span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="esg.html">esg.pl</a></span>&nbsp; -- Event Endpoint Sequence Graph (ESG).<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="esg.html#esg/4">esg/4</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="esg.html#esg_event_sequence/2">esg_event_sequence/2</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="esg.html#esg_retract/1">esg_retract/1</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="esg.html#esg_to_list/2">esg_to_list/2</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="interval.html">interval.pl</a></span>&nbsp; -- Allen calculus implementation using Event Endpoint Graphs (ESGs).<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="interval.html#interval_after/2">interval_after/2</a></td><td class="summary">Interval I0 takes place after I1.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="interval.html#interval_before/2">interval_before/2</a></td><td class="summary">Interval I0 takes place before I1.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="interval.html#interval_during/2">interval_during/2</a></td><td class="summary">Interval I0 is inside interval I1, i.e.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="interval.html#interval_equals/2">interval_equals/2</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="interval.html#interval_finished_by/2">interval_finished_by/2</a></td><td class="summary">Interval I2 finishes interval I1, i.e.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="interval.html#interval_finishes/2">interval_finishes/2</a></td><td class="summary">Interval I0 finishes interval I1, i.e.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="interval.html#interval_meets/2">interval_meets/2</a></td><td class="summary">Intervals I0 and I1 meet, i.e.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="interval.html#interval_met_by/2">interval_met_by/2</a></td><td class="summary">Intervals I1 and I2 meet, i.e.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="interval.html#interval_overlapped_by/2">interval_overlapped_by/2</a></td><td class="summary">Interval I2 overlaps temporally with I1.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="interval.html#interval_overlaps/2">interval_overlaps/2</a></td><td class="summary">Interval I0 overlaps temporally with I1.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="interval.html#interval_started_by/2">interval_started_by/2</a></td><td class="summary">Interval I2 starts interval I1, i.e.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="interval.html#interval_starts/2">interval_starts/2</a></td><td class="summary">Interval I0 starts interval I1, i.e.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="parser.html">parser.pl</a></span>&nbsp; -- Activity parsing.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="parser.html#parser_create/1">parser_create/1</a></td><td class="summary">Creates a new activity detection parser.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="parser.html#parser_create/2">parser_create/2</a></td><td class="summary">Creates a new activity detection parser.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="parser.html#parser_intermediate_results/2">parser_intermediate_results/2</a></td><td class="summary">Outputs is a list of activity compositions considered as <b>non-final</b> by the parser, i.e., some new token could be pushed that would render the item in the list invalid.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="parser.html#parser_jsonify/2">parser_jsonify/2</a></td><td class="summary">Converts a list of action terms into a JSON-encoded atom.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="parser.html#parser_pop_finalized/2">parser_pop_finalized/2</a></td><td class="summary">Empties the output message queue of the activity parser.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="parser.html#parser_run/3">parser_run/3</a></td><td class="summary">Runs the parser for provided tokens.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="parser.html#parser_start/1">parser_start/1</a></td><td class="summary">Starts a parser, putting it in a state where it waits for tokens to be streamed to the message queue of the parser thread.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="parser.html#parser_stop/1">parser_stop/1</a></td><td class="summary">Stops a parser, sending an <b>EOF</b> message to all of its threads before joining them.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="workflow.html">workflow.pl</a></span>&nbsp; -- Reasoning about plans.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="workflow.html#workflow_sequence/2">workflow_sequence/2</a></td><td class="summary">StepSequence is an ordered sequence of steps that are steps of the workflow WF.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+</table>
+
+</body>
+</html>

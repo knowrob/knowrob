@@ -1,0 +1,25 @@
+var terms_8h =
+[
+    [ "AtomRule", "terms_8h.html#a6322262fa77dcffb41e8d2e01f34d2c7", null ],
+    [ "FunctionRule", "terms_8h.html#aeb02a4369979c678e64cb89dec15567d", null ],
+    [ "TermRule", "terms_8h.html#a88b18de675ff68d878b675aa6306b351", null ],
+    [ "atom", "terms_8h.html#a9e3756063d48d2e2ed6b11de098b5f41", null ],
+    [ "atom_regular", "terms_8h.html#a1f6291151c788ca19d48a940fd4791a4", null ],
+    [ "atomic", "terms_8h.html#ad3ab3e71cd117736bc3b78d650a1e627", null ],
+    [ "atomic_list", "terms_8h.html#abdc9f9c06a6d7f46d9b9c9d4b0471037", null ],
+    [ "blank", "terms_8h.html#a50a79c614f4433ebc1996b219d86e0e1", null ],
+    [ "function", "terms_8h.html#a5c917ef49b9ea2d5ab29aba165827dc8", null ],
+    [ "iri", "terms_8h.html#a7650e556d32a5b3fdddbaa96cd714957", null ],
+    [ "key_value_pair", "terms_8h.html#a15bc935c50a88d78f7eecf2a3ff66356", null ],
+    [ "nil", "terms_8h.html#a5d2b2e55cdab261648685784fea88603", null ],
+    [ "number", "terms_8h.html#a3c0e1ef1731e134332d9d271e06b0130", null ],
+    [ "option", "terms_8h.html#a68a3b88b4b929c11d0df2ac514242e61", null ],
+    [ "options", "terms_8h.html#aecc0d97e0b9a5bc1c35a44777f2e3dbd", null ],
+    [ "options_or_nil", "terms_8h.html#a89786c15a1867a6deee81afb86aab5df", null ],
+    [ "string", "terms_8h.html#a9c1e5ea8efa4d1a363a78c22d531e712", null ],
+    [ "term", "terms_8h.html#ada290cbf9e5dffe5c9c206caecda1b6c", null ],
+    [ "var", "terms_8h.html#a12540923a3d192d7b3b4e33eda349684", null ],
+    [ "var_question", "terms_8h.html#adebb98718e42826fe15615f871963b38", null ],
+    [ "var_upper", "terms_8h.html#a133dd86ea3aa9e69e7657f67ff103c0d", null ],
+    [ "xsd", "terms_8h.html#a9ce845a49b864320f998351298c42938", null ]
+];

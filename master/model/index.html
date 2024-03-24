@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>model</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="wiki">KnowRob Model</h1>
+
+<p>
+KnowRob supports the Resource Description Framework (RDF) which is similar to
+classical modelling approaches such as entity-relationship and class diagrams.
+In the RDF model, statements about <b>resources</b> can be represented
+in form of <b>subject-predicate-object</b> triples that express a relationship
+between subject and object of the triple.
+Models in KnowRob <b>usually</b> build ontop of RDF.
+One category of KnowRob Models are extensions of the modelling language
+that introduce new resources such as
+<b>XML Schema Data Types</b> (XSD),
+<b>RDF Schema</b> (RDFS), and
+<b>Web Ontology Language</b> (OWL).
+The other category of models define
+<b>RDF ontologies</b> that conceptualize entities, and
+allow some form of reasoning.</p>
+
+<h3 class="wiki">Ontology Languages</h3>
+
+<p>
+RDFS is an ontology language that can be used to represent <b>taxonomies</b>
+through <b>subClassOf</b> and <b>subPropertyOf</b> relationships.
+It further allows to define the <b>domain</b> and <b>range</b> of properties --
+i.e. what type of subject can be the host the property,
+and what type of object can be the value of it.
+RDFS is integrated into the KnowRob Language through a set
+of language terms including <a class="builtin" href="http://www.swi-prolog.org/pldoc/man?predicate=has_type/2">has_type/2</a>,
+<a href="RDFS.html#has_range/2">has_range/2</a>, and <a href="RDFS.html#has_domain/2">has_domain/2</a>.</p>
+
+<p>
+OWL is another ontology language, but more expressive then RDFS.
+Please refer to the <a href="https://www.w3.org/TR/owl2-overview/">OWL2 overview</a> for
+complete information about it.
+The OWL language supports some more advanced class relationships such as
+<b>intersectionOf</b> and <b>complementOf</b>, property cardinality restrictions,
+and additional property characteristics such as <b>inverse</b> and <b>functional</b>
+properties.
+KnowRob integrates with the OWL language by declaring a set of language
+terms, and how they map into the RDF model.
+An example of an OWL language term is shown below:</p>
+
+<pre class="code">
+has_inverse_property(Property,Inverse) ?+&gt;
+    triple(Property,owl:inverseOf,Inverse).</pre>
+
+<p>
+This <b>querying+projection</b> rule declares that the term <a href="OWL.html#has_inverse_property/2">has_inverse_property/2</a> is mapped
+to RDF by using <b>owl:inverseOf</b> as predicate in the triple.
+KnowRob's language further supports OWL class expressions in arguments of
+language terms. Such class descriptions can used with the core terms
+<a href="RDFS.html#instance_of/2">instance_of/2</a>, <a href="RDFS.html#subclass_of/2">subclass_of/2</a>, and <a href="holds.html#holds/3">holds/3</a>, for example:</p>
+
+<pre class="code">
+:- instance_of(Subject,some(Predicate,Object)).</pre>
+
+<p>
+Where the term <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=some/2">some/2</a> maps to an existential restriction class
+in the OWL language.
+Please refer to source code documentation for a full list of OWL
+language terms.</p>
+
+<h3 class="wiki">Ontology Organization</h3>
+
+<p>
+KnowRob ships with a set of OWL ontologies organized
+into upper-level, domain and application ontologies.</p>
+
+<p>
+A <b>upper-level ontology</b> (also called foundational ontology) defines
+concepts that are useful across disciplines such as event and object,
+and general relations such as parthood and participation.
+KnowRob uses the <a href="http://ontologydesignpatterns.org/wiki/Ontology:DOLCE+DnS_Ultralite">DOLCE+DnS Ultralite</a> (DUL) upper-level ontology which is a
+*"lightweight, easy-to-apply foundational ontology for modeling either physical or social contexts"*.</p>
+
+<p>
+A <b>domain ontology</b> is used to fix general terms in some domain.
+The domain KnowRob was designed for is <b>everyday activities</b>.
+KnowRob ships with the
+<a href="https://github.com/ease-crc/soma">Socio-physical Model of Activities</a> (SOMA)
+ontology which derives its notions from the DUL upper-level.
+However, it is possible to configure KnowRob for other discipines by
+using different domain ontologies.
+Another domain ontology in KnowRob has the scope
+to capture categories underying robot control.
+This includes the concepts sensor, actor, and capability.</p>
+
+<p>
+Finally, an <b>application ontology</b> contains all application-specific definitions.
+As KnowRob is a general framework, no such ontology will be auto-loaded by default.
+However, some application ontologies are available as part of public
+<a href="https://github.com/knowrob/">repositories</a>,
+and hosted by the <a href="http://www.open-ease.org/">openEASE webservice</a>.</p>
+
+<h3 class="wiki">Activity Model</h3>
+
+<p>
+In KnowRob, an <b>Action</b> is defined as an <b>Event</b> where at least one agent that participates in the event executes a <b>Task</b> which is typically defined in a <b>Plan</b>. Tasks are used to classify actions, similar to how roles are used to classify objects within some situational context. There may be multiple plans defining the same task which is useful to capture different ways to achieve the same goal. The distinction between <b>Action</b> and <b>Task</b> is further important as it enables us to put individual tasks into discourse without referring to a particular execution of them (i.e. an <b>Action</b>). This is needed because a <b>Plan</b> is a generalization of action executions, abstracting away from individual objects that were involved by only referring to the roles they have played.</p>
+
+<p>
+<strong>Plans</strong> are used to structure tasks, asserting how they are composed of steps and in which order they should be executed. KnowRob supports relations from Allen's Interval Algebra to assert ordering constraints between steps, and also allows to only specify partial ordering. Each step of a plan is a task itself, and may also be defined by some <code>plan(s)</code>. However, the action model of KnowRob allows to go deeper by decomposing a task into <b>phases</b>. A phase is a <b>Process</b> or <b>State</b> that occurs during task execution which includes force dynamic events, and motions. Processes are classified by one of the <b>ProcessType</b> concepts, and states are classified by one of the <b>Gestallt</b> concepts defined in the model.</p>
+
+<p>
+&lt;p align="center"&gt;
+&lt;img src="<a class="file" href="../../img/plan.png">../../img/plan.png</a>" width="500"&gt;
+&lt;/p&gt;</p>
+
+<p>
+<strong>Roles</strong> are used to classify objects that participate in some event. This includes the agent that performed the action, tools that were used, objects that were affected, as well as locations of interest. KnowRob defines a taxonomy of roles with the most general concepts being <b>Patient</b>, <b>Instrument</b>, and <b>Location</b>.</p>
+
+<h2 class="wiki plfiles">Prolog files</h2>
+
+<table class="summary">
+<tr><th colspan="3" class="file"><span style="float:left"><a href="DUL.html">DUL.pl</a></span>&nbsp; -- Predicates for the DOLCE+DnS Ultralite ontology.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="DUL.html#executes_task/2">executes_task/2</a></td><td class="summary">A relation between an action and a task, e.g.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#has_assignment/2">has_assignment/2</a></td><td class="summary">Associates a parameter to an assignment.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#has_data_value/2">has_data_value/2</a></td><td class="summary">A datatype property that encodes values from a datatype for an Entity.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#has_location/2">has_location/2</a></td><td class="summary">A generic, relative spatial location, holding between any entities.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#has_object_type/2">has_object_type/2</a></td><td class="summary">Relates an entity to its types that are sub-classes of the Object concept.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#has_parameter/2">has_parameter/2</a></td><td class="summary">A Concept can have a Parameter that constrains the attributes that a classified Entity can have in a certain Situation, e.g.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#has_parameter/3">has_parameter/3</a></td><td class="summary">Same as <a href="DUL.html#has_parameter/2">has_parameter/2</a> but in addition unifies the type of the parameter with the third argument.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#has_parameter_range/3">has_parameter_range/3</a></td><td class="summary">Same as <a href="DUL.html#has_parameter/2">has_parameter/2</a> but in addition unifies the range of the parameter with the third argument.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#has_part/2">has_part/2</a></td><td class="summary">Relates an object to its parts.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#has_participant/3">has_participant/3</a></td><td class="summary">A relation between an object and a process, e.g.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#has_quality_type/2">has_quality_type/2</a></td><td class="summary">Relates an entity to its types that are sub-classes of the Quality concept.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#has_region/2">has_region/2</a></td><td class="summary">A relation between entities and regions, e.g.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#has_role/2">has_role/2</a></td><td class="summary">Relates an object to its roles.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#has_time_interval/2">has_time_interval/2</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_action/1">is_action/1</a></td><td class="summary">True iff Entity is an instance of dul:'Action'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_agent/1">is_agent/1</a></td><td class="summary">True iff Entity is an instance of dul:'Agent'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_amount/1">is_amount/1</a></td><td class="summary">True iff Entity is an instance of dul:'Amount'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_classified_by/2">is_classified_by/2</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_concept/1">is_concept/1</a></td><td class="summary">True iff Entity is an instance of dul:'Concept'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_description/1">is_description/1</a></td><td class="summary">True iff Entity is an instance of dul:'Description'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_design/1">is_design/1</a></td><td class="summary">True iff Entity is an instance of dul:'Design'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_diagnosis/1">is_diagnosis/1</a></td><td class="summary">True iff Entity is an instance of dul:'Diagnosis'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_event/1">is_event/1</a></td><td class="summary">True iff Entity is an instance of dul:'Event'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_event_type/1">is_event_type/1</a></td><td class="summary">True iff Entity is an instance of dul:'EventType'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_goal/1">is_goal/1</a></td><td class="summary">True iff Entity is an instance of dul:'Goal'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_norm/1">is_norm/1</a></td><td class="summary">True iff Entity is an instance of dul:'Norm'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_object/1">is_object/1</a></td><td class="summary">True iff Entity is an instance of dul:'Object'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_parameter/1">is_parameter/1</a></td><td class="summary">True iff Entity is an instance of dul:'Parameter'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_physical_artifact/1">is_physical_artifact/1</a></td><td class="summary">True iff Entity is an instance of dul:'PhysicalArtifact'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_physical_attribute/1">is_physical_attribute/1</a></td><td class="summary">True iff Entity is an instance of dul:'PhysicalAttribute'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_physical_object/1">is_physical_object/1</a></td><td class="summary">True iff Entity is an instance of dul:'PhysicalObject'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_plan/1">is_plan/1</a></td><td class="summary">True iff Entity is an instance of dul:'Plan'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_plan_execution/1">is_plan_execution/1</a></td><td class="summary">True iff Entity is an instance of dul:'PlanExecution'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_process/1">is_process/1</a></td><td class="summary">True iff Entity is an instance of dul:'Process'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_quality/1">is_quality/1</a></td><td class="summary">True iff Entity is an instance of dul:'Quality'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_region/1">is_region/1</a></td><td class="summary">True iff Entity is an instance of dul:'Region'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_role/1">is_role/1</a></td><td class="summary">True iff Entity is an instance of dul:'Role'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_setting_for/2">is_setting_for/2</a></td><td class="summary">A relation between situations and entities, e.g.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_situation/1">is_situation/1</a></td><td class="summary">True iff Entity is an instance of dul:'Situation'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_social_attribute/1">is_social_attribute/1</a></td><td class="summary">True iff Entity is an instance of dul:'SocialAttribute'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_social_object/1">is_social_object/1</a></td><td class="summary">True iff Entity is an instance of dul:'SocialObject'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_space_region/1">is_space_region/1</a></td><td class="summary">True iff Entity is an instance of dul:'SpaceRegion'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_task/1">is_task/1</a></td><td class="summary">True iff Entity is an instance of dul:'Task'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_time_interval/1">is_time_interval/1</a></td><td class="summary">True iff Entity is an instance of dul:'TimeInterval'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#is_transition/1">is_transition/1</a></td><td class="summary">True iff Entity is an instance of dul:'Transition'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#plan_has_goal/2">plan_has_goal/2</a></td><td class="summary">Relates a plan to its goal.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#satisfies/2">satisfies/2</a></td><td class="summary">A relation between a Situation and a Description, e.g.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#task_role/2">task_role/2</a></td><td class="summary">A relation between roles and tasks, e.g.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#task_role_range/3">task_role_range/3</a></td><td class="summary">Same as <a href="DUL.html#task_role/2">task_role/2</a> but in addition unifies the range of the parameter with the third argument.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="DUL.html#task_role_type/3">task_role_type/3</a></td><td class="summary">Same as <a href="DUL.html#task_role/2">task_role/2</a> but in addition unifies the type of the parameter with the third argument.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="OWL.html">OWL.pl</a></span>&nbsp; -- The Web Ontology Language (OWL) model.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="OWL.html#disjoint_with/2">disjoint_with/2</a></td><td class="summary">Tests if Class1 and Class2 are disjoint, taking both individual disjointWith properties and the OWL2 AllDisjointClasses into account.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#disjoint_with_direct/2">disjoint_with_direct/2</a></td><td class="summary">True if there is a disjointness axioms for Cls and Disjoint, not taking into account the super classes of both.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#has_description/2">has_description/2</a></td><td class="summary">Convert an OWL class into a Prolog representation.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#has_equivalent_class/2">has_equivalent_class/2</a></td><td class="summary">Maps an OWL class to classes it is equivalent to.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#has_inverse_property/2">has_inverse_property/2</a></td><td class="summary">The inverse-of relation between two properties.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#has_property_chain/2">has_property_chain/2</a></td><td class="summary">Reads chain axioms of a property resource.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#is_all_disjoint_classes/1">is_all_disjoint_classes/1</a></td><td class="summary">True for OWL2 AllDisjointClasses.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#is_class/1">is_class/1</a></td><td class="summary">True for OWL classes.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#is_complement_of/2">is_complement_of/2</a></td><td class="summary">Convert an OWL complement class into a Prolog representation.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#is_data_property/1">is_data_property/1</a></td><td class="summary">True iff Entity is an datatype property IRI.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#is_functional_property/1">is_functional_property/1</a></td><td class="summary">True for functional properties.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#is_individual/1">is_individual/1</a></td><td class="summary">True for OWL individuals.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#is_intersection_of/2">is_intersection_of/2</a></td><td class="summary">Convert an OWL intersection class into a Prolog representation.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#is_object_property/1">is_object_property/1</a></td><td class="summary">True for OWL object properties.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#is_owl_term/1">is_owl_term/1</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#is_restriction/1">is_restriction/1</a></td><td class="summary">True for OWL restrcitions.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#is_restriction/2">is_restriction/2</a></td><td class="summary">Convert an OWL restriction class into a Prolog representation.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#is_restriction_term/1">is_restriction_term/1</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#is_symmetric_property/1">is_symmetric_property/1</a></td><td class="summary">True for symmetric properties.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#is_transitive_property/1">is_transitive_property/1</a></td><td class="summary">True for transitive properties.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#is_union_of/2">is_union_of/2</a></td><td class="summary">Convert an OWL union class into a Prolog representation.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="OWL.html#same_as/2">same_as/2</a></td><td class="summary">True if X and Y are identical or connected by the owl:sameAs relation.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="QUDT.html">QUDT.pl</a></span>&nbsp; -- Utilities for handling units of measure and the conversion between different units<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="QUDT.html#qudt_conv/4">qudt_conv/4</a></td><td class="summary">Convert a value to another unit of the same kind.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="QUDT.html#qudt_unit/4">qudt_unit/4</a></td><td class="summary">Facts about units in the QUDT model.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="RDFS.html">RDFS.pl</a></span>&nbsp; -- The Resource Description Framework Schema model.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="RDFS.html#has_comment/2">has_comment/2</a></td><td class="summary">rdfs:comment is an instance of rdf:Property that may be used to provide a human-readable description of a resource.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="RDFS.html#has_domain/2">has_domain/2</a></td><td class="summary">The domain of a property globally restricts hosts of the property to instances of the domain.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="RDFS.html#has_label/2">has_label/2</a></td><td class="summary">rdfs:label is an instance of rdf:Property that may be used to provide a human-readable version of a resource's name.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="RDFS.html#has_range/2">has_range/2</a></td><td class="summary">The range of a property globally restricts values of the property to instances of the range.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="RDFS.html#has_type/2">has_type/2</a></td><td class="summary">rdf:type is an instance of rdf:Property that is used to state that a resource is an instance of a class.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="RDFS.html#instance_of/2">instance_of/2</a></td><td class="summary">The type of an entity (rdf:type).</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="RDFS.html#is_datatype/1">is_datatype/1</a></td><td class="summary">rdfs:Datatype is the class of datatypes.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="RDFS.html#is_literal/1">is_literal/1</a></td><td class="summary">The class rdfs:Literal is the class of literal values such as strings and integers.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="RDFS.html#is_property/1">is_property/1</a></td><td class="summary">rdf:Property is the class of RDF properties.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="RDFS.html#is_resource/1">is_resource/1</a></td><td class="summary">All things described by RDF are called resources, and are instances of the class rdfs:Resource.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="RDFS.html#rdf_list/2">rdf_list/2</a></td><td class="summary">Read a RDF list into a Prolog list.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="RDFS.html#subclass_of/2">subclass_of/2</a></td><td class="summary">The subclass-of relation (rdfs:subClassOf).</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="RDFS.html#subproperty_of/2">subproperty_of/2</a></td><td class="summary">The subproperty-of relation (rdfs:subPropertyOf).</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="SOMA.html">SOMA.pl</a></span>&nbsp; -- Predicates for the SOMA ontology.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="SOMA.html#action_active/1">action_active/1</a></td><td class="summary">Set the execution status of an action to 'active'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#action_cancelled/1">action_cancelled/1</a></td><td class="summary">Set the execution status of an action to 'cancelled'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#action_failed/1">action_failed/1</a></td><td class="summary">Set the execution status of an action to 'failed'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#action_paused/1">action_paused/1</a></td><td class="summary">Set the execution status of an action to 'paused'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#action_pending/1">action_pending/1</a></td><td class="summary">Set the execution status of an action to 'planning'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#action_status/2">action_status/2</a></td><td class="summary">Relates an action to its execution status.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#action_succeeded/1">action_succeeded/1</a></td><td class="summary">Set the execution status of an action to 'succeeded'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#disposition_trigger_type/2">disposition_trigger_type/2</a></td><td class="summary">Relates a disposition to the type of objects that can be the trigger of the disposition.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#event_interval/3">event_interval/3</a></td><td class="summary">Returns the start and end time of an event.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#has_disposition/2">has_disposition/2</a></td><td class="summary">Relates an object to its dispositions.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#has_interval_begin/2">has_interval_begin/2</a></td><td class="summary">The start time of I.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#has_interval_duration/2">has_interval_duration/2</a></td><td class="summary">Calculate the duration of the the TemporalThing Event.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#has_interval_end/2">has_interval_end/2</a></td><td class="summary">The end time of I.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#has_kinematics_file/3">has_kinematics_file/3</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#has_kinematics_file/3">has_kinematics_file/3</a></td><td class="summary">Associates an object to KinoDynamicData about the object.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#has_process_role/2">has_process_role/2</a></td><td class="summary">A relation between roles and process types.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#has_subevent/2">has_subevent/2</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_affordance/1">is_affordance/1</a></td><td class="summary">True iff Entity is an instance of soma:'Affordance'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_binding/1">is_binding/1</a></td><td class="summary">True iff Entity is an instance of soma:'Binding'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_chemical_process/1">is_chemical_process/1</a></td><td class="summary">True iff Entity is an instance of soma:'ChemicalProcess'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_computational_agent/1">is_computational_agent/1</a></td><td class="summary">True iff Entity is an instance of soma:'ComputationalAgent'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_configuration/1">is_configuration/1</a></td><td class="summary">True iff Entity is an instance of soma:'Configuration'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_destination/1">is_destination/1</a></td><td class="summary">True iff Entity is an instance of soma:'Destination'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_digital_object/1">is_digital_object/1</a></td><td class="summary">True iff Entity is an instance of soma:'DigitalObject'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_disposition/1">is_disposition/1</a></td><td class="summary">True iff Entity is an instance of soma:'Disposition'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_episode/1">is_episode/1</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_extrinsic/1">is_extrinsic/1</a></td><td class="summary">True iff Entity is an instance of soma:'Extrinsic'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_feature/1">is_feature/1</a></td><td class="summary">True iff Entity is an instance of soma:'Feature'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_force_interaction/1">is_force_interaction/1</a></td><td class="summary">True iff Entity is an instance of soma:'ForceInteraction'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_instrument/1">is_instrument/1</a></td><td class="summary">True iff Entity is an instance of soma:'Instrument'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_interval_equal/2">is_interval_equal/2</a></td><td class="summary">Interval I1 is equal to I2.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_intrinsic/1">is_intrinsic/1</a></td><td class="summary">True iff Entity is an instance of soma:'Intrinsic'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_location/1">is_location/1</a></td><td class="summary">True iff Entity is an instance of soma:'Location'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_manipulation_action/1">is_manipulation_action/1</a></td><td class="summary">True iff Entity is an instance of soma:'ManipulationAction'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_mental_action/1">is_mental_action/1</a></td><td class="summary">True iff Entity is an instance of soma:'MentalAction'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_mental_task/1">is_mental_task/1</a></td><td class="summary">True iff Entity is an instance of soma:'MentalTask'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_motion/1">is_motion/1</a></td><td class="summary">True iff Entity is an instance of soma:'Motion'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_origin/1">is_origin/1</a></td><td class="summary">True iff Entity is an instance of soma:'Origin'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_patient/1">is_patient/1</a></td><td class="summary">True iff Entity is an instance of soma:'Patient'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_performed_by/2">is_performed_by/2</a></td><td class="summary">Relates an action to the agent that performs it.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_physical_process/1">is_physical_process/1</a></td><td class="summary">True iff Entity is an instance of soma:'PhysicalProcess'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_physical_quality/1">is_physical_quality/1</a></td><td class="summary">True iff Entity is an instance of soma:'PhysicalQuality'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_physical_state/1">is_physical_state/1</a></td><td class="summary">True iff Entity is an instance of soma:'PhysicalState'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_physical_task/1">is_physical_task/1</a></td><td class="summary">True iff Entity is an instance of soma:'PhysicalTask'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_process_flow/1">is_process_flow/1</a></td><td class="summary">True iff Entity is an instance of soma:'ProcessFlow'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_process_type/1">is_process_type/1</a></td><td class="summary">True iff Entity is an instance of soma:'ProcessType'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_progression/1">is_progression/1</a></td><td class="summary">True iff Entity is an instance of soma:'Progression'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_social_quality/1">is_social_quality/1</a></td><td class="summary">True iff Entity is an instance of soma:'SocialQuality'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_social_state/1">is_social_state/1</a></td><td class="summary">True iff Entity is an instance of soma:'SocialState'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_state/1">is_state/1</a></td><td class="summary">True iff Entity is an instance of soma:'State'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_state_type/1">is_state_type/1</a></td><td class="summary">True iff Entity is an instance of soma:'StateType'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#is_succeedence/1">is_succeedence/1</a></td><td class="summary">True iff Entity is an instance of soma:'Succeedence'.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#object_color_rgb/4">object_color_rgb/4</a></td><td class="summary">True if Col is the main color of Obj.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#object_dimensions/4">object_dimensions/4</a></td><td class="summary">True if Depth x Width x Height are (exactly) the extends of the bounding box of Obj.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#object_feature/2">object_feature/2</a></td><td class="summary">Associates an object resource to features it hosts.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#object_localization/2">object_localization/2</a></td><td class="summary">Relates an object to its localization quality.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#object_mesh_path/2">object_mesh_path/2</a></td><td class="summary">True if FilePath is a path to a mesh file (stl or dae) for Obj.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#object_shape/5">object_shape/5</a></td><td class="summary">Relates objects to shapes and their origin (usually a pose relative to the object).</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#object_shape_type/2">object_shape_type/2</a></td><td class="summary">Relates an object to the type of its <code>shape(s)</code>.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#plan_defines_task/2">plan_defines_task/2</a></td><td class="summary">Relates a plan to the task it defines.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#task_effect/2">task_effect/2</a></td><td class="summary">Relates an action or task to roles that imply change, and that need to be taken by some object when the task is executed.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#workflow_constituent/2">workflow_constituent/2</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#workflow_first_step/2">workflow_first_step/2</a></td><td class="summary">Relates a workflow to the dedicated first step of it.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="SOMA.html#workflow_role_range/3">workflow_role_range/3</a></td><td class="summary">Relates a workflow to roles of objects defined by the tasks of the workflow, and also infers the required type for fillers of the role.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="XSD.html">XSD.pl</a></span>&nbsp; -- XML Schema Data Types.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="XSD.html#xsd_data_basetype/2">xsd_data_basetype/2</a></td><td class="summary">Convert between XSD and Prolog type identifier.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="XSD.html#xsd_data_type/1">xsd_data_type/1</a></td><td class="summary">True for all XSD data types such as xsd:string.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="XSD.html#xsd_data_type_name/2">xsd_data_type_name/2</a></td><td class="summary">Split name from IRI of a XSD type.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="XSD.html#xsd_misc_type/1">xsd_misc_type/1</a></td><td class="summary">Mis data types.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="XSD.html#xsd_numeric_type/1">xsd_numeric_type/1</a></td><td class="summary">Decimal data types are used for numeric values.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="XSD.html#xsd_string_type/1">xsd_string_type/1</a></td><td class="summary">String data types are used for values that contains character strings.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="__init__.html">__init__.pl</a></span><span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="portray.html">portray.pl</a></span>&nbsp; -- portray for language terms and RDF resources.<span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="terms.html">terms.pl</a></span>&nbsp; -- The occurs predicate.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="terms.html#(is_a)/2">is_a/2</a></td><td class="summary">Wrapper around instance_of, subclass_of, and subproperty_of.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="terms.html#occurs/1">occurs/1</a></td><td class="summary">True for all occurences (events).</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+</table>
+
+</body>
+</html>

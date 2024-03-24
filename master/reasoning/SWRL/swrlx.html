@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>swrlx.pl -- Support for the SWRL Extensions built-in library.</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>swrlx.pl -- Support for the SWRL Extensions built-in library.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Álvaro Páez</dd><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="https://github.com/protegeproject/swrlapi/wiki/ExtensionsBuiltInLibrary">https://github.com/protegeproject/swrlapi/wiki/ExtensionsBuiltInLibrary</a></dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="swrlx_make_individual/2"><b class="pred">swrlx_make_individual</b><var class="arglist">(?Individual, +Pattern)</var></a> is <b class="det">det</b></dt><dd class="defbody">This predicate provides a controlled way of creating OWL individuals in a rule.
+It succeeds in any case if <var>Individual</var> is instantiated before the call.
+<var>Pattern</var> is a signature of instantiations in a rule, and if the pattern was used
+before to create an individual, then <var>Individual</var> will be instantiated to
+the previously created individual.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Individual</var></td><td class="argdescr">- IRI atom</td></tr>
+<tr><td><var>Pattern</var></td><td class="argdescr">- List of atoms</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</body>
+</html>

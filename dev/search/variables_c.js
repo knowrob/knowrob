@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['name_5f_4434',['name_',['../classknowrob_1_1_named_plugin.html#a32b9558327b2cb8d44569ddf33be459c',1,'knowrob::NamedPlugin::name_()'],['../classknowrob_1_1_plugin_library.html#a0674f8cc36de06abf1bd9a41ffa875db',1,'knowrob::PluginLibrary::name_()'],['../classknowrob_1_1_plugin_module.html#a6987abc010f505f8d952a0fa3d24c5ef',1,'knowrob::PluginModule::name_()'],['../classknowrob_1_1_typed_plugin_factory.html#a99f874085f97bbb954ce8c36da8dc07f',1,'knowrob::TypedPluginFactory::name_()'],['../classknowrob_1_1_reified_triple.html#a1e33d74712010123cca7ac9a0224ccb4',1,'knowrob::ReifiedTriple::name_()'],['../classknowrob_1_1_current_graph.html#aaf5de33e9318669ddd24795facf1ba61',1,'knowrob::CurrentGraph::name_()']]],
+  ['name_5fof_5fexecutable_4435',['NAME_OF_EXECUTABLE',['../namespaceknowrob.html#a63a8ab9e421e88b8814fc09d74da2189',1,'knowrob']]],
+  ['nameatom_5f_4436',['nameAtom_',['../classknowrob_1_1_variable.html#a040d871ddc5a50c5765cb7109d4ff360',1,'knowrob::Variable']]],
+  ['namedindividual_4437',['NamedIndividual',['../namespaceknowrob_1_1owl.html#a60830b899d37180c3d8bc9d26d044c79',1,'knowrob::owl']]],
+  ['names_5flock_5f_4438',['names_lock_',['../class_t_f_memory.html#a6c31c80a681ba5532272da4643b2839e',1,'TFMemory']]],
+  ['negatedliterals_5f_4439',['negatedLiterals_',['../classknowrob_1_1_predicate_negation_stage.html#aebb9d716edcc9ccd06eade0a1684137e',1,'knowrob::PredicateNegationStage']]],
+  ['negatedmodals_5f_4440',['negatedModals_',['../classknowrob_1_1_modal_negation_stage.html#a6aa4eb8f0a643a57f464fd1242f21d1e',1,'knowrob::ModalNegationStage']]],
+  ['negativeanswers_5f_4441',['negativeAnswers_',['../classknowrob_1_1_conjunctive_broadcaster.html#aa7866d49e8d111380ee087a4b2902604',1,'knowrob::ConjunctiveBroadcaster::negativeAnswers_()'],['../classknowrob_1_1_disjunctive_broadcaster.html#a7b66d6a5040771896966538e4b5c6d3b',1,'knowrob::DisjunctiveBroadcaster::negativeAnswers_()']]],
+  ['negativegroundings_5f_4442',['negativeGroundings_',['../classknowrob_1_1_answer_yes.html#ab65aa448157ba6e798b667092324a81a',1,'knowrob::AnswerYes']]],
+  ['negativeungrounded_5f_4443',['negativeUngrounded_',['../classknowrob_1_1_answer_no.html#abcbffe19cd745f038b082f9f8a9bce0a',1,'knowrob::AnswerNo']]],
+  ['neighbors_5f_4444',['neighbors_',['../classknowrob_1_1_dependency_node.html#a4881f4c40792ce9d7f47ed054892bf24',1,'knowrob::DependencyNode::neighbors_()'],['../structknowrob_1_1_knowledge_base_1_1_dependency_node_queue.html#a9d8d6be13d08cddc30cccefe2c90b76f',1,'knowrob::KnowledgeBase::DependencyNodeQueue::neighbors_()']]],
+  ['nestedcontext_5f_4445',['nestedContext_',['../classknowrob_1_1_modal_stage.html#a99f369c90f9a7b2147eca7cddecf2e33',1,'knowrob::ModalStage']]],
+  ['next_5f_4446',['next_',['../classknowrob_1_1_graph_transformation.html#aa775eca326ac8203513ce60ab4776a5b',1,'knowrob::GraphTransformation']]],
+  ['next_5fptr_5f_4447',['next_ptr_',['../classknowrob_1_1mongo_1_1_change_stream.html#ad952f50f9d5aae87776b13752c4ee39d',1,'knowrob::mongo::ChangeStream']]],
+  ['nexttransformation_5f_4448',['nextTransformation_',['../classknowrob_1_1_graph_transformation.html#a75c4fb30beba3597612a9cea32b574ee',1,'knowrob::GraphTransformation']]],
+  ['node_5f_4449',['node_',['../structknowrob_1_1_knowledge_base_1_1_dependency_node_queue.html#a4af13fd86b2865382a05085e990450ad',1,'knowrob::KnowledgeBase::DependencyNodeQueue']]],
+  ['nodes_5f_4450',['nodes_',['../classknowrob_1_1_dependency_graph.html#ab42385c2b064844ac9f16a1b5008fc1d',1,'knowrob::DependencyGraph::nodes_()'],['../classknowrob_1_1_query_tree_1_1_path.html#ade7d1ff120faebc57254ff1d00238292',1,'knowrob::QueryTree::Path::nodes_()']]],
+  ['novariables_5f_4451',['noVariables_',['../classknowrob_1_1_term.html#abb744e98c9a09906163642e335b1bcf9',1,'knowrob::Term']]],
+  ['numstages_5f_4452',['numStages_',['../classknowrob_1_1mongo_1_1_pipeline.html#a3731546b55f4b096b2e92f3ac9b15227',1,'knowrob::mongo::Pipeline']]]
+];

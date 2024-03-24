@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>OWL.pl -- The Web Ontology Language (OWL) model.</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>OWL.pl -- The Web Ontology Language (OWL) model.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_owl_term/1"><b class="pred">is_owl_term</b><var class="arglist">(+Term)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_restriction_term/1"><b class="pred">is_restriction_term</b><var class="arglist">(+Term)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_class/1"><b class="pred">is_class</b><var class="arglist">(+Entity)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True for OWL classes.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_restriction/1"><b class="pred">is_restriction</b><var class="arglist">(+Entity)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True for OWL restrcitions.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_individual/1"><b class="pred">is_individual</b><var class="arglist">(+Entity)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True for OWL individuals.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_object_property/1"><b class="pred">is_object_property</b><var class="arglist">(+Entity)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True for OWL object properties.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_functional_property/1"><b class="pred">is_functional_property</b><var class="arglist">(+Entity)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True for functional properties.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_transitive_property/1"><b class="pred">is_transitive_property</b><var class="arglist">(+Entity)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True for transitive properties.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_symmetric_property/1"><b class="pred">is_symmetric_property</b><var class="arglist">(+Entity)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True for symmetric properties.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_data_property/1"><b class="pred">is_data_property</b><var class="arglist">(+Entity)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True iff <var>Entity</var> is an datatype property IRI.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_restriction/2"><b class="pred">is_restriction</b><var class="arglist">(?Restr, ?Descr)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Convert an OWL restriction class into a Prolog representation.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Restr</var></td><td class="argdescr">- OWL restriction class</td></tr>
+<tr><td><var>Descr</var></td><td class="argdescr">- Prolog term representing the class</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_union_of/2"><b class="pred">is_union_of</b><var class="arglist">(?UnionClass, ?Descr)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Convert an OWL union class into a Prolog representation.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>UnionClass</var></td><td class="argdescr">- OWL union class</td></tr>
+<tr><td><var>Descr</var></td><td class="argdescr">- Prolog term representing the class</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_intersection_of/2"><b class="pred">is_intersection_of</b><var class="arglist">(?IntersectionClass, ?Descr)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Convert an OWL intersection class into a Prolog representation.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>IntersectionClass</var></td><td class="argdescr">- OWL intersection class</td></tr>
+<tr><td><var>Descr</var></td><td class="argdescr">- Prolog term representing the class</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_complement_of/2"><b class="pred">is_complement_of</b><var class="arglist">(?ComplementClass, ?Descr)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Convert an OWL complement class into a Prolog representation.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>ComplementClass</var></td><td class="argdescr">- an OWL restriction class</td></tr>
+<tr><td><var>Descr</var></td><td class="argdescr">- Prolog term representing the class</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_description/2"><b class="pred">has_description</b><var class="arglist">(+Class, -Descr)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Convert an OWL class into a Prolog representation. This
+representation is:
+<ul>
+<li><code>only(Property,Class)</code></li>
+<li><code>some(Property,Class)</code></li>
+<li><code>min(Property,Min,Class)</code></li>
+<li><code>max(Property,Max,Class)</code></li>
+<li><code>exactly(Property,Count,Class)</code></li>
+<li><code>union_of(Classes)</code></li>
+<li><code>intersection_of(Classes)</code></li>
+<li><code>complement_of(Class)</code></li>
+<li><code>one_of(Individuals)</code></li>
+</ul>
+
+<p>
+For example, the union-of can be the result of</p>
+
+<pre class="code" ext="">
+&lt;rdfs:Class rdf:ID="myclass"&gt;
+  &lt;owl:unionOf parseType=Collection&gt;
+    &lt;rdf:Description rdf:about="gnu"/&gt;
+    &lt;rdf:Description rdf:about="gnat"/&gt;
+  &lt;/owl:unionOf&gt;
+&lt;/rdfs:Class&gt;</pre>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Class</var></td><td class="argdescr">- an OWL class</td></tr>
+<tr><td><var>Descr</var></td><td class="argdescr">- Prolog term representing the class</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_all_disjoint_classes/1"><b class="pred">is_all_disjoint_classes</b><var class="arglist">(?AllDisjointClasses)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True for OWL2 <var>AllDisjointClasses</var>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_inverse_property/2"><b class="pred">has_inverse_property</b><var class="arglist">(?Property, ?Inverse)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">The inverse-of relation between two properties.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Property</var></td><td class="argdescr">- property resource</td></tr>
+<tr><td><var>Inverse</var></td><td class="argdescr">- inverse of the property</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_property_chain/2"><b class="pred">has_property_chain</b><var class="arglist">(?Property, -Chain)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Reads chain axioms of a property resource.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Property</var></td><td class="argdescr">- property resource</td></tr>
+<tr><td><var>Chain</var></td><td class="argdescr">- list of property resources</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_equivalent_class/2"><b class="pred">has_equivalent_class</b><var class="arglist">(?Class1, ?Class2)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Maps an OWL class to classes it is equivalent to.
+This is in particular important for classification
+as suffcicient conditions can be defined using equivalent
+class statements.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Class1</var></td><td class="argdescr">- OWL class</td></tr>
+<tr><td><var>Class2</var></td><td class="argdescr">- an equivalent OWL class</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="same_as/2"><b class="pred">same_as</b><var class="arglist">(?X, ?Y)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True if <var>X</var> and <var>Y</var> are identical or connected by the owl:sameAs
+relation. Considers owl:sameAs transitive and symmetric.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="disjoint_with_direct/2"><b class="pred">disjoint_with_direct</b><var class="arglist">(?Cls, ?Disjoint)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True if there is a disjointness axioms for <var>Cls</var> and
+<var>Disjoint</var>, not taking into account the super classes of both.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="disjoint_with/2"><b class="pred">disjoint_with</b><var class="arglist">(?Class1, ?Class2)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Tests if <var>Class1</var> and <var>Class2</var> are disjoint, taking both individual disjointWith
+properties and the OWL2 AllDisjointClasses into account.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Class1</var></td><td class="argdescr">- OWL class</td></tr>
+<tr><td><var>Class2</var></td><td class="argdescr">- a disjoint OWL class
+
+<p>
+<code>disjoint_with(A,B)</code> :-
+<code>ground([A,B])</code>, A=B, !, fail.</p></td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2 class="undoc">Undocumented predicates</h2>
+
+<p>
+The following predicates are exported, but not or incorrectly documented.</p>
+
+<dl class="undoc">
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="instance_of_description/2"><b class="pred">instance_of_description</b><var class="arglist">(Arg1, Arg2)</var></a></dt>
+</dl>
+
+</body>
+</html>

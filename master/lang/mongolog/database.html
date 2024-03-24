@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>database.pl -- Storage of predicates in mongolog programs.</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>database.pl -- Storage of predicates in mongolog programs.</h1>
+
+<p>
+The following predicates are supported:</p>
+
+<table class="wiki">
+<tr><th>Predicate</th><th>Arguments</th></tr>
+<tr><td class="left"><a class="builtin" href="http://www.swi-prolog.org/pldoc/man?predicate=assert/1">assert/1</a></td><td class="left">+Head</td></tr>
+<tr><td class="left"><a class="builtin" href="http://www.swi-prolog.org/pldoc/man?predicate=retractall/1">retractall/1</a></td><td class="left">+Head</td></tr>
+</table>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="https://www.swi-prolog.org/pldoc/man?section=dynpreds">https://www.swi-prolog.org/pldoc/man?section=dynpreds</a></dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="mongolog_add_predicate/3"><b class="pred">mongolog_add_predicate</b><var class="arglist">(+Functor, +Fields, +Options)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Register a predicate that stores facts in the database.
+<var>Functor</var> is the functor of a n-ary predicate, and <var>Fields</var> is
+a n-elemental list of keys associated to the different
+arguments of the predicate.
+<var>Options</var> is a list of optional paramers:
+
+<table class="wiki">
+<tr><td><code>indices(List)</code></td><td>a list of indices passed to <a href="db.html#setup_collection/2">setup_collection/2</a></td></tr>
+<tr><td><code>collection(Collection)</code></td><td>name of the collection where predicate is stored, default is to use the functor of the predicate</td></tr>
+</table>
+
+<p>
+Current limitation: there cannot be predicates with the same functor,
+but different arity.</p>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Functor</var></td><td class="argdescr">- functor of the predicate</td></tr>
+<tr><td><var>Fields</var></td><td class="argdescr">- field names of predicate arguments</td></tr>
+<tr><td><var>Options</var></td><td class="argdescr">- option list</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="mongolog_drop_predicate/1"><b class="pred">mongolog_drop_predicate</b><var class="arglist">(+Functor)</var></a> is <b class="det">det</b></dt><dd class="defbody">Delete all facts associated to predicate with
+given functor.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Functor</var></td><td class="argdescr">- functor of the predicate</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</body>
+</html>

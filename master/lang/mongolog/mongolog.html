@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>mongolog.pl -- Compiling goals into aggregation pipelines.</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>mongolog.pl -- Compiling goals into aggregation pipelines.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_mongolog_predicate/1"><b class="pred">is_mongolog_predicate</b><var class="arglist">(+PredicateIndicator)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True if <var>PredicateIndicator</var> corresponds to a known mongolog predicate.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="mongolog_call/1"><b class="pred">mongolog_call</b><var class="arglist">(+Goal)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Same as <a href="mongolog.html#mongolog_call/2">mongolog_call/2</a> with empty options list.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Goal</var></td><td class="argdescr">- A compound term expanding into an aggregation pipeline</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="mongolog_call/2"><b class="pred">mongolog_call</b><var class="arglist">(+Goal, +Options)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Call <var>Goal</var> by translating it into an aggregation pipeline.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Goal</var></td><td class="argdescr">- A compound term expanding into an aggregation pipeline</td></tr>
+<tr><td><var>Options</var></td><td class="argdescr">- Additional options</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</body>
+</html>

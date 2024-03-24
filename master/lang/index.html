@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>lang</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="wiki">KnowRob Language</h1>
+
+<p>
+The KnowRob query language supports logic programming syntax.
+However, language expressions are potentially compiled by KnowRob into other
+formats such as mongo DB queries in order to combine
+different backends for query answering.
+KnowRob orchestrates this process through a pipeline of query steps
+where different steps are linked with each other by feeding groundings of
+one step into the input queue of the next step.</p>
+
+<p>
+The main interface predicates for using the KnowRob query language
+are <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=kb_call/2">kb_call/2</a> and <a href="query.html#kb_project/2">kb_project/2</a>.
+Their first argument is a language term (such as <a href="holds.html#holds/3">holds/3</a>),
+and their second argument is a contextual parameter used
+to handle scoped statements and questions.</p>
+
+<h3 class="wiki">Language terms</h3>
+
+<p>
+The binary operators
+<code>?&gt;</code> (querying operator) and
+<code>+&gt;</code> (projection operator) are used to declare language terms, and
+how they are hooked into the querying and projection predicates respectively.
+Syntactically, these declarations are similar to regular Prolog rules,
+which, instead, use the operator <code>:-</code>.
+When such a declaration appears in a module, the code is
+expanded into additional clauses of the querying and projection predicates.
+A regular Prolog rule is also generated, but the body of the rule
+is replaced with a call of the querying or projection predicate with the respective
+term as argument.</p>
+
+<p>
+Each call within the body of such a rule is expanded to a call of
+the querying or projection predicate instead where the language term argument
+is instantiated to the term called in the original body of the rule.
+So if we write, for example, <code>is_object(OBJ)</code> on the right-hand side
+of an querying rule, it is internally expanded to <code>kb_call(is_object(OBJ),Context)</code>.
+In the case of a projection rule, above expression would expand to
+<code>kb_project(is_object(OBJ),Context)</code>, which is also meaningful.
+In such a case, where querying and projection rules can be declared identical
+within the querying and projection operators, one can also use the operator
+<code>?+&gt;</code> which expands into both cases to avoid code redundancy.</p>
+
+<h3 class="wiki">Scoped questions and statements</h3>
+
+<p>
+Another aspect of these operators is that they hide the contextual
+argument from the declaration (above: the <var>Context</var> argument of predicates).
+This is handy for declaring context-invariant rules.
+However, rules may be written that retrieve or update the context hidden
+in the operator.
+This is possible through a DSL that allows to interact
+with the hidden context argument.</p>
+
+<p>
+Within projection rules, context is a tuple of
+fact scope (also called statement scope), and configuration.
+The scope of the statement restricts the context
+in which the statement is true, for example,
+that some statement is true after some event has happened.
+The scope must be instantiated before calling the projection predicate.
+Statements in projection rules expand into scoped assertions.
+Within querying rules, on the other hand, context has an additional
+query scope (also called question scope).
+Question scopes are used to restrict the scope
+of considered statements to statements with overlapping
+scopes to the one provided.
+The querying rule instantiates the statement scope to some scope
+within which the given statement is true, if any.
+In case of the term expands into a conjunctive query,
+the statament scope is instantiated to the intersection
+of individual statement scopes (if the intersection is not empty).</p>
+
+<p>
+Special scoping language terms are used to restrict the scope
+within a nested term. Restrictions of the scope will allways be passed
+through to child terms, hence the scoping is done in the outer term such as
+in <code>since(holds(S,P,O),Time)</code>. As these terms are usually defined as operators,
+one can also write, for example, <code>holds(S,P,O) since Time</code>.
+Generally, scoping terms are nested terms where another language term is
+called with an updated scope.
+In the case of querying-rules, scoping predicates will modify the question scope,
+while, in the case of projection-rules, the statement scope is modified.</p>
+
+<p>
+The following time-scoping terms are pre-defined:</p>
+
+<table class="wiki">
+<tr><th>Term</th><th>Description</th></tr>
+<tr><td class="left"><a href="temporal.html#(during)/2">during/2</a></td><td class="left">The time frame in which a statement holds</td></tr>
+<tr><td class="left"><a href="temporal.html#(since)/2">since/2</a></td><td class="left">The begin time of a statement being true</td></tr>
+<tr><td class="left"><a href="temporal.html#(until)/2">until/2</a></td><td class="left">The end time of a statement being true</td></tr>
+</table>
+
+<h2 class="wiki subdirs">Sub directories</h2>
+
+<table class="subdirs">
+<tr><td><a class="subdir" href="mongolog/index.html">[dir] mongolog</a></td></tr>
+<tr><td><a class="subdir" href="terms/index.html">[dir] terms</a></td></tr>
+</table>
+
+<h2 class="wiki plfiles">Prolog files</h2>
+
+<table class="summary">
+<tr><th colspan="3" class="file"><span style="float:left"><a href="__init__.html">__init__.pl</a></span><span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="computable.html">computable.pl</a></span>&nbsp; -- Computable predicates.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="computable.html#add_computable_predicate/2">add_computable_predicate/2</a></td><td class="summary">Register a computable predicate.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="computable.html#add_computable_property/2">add_computable_property/2</a></td><td class="summary">Register a computable property.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="computable.html#(computables)/1">computables/1</a></td><td class="summary">Register a list of comutables.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="computable.html#drop_computable_predicate/1">drop_computable_predicate/1</a></td><td class="summary">Unregister all computable predicates in a module.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="computable.html#drop_computable_predicate/2">drop_computable_predicate/2</a></td><td class="summary">Unregister a computable predicate.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="computable.html#drop_computable_property/1">drop_computable_property/1</a></td><td class="summary">Unregister all computable properties in a module.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="computable.html#drop_computable_property/2">drop_computable_property/2</a></td><td class="summary">Unregister a computable predicate.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="db.html">db.pl</a></span>&nbsp; -- Database predicates.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="db.html#drop_graph/1">drop_graph/1</a></td><td class="summary">Deletes all triples asserted into given named graph.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="db.html#get_unique_name/2">get_unique_name/2</a></td><td class="summary">Generates a unique name with given prefix.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="db.html#is_unique_name/1">is_unique_name/1</a></td><td class="summary">True if Name is not the subject of any known fact.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="db.html#load_json_rdf/1">load_json_rdf/1</a></td><td class="summary">Load JSON-encoded triple data into the knowledge base.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="db.html#load_owl/1">load_owl/1</a></td><td class="summary">Same as <a href="db.html#load_owl/2">load_owl/2</a> with empty Options list.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="db.html#load_owl/2">load_owl/2</a></td><td class="summary">Same as <a href="db.html#load_owl/3">load_owl/3</a> with universal scope, and graph name argument as given in the options list or "user" if none is given.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="db.html#load_owl/3">load_owl/3</a></td><td class="summary">Load RDF data from URL, and assert it into the triple DB using the scope provided and into a graph named according to the ontology.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="db.html#memorize/1">memorize/1</a></td><td class="summary">Store knowledge into given directory.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="db.html#remember/1">remember/1</a></td><td class="summary">Restore memory previously stored into given directory.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="db.html#setup_collection/2">setup_collection/2</a></td><td class="summary">Configure the indices of a named collection.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="db.html#unwatch/1">unwatch/1</a></td><td class="summary">Stop a previously started watch operation.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="db.html#watch/3">watch/3</a></td><td class="summary">Start watching possible instantiations of variables in Goal.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="db.html#watch_event/2">watch_event/2</a></td><td class="summary">This predicate is called by the mongo client when changes are received in a watch operation.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="designator.html">designator.pl</a></span>&nbsp; -- Implementation of entity designators.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="designator.html#has_designator/2">has_designator/2</a></td><td class="summary">Find entities denoted by some designator.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="designator.html#is_designator/1">is_designator/1</a></td><td class="summary">True for instantiated designators.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="messages.html">messages.pl</a></span><span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="query.html">query.pl</a></span>&nbsp; -- Query aggregation.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="query.html#ask/1">ask/1</a></td><td class="summary">Same as <a href="query.html#kb_call/1">kb_call/1</a>.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="query.html#ask/2">ask/2</a></td><td class="summary">Same as <a href="query.html#kb_call/4">kb_call/4</a> with empty options list and FScope as wildcard.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="query.html#call_with/3">call_with/3</a></td><td class="summary">Calls a goal in given backend.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="query.html#is_callable_with/2">is_callable_with/2</a></td><td class="summary">True if Backend is a querying backend that can handle Goal.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="query.html#kb_add_rule/2">kb_add_rule/2</a></td><td class="summary">Register a rule that translates into an aggregation pipeline.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="query.html#kb_call/1">kb_call/1</a></td><td class="summary">Same as <a href="query.html#kb_call/3">kb_call/3</a> with default scope to include only facts that hold now.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="query.html#kb_call/3">kb_call/3</a></td><td class="summary">Same as <a href="query.html#kb_call/4">kb_call/4</a> with empty options list.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="query.html#kb_call/4">kb_call/4</a></td><td class="summary">True if Statement holds within QScope.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="query.html#kb_drop_rule/1">kb_drop_rule/1</a></td><td class="summary">Drop a previously added <code>mongolog</code> rule.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="query.html#kb_expand/2">kb_expand/2</a></td><td class="summary">Translate a goal into a sequence of terminal commands.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="query.html#kb_project/1">kb_project/1</a></td><td class="summary">Same as <a href="query.html#kb_project/2">kb_project/2</a> with universal scope.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="query.html#kb_project/2">kb_project/2</a></td><td class="summary">Same as <a href="query.html#kb_project/3">kb_project/3</a> with empty options list.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="query.html#kb_project/3">kb_project/3</a></td><td class="summary">Assert that some statement is true.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="query.html#kb_unproject/1">kb_unproject/1</a></td><td class="summary">Same as <a href="query.html#kb_unproject/2">kb_unproject/2</a> with universal scope.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="query.html#kb_unproject/2">kb_unproject/2</a></td><td class="summary">Same as <a href="query.html#kb_unproject/3">kb_unproject/3</a> with empty options list.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="query.html#kb_unproject/3">kb_unproject/3</a></td><td class="summary">Unproject that some statement is true.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="rdf_tests.html">rdf_tests.pl</a></span>&nbsp; -- A test environment for running tests with RDF data.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="rdf_tests.html#begin_rdf_tests/2">begin_rdf_tests/2</a></td><td class="summary">Same as <a href="rdf_tests.html#begin_rdf_tests/3">begin_rdf_tests/3</a> with empty options list.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="rdf_tests.html#begin_rdf_tests/3">begin_rdf_tests/3</a></td><td class="summary">Begin unit testing code section with RDF data.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="rdf_tests.html#end_rdf_tests/1">end_rdf_tests/1</a></td><td class="summary">End unit testing code section with RDF data.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="scope.html">scope.pl</a></span>&nbsp; -- Scoping predicates.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="scope.html#current_scope/1">current_scope/1</a></td><td class="summary">The scope of facts that are currently true.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="scope.html#scope_intersect/3">scope_intersect/3</a></td><td class="summary">Intersect two scopes.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="scope.html#subscope_of/2">subscope_of/2</a></td><td class="summary">True if scope Sup contains all facts that are contained in scope Sub.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="scope.html#time_scope/3">time_scope/3</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="scope.html#time_scope_data/2">time_scope_data/2</a></td><td class="summary">Read since/until pair of temporal scope.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="scope.html#universal_scope/1">universal_scope/1</a></td><td class="summary">The scope of facts that are universally true.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="scope.html#wildcard_scope/1">wildcard_scope/1</a></td><td class="summary">A scope that matches any fact.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="subgraph.html">subgraph.pl</a></span>&nbsp; -- subgraph-of relationship between RDF graphs.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="subgraph.html#add_subgraph/2">add_subgraph/2</a></td><td class="summary">Adds the subgraph-of relation between two named graphs.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="subgraph.html#get_subgraphs/2">get_subgraphs/2</a></td><td class="summary">Get all subgraphs of a named graph.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="subgraph.html#get_supgraphs/2">get_supgraphs/2</a></td><td class="summary">Get all super-graphs of a named graph.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="subgraph.html#load_graph_structure/0">load_graph_structure/0</a></td><td class="summary">Avoid that there are any orphan graphs.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+</table>
+
+</body>
+</html>

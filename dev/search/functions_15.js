@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['undefinerelation_4083',['unDefineRelation',['../classknowrob_1_1_goal_driven_reasoner.html#ad3ba2f729fc881717c6623ce525ea9a2',1,'knowrob::GoalDrivenReasoner']]],
+  ['unifier_4084',['Unifier',['../classknowrob_1_1_unifier.html#a24176ba8b2becbef9a44ff841e16e012',1,'knowrob::Unifier']]],
+  ['unify_4085',['unify',['../classknowrob_1_1_unifier.html#aae8b3b89c8a03a222617c40a33ae4d4c',1,'knowrob::Unifier::unify(const TermPtr &amp;t0, const TermPtr &amp;t1)'],['../classknowrob_1_1_unifier.html#a048b51b0131382e497a67294b27ed611',1,'knowrob::Unifier::unify(const std::shared_ptr&lt; Variable &gt; &amp;var, const TermPtr &amp;t)']]],
+  ['unifyvars_4086',['unifyVars',['../classknowrob_1_1_prolog_term.html#a04db3251bd6c9524e16ec36026c7301a',1,'knowrob::PrologTerm']]],
+  ['unifywith_4087',['unifyWith',['../classknowrob_1_1_bindings.html#a909f2467ea89b75b07c08292fb555535',1,'knowrob::Bindings']]],
+  ['unique_5firi_4088',['unique_iri',['../classknowrob_1_1semweb_1_1_resource.html#a88c9284811faf8e33a84f497b4519235',1,'knowrob::semweb::Resource::unique_iri(std::string_view ns, std::string_view name)'],['../classknowrob_1_1semweb_1_1_resource.html#af7f32f351a3296654ded17a10e023d07',1,'knowrob::semweb::Resource::unique_iri(std::string_view type_iri)']]],
+  ['unreifiediri_4089',['unReifiedIRI',['../classknowrob_1_1semweb_1_1_property.html#a2e1ef1ce50f067ef67afa5c0dcde0419',1,'knowrob::semweb::Property']]],
+  ['unset_4090',['unset',['../classknowrob_1_1mongo_1_1_pipeline.html#ae54f3542a396dc1f186d38148fb07e0e',1,'knowrob::mongo::Pipeline']]],
+  ['until_4091',['until',['../classknowrob_1_1_time_interval.html#af692a5731b8e3b00dc6195420746e887',1,'knowrob::TimeInterval']]],
+  ['unwatch_4092',['unwatch',['../classknowrob_1_1mongo_1_1_query_watch.html#a058cfbac2df9e0bb8ea8d99a8fa2526c',1,'knowrob::mongo::QueryWatch']]],
+  ['unwind_4093',['unwind',['../classknowrob_1_1mongo_1_1_pipeline.html#abdb95d7d7433f3300b0c2940a6b29d94',1,'knowrob::mongo::Pipeline']]],
+  ['update_4094',['update',['../classknowrob_1_1mongo_1_1_collection.html#a2d9d7ff8898d0794b9230a29aa770441',1,'knowrob::mongo::Collection::update()'],['../classknowrob_1_1mongo_1_1_mongo_taxonomy.html#af519b3855f8e37c5334619384db413ac',1,'knowrob::mongo::MongoTaxonomy::update()'],['../classknowrob_1_1_data_driven_reasoner.html#a120e83c9b9dcd144de9af7021e32ed2f',1,'knowrob::DataDrivenReasoner::update()'],['../class_factxx_reasoner_1_1_factxx_reasoner.html#ad6707c53eaf3f6d228b087245b2d274b',1,'FactxxReasoner.FactxxReasoner.update()']]],
+  ['update_5ftriples_4095',['update_triples',['../class_factxx_reasoner_1_1_factxx_reasoner.html#af4e1de8231c168639ce74685302aa05c',1,'FactxxReasoner::FactxxReasoner']]],
+  ['updatehierarchyo_4096',['updateHierarchyO',['../classknowrob_1_1mongo_1_1_mongo_taxonomy.html#a11af2b0096810c23805123fa2cc304e2',1,'knowrob::mongo::MongoTaxonomy']]],
+  ['updatehierarchyp_4097',['updateHierarchyP',['../classknowrob_1_1mongo_1_1_mongo_taxonomy.html#a52c25ad6fb88b45c274406a324dce72e',1,'knowrob::mongo::MongoTaxonomy']]],
+  ['updateinterval_4098',['updateInterval',['../classknowrob_1_1_data_driven_reasoner.html#ab6a12b2cf2b997a968ac55ee4fc846e1',1,'knowrob::DataDrivenReasoner']]],
+  ['updatelogger_4099',['updateLogger',['../classknowrob_1_1_logger.html#a9514103b106f6c520ad9f7308a24ecfd',1,'knowrob::Logger']]],
+  ['updateuri_4100',['updateURI',['../classknowrob_1_1_u_r_i.html#a4ccb3b7f1a943998271717f34e4c4541',1,'knowrob::URI']]],
+  ['updatevocabulary_4101',['updateVocabulary',['../classknowrob_1_1transaction_1_1_transaction.html#a5437b21f57738098cdfb20e9a2b47df2',1,'knowrob::transaction::Transaction::updateVocabulary()'],['../classknowrob_1_1transaction_1_1_insert.html#a2b12dd82b8bdbc7e38d4e6bd2597424e',1,'knowrob::transaction::Insert::updateVocabulary()'],['../classknowrob_1_1transaction_1_1_remove.html#a0bc83635ff4ce663bbf11389a52163d6',1,'knowrob::transaction::Remove::updateVocabulary()']]],
+  ['upper_5fprefix_4102',['upper_prefix',['../namespaceknowrob_1_1parsers_1_1str.html#a391b71a26b1c8515fda613f38f0ae87c',1,'knowrob::parsers::str']]],
+  ['uri_4103',['uri',['../classknowrob_1_1_data_source.html#a701365f17b5a36b7ccec011217a77e3a',1,'knowrob::DataSource::uri()'],['../classknowrob_1_1_u_r_i.html#ab2eb0f45b5e6db766a05baf446144136',1,'knowrob::URI::URI(std::string_view path)'],['../classknowrob_1_1_u_r_i.html#a213ec76b570e185a43c54c622ee538ea',1,'knowrob::URI::URI(const boost::property_tree::ptree &amp;property_tree)'],['../classknowrob_1_1_u_r_i.html#aefc3ddca82a452bc16ba37dbae8839af',1,'knowrob::URI::URI(std::string path, std::string protocol, std::string host, int port)']]],
+  ['uritoalias_4104',['uriToAlias',['../classknowrob_1_1_prefix_registry.html#ab11c32e82e284b8066524b5118cedd7b',1,'knowrob::PrefixRegistry']]],
+  ['url_5fresolve2_4105',['url_resolve2',['../_prolog_engine_8cpp.html#ac2c517fc633fee2e3e2e2a4a65a37d3d',1,'PrologEngine.cpp']]]
+];

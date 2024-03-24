@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['d_4230',['d',['../namespacesetup.html#aa2586b6c4dd84a0aaaf49cb1565cee6e',1,'setup']]],
+  ['data_5f_4231',['data_',['../classknowrob_1_1_triple_pattern_container.html#a3d46886beb1cb9eb14bc24bdac9e64eb',1,'knowrob::TriplePatternContainer::data_()'],['../classknowrob_1_1_triple_view_batch.html#a3e1e1c904985b78fa435378024405aca',1,'knowrob::TripleViewBatch::data_()']]],
+  ['database_5f_4232',['database_',['../classknowrob_1_1_redland_model.html#a30daef39d8bf3caa98850d5a6df8080d',1,'knowrob::RedlandModel']]],
+  ['datasourcehandler_5f_4233',['dataSourceHandler_',['../classknowrob_1_1_data_source_handler.html#af5ee325c9bca41c6b941e9d27d99c196',1,'knowrob::DataSourceHandler']]],
+  ['datatypeproperty_4234',['DatatypeProperty',['../namespaceknowrob_1_1owl.html#af8976471ea5a3d7e47ab2cb5654ce312',1,'knowrob::owl']]],
+  ['db_5fcollection_5f_4235',['db_collection_',['../class_t_f_republisher.html#aa5850524c328d10b02acd686de244431',1,'TFRepublisher']]],
+  ['db_5fname_5f_4236',['db_name_',['../class_t_f_logger.html#a524bcd4ab825dc5f7723ed0b760bff5e',1,'TFLogger::db_name_()'],['../class_t_f_republisher.html#a829092e4af4c807841ef2cc2fa8dabdf',1,'TFRepublisher::db_name_()']]],
+  ['db_5fname_5fknowrob_4237',['DB_NAME_KNOWROB',['../classknowrob_1_1_mongo_knowledge_graph.html#a700046a22dd4858e116ed1347c9b3c28',1,'knowrob::MongoKnowledgeGraph']]],
+  ['db_5fname_5ftests_4238',['DB_NAME_TESTS',['../classknowrob_1_1_mongo_knowledge_graph.html#aa27da54765728b6957f70484ae505e6f',1,'knowrob::MongoKnowledgeGraph']]],
+  ['db_5furi_5f_4239',['db_uri_',['../class_t_f_logger.html#a99bbf719a801b27fe9643e3b9ae515c5',1,'TFLogger::db_uri_()'],['../class_t_f_republisher.html#a93a1f452aea321f44041de9f7b47b758',1,'TFRepublisher::db_uri_()']]],
+  ['db_5furi_5fdefault_4240',['DB_URI_DEFAULT',['../classknowrob_1_1_mongo_knowledge_graph.html#ac77ae70084baffe05aeb997a21f66a4e',1,'knowrob::MongoKnowledgeGraph']]],
+  ['defaultgraph_5f_4241',['defaultGraph_',['../classknowrob_1_1_import_hierarchy.html#a38511dd1662ddbf7912d986eb73af7c6',1,'knowrob::ImportHierarchy']]],
+  ['deferreddontknowanswers_5f_4242',['deferredDontKnowAnswers_',['../classknowrob_1_1_query_stage.html#ae84a9840a07b1974a455243bab785634',1,'knowrob::QueryStage']]],
+  ['deferrednegativeanswers_5f_4243',['deferredNegativeAnswers_',['../classknowrob_1_1_query_stage.html#aeaaf02c3a7813b06e4ce486bc14e465f',1,'knowrob::QueryStage']]],
+  ['deferredpositiveanswers_5f_4244',['deferredPositiveAnswers_',['../classknowrob_1_1_disjunctive_broadcaster.html#a77e40ae48707e5c78dfaf4ca0273afbc',1,'knowrob::DisjunctiveBroadcaster']]],
+  ['definedclasses_5f_4245',['definedClasses_',['../classknowrob_1_1_vocabulary.html#a1bd55538833daf6f23dad3409e75b94a',1,'knowrob::Vocabulary']]],
+  ['definedproperties_5f_4246',['definedProperties_',['../classknowrob_1_1_vocabulary.html#aaf79e3094ac1cfb3ba99ed7b67bf9c1f',1,'knowrob::Vocabulary']]],
+  ['definedreifications_5f_4247',['definedReifications_',['../classknowrob_1_1_vocabulary.html#a92c5848a901b4e7d188eb02f6b8a2d0c',1,'knowrob::Vocabulary']]],
+  ['definedrelations_5f_4248',['definedRelations_',['../classknowrob_1_1_goal_driven_reasoner.html#a61ce35a24f945ba618b8879af42ae7f9',1,'knowrob::GoalDrivenReasoner']]],
+  ['directimports_5f_4249',['directImports_',['../classknowrob_1_1_current_graph.html#aee4b80e5517395308e2b6f60b38634bc',1,'knowrob::CurrentGraph']]],
+  ['directparents_5f_4250',['directParents_',['../classknowrob_1_1semweb_1_1_class.html#a8d617d94fd5b87d3d0772a40db419083',1,'knowrob::semweb::Class::directParents_()'],['../classknowrob_1_1semweb_1_1_property.html#a7714f8a58feefdd9650cbf929987c0f2',1,'knowrob::semweb::Property::directParents_()']]],
+  ['dllpath_5f_4251',['dllPath_',['../classknowrob_1_1_plugin_library.html#a540003af8f9d54f9532ff698206584fa',1,'knowrob::PluginLibrary']]],
+  ['document_5f_4252',['document_',['../classknowrob_1_1mongo_1_1_mongo_triple.html#afe3af64129818dce3bb39ee6b6302ed9',1,'knowrob::mongo::MongoTriple::document_()'],['../classknowrob_1_1mongo_1_1_mongo_triple_pattern.html#a2451f1c44afdfef7edbac7aefddede14',1,'knowrob::mongo::MongoTriplePattern::document_()']]],
+  ['domain_4253',['domain',['../namespaceknowrob_1_1rdfs.html#a83167c4754271ab528a290dba37788e8',1,'knowrob::rdfs']]],
+  ['doparse_5f_4254',['doParse_',['../classknowrob_1_1_ontology_parser.html#a266d02bee936501159b90d0582b7cf03',1,'knowrob::OntologyParser']]]
+];

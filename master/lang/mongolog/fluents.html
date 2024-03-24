@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>fluents.pl -- Fluents in mongolog programs.</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>fluents.pl -- Fluents in mongolog programs.</h1>
+
+<p>
+Fluents are functional predicates that change their value over time.
+Documents with a dedicated time field are used to represent fluents.
+Any existing database collection with time index may be used as a backend for fluents.
+At any timepoint, the document with the latest stamp before the timepoint provides fluent value.
+There can only be one fluent value at a time.
+However, fluents may have additional "key" arguments. For each combination of key arguments
+a different value is stored.
+The value of a fluent is given by the remaining "value" arguments.
+Each argument may be an atomic value, or a compound term.
+Fluents support <a class="builtin" href="http://www.swi-prolog.org/pldoc/man?predicate=assert/1">assert/1</a> and <a class="builtin" href="http://www.swi-prolog.org/pldoc/man?predicate=retractall/1">retractall/1</a> for adding and removing them from the database.
+All key arguments must be grounded, value arguments maybe grounded to apply additional
+filtering based on the fluent value.</p>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="mongolog_add_fluent/4"><b class="pred">mongolog_add_fluent</b><var class="arglist">(+Functor, +ArgFields, +TimeField, +Options)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Register a fluent predicate that stores facts in the database.
+<var>Functor</var> is the functor of a n-ary predicate, and Fields is
+a n-elemental list of keys associated to the different
+arguments of the predicate.
+TimeKey is the document field where the time is stored.
+<var>Options</var> may have the same options as accepted by <a href="database.html#mongolog_add_predicate/3">mongolog_add_predicate/3</a>.
+
+<p>
+Current limitation: there cannot be predicates with the same functor,
+but different arity.</p>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Functor</var></td><td class="argdescr">- functor of the predicate</td></tr>
+<tr><td><var>ArgFields</var></td><td class="argdescr">- field names of predicate arguments</td></tr>
+<tr><td><var>TimeField</var></td><td class="argdescr">- field name of time value</td></tr>
+<tr><td><var>Options</var></td><td class="argdescr">- option list</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="mongolog_add_fluent/3"><b class="pred">mongolog_add_fluent</b><var class="arglist">(+Functor, +ArgFields, +TimeField)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Same as <a href="fluents.html#mongolog_add_fluent/4">mongolog_add_fluent/4</a> with empty options list.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Functor</var></td><td class="argdescr">- functor of the predicate</td></tr>
+<tr><td><var>ArgFields</var></td><td class="argdescr">- field names of predicate arguments</td></tr>
+<tr><td><var>TimeField</var></td><td class="argdescr">- field name of time value</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="mongolog_drop_fluent/1"><b class="pred">mongolog_drop_fluent</b><var class="arglist">(+Functor)</var></a> is <b class="det">det</b></dt><dd class="defbody">Delete all facts associated to predicate with
+given functor.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Functor</var></td><td class="argdescr">- functor of the predicate</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</body>
+</html>

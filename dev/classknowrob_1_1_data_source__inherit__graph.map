@@ -1,0 +1,7 @@
+<map id="knowrob::DataSource" name="knowrob::DataSource">
+<area shape="rect" id="node1" title=" " alt="" coords="107,5,269,32"/>
+<area shape="rect" id="node2" href="$classknowrob_1_1_data_file.html" title=" " alt="" coords="30,80,170,107"/>
+<area shape="rect" id="node4" href="$classknowrob_1_1_data_service.html" title=" " alt="" coords="200,80,365,107"/>
+<area shape="rect" id="node3" href="$classknowrob_1_1_ontology_file.html" title=" " alt="" coords="5,155,173,181"/>
+<area shape="rect" id="node5" href="$classknowrob_1_1_s_p_a_r_q_l_service.html" title=" " alt="" coords="197,155,381,181"/>
+</map>

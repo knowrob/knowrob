@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['semweb_2ecpp_2890',['semweb.cpp',['../semweb_8cpp.html',1,'']]],
+  ['semweb_2eh_2891',['semweb.h',['../semweb_8h.html',1,'']]],
+  ['setup_2epy_2892',['setup.py',['../setup_8py.html',1,'']]],
+  ['shared_5fptr_2eh_2893',['shared_ptr.h',['../shared__ptr_8h.html',1,'']]],
+  ['sparqlbackend_2ecpp_2894',['SPARQLBackend.cpp',['../_s_p_a_r_q_l_backend_8cpp.html',1,'']]],
+  ['sparqlbackend_2eh_2895',['SPARQLBackend.h',['../_s_p_a_r_q_l_backend_8h.html',1,'']]],
+  ['sparqlquery_2ecpp_2896',['SPARQLQuery.cpp',['../_s_p_a_r_q_l_query_8cpp.html',1,'']]],
+  ['sparqlquery_2eh_2897',['SPARQLQuery.h',['../_s_p_a_r_q_l_query_8h.html',1,'']]],
+  ['sparqlservice_2ecpp_2898',['SPARQLService.cpp',['../_s_p_a_r_q_l_service_8cpp.html',1,'']]],
+  ['sparqlservice_2eh_2899',['SPARQLService.h',['../_s_p_a_r_q_l_service_8h.html',1,'']]],
+  ['string_2ecpp_2900',['String.cpp',['../_string_8cpp.html',1,'']]],
+  ['string_2eh_2901',['String.h',['../_string_8h.html',1,'']]],
+  ['string_5fview_2eh_2902',['string_view.h',['../string__view_8h.html',1,'']]],
+  ['strings_2ecpp_2903',['strings.cpp',['../strings_8cpp.html',1,'']]],
+  ['strings_2eh_2904',['strings.h',['../strings_8h.html',1,'']]],
+  ['swrlreasoner_2ecpp_2905',['SWRLReasoner.cpp',['../_s_w_r_l_reasoner_8cpp.html',1,'']]],
+  ['swrlreasoner_2eh_2906',['SWRLReasoner.h',['../_s_w_r_l_reasoner_8h.html',1,'']]]
+];

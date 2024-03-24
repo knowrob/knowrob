@@ -1,0 +1,52 @@
+<map id="src/backend/BackendInterface.cpp" name="src/backend/BackendInterface.cpp">
+<area shape="rect" id="node1" title=" " alt="" coords="1457,5,1699,32"/>
+<area shape="rect" id="node2" href="$_backend_interface_8h.html" title=" " alt="" coords="1535,80,1800,107"/>
+<area shape="rect" id="node36" href="$_backend_transaction_8h.html" title=" " alt="" coords="1410,155,1573,181"/>
+<area shape="rect" id="node38" href="$_reified_triple_8h.html" title=" " alt="" coords="421,319,567,360"/>
+<area shape="rect" id="node39" href="$_un_reification_container_8h.html" title=" " alt="" coords="959,319,1146,360"/>
+<area shape="rect" id="node40" href="$_reified_query_8h.html" title=" " alt="" coords="2922,229,3069,271"/>
+<area shape="rect" id="node43" href="$_graph_builtin_8h.html" title=" " alt="" coords="847,415,1067,442"/>
+<area shape="rect" id="node47" href="$knowrob_8h.html" title=" " alt="" coords="3197,505,3348,531"/>
+<area shape="rect" id="node50" href="$model_8h.html" title=" " alt="" coords="2349,497,2495,539"/>
+<area shape="rect" id="node3" href="$_queryable_backend_8h.html" title=" " alt="" coords="1980,229,2187,271"/>
+<area shape="rect" id="node34" href="$_backend_manager_8h.html" title=" " alt="" coords="1597,155,1743,181"/>
+<area shape="rect" id="node4" href="$_token_buffer_8h.html" title=" " alt="" coords="1731,326,1953,353"/>
+<area shape="rect" id="node5" href="$_backend_8h.html" title=" " alt="" coords="1171,326,1260,353"/>
+<area shape="rect" id="node25" href="$_answer_8h.html" title=" " alt="" coords="2224,415,2417,442"/>
+<area shape="rect" id="node26" href="$_graph_path_query_8h.html" title=" " alt="" coords="2666,408,2861,449"/>
+<area shape="rect" id="node29" href="$_answer_yes_8h.html" title=" " alt="" coords="2213,326,2428,353"/>
+<area shape="rect" id="node30" href="$_answer_no_8h.html" title=" " alt="" coords="1977,326,2189,353"/>
+<area shape="rect" id="node31" href="$_graph_connective_8h.html" title=" " alt="" coords="2935,415,3186,442"/>
+<area shape="rect" id="node33" href="$_graph_query_expansion_8h.html" title=" " alt="" coords="2605,319,2810,360"/>
+<area shape="rect" id="node6" href="$_framed_triple_8h.html" title=" " alt="" coords="115,505,337,531"/>
+<area shape="rect" id="node11" href="$_triple_container_8h.html" title=" " alt="" coords="517,415,753,442"/>
+<area shape="rect" id="node17" href="$_vocabulary_8h.html" title=" " alt="" coords="1333,415,1556,442"/>
+<area shape="rect" id="node24" href="$_thread_pool_8h.html" title=" " alt="" coords="1143,415,1309,442"/>
+<area shape="rect" id="node7" title=" " alt="" coords="93,587,167,613"/>
+<area shape="rect" id="node8" title=" " alt="" coords="192,587,260,613"/>
+<area shape="rect" id="node9" href="$_x_s_d_type_8h.html" title=" " alt="" coords="285,587,375,613"/>
+<area shape="rect" id="node10" title=" " alt="" coords="621,661,719,688"/>
+<area shape="rect" id="node12" title=" " alt="" coords="411,497,574,539"/>
+<area shape="rect" id="node13" title=" " alt="" coords="599,505,659,531"/>
+<area shape="rect" id="node14" title=" " alt="" coords="5,587,68,613"/>
+<area shape="rect" id="node15" title=" " alt="" coords="1333,661,1410,688"/>
+<area shape="rect" id="node16" title=" " alt="" coords="1032,661,1119,688"/>
+<area shape="rect" id="node18" title=" " alt="" coords="1929,587,1987,613"/>
+<area shape="rect" id="node19" title=" " alt="" coords="1725,587,1775,613"/>
+<area shape="rect" id="node20" href="$_property_8h.html" title=" " alt="" coords="1256,505,1343,531"/>
+<area shape="rect" id="node22" href="$_class_8h.html" title=" " alt="" coords="1265,587,1334,613"/>
+<area shape="rect" id="node23" href="$_import_hierarchy_8h.html" title=" " alt="" coords="1681,505,1819,531"/>
+<area shape="rect" id="node21" href="$_i_r_i_atom_8h.html" title=" " alt="" coords="2328,587,2516,613"/>
+<area shape="rect" id="node27" href="$_graph_query_8h.html" title=" " alt="" coords="2657,505,2872,531"/>
+<area shape="rect" id="node28" href="$_graph_term_8h.html" title=" " alt="" coords="2733,587,2943,613"/>
+<area shape="rect" id="node32" href="$_graph_pattern_8h.html" title=" " alt="" coords="2949,505,3173,531"/>
+<area shape="rect" id="node35" href="$_plugin_manager_8h.html" title=" " alt="" coords="1996,505,2237,531"/>
+<area shape="rect" id="node37" href="$_reification_container_8h.html" title=" " alt="" coords="1284,319,1453,360"/>
+<area shape="rect" id="node41" href="$_graph_union_8h.html" title=" " alt="" coords="2986,326,3202,353"/>
+<area shape="rect" id="node42" href="$_graph_sequence_8h.html" title=" " alt="" coords="3227,326,3468,353"/>
+<area shape="rect" id="node44" href="$_variable_8h.html" title=" " alt="" coords="1367,505,1453,531"/>
+<area shape="rect" id="node45" href="$_atomic_8h.html" title=" " alt="" coords="949,505,1029,531"/>
+<area shape="rect" id="node46" href="$_function_8h.html" title=" " alt="" coords="683,505,873,531"/>
+<area shape="rect" id="node48" title=" " alt="" coords="3192,587,3257,613"/>
+<area shape="rect" id="node49" title=" " alt="" coords="3282,587,3357,613"/>
+</map>

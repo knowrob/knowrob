@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>terms.pl -- The occurs predicate.</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>terms.pl -- The occurs predicate.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="occurs/1"><b class="pred">occurs</b><var class="arglist">(?Event)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True for all occurences (events).
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Event</var></td><td class="argdescr">- an event instance.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_a/2"><var class="arglist">+Resource</var> <b class="pred">is_a</b> <var class="arglist">?Type</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Wrapper around instance_of, subclass_of, and subproperty_of.
+Using this is a bit slower as an additional type check
+is needed.
+For example: <code>Cat is_a Animal</code> and <code>Nibbler is_a Cat</code>.
+
+<p>
+Note that contrary to wrapped predicates, <a href="terms.html#(is_a)/2">is_a/2</a> requires
+the <var>Resource</var> to be ground.</p>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Resource</var></td><td class="argdescr">- a RDF resource</td></tr>
+<tr><td><var>Type</var></td><td class="argdescr">- the type of the resource</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</body>
+</html>

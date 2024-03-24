@@ -1,0 +1,7 @@
+<map id="knowrob::reasoner::TripleEvent" name="knowrob::reasoner::TripleEvent">
+<area shape="rect" id="node1" title=" " alt="" coords="204,71,355,112"/>
+<area shape="rect" id="node3" href="$classknowrob_1_1reasoner_1_1_assertion_event.html" title=" " alt="" coords="403,5,553,47"/>
+<area shape="rect" id="node4" href="$classknowrob_1_1reasoner_1_1_replacement_event.html" title=" " alt="" coords="403,71,553,112"/>
+<area shape="rect" id="node5" href="$classknowrob_1_1reasoner_1_1_retraction_event.html" title=" " alt="" coords="403,136,553,177"/>
+<area shape="rect" id="node2" href="$classknowrob_1_1reasoner_1_1_event.html" title=" " alt="" coords="5,71,156,112"/>
+</map>

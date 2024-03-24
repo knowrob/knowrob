@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>interval.pl -- Allen calculus implementation using Event Endpoint Graphs (ESGs).</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>interval.pl -- Allen calculus implementation using Event Endpoint Graphs (ESGs).</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="interval_equals/2"><b class="pred">interval_equals</b><var class="arglist">(I0, I1)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="interval_before/2"><b class="pred">interval_before</b><var class="arglist">(I0, I1)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Interval <var>I0</var> takes place before <var>I1</var>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>I0</var></td><td class="argdescr">- Time point, interval or temporally extended entity</td></tr>
+<tr><td><var>I1</var></td><td class="argdescr">- Time point, interval or temporally extended entity</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="interval_after/2"><b class="pred">interval_after</b><var class="arglist">(I0, I1)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Interval <var>I0</var> takes place after <var>I1</var>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>I0</var></td><td class="argdescr">- Time point, interval or temporally extended entity</td></tr>
+<tr><td><var>I1</var></td><td class="argdescr">- Time point, interval or temporally extended entity</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="interval_meets/2"><b class="pred">interval_meets</b><var class="arglist">(I0, I1)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Intervals <var>I0</var> and <var>I1</var> meet, i.e. the end time of <var>I0</var> is equal to the start time of <var>I1</var>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>I0</var></td><td class="argdescr">- Time point, interval or temporally extended entity</td></tr>
+<tr><td><var>I1</var></td><td class="argdescr">- Time point, interval or temporally extended entity</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="interval_met_by/2"><b class="pred">interval_met_by</b><var class="arglist">(I1, I2)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Intervals <var>I1</var> and <var>I2</var> meet, i.e. the end time of <var>I2</var> is equal to the start time of <var>I1</var>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>I1</var></td><td class="argdescr">- Instance of a knowrob:TimeInterval</td></tr>
+<tr><td><var>I2</var></td><td class="argdescr">- Instance of a knowrob:TimeInterval</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="interval_starts/2"><b class="pred">interval_starts</b><var class="arglist">(I0, I1)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Interval <var>I0</var> starts interval <var>I1</var>, i.e. both have the same start time, but <var>I0</var> finishes earlier
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>I0</var></td><td class="argdescr">- Time point, interval or temporally extended entity</td></tr>
+<tr><td><var>I1</var></td><td class="argdescr">- Time point, interval or temporally extended entity</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="interval_started_by/2"><b class="pred">interval_started_by</b><var class="arglist">(I1, I2)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Interval <var>I2</var> starts interval <var>I1</var>, i.e. both have the same start time, but <var>I2</var> finishes earlier
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>I1</var></td><td class="argdescr">- Instance of a knowrob:TimeInterval</td></tr>
+<tr><td><var>I2</var></td><td class="argdescr">- Instance of a knowrob:TimeInterval</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="interval_finishes/2"><b class="pred">interval_finishes</b><var class="arglist">(I0, I1)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Interval <var>I0</var> finishes interval <var>I1</var>, i.e. both have the same end time, but <var>I0</var> starts later
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>I0</var></td><td class="argdescr">- Time point, interval or temporally extended entity</td></tr>
+<tr><td><var>I1</var></td><td class="argdescr">- Time point, interval or temporally extended entity</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="interval_finished_by/2"><b class="pred">interval_finished_by</b><var class="arglist">(I1, I2)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Interval <var>I2</var> finishes interval <var>I1</var>, i.e. both have the same end time, but <var>I2</var> starts later
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>I1</var></td><td class="argdescr">- Instance of a knowrob:TimeInterval</td></tr>
+<tr><td><var>I2</var></td><td class="argdescr">- Instance of a knowrob:TimeInterval</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="interval_overlaps/2"><b class="pred">interval_overlaps</b><var class="arglist">(I0, I1)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Interval <var>I0</var> overlaps temporally with <var>I1</var>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>I0</var></td><td class="argdescr">- Time point, interval or temporally extended entity</td></tr>
+<tr><td><var>I1</var></td><td class="argdescr">- Time point, interval or temporally extended entity</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="interval_overlapped_by/2"><b class="pred">interval_overlapped_by</b><var class="arglist">(I1, I2)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Interval <var>I2</var> overlaps temporally with <var>I1</var>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>I1</var></td><td class="argdescr">- Instance of a knowrob:TimeInterval</td></tr>
+<tr><td><var>I2</var></td><td class="argdescr">- Instance of a knowrob:TimeInterval</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="interval_during/2"><b class="pred">interval_during</b><var class="arglist">(I0, I1)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Interval <var>I0</var> is inside interval <var>I1</var>, i.e. it starts later and finishes earlier than <var>I1</var>.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>I0</var></td><td class="argdescr">- Time point, interval or temporally extended entity</td></tr>
+<tr><td><var>I1</var></td><td class="argdescr">- Time point, interval or temporally extended entity</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2 class="undoc">Undocumented predicates</h2>
+
+<p>
+The following predicates are exported, but not or incorrectly documented.</p>
+
+<dl class="undoc">
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="interval_query/1"><b class="pred">interval_query</b><var class="arglist">(Arg1)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="interval_constraint/3"><b class="pred">interval_constraint</b><var class="arglist">(Arg1, Arg2, Arg3)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="interval_constraint/2"><b class="pred">interval_constraint</b><var class="arglist">(Arg1, Arg2)</var></a></dt>
+</dl>
+
+</body>
+</html>

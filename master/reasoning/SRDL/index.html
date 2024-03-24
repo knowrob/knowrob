@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SRDL</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="wiki">srdl</h1>
+
+<p>
+The Semantic Robot Description Language (SRDL) extends KnowRob with representations for robot hardware,
+robot software and robot capabilities. The hardware models can automatically be
+<a href="http://knowrob.org/doc/create_srdl_model">imported from a URDF description</a>,
+and are annotated with additional semantic information.
+For example, one can annotate semantically meaningful groups of links such
+as the left arm or the right gripper. SRDL integrates
+this information into KnowRob, allowing the system to reason about the robot's configuration.
+In addition, SRDL provides inference mechanisms that operate on the robot model and
+are able to check which dependencies of
+<a href="http://knowrob.org/doc/doc/modeling_tasks_and_actions">action descriptions</a>
+are available on the robot. This allows to identify missing components or capabilities.</p>
+
+<p>
+<div class="figure">
+<div class="image"><img alt="img/srdl.png" border="0" src="../../../img/srdl.png"></div>
+<div class="caption"> </div>
+</div>
+</p>
+
+<h3 class="wiki">Ontology organization</h3>
+
+<p>
+The SRDL ontology is organized in a modular way, e.g. to describe only components or only capabilities.</p>
+<ul>
+<li><b>srdl2</b>: Only generic cross-file relations like the generic dependsOn property</li>
+<li><b>srdl2-comp</b>: Classes of hardware and software components, aggregation of components to kinematic chains, composition of components</li>
+<li><b>srdl2-cap</b>: Classes of capabilities, including their dependencies on components or other capabilities</li>
+<li><b>srdl2-action</b>: Dependency specifications for common actions</li>
+<li><b>Robot model</b>: Description of a concrete robot instance including its kinematic structure (auto-generated from URDF file), other hardware/software components and hardcoded capabilities</li>
+<li><b>Task model</b>: Description of the concrete task at hand, using the action classes defined in the srdl-action ontology</li>
+</ul>
+
+<h3 class="wiki">More detailed documentation</h3>
+
+<p>
+Please visit <a href="http://knowrob.org/doc/srdl2_tutorial">knowrob.org</a>.</p>
+
+<h2 class="wiki plfiles">Prolog files</h2>
+
+<table class="summary">
+<tr><th colspan="3" class="file"><span style="float:left"><a href="__init__.html">__init__.pl</a></span><span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="srdl.html">srdl.pl</a></span><span style="float:right"></span></th></tr>
+</table>
+
+</body>
+</html>

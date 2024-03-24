@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>scope.pl -- Scoping predicates.</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>scope.pl -- Scoping predicates.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="universal_scope/1"><b class="pred">universal_scope</b><var class="arglist">(-Scope)</var></a> is <b class="det">det</b></dt><dd class="defbody">The scope of facts that are universally true.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Scope</var></td><td class="argdescr">- A scope dictionary.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="current_scope/1"><b class="pred">current_scope</b><var class="arglist">(-Scope)</var></a> is <b class="det">det</b></dt><dd class="defbody">The scope of facts that are currently true.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Scope</var></td><td class="argdescr">- A scope dictionary.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="wildcard_scope/1"><b class="pred">wildcard_scope</b><var class="arglist">(-Scope)</var></a> is <b class="det">det</b></dt><dd class="defbody">A scope that matches any fact.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Scope</var></td><td class="argdescr">- A scope dictionary.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="subscope_of/2"><b class="pred">subscope_of</b><var class="arglist">(+Sub, +Sup)</var></a> is <b class="det">det</b></dt><dd class="defbody">True if scope <var>Sup</var> contains all facts that are contained
+in scope <var>Sub</var>.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Sub</var></td><td class="argdescr">- a scope dict.</td></tr>
+<tr><td><var>Sup</var></td><td class="argdescr">- a scope dict.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="scope_intersect/3"><b class="pred">scope_intersect</b><var class="arglist">(+A, +B, -Merged)</var></a> is <b class="det">det</b></dt><dd class="defbody">Intersect two scopes. The intersected scope contains all
+facts that are contained in scope <var>A</var> and also in scope <var>B</var>.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>A</var></td><td class="argdescr">- a scope dict.</td></tr>
+<tr><td><var>B</var></td><td class="argdescr">- a scope dict.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="time_scope/3"><b class="pred">time_scope</b><var class="arglist">(?Since, ?Until, ?Scope)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Scope</var></td><td class="argdescr">- A scope dict.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="time_scope_data/2"><b class="pred">time_scope_data</b><var class="arglist">(+Scope, ?IntervalData)</var></a> is <b class="det">det</b></dt><dd class="defbody">Read since/until pair of temporal scope.
+Note that vars are used in case since or until
+not known.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Scope</var></td><td class="argdescr">- A scope dict.</td></tr>
+<tr><td><var>IntervalData</var></td><td class="argdescr">- A list [Since,Until].</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</body>
+</html>

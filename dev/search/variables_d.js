@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['o_4453',['o',['../structknowrob_1_1_raptor_container_1_1mapped__statement.html#a61cab6acdd327f37f0578fb254e80559',1,'knowrob::RaptorContainer::mapped_statement']]],
+  ['o_5fvars_4454',['o_vars',['../structknowrob_1_1_graph_query_expansion.html#a8a33689642f6fb5c7cb19174876b7153',1,'knowrob::GraphQueryExpansion']]],
+  ['object_5f_4455',['object_',['../classknowrob_1_1_framed_triple_template.html#af11d558df72a81494aad546b0ba2ea4f',1,'knowrob::FramedTripleTemplate']]],
+  ['objectoperator_5f_4456',['objectOperator_',['../classknowrob_1_1_framed_triple_pattern.html#a73437a2e60f371f52458d27d38cac697',1,'knowrob::FramedTriplePattern']]],
+  ['objectproperty_4457',['ObjectProperty',['../namespaceknowrob_1_1owl.html#a2589023a7f06a221210797ad314e0aa6',1,'knowrob::owl']]],
+  ['objectterm_5f_4458',['objectTerm_',['../classknowrob_1_1_framed_triple_pattern.html#ae00d9b6f6c0a74d116db55f8b4545120',1,'knowrob::FramedTriplePattern']]],
+  ['objectvariable_5f_4459',['objectVariable_',['../classknowrob_1_1_framed_triple_pattern.html#a960b0dde827e63dd1967016d4bd6f18c',1,'knowrob::FramedTriplePattern']]],
+  ['occasional_4460',['occasional',['../structknowrob_1_1_graph_selector.html#a0b144d4b0052d99b3308ba9c408d665a',1,'knowrob::GraphSelector']]],
+  ['onecollection_4461',['oneCollection',['../structknowrob_1_1mongo_1_1_triple_store.html#abacf03703c8f6ee5ba7155bcd407ebfa',1,'knowrob::mongo::TripleStore']]],
+  ['onecollection_5f_4462',['oneCollection_',['../classknowrob_1_1_mongo_knowledge_graph.html#a934a739e8dd0803ef273efcb3e65a6f2',1,'knowrob::MongoKnowledgeGraph::oneCollection_()'],['../classknowrob_1_1mongo_1_1_mongo_taxonomy.html#a7f4b5febfea6fe3e5ce33ac08978b6ab',1,'knowrob::mongo::MongoTaxonomy::oneCollection_()']]],
+  ['ontologylanguage_5f_4463',['ontologyLanguage_',['../classknowrob_1_1_ontology_file.html#a83d6b52759e2b5cbe989524168e6e428',1,'knowrob::OntologyFile']]],
+  ['opennodes_5f_4464',['openNodes_',['../classknowrob_1_1_query_tree.html#aafde9b7a6e80ec41ebe0f6a5b2d893d2',1,'knowrob::QueryTree']]],
+  ['options_5f_4465',['options_',['../classknowrob_1_1_option_list.html#a988b64d739964d4d503e76085f0ab057',1,'knowrob::OptionList']]],
+  ['origin_5f_4466',['origin_',['../classknowrob_1_1_graph_transformation.html#aab011e5b8f5557e589a8af156d064877',1,'knowrob::GraphTransformation::origin_()'],['../classknowrob_1_1_raptor_container.html#ae353b80575e44626c1a4709fa7b218c6',1,'knowrob::RaptorContainer::origin_()'],['../classknowrob_1_1_redland_model.html#a4298753413da7d65f34108366191a060',1,'knowrob::RedlandModel::origin_()'],['../classknowrob_1_1_ontology_file.html#ac603c86c717aa2edbc8c01f9335b5673',1,'knowrob::OntologyFile::origin_()'],['../classknowrob_1_1_ontology_parser.html#a41c5cd49886572ce823e1b3083f1478b',1,'knowrob::OntologyParser::origin_()'],['../classknowrob_1_1_s_p_a_r_q_l_service.html#a46841abe83c220b0b1cf7971c35190c2',1,'knowrob::SPARQLService::origin_()']]],
+  ['origin_5fany_4467',['ORIGIN_ANY',['../classknowrob_1_1_import_hierarchy.html#a1114615c07688aa974e7d4d076c74663',1,'knowrob::ImportHierarchy']]],
+  ['origin_5freasoner_4468',['ORIGIN_REASONER',['../classknowrob_1_1_import_hierarchy.html#a27758a3996d35b481ab05cc48ff5572e',1,'knowrob::ImportHierarchy']]],
+  ['origin_5fsession_4469',['ORIGIN_SESSION',['../classknowrob_1_1_import_hierarchy.html#a946848ffb3c802d3937165ce83397b88',1,'knowrob::ImportHierarchy']]],
+  ['origin_5fsystem_4470',['ORIGIN_SYSTEM',['../classknowrob_1_1_import_hierarchy.html#aab8fe694f56d03ba6cc57159da719410',1,'knowrob::ImportHierarchy']]],
+  ['origin_5ftest_4471',['ORIGIN_TEST',['../classknowrob_1_1_import_hierarchy.html#a4325fd939e9fc79dba82bc70a308b014',1,'knowrob::ImportHierarchy']]],
+  ['origin_5fuser_4472',['ORIGIN_USER',['../classknowrob_1_1_import_hierarchy.html#ae43ccaeb3b4891f13a2e772580271041',1,'knowrob::ImportHierarchy']]],
+  ['original_4473',['original',['../structknowrob_1_1_graph_query_expansion.html#afe5981c235e6b558b280ee63fb5e8bdb',1,'knowrob::GraphQueryExpansion']]],
+  ['originaltriples_5f_4474',['originalTriples_',['../classknowrob_1_1_reification_container.html#a067ebf81dd9d3d67d95438aab2ae156c',1,'knowrob::ReificationContainer']]],
+  ['originversions_5f_4475',['originVersions_',['../classknowrob_1_1_data_backend.html#aa6a735ceabf3e70e03c5805c58967f53',1,'knowrob::DataBackend']]],
+  ['owned_4476',['owned',['../structknowrob_1_1_framed_triple_ptr.html#a9d93b5897f89dfafd73a4bb391553403',1,'knowrob::FramedTriplePtr']]],
+  ['ownedworld_5f_4477',['ownedWorld_',['../classknowrob_1_1_redland_model.html#a58c08ac68dcd151b8847a80946cf134d',1,'knowrob::RedlandModel']]]
+];

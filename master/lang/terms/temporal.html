@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>temporal.pl -- Temporally scoped statements.</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>temporal.pl -- Temporally scoped statements.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="multidef"><span style="float:right">&nbsp;</span><a name="during/2"><var class="arglist">+Statement</var> <b class="pred">during</b> <var class="arglist">?Interval</var></a> is <b class="det">nondet</b><span class="anot" style="float:right">[multifile]</span></dt><dd class="defbody">True iff <var>Statement</var> holds during the whole
+duration of a time interval.
+<a href="temporal.html#(during)/2">during/2</a> is defined as an operator such that
+queries can be written as <code>Statement during Interval</code>.
+The <var>Interval</var> is represented as 2-element list <code>[Since,Until]</code>
+where Since and Until are the interval boundaries (unix timestamp, double).
+Note that it is currently not allowed to call this predicate
+with one of the boundaries grounded and the other not.
+Either both boundaries must be ground or both variables.
+If used in <b>project</b> expressions, <a href="temporal.html#(during)/2">during/2</a> will scope all
+assertions in <var>Statement</var> with the interval provided.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Statement</var></td><td class="argdescr">- A language term.</td></tr>
+<tr><td><var>Interval</var></td><td class="argdescr">- A 2-element list.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="multidef"><span style="float:right">&nbsp;</span><a name="since/2"><var class="arglist">+Statement</var> <b class="pred">since</b> <var class="arglist">?Instant</var></a> is <b class="det">nondet</b><span class="anot" style="float:right">[multifile]</span></dt><dd class="defbody">True for statements that hold (at least) since some time
+instant, <i>and</i> until at least the current time.
+<a href="temporal.html#(since)/2">since/2</a> is defined as an operator such that
+queries can be written as <code>Statement since Instant</code>.
+<var>Instant</var> is a unix timestamp represented as floating point number.
+If used in <b>project</b> expressions, <a href="temporal.html#(since)/2">since/2</a> will scope all
+assertions in <var>Statement</var> with an interval that begins
+at given time instant, and whose end is not known.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Statement</var></td><td class="argdescr">- A language term.</td></tr>
+<tr><td><var>Instant</var></td><td class="argdescr">- A time instant.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="multidef"><span style="float:right">&nbsp;</span><a name="until/2"><var class="arglist">+Statement</var> <b class="pred">until</b> <var class="arglist">?Instant</var></a> is <b class="det">nondet</b><span class="anot" style="float:right">[multifile]</span></dt><dd class="defbody">True for statements that hold (at least) until some time
+instant.
+<a href="temporal.html#(until)/2">until/2</a> is defined as an operator such that
+queries can be written as <code>Statement until Instant</code>.
+<var>Instant</var> is a unix timestamp represented as floating point number.
+If used in <b>project</b> expressions, <a href="temporal.html#(until)/2">until/2</a> updates the existing record of
+<var>Statement</var> known to hold at time instant if any, else it
+will create a record whose begin time is not known.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Statement</var></td><td class="argdescr">- A language term.</td></tr>
+<tr><td><var>Interval</var></td><td class="argdescr">- A time interval, instant, or event.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</body>
+</html>

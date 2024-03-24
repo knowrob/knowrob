@@ -1,0 +1,7 @@
+<map id="knowrob::SPARQLBackend" name="knowrob::SPARQLBackend">
+<area shape="rect" id="node1" title=" " alt="" coords="16,229,207,256"/>
+<area shape="rect" id="node5" href="$classknowrob_1_1_redland_model.html" title=" " alt="" coords="22,304,201,331"/>
+<area shape="rect" id="node2" href="$classknowrob_1_1_queryable_backend.html" title=" " alt="" coords="7,155,215,181"/>
+<area shape="rect" id="node3" href="$classknowrob_1_1_data_backend.html" title=" " alt="" coords="25,80,197,107"/>
+<area shape="rect" id="node4" href="$classknowrob_1_1_data_source_handler.html" title=" " alt="" coords="5,5,217,32"/>
+</map>

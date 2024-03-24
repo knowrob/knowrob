@@ -1,0 +1,14 @@
+<map id="knowrob::Formula" name="knowrob::Formula">
+<area shape="rect" id="node1" title=" " alt="" coords="5,309,144,336"/>
+<area shape="rect" id="node2" href="$classknowrob_1_1_compound_formula.html" title=" " alt="" coords="192,157,401,184"/>
+<area shape="rect" id="node9" href="$classknowrob_1_1_predicate.html" title=" " alt="" coords="223,309,370,336"/>
+<area shape="rect" id="node12" title=" " alt="" coords="199,360,395,387"/>
+<area shape="rect" id="node3" href="$classknowrob_1_1_conjunction.html" title=" " alt="" coords="501,5,664,32"/>
+<area shape="rect" id="node4" href="$classknowrob_1_1_disjunction.html" title=" " alt="" coords="503,56,662,83"/>
+<area shape="rect" id="node5" href="$classknowrob_1_1_implication.html" title=" " alt="" coords="503,107,662,133"/>
+<area shape="rect" id="node6" href="$classknowrob_1_1_modal_formula.html" title=" " alt="" coords="493,157,672,184"/>
+<area shape="rect" id="node7" href="$classknowrob_1_1_negation.html" title=" " alt="" coords="510,208,655,235"/>
+<area shape="rect" id="node8" title=" " alt="" coords="449,259,716,285"/>
+<area shape="rect" id="node10" href="$classknowrob_1_1_bottom.html" title=" " alt="" coords="515,309,650,336"/>
+<area shape="rect" id="node11" href="$classknowrob_1_1_top.html" title=" " alt="" coords="529,360,637,387"/>
+</map>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>tf.pl</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>tf.pl</h1>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_republish_set_goal/2"><b class="pred">tf_republish_set_goal</b><var class="arglist">(+TimeStart, +TimeEnd)</var></a> is <b class="det">det</b></dt><dd class="defbody">Set a new goal for the TF republisher.
+The republisher then iterates over database records
+within the time interval provided.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_republish_set_progress/1"><b class="pred">tf_republish_set_progress</b><var class="arglist">(+Progress)</var></a> is <b class="det">det</b></dt><dd class="defbody">Advance republisher to some point in time.
+<var>Progress</var> is a number between zero and one used
+as interpolation factor between start and end time.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_republish_clear/0"><b class="pred">tf_republish_clear</b></a> is <b class="det">det</b></dt><dd class="defbody">Reset the TF republisher.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_republish_set_loop/1"><b class="pred">tf_republish_set_loop</b><var class="arglist">(+Loop)</var></a> is <b class="det">det</b></dt><dd class="defbody">Toggle looping from end time to start time.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_republish_set_time/1"><b class="pred">tf_republish_set_time</b><var class="arglist">(+Time)</var></a> is <b class="det">det</b></dt><dd class="defbody">Set the current time of the TF republisher.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_republish_set_pose/2"><b class="pred">tf_republish_set_pose</b><var class="arglist">(+ObjFrame, +PoseData)</var></a> is <b class="det">det</b></dt><dd class="defbody">Update the transform of a frame in the TF republisher.
+This is useful to initialize transforms from data not within
+the range of the republisher.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_republish_set_realtime_factor/1"><b class="pred">tf_republish_set_realtime_factor</b><var class="arglist">(+Factor)</var></a> is <b class="det">det</b></dt><dd class="defbody">Change the realtime factor.
+Default is 1.0, i.e. realtime republishing.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_logger_enable/0"><b class="pred">tf_logger_enable</b></a> is <b class="det">det</b></dt><dd class="defbody">Activate the TF logger.
+That is start listening to TF messages and storing
+them in a mongo database.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_logger_disable/0"><b class="pred">tf_logger_disable</b></a> is <b class="det">det</b></dt><dd class="defbody">Deactivate the TF logger.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_mem_clear/0"><b class="pred">tf_mem_clear</b></a> is <b class="det">det</b></dt><dd class="defbody">Reset the TF memory.
+That is remove every transform stored in the local memory.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_mem_set_pose/3"><b class="pred">tf_mem_set_pose</b><var class="arglist">(+ObjFrame, +PoseData, +Since)</var></a> is <b class="det">det</b></dt><dd class="defbody">Update the transform of a frame in local memory.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_mem_get_pose/3"><b class="pred">tf_mem_get_pose</b><var class="arglist">(+ObjFrame, ?PoseData, ?Since)</var></a> is <b class="det">det</b></dt><dd class="defbody">Read the transform of a frame from local memory.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_set_pose/3"><b class="pred">tf_set_pose</b><var class="arglist">(+Obj, +Data, +Scope)</var></a> is <b class="det">det</b></dt><dd class="defbody">Update the position of an object.
+The position is updated in local memory, but also
+written into mongo database.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_get_pose/4"><b class="pred">tf_get_pose</b><var class="arglist">(+Obj, ?PoseQuery, +QueryScope, +FactScope)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Retrieve the pose of an object.
+The pose can be requested in a specific reference frame.</dd>
+</dl>
+
+</body>
+</html>

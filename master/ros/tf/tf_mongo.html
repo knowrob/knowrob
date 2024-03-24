@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>tf_mongo.pl</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>tf_mongo.pl</h1>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_mng_drop/0"><b class="pred">tf_mng_drop</b></a> is <b class="det">det</b></dt><dd class="defbody">Drops all documents in the TF database collection.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_mng_lookup/6"><b class="pred">tf_mng_lookup</b><var class="arglist">(+ObjFrame, +QuerySince, +QueryUntil, -PoseData, -FactSince, -FactUntil)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Retrieve all transforms of frame within some time interval.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_mng_store/3"><b class="pred">tf_mng_store</b><var class="arglist">(+ObjFrame, +PoseData, +Stamp)</var></a> is <b class="det">det</b></dt><dd class="defbody">Store a transform in mongo DB.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_mng_trajectory/4"><b class="pred">tf_mng_trajectory</b><var class="arglist">(+Obj, +Begin, +End, -Trajectory)</var></a> is <b class="det">det</b></dt><dd class="defbody">Read all transforms associated to a frame in given time interval.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_mng_lookup_all/1"><b class="pred">tf_mng_lookup_all</b><var class="arglist">(-Transforms)</var></a> is <b class="det">det</b></dt><dd class="defbody">Retrieve latest transform of each frame.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_mng_lookup_all/2"><b class="pred">tf_mng_lookup_all</b><var class="arglist">(-Transforms, +Stamp)</var></a> is <b class="det">det</b></dt><dd class="defbody">Retrieve latest transform of each frame.
+Documents later than <var>Stamp</var> are ignored.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_mng_tree/2"><b class="pred">tf_mng_tree</b><var class="arglist">(+Stamp, -Tree)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Loads full TF tree for given timestamp.
+All poses in the tree are transformed into world coordinates.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="tf_mng_tree_lookup/3"><b class="pred">tf_mng_tree_lookup</b><var class="arglist">(+Tree, +ChildFrame, -PoseData)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Retrieve pose of named frame from a previously created TF tree.
+<var>PoseData</var> is a list <code>[RefFrame,Position,Rotation]</code>.
+RefFrame maybe grounded in which case the requested relative
+transform is computed if needed and possible.</dd>
+</dl>
+
+</body>
+</html>

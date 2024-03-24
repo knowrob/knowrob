@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>module.pl -- Extended Prolog modules.</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>module.pl -- Extended Prolog modules.</h1>
+
+<p>
+One of the extensions is that <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=rdf_meta/1">rdf_meta/1</a> information can be
+specified through exported predicates, as in:</p>
+
+<pre class="code" ext="">
+:- module(my_module, [ my_predicate(r,t) ]).</pre>
+
+<p>
+Which expands to a call of <code>rdf_meta(my_predicate(r,t))</code>.</p>
+
+<p>
+Predicates may further be marked as goals for computable properties, as in:</p>
+
+<pre class="code" ext="">
+:- module(my_module, [ my_predicate(r,r) -&gt; onto:my_property ]).</pre>
+
+<p>
+Where <code>my_predicate</code> is called to compute the relation <code>onto:my_property</code>
+between the entities that are bound to the arguments of the predicate.</p>
+
+<p>
+Finally, a notion of interface is added which is documented below.</p>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="use_directory/1"><b class="pred">use_directory</b><var class="arglist">(+Dir)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Load initialization file in directory.
+The file must be named <code>__init__.pl</code>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="interface/2"><b class="pred">interface</b><var class="arglist">(+Name, +Exports)</var></a> is <b class="det">det</b></dt><dd class="defbody">Defines a new interface. The syntax is equal to the one used to define
+modules. Modules implementing the interface include a term
+<b><code>implements(InterfaceFile)</code></b> in the list of exported terms.
+
+<pre class="code" ext="">
+file a:
+    :- interface(iface,
+            [ test(r,r) ]).
+file b:
+    :- module(iface_impl,
+            [ implements(iface),
+              test2(t),
+              test3/2
+            ]).</pre>
+
+</dd>
+</dl>
+
+</body>
+</html>

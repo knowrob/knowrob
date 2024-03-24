@@ -1,0 +1,7 @@
+<map id="knowrob::DataDrivenReasoner" name="knowrob::DataDrivenReasoner">
+<area shape="rect" id="node1" title=" " alt="" coords="149,155,370,181"/>
+<area shape="rect" id="node4" href="$class_factxx_reasoner_1_1_factxx_reasoner.html" title="A reasoner that uses the pyfactxx library to perform reasoning on an OWL knowledge base." alt="" coords="5,229,236,256"/>
+<area shape="rect" id="node5" title=" " alt="" coords="260,229,539,256"/>
+<area shape="rect" id="node2" href="$classknowrob_1_1_reasoner.html" title=" " alt="" coords="186,80,333,107"/>
+<area shape="rect" id="node3" href="$classknowrob_1_1_data_source_handler.html" title=" " alt="" coords="153,5,365,32"/>
+</map>

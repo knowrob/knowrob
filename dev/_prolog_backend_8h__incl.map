@@ -1,0 +1,52 @@
+<map id="include/knowrob/reasoner/prolog/PrologBackend.h" name="include/knowrob/reasoner/prolog/PrologBackend.h">
+<area shape="rect" id="node1" title=" " alt="" coords="1661,5,1852,47"/>
+<area shape="rect" id="node2" href="$_queryable_backend_8h.html" title=" " alt="" coords="1435,95,1641,136"/>
+<area shape="rect" id="node46" href="$_prolog_term_8h.html" title=" " alt="" coords="2373,281,2479,307"/>
+<area shape="rect" id="node3" href="$_token_buffer_8h.html" title=" " alt="" coords="46,191,267,218"/>
+<area shape="rect" id="node7" href="$_backend_8h.html" title=" " alt="" coords="723,363,812,389"/>
+<area shape="rect" id="node34" href="$_answer_8h.html" title=" " alt="" coords="1632,363,1825,389"/>
+<area shape="rect" id="node37" href="$_graph_path_query_8h.html" title=" " alt="" coords="1301,273,1495,315"/>
+<area shape="rect" id="node40" href="$_answer_yes_8h.html" title=" " alt="" coords="1621,281,1836,307"/>
+<area shape="rect" id="node42" href="$_answer_no_8h.html" title=" " alt="" coords="1911,281,2123,307"/>
+<area shape="rect" id="node43" href="$_graph_connective_8h.html" title=" " alt="" coords="1026,281,1277,307"/>
+<area shape="rect" id="node45" href="$_graph_query_expansion_8h.html" title=" " alt="" coords="1435,184,1641,225"/>
+<area shape="rect" id="node4" href="$_token_broadcaster_8h.html" title=" " alt="" coords="52,616,200,643"/>
+<area shape="rect" id="node6" href="$_token_queue_8h.html" title=" " alt="" coords="5,281,119,307"/>
+<area shape="rect" id="node5" title=" " alt="" coords="1403,869,1481,896"/>
+<area shape="rect" id="node8" title=" " alt="" coords="171,780,321,821"/>
+<area shape="rect" id="node9" href="$_framed_triple_pattern_8h.html" title=" " alt="" coords="1099,437,1310,479"/>
+<area shape="rect" id="node19" href="$_framed_triple_8h.html" title=" " alt="" coords="1111,616,1333,643"/>
+<area shape="rect" id="node22" href="$_triple_container_8h.html" title=" " alt="" coords="1048,534,1284,561"/>
+<area shape="rect" id="node27" href="$_vocabulary_8h.html" title=" " alt="" coords="364,616,587,643"/>
+<area shape="rect" id="node28" href="$_property_tree_8h.html" title=" " alt="" coords="397,698,573,725"/>
+<area shape="rect" id="node29" href="$_thread_pool_8h.html" title=" " alt="" coords="1333,445,1500,471"/>
+<area shape="rect" id="node31" href="$_data_source_handler_8h.html" title=" " alt="" coords="662,437,873,479"/>
+<area shape="rect" id="node32" href="$_plugin_factory_8h.html" title=" " alt="" coords="417,534,648,561"/>
+<area shape="rect" id="node33" href="$_typed_plugin_factory_8h.html" title=" " alt="" coords="427,437,638,479"/>
+<area shape="rect" id="node10" href="$_predicate_8h.html" title=" " alt="" coords="1965,616,2183,643"/>
+<area shape="rect" id="node23" href="$_first_order_literal_8h.html" title=" " alt="" coords="1409,527,1617,568"/>
+<area shape="rect" id="node24" href="$_query_context_8h.html" title=" " alt="" coords="1796,534,2032,561"/>
+<area shape="rect" id="node25" href="$groundable_8h.html" title=" " alt="" coords="1265,787,1475,814"/>
+<area shape="rect" id="node26" href="$_numeric_8h.html" title=" " alt="" coords="749,616,940,643"/>
+<area shape="rect" id="node11" title=" " alt="" coords="2119,787,2181,814"/>
+<area shape="rect" id="node12" href="$formulas_2_formula_8h.html" title=" " alt="" coords="2689,787,2776,814"/>
+<area shape="rect" id="node14" href="$_term_8h.html" title=" " alt="" coords="2394,787,2562,814"/>
+<area shape="rect" id="node16" href="$_atom_8h.html" title=" " alt="" coords="951,787,1021,814"/>
+<area shape="rect" id="node18" href="$_function_8h.html" title=" " alt="" coords="2112,698,2303,725"/>
+<area shape="rect" id="node13" title=" " alt="" coords="2695,869,2771,896"/>
+<area shape="rect" id="node15" title=" " alt="" coords="2457,869,2499,896"/>
+<area shape="rect" id="node17" title=" " alt="" coords="385,869,459,896"/>
+<area shape="rect" id="node20" title=" " alt="" coords="1247,698,1315,725"/>
+<area shape="rect" id="node21" href="$_x_s_d_type_8h.html" title=" " alt="" coords="1131,698,1222,725"/>
+<area shape="rect" id="node30" title=" " alt="" coords="1691,534,1771,561"/>
+<area shape="rect" id="node35" href="$_token_8h.html" title=" " alt="" coords="1752,698,1935,725"/>
+<area shape="rect" id="node36" href="$_query_8h.html" title=" " alt="" coords="1960,445,2031,471"/>
+<area shape="rect" id="node38" href="$_graph_query_8h.html" title=" " alt="" coords="1291,363,1505,389"/>
+<area shape="rect" id="node39" href="$_graph_term_8h.html" title=" " alt="" coords="1525,445,1735,471"/>
+<area shape="rect" id="node41" href="$_framed_predicate_8h.html" title=" " alt="" coords="1850,363,2117,389"/>
+<area shape="rect" id="node44" href="$_graph_pattern_8h.html" title=" " alt="" coords="991,363,1215,389"/>
+<area shape="rect" id="node47" title=" " alt="" coords="2640,363,2745,389"/>
+<area shape="rect" id="node48" href="$_compound_formula_8h.html" title=" " alt="" coords="2480,691,2695,732"/>
+<area shape="rect" id="node49" href="$_graph_builtin_8h.html" title=" " alt="" coords="2243,363,2463,389"/>
+<area shape="rect" id="node50" href="$_list_term_8h.html" title=" " alt="" coords="2365,616,2556,643"/>
+</map>

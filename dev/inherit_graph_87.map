@@ -1,0 +1,8 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classknowrob_1_1reasoner_1_1_event.html" title=" " alt="" coords="5,39,156,80"/>
+<area shape="rect" id="node2" href="$classknowrob_1_1reasoner_1_1_invalidation_event.html" title=" " alt="" coords="204,5,355,47"/>
+<area shape="rect" id="node3" href="$classknowrob_1_1reasoner_1_1_triple_event.html" title=" " alt="" coords="204,71,355,112"/>
+<area shape="rect" id="node4" href="$classknowrob_1_1reasoner_1_1_assertion_event.html" title=" " alt="" coords="403,5,553,47"/>
+<area shape="rect" id="node5" href="$classknowrob_1_1reasoner_1_1_replacement_event.html" title=" " alt="" coords="403,71,553,112"/>
+<area shape="rect" id="node6" href="$classknowrob_1_1reasoner_1_1_retraction_event.html" title=" " alt="" coords="403,136,553,177"/>
+</map>

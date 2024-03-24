@@ -1,0 +1,28 @@
+var classknowrob_1_1mongo_1_1_collection =
+[
+    [ "Collection", "classknowrob_1_1mongo_1_1_collection.html#a4c4ef4d87e238903589f35474097baa9", null ],
+    [ "Collection", "classknowrob_1_1mongo_1_1_collection.html#aead61f337c82b5a9cc91114246506a1c", null ],
+    [ "~Collection", "classknowrob_1_1mongo_1_1_collection.html#a017dd492156e6b570a21f58a07dd73f5", null ],
+    [ "appendSession", "classknowrob_1_1mongo_1_1_collection.html#aa7d5ccd777334440ba73ad6c5bf6f326", null ],
+    [ "client", "classknowrob_1_1mongo_1_1_collection.html#a93734d7e8379d243954d78d993de6423", null ],
+    [ "coll", "classknowrob_1_1mongo_1_1_collection.html#a085ae4de8eb8951fab59b4a7b3d55a77", null ],
+    [ "connection", "classknowrob_1_1mongo_1_1_collection.html#a7006eb95e5f326a07eaebbdfcae6f584", null ],
+    [ "createAscendingIndex", "classknowrob_1_1mongo_1_1_collection.html#a016037a9db3d8f82a5c6e22808f651c2", null ],
+    [ "createBulkOperation", "classknowrob_1_1mongo_1_1_collection.html#a292c2025cad7e8cd4d8e6bcf55c7d047", null ],
+    [ "createIndex", "classknowrob_1_1mongo_1_1_collection.html#a79f2ba361fcb7f6500c2e498b527256b", null ],
+    [ "createTripleIndex", "classknowrob_1_1mongo_1_1_collection.html#ac853a9370c3a75eb4ab32f37d84157d5", null ],
+    [ "dbName", "classknowrob_1_1mongo_1_1_collection.html#a00d8645e31ce2f4e970afc95238cab1d", null ],
+    [ "dbURI", "classknowrob_1_1mongo_1_1_collection.html#a35316c6e668a6a13562b9b58e44c90b9", null ],
+    [ "distinctValues", "classknowrob_1_1mongo_1_1_collection.html#ae6112dfefaf3b73ef2d686749e170173", null ],
+    [ "drop", "classknowrob_1_1mongo_1_1_collection.html#a49c75f0c3e8cf7a72a880bb5cc5c2645", null ],
+    [ "empty", "classknowrob_1_1mongo_1_1_collection.html#a667806fdd9822ea7a0414da5167f8799", null ],
+    [ "evalAggregation", "classknowrob_1_1mongo_1_1_collection.html#a269bad7e67bddf826e651dbb7efc9d0f", null ],
+    [ "name", "classknowrob_1_1mongo_1_1_collection.html#afad493519d0a0dd756099e799eb28192", null ],
+    [ "pool", "classknowrob_1_1mongo_1_1_collection.html#a82c76e741cf04515d6e7270555322a45", null ],
+    [ "removeAll", "classknowrob_1_1mongo_1_1_collection.html#aeba027f90d61f3ea1c0c8401bf2ecac0", null ],
+    [ "removeOne", "classknowrob_1_1mongo_1_1_collection.html#aff095ea123d6f2c4a88260a25109e26c", null ],
+    [ "removeOne", "classknowrob_1_1mongo_1_1_collection.html#a9b7b7f5f7e817e1ed38f8a67e7fcdad3", null ],
+    [ "session", "classknowrob_1_1mongo_1_1_collection.html#aa8669a1fdffd33635eaace1026b51f00", null ],
+    [ "storeOne", "classknowrob_1_1mongo_1_1_collection.html#aea648e74d5b5ebd5a3315db7b9a8a179", null ],
+    [ "update", "classknowrob_1_1mongo_1_1_collection.html#a2d9d7ff8898d0794b9230a29aa770441", null ]
+];

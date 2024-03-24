@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>db.pl -- Database predicates.</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>db.pl -- Database predicates.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="remember/1"><b class="pred">remember</b><var class="arglist">(+Directory)</var></a> is <b class="det">det</b></dt><dd class="defbody">Restore memory previously stored into given directory.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Directory</var></td><td class="argdescr">- filesystem path</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="memorize/1"><b class="pred">memorize</b><var class="arglist">(+Directory)</var></a> is <b class="det">det</b></dt><dd class="defbody">Store knowledge into given directory.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Directory</var></td><td class="argdescr">- filesystem path</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="drop_graph/1"><b class="pred">drop_graph</b><var class="arglist">(+Name)</var></a> is <b class="det">det</b></dt><dd class="defbody">Deletes all triples asserted into given named graph.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Name</var></td><td class="argdescr">- the graph name.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_unique_name/1"><b class="pred">is_unique_name</b><var class="arglist">(+Name)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True if <var>Name</var> is not the subject of any known fact.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="get_unique_name/2"><b class="pred">get_unique_name</b><var class="arglist">(+Prefix, -Name)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Generates a unique name with given prefix.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="setup_collection/2"><b class="pred">setup_collection</b><var class="arglist">(+Name, +Indices)</var></a> is <b class="det">det</b></dt><dd class="defbody">Configure the indices of a named collection.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="load_owl/1"><b class="pred">load_owl</b><var class="arglist">(+URL)</var></a> is <b class="det">det</b></dt><dd class="defbody">Same as <a href="db.html#load_owl/2">load_owl/2</a> with empty Options list.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>URL</var></td><td class="argdescr">- <var>URL</var> of a RDF file.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="load_owl/2"><b class="pred">load_owl</b><var class="arglist">(+URL, +Options)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Same as <a href="db.html#load_owl/3">load_owl/3</a> with universal scope,
+and graph name argument as given in the options list
+or "user" if none is given.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>URL</var></td><td class="argdescr">- <var>URL</var> of a RDF file.</td></tr>
+<tr><td><var>Options</var></td><td class="argdescr">- List of options.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="load_owl/3"><b class="pred">load_owl</b><var class="arglist">(+URL, +Scope, +ParentGraph)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Load RDF data from <var>URL</var>, and assert it into
+the triple DB using the scope provided
+and into a graph named according to the ontology.
+The named graph is added as child graph of <var>ParentGraph</var>.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>URL</var></td><td class="argdescr">- <var>URL</var> of a RDF file.</td></tr>
+<tr><td><var>Scope</var></td><td class="argdescr">- The subject of a triple.</td></tr>
+<tr><td><var>ParentGraph</var></td><td class="argdescr">- The parent graph name.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="load_json_rdf/1"><b class="pred">load_json_rdf</b><var class="arglist">(FilePath)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Load JSON-encoded triple data into the knowledge base.
+Each triple document in the JSON file must have the keys
+"s","p","o" for the subject, property, and value of the triple.
+In addition a scope document can be provided optionally.
+If this is not the case, it is assumed that the facts universally hold.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>FilePath</var></td><td class="argdescr">- - Path to the json file</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="watch/3"><b class="pred">watch</b><var class="arglist">(+Goal, +Callback, -WatcherID)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Start watching possible instantiations of variables in <var>Goal</var>.
+<var>Goal</var> must be a KnowRob language term.
+<var>Callback</var> is called whenever the set of possible instantiations changes,
+and it is provided with information about the change.
+The change information is encoded in a term that is appended to
+already existing arguments of <var>Callback</var>, if any.
+
+<p>
+Note that callback is currently not called when documents are removed!
+This might change in the future.</p>
+
+<p>
+Also note that currently <var>Goal</var> must be a term <a href="triple.html#triple/3">triple/3</a>.
+The scope of triples is ignored.
+No other predicates are supported yet.
+This might also change in the future.</p>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Goal</var></td><td class="argdescr">- a KnowRob language term with free variables.</td></tr>
+<tr><td><var>Callback</var></td><td class="argdescr">- a predicate called for each change event.</td></tr>
+<tr><td><var>WatcherID</var></td><td class="argdescr">- a unique identifier of the watching operation.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="unwatch/1"><b class="pred">unwatch</b><var class="arglist">(+WatcherID)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Stop a previously started watch operation.
+This will fail if <var>WatcherID</var> does not belong to
+a active watch operation.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>WatcherID</var></td><td class="argdescr">- a unique identifier of the watching operation.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="watch_event/2"><b class="pred">watch_event</b><var class="arglist">(+WatcherID, +Event)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">This predicate is called by the mongo client when
+changes are received in a watch operation.
+<var>Event</var> is a change stream response document.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>WatcherID</var></td><td class="argdescr">- a unique identifier of the watching operation.</td></tr>
+<tr><td><var>Event</var></td><td class="argdescr">- a change stream output document.</td></tr>
+</table>
+
+</dd>
+<dt class="keyword-see">See also</dt><dd class="keyword-see">- <a href="https://docs.mongodb.com/manual/reference/change-events/#change-stream-output">https://docs.mongodb.com/manual/reference/change-events/#change-stream-output</a></dd>
+</dl>
+
+</dd>
+</dl>
+
+</body>
+</html>

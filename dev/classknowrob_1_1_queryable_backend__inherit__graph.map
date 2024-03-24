@@ -1,0 +1,9 @@
+<map id="knowrob::QueryableBackend" name="knowrob::QueryableBackend">
+<area shape="rect" id="node1" title=" " alt="" coords="258,155,466,181"/>
+<area shape="rect" id="node4" href="$classknowrob_1_1_mongo_knowledge_graph.html" title=" " alt="" coords="5,229,247,256"/>
+<area shape="rect" id="node5" href="$classknowrob_1_1_prolog_backend.html" title=" " alt="" coords="271,229,453,256"/>
+<area shape="rect" id="node6" href="$classknowrob_1_1_s_p_a_r_q_l_backend.html" title=" " alt="" coords="477,229,668,256"/>
+<area shape="rect" id="node2" href="$classknowrob_1_1_data_backend.html" title=" " alt="" coords="276,80,448,107"/>
+<area shape="rect" id="node3" href="$classknowrob_1_1_data_source_handler.html" title=" " alt="" coords="256,5,468,32"/>
+<area shape="rect" id="node7" href="$classknowrob_1_1_redland_model.html" title=" " alt="" coords="483,304,662,331"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="knowrob::ModalStage" name="knowrob::ModalStage">
+<area shape="rect" id="node1" title=" " alt="" coords="25,319,187,345"/>
+<area shape="rect" id="node2" href="$classknowrob_1_1_typed_query_stage.html" title=" " alt="" coords="6,229,206,271"/>
+<area shape="rect" id="node3" href="$classknowrob_1_1_query_stage.html" title=" " alt="" coords="25,155,187,181"/>
+<area shape="rect" id="node4" href="$classknowrob_1_1_token_broadcaster.html" title=" " alt="" coords="5,80,207,107"/>
+<area shape="rect" id="node5" href="$classknowrob_1_1_token_stream.html" title=" " alt="" coords="21,5,191,32"/>
+</map>

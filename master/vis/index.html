@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>vis</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="wiki">knowrob_vis</h1>
+
+<p>
+Utilities for the visualization of knowledge pieces.
+This package follows a client-server scheme:
+The server side (knowrob_vis) generates only messages describing what
+should be visualized, and clients can subscribe to these messages
+and update their canvas accordingly.</p>
+
+<p>
+One of the supported clients is <a href="http://wiki.ros.org/rviz">RViz</a>
+which uses so called <b>Marker</b> messages to tell RViz what should
+be displayed.
+These describe some 3D visual information, such as some
+basic 3D shapes, but also complex meshes.</p>
+
+<p>
+The second visualization interface implemented in this package is the data visualization
+module <a class="file" href="data_vis.html">data_vis.pl</a>.
+<a href="https://raw.githubusercontent.com/code-iai/iai_common_msgs/master/data_vis_msgs/msg/DataVis.msg">Data visualization messages</a> contain
+a set of data records together with some visualization hints such
+as diagram type, axis labels, font size, etc.
+How in particular the data is displayed is up to the data visualization
+client.
+At the moment only <a href="http://www.open-ease.org/">openEASE</a> implements such a client.</p>
+
+<h2 class="wiki plfiles">Prolog files</h2>
+
+<table class="summary">
+<tr><th colspan="3" class="file"><span style="float:left"><a href="__init__.html">__init__.pl</a></span><span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="data_vis.html">data_vis.pl</a></span>&nbsp; -- Methods for data visualization<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="data_vis.html#data_vis/2">data_vis/2</a></td><td class="summary">Creates a new data_vis message and publishes it via <i>/data_vis_msgs</i> ROS topic.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="data_vis.html#data_vis_remove/1">data_vis_remove/1</a></td><td class="summary">Republishes a data_vis object with empty data so that visualization clients can remove it.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="data_vis.html#timeline/1">timeline/1</a></td><td class="summary">Creates a new data_vis timeline message and publishes it via <i>/data_vis_msgs</i> ROS topic.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="data_vis.html#timeline_data/1">timeline_data/1</a></td><td class="summary">Creates a new data_vis timeline message and publishes it via <i>/data_vis_msgs</i> ROS topic.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+</table>
+
+</body>
+</html>
