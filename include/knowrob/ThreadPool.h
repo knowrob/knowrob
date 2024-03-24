@@ -124,6 +124,7 @@ namespace knowrob {
 
 		protected:
 			std::atomic<bool> isTerminated_;
+			std::atomic<bool> isRunning_;
 			std::atomic<bool> hasStopRequest_;
 			std::mutex mutex_;
 			std::condition_variable finishedCV_;

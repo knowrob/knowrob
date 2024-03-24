@@ -147,10 +147,11 @@ void ThreadPool::Worker::run() {
 ThreadPool::Runner::Runner()
 		: isTerminated_(false),
 		  hasStopRequest_(false),
+		  isRunning_(false),
 		  exceptionHandler_(nullptr) {}
 
 ThreadPool::Runner::~Runner() {
-	stop(true);
+	if(isRunning_) stop(true);
 }
 
 void ThreadPool::Runner::join() {
@@ -161,6 +162,7 @@ void ThreadPool::Runner::join() {
 }
 
 void ThreadPool::Runner::runInternal() {
+	isRunning_ = true;
 	isTerminated_ = false;
 	hasStopRequest_ = false;
 	// do the work
@@ -187,6 +189,7 @@ void ThreadPool::Runner::runInternal() {
 	}
 	// toggle flag
 	isTerminated_ = true;
+	isRunning_ = false;
 	finishedCV_.notify_all();
 }
 
