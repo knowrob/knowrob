@@ -215,12 +215,11 @@ bool RedlandModel::initializeBackend() {
 	return true;
 }
 
-bool RedlandModel::initializeBackend(const PropertyTree &config) {
+bool RedlandModel::initializeBackend(const PropertyTree &ptree) {
 	if (isInitialized()) {
 		KB_WARN("RedlandModel already initialized.");
 		return false;
 	}
-	auto ptree = config.ptree();
 	auto o_host = ptree->get_optional<std::string>(REDLAND_SETTING_HOST);
 	auto o_port = ptree->get_optional<std::string>(REDLAND_SETTING_PORT);
 	auto o_user = ptree->get_optional<std::string>(REDLAND_SETTING_USER);

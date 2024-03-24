@@ -54,7 +54,6 @@ test('<(Short1,Short3)') :-
 test('<(Short3,Short4)') :-
 	assert_false(interval_before(test:'Short3', test:'Short4')).
 % NOTE: below fails because the events meet each other
-% TODO: I think it is a bit counter-intuitive that < does not include m.
 test('<(Short1,Short2)') :-
 	assert_false(interval_before(test:'Short1', test:'Short2')).
 
@@ -134,13 +133,5 @@ test('<(Event6,Short4)', [ fixme('support mixing of quantitative+qualitative inp
 	interval_before(test:'Event6', test:'Short4').
 test('<(Event7,Short4)', [ fixme('support mixing of quantitative+qualitative input') ]) :-
 	interval_before(test:'Event7', test:'Short4').
-
-%%%%%%%%%%%%%%%%%%%
-%% DYNAMIC ASSERTIONS
-%%%%%%%%%%%%%%%%%%%
-
-% TODO: tests adding axioms, connect to pre-loaded events
-%         that won't work at the moment! because ESGs are
-%         not updated
 
 :- end_tests(time_interval).

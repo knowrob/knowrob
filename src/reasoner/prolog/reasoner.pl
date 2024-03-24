@@ -84,27 +84,38 @@ reasoner_setting(Name, _Type, _Default, _Comment) :-
 reasoner_setting(Name, Type, Default, Comment) :-
     user:assertz(defined_reasoner_setting(Name, Type, Default, Comment)).
 
-%%
-reasoner_set_setting(ResonerModule, Name, ValueString) :-
-    setting_value1(Name, ValueString, Value),
+%% reasoner_set_setting(+ResonerModule, +Name, +Value) is det.
+%
+% Define the value of a setting.
+%
+reasoner_set_setting(ResonerModule, Name, Value) :-
+    setting_value1(Name, Value, RealValue),
     ResonerModule:transaction((
         retractall(current_setting(Name,_)),
-        assertz(current_setting(Name,Value))
+        assertz(current_setting(Name,RealValue))
     )).
 
 %%
-setting_value1(Name, ValueString, Value) :-
+setting_value1(Name, Value, RealValue) :-
     user:defined_reasoner_setting(Name,Type,_,_),
-    setting_value2(Type, ValueString, Value), !.
+    ( atom(Value)
+    -> setting_value_atom(Type, Value, RealValue)
+    ;  setting_value_str(Type, Value, RealValue)
+    ), !.
 
-setting_value1(_Name, ValueString, ValueString) :- !.
+setting_value1(_Name, Value, Value).
 
-setting_value2(list, Atom, Term)    :- term_to_atom(Term, Atom).
-setting_value2(number, Atom, Term)  :- atom_number(Atom, Term).
-setting_value2(float, Atom, Term)   :- atom_number(Atom, Term).
-setting_value2(double, Atom, Term)  :- atom_number(Atom, Term).
-setting_value2(integer, Atom, Term) :- atom_number(Atom, Term).
-setting_value2(_, Atom, Atom).
+setting_value_atom(list, Atom, Term)    :- term_to_atom(Term, Atom).
+setting_value_atom(number, Atom, Term)  :- atom_number(Atom, Term).
+setting_value_atom(float, Atom, Term)   :- atom_number(Atom, Term).
+setting_value_atom(double, Atom, Term)  :- atom_number(Atom, Term).
+setting_value_atom(integer, Atom, Term) :- atom_number(Atom, Term).
+
+setting_value_str(list, String, Term)    :- term_string(Term, String).
+setting_value_str(number, String, Num)  :- number_string(Num, String).
+setting_value_str(float, String, Num)   :- number_string(Num, String).
+setting_value_str(double, String, Num)  :- number_string(Num, String).
+setting_value_str(integer, String, Num) :- number_string(Num, String).
 
 %% reasoner_rdf_init(+Reasoner) is det.
 %

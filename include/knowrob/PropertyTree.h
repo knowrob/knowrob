@@ -29,19 +29,24 @@ namespace knowrob {
 		explicit PropertyTree(const boost::property_tree::ptree *ptree);
 
 		/**
+		 * Access the underlying boost property tree.
+		 * @return the underlying property tree.
+		 */
+		auto operator->() const { return ptree_; }
+
+		/**
 		 * key-value pairs of settings where the key uses "." as separator of levels in the tree.
 		 * @param key a key.
 		 * @return the value associated with the key.
 		 */
-		std::string_view get(std::string_view key, std::string_view defaultValue) const;
+		TermPtr get(std::string_view key, const TermPtr &defaultValue) const;
 
 		/**
 		 * Generate a term from a key string.
 		 * @param key a key
-		 * @param separator the separator used in the key term.
 		 * @return a term representing the key.
 		 */
-		TermPtr createKeyTerm(std::string_view key, std::string_view separator) const;
+		TermPtr createKeyTerm(std::string_view key) const;
 
 		/**
 		 * @return the begin iterator of the key-value pairs.
@@ -66,11 +71,10 @@ namespace knowrob {
 	private:
 		void loadProperty(const std::string &key, const boost::property_tree::ptree &ptree);
 
-		void loadRemainder(const std::string &key, const boost::property_tree::ptree &ptree);
-
-		std::map<std::string, std::string> properties_;
+		std::map<std::string, TermPtr> properties_;
 		std::list<std::shared_ptr<DataSource>> dataSources_;
 		const boost::property_tree::ptree *ptree_;
+		std::string delimiter_;
 	};
 }
 

@@ -315,16 +315,7 @@ ros_push_token(Parser,Tok) :-
   %%
   parser_push_token(Parser,tok(Time,Endoint,Object_Atoms)).
 
-is_token_(tok(Time,_Endpoint,_Objects)) :-
-  %% 1.ARG
-  number(Time),
-  %% 2.ARG
-%  TODO kb_resource missing
-%  endpoint_type(Endpoint,EvtType),
-%  kb_resource(EvtType),
-  %% 3.ARG
-%  forall(member(Obj,Objects), kb_resource(Obj)),
-  true.
+is_token_(tok(Time,_Endpoint,_Objects)) :- number(Time).
 
 %%
 parser_run_(Parser) :-
@@ -390,13 +381,7 @@ parser_synch_(Parser) :-
 parser_synch__(Thread) :- \+ is_active_thread_(Thread), !.
 parser_synch__(Thread) :- \+ thread_peek_message(Thread,_), !.
 parser_synch__(Thread) :-
-  % TODO: is there an event-driven way to wait for a queue to be empty?
-  %       I guess best option is to use a dedicated message signalling
-  %       that the thread is waiting now. then just use get message for 
-  %       blocking wait.
-  %       but this is difficult as wait is triggered by requesting token
-  %       in lazy list.
-%  thread_get_message(sleep_queue,sleeping(Thread)),
+  % wait for above conditions to be met
   sleep(0.001),
   parser_synch__(Thread).
 
@@ -430,7 +415,6 @@ action_threaded_(Parser,_States,ActTerm) -->
   }.
 
 %% parse {PreConditions}[-(Tsk),...,+(Tsk)]
-%% TODO: include classification in parse tree
 action_([G0,S0,A0]->[G3,S2,A2],
     action(WF,Tsk,Constituents),[Pre,_Post]) -->
   { esg_pop(G0,E0,G1),
@@ -438,18 +422,13 @@ action_([G0,S0,A0]->[G3,S2,A2],
     action_preceded_by_(Pre,S0,A0->A1)
   },
   constituents_([G1,S0,A1]->[G2,S2,A2],WF,Tsk,Constituents),
-  % TODO: can we handle post conditions? e.g. surface contact after dropping.
-  %       these are ignored at the moment.
-  %{ 'post_conditions'(Tsk,_Post) },
   { esg_pop(G2,E1,G3),
     concept_endpoint_(E1,+(Tsk))
   }.
 
 %%
-% TODO: there is always also a thread that detects the sub-action
-%       starting at the current token.
-%       It would be good to wait on this thread here, and to integrate its
-%       result as sub-action.
+% TODO: there is always also a thread that detects the sub-action starting at the current token.
+%       It would be good to wait on this thread here, and to integrate its result as sub-action.
 sub_action_([G0,S0,A0]->[G_n,S_n,A_n],
              Parent_WF,action(WF,Tsk,Constituents)) -->
   { parser_get_grammar_(_,WF,Tsk,[G1|TskConditions]),
@@ -870,9 +849,6 @@ ignore_actors_(Bindings,States,Actors) :-
   get_dict(has_token,States,_),
   % allow skipping endpoint in case none of the
   % participants is bound to the activity context.
-  % TODO: this is too restrictive, e.g. bumping the object
-  %           into another object, dropping it and picking it up again, etc.
-  %           but well one could argue that this is another plan then.
   forall(
     member(O,Actors),
     \+ member([O,_],Bindings)

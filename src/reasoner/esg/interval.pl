@@ -17,6 +17,9 @@
     ]).
 /** <module> Allen calculus implementation using Event Endpoint Graphs (ESGs).
 
+Limitation: At the moment, once generated ESGs are never updated.
+So any assertions/retractions after the initial creation will be ignored.
+
 @author Daniel Beßler
 @license BSD
 */
@@ -51,7 +54,6 @@ allen_symbol(d).
 %% time_interval_data(?Event::iri, -Begin::double, -End::double) is semidet.
 %
 % Read time interval data from RDF store.
-% TODO: move somewhere else?
 %
 time_interval_data(Event, Begin, End) :-
     % TODO: restrict below calls to the RDF graph of the reasoner instance
@@ -322,10 +324,6 @@ esg_query_(ESG, =(E0,E1)) :-
 %%
 %
 get_esg_(Evt,ESG) :-
-	% FIXME: once generated ESGs are never updated.
-	%           each new allen axiom inferred/asserted should notify us to update ESGs
-	%           - use notify to trigger update?
-	%           - need to merge ESGs when new axioms are added
 	ground(Evt),!,
 	(  esg_cache_(Evt,ESG)
 	-> true

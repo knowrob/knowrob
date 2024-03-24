@@ -23,9 +23,6 @@ a to another endpoint b implies that a < b (transitivity).
 
 @author Daniel Beßler
 */
-%TODO optional constituents
-%TODO repeatable constituents
-%TODO think about use of time data
 
 :- dynamic esg_endpoint/3,       % sequencer id, endpoint id, endpoint term
            esg_endpoint_node/3,  % sequencer id, endpoint id, node id
@@ -172,8 +169,6 @@ push_constraint(ESG,=(Term0,Term1)) :-
   esg_endpoint(ESG,_,Term0,N),
   esg_endpoint(ESG,_,Term1,N),!.
 push_constraint(ESG,=(Term0,Term1)) :-
-  % TODO: contradiction if there is a path E0->E1 or E1->E0
-  %       - make unit tests for this case
   once(esg_endpoint(ESG,E0,Term0,N0) ; throw_unknown_endpoint(Term0)),
   once(esg_endpoint(ESG,E1,Term1,N1) ; throw_unknown_endpoint(Term1)),
   % remove edges if there is an edge from some node N to one of the merged
@@ -365,7 +360,6 @@ esg_join(ESG,[Tsk0,TskESG0],Joined) :-
   esg_pop(TskESG0,-(Tsk0),TskESG1),
   esg_pop(ESG,-(Tsk1),ESG1),
   ( ( Tsk0 = Tsk1 );
-    %% FIXME: this should not be here!
     ( has_type(Tsk0,TskType), has_type(Tsk1,TskType) )
   ), !,
   % find a path to +(Act) in both ESGs
@@ -376,7 +370,6 @@ esg_join(ESG,[Tsk0,TskESG0],Joined) :-
   % Merge nodes of both graphs that contain +(Tsk).
   % This is needed in case +(Tsk) is in a "parallel node" in at least
   % one of the graphs.
-  % TODO: I am not 100% confident that this will work in all cases.
   append(TskNode1,TskNode2,TskNode3),
   once(select(+(Tsk1),TskNode3,TskNode4)),
   RestESG=[TskNode4|Rest],

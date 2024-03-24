@@ -109,9 +109,8 @@ bool PrologReasoner::initializeReasoner(const PropertyTree &cfg) {
 	// load properties into the reasoner module.
 	// this is needed mainly for `reasoner_setting/2` that provides reasoner instance specific settings.
 	for (auto &pair: cfg) {
-		auto key_t = cfg.createKeyTerm(pair.first, ":");
-		auto val_t = std::make_shared<Atom>(pair.second);
-		setReasonerSetting(key_t, val_t);
+		auto key_t = cfg.createKeyTerm(pair.first);
+		setReasonerSetting(key_t, pair.second);
 	}
 	// load reasoner default packages. this is usually the code that implements the reasoner.
 	initializeDefaultPackages();
