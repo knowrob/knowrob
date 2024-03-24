@@ -47,7 +47,6 @@ mongolog_scope_is_valid(['$match',
 mongolog_scope_doc(QScope, [Key,Value]) :-
 	scope_doc1(QScope, [Key,Value]),
 	% do not proceed for variables in scope these are handled later
-	% FIXME: not sure about below, how can variables be identified?
 	(( Value=array([_,[_,[_,string(VarKey)]]]),
 	   atom_concat('$',_,VarKey) ) -> fail ; true).
 
@@ -103,7 +102,6 @@ mongolog_scope_match(Ctx, ['$expr', ['$and', array(List)]]) :-
 		])],
 		% only include variables, constants are handled earlier
 		(	scope_doc1(Scope, [ScopeKey,[Operator,string(Val0)]]),
-			% FIXME: not sure about below, how can variables be identified?
 			atom_concat('$',_,Val0),
 			atom_concat('$',ScopeKey,ScopeValue),
 			atom_concat('$',Val0,Val)
@@ -178,8 +176,6 @@ time_scope_data(Scope,[Since,Until]) :-
 % if this is the case, they must be replaced by variable keys to be referred to in queries.
 %
 mongolog_resolve_scope(In, Ctx, [query_scope(Scope1)|Rest]) :-
-    % TODO: is it sufficient to do this only for call_with_context/2? maybe it should also be
-    %       done by mongolog_call predicate?
 	select_option(query_scope(Scope0),In,Rest),!,
 	resolve_scope1(Scope0, Ctx, Scope1).
 

@@ -31,9 +31,6 @@ for the new IRI.
 % projection queries can use new_iri/1 and new_iri/2 to generate
 % IRI's that have not been used so far.
 %
-% FIXME: it could happen that if in one compilation multiple new_iri's
-%         are generated that both have the same IRI. very unlikely, but still...
-%
 mongolog:step_expand(
 		new_iri(IRI),
 		pragma(get_unique_name(Type,IRI))) :-
@@ -53,7 +50,7 @@ mongolog:step_compile(
 	findall(Step,
 		% first extract the name from the IRI and set new field "t_name".
 		% here we use the remainder after the last '#' as name.
-		% FIXME: this is not entirely accurate, see the documentation of iri_xml_namespace:
+		% Note: this is not entirely accurate, see the documentation of iri_xml_namespace:
 		%			https://www.swi-prolog.org/pldoc/man?predicate=iri_xml_namespace/3
 		(	Step=['$set', ['t_name', ['$last', ['$split', array([IRI0, string('#')])]]]]
 		% next set field "t_ns" to remaining prefix of IRI

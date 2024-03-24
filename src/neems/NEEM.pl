@@ -22,7 +22,6 @@ knowrob_load_neem(NEEM_id) :-
 	tf_mongo:tf_mng_lookup_all(InitialTransforms),
 	forall(
 	    (   member([Ref,Frame,Pos,Rot],InitialTransforms),
-	        % FIXME avoid this elsewhere
 	        Ref \= Frame,
 	        \+ atom_concat('/',Ref,Frame),
 	        \+ atom_concat('/',Frame,Ref)
@@ -109,8 +108,6 @@ test('has_role') :-
 
 test('has_transition') :-
 	rdf_equal(test:'TestColor_0',Q),
-	% TODO: assert a description of the transistion, then state that
-	%          the episode satisfies this description.
 	assert_true(mongolog_call(project(has_region(Q,test:'TEST_GREEN') until 300))),
 	assert_true(mongolog_call(project(has_region(Q,test:'TEST_RED') since 300))),
 	assert_true(has_region(Q,test:'TEST_RED')),

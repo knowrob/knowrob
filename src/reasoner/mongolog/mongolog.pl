@@ -77,10 +77,6 @@ mongolog_current_predicate1(_Module, Functor, _Arity, built_in) :-
 mongolog_current_predicate1(Module, Functor, _Arity, idb_relation) :-
     step_command(Module, Functor), !.
 
-mongolog_current_predicate1(Module, Functor, 2, idb_relation) :-
-	current_reasoner_manager(Manager),
-	mng_rdf_current_property_cpp(Manager, Module, Functor), !.
-
 mongolog_current_predicate1(_Module, Functor, Arity, built_in) :-
     mongolog_rule(user, Functor, Args, _),
     length(Args, Arity),!.
@@ -1340,7 +1336,7 @@ expand_instantiations(not(Goal), not(Goal)) :- !.
 expand_instantiations(forall(Cond,Action), forall(Cond,Action)) :- !.
 % meta predicates like `,/2`, `call/1`, `once/1`, `->\2` that receive a goal as an argument,
 % and where the goal argument can be expanded.
-% FIXME: findall-family of predicates and instantiations in their goal argument
+% TODO: findall-family of predicates and instantiations in their goal argument
 expand_instantiations(Head, Expanded) :-
 	user:predicate_property(Head, meta_predicate(MetaSpecifier)), !,
 	Head =.. [HeadFunctor|Args],
@@ -1420,7 +1416,7 @@ expand_term_0([X|Xs], [X_expanded|Xs_expanded]) :-
 	).
 
 expand_term_1(Goal, Expanded) :-
-	% FIXME: seems nested terms sometimes not properly flattened, how does it happen?
+	% TODO: seems nested terms sometimes not properly flattened, how does it happen?
 	is_list(Goal),!,
 	expand_term_0(Goal, Expanded).
 

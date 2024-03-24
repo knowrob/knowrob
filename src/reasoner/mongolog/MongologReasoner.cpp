@@ -26,8 +26,6 @@ foreign_t pl_db_name3(term_t, term_t, term_t);
 
 foreign_t pl_uri3(term_t, term_t, term_t);
 
-foreign_t pl_rdf_current_property_cpp3(term_t t_reasonerManager, term_t t_reasonerModule, term_t t_propertyIRI);
-
 foreign_t pl_assert_triple_cpp9(term_t, term_t, term_t, term_t, term_t, term_t, term_t, term_t, term_t);
 
 MongologReasoner::MongologReasoner()
@@ -52,8 +50,6 @@ bool MongologReasoner::initializeDefaultPackages() {
 		PL_register_foreign("mng_uri_cpp",
 							3, (pl_function_t) pl_uri3, 0);
 
-		PL_register_foreign("mng_rdf_current_property_cpp",
-							3, (pl_function_t) pl_rdf_current_property_cpp3, 0);
 		PL_register_foreign("mng_assert_triple_cpp",
 							9, (pl_function_t) pl_assert_triple_cpp9, 0);
 	}
@@ -135,19 +131,6 @@ foreign_t pl_uri3(term_t t_reasonerManager, term_t t_reasonerModule, term_t t_ur
 	if (mongolog) {
 		auto &uri = mongolog->knowledgeGraph()->dbURI();
 		return PL_unify_atom_chars(t_uri, uri.c_str());
-	}
-	return false;
-}
-
-
-foreign_t pl_rdf_current_property_cpp3(term_t t_reasonerManager,
-									   term_t t_reasonerModule,
-									   term_t t_propertyIRI) {
-	auto mongolog = getMongologReasoner(t_reasonerManager, t_reasonerModule);
-	char *propertyIRI;
-	if (mongolog && PL_get_atom_chars(t_propertyIRI, &propertyIRI)) {
-		// TODO: rather only yield true if there is an IDB predicate for the property?
-		return mongolog->knowledgeGraph()->vocabulary()->isDefinedProperty(propertyIRI);
 	}
 	return false;
 }

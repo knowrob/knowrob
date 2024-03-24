@@ -697,7 +697,6 @@ object_shape_type(Obj, ShapeType) ?>
 % @param FilePath the file path
 %
 object_mesh_path(Obj, FilePath) ?+>
-	% TODO: get_or_create SHA,REG in projection
 	triple(Obj, soma:hasShape, SHA),
 	triple(SHA, dul:hasRegion, REG),
 	triple(REG, soma:hasFilePath, FilePath),
@@ -715,7 +714,6 @@ object_mesh_path(Obj, FilePath) ?>
 % @param Col rgb color data
 % 
 object_color_rgb(OBJ, R, G, B) ?+>
-	% TODO: get_or_create COL,REG in projection
 	triple(OBJ, soma:hasColor, COL),
 	triple(COL, dul:hasRegion, REG),
 	triple(REG, soma:hasRGBValue, term([R,G,B])),
@@ -731,12 +729,6 @@ shape_bbox(ShapeRegion, Depth, Width, Height) ?+>
 	triple(ShapeRegion, soma:hasHeight, Height),
 	!.
 
-% TODO
-%shape_bbox(ShapeRegion, Diameter, Diameter, Diameter) ?>
-%	holds(ShapeRegion, soma:hasRadius, Radius),
-%	Diameter is 2 * Radius,
-%	!.
-
 %% object_dimensions(?Obj, ?Depth, ?Width, ?Height) is nondet.
 %
 % True if Depth x Width x Height are (exactly) the extends of the bounding box of Obj.
@@ -749,7 +741,6 @@ shape_bbox(ShapeRegion, Depth, Width, Height) ?+>
 % @param Height Height of the bounding box (z-dimension)
 % 
 object_dimensions(Obj, Depth, Width, Height) ?+>
-	% TODO: get_or_create SHA,REG in projection
 	triple(Obj, soma:hasShape, SHA),
 	triple(SHA, dul:hasRegion, REG),
 	shape_bbox(REG, Depth, Width, Height),
@@ -819,8 +810,6 @@ object_shape(Obj, Frame, ShapeTerm, [Frame,Pos,Rot], material(rgba(R,G,B,A))) ?>
 	shape_term(SR, ShapeTerm),
 	ignore(shape_origin(SR, Pos, Rot)),
 	% COLOR
-	% TODO: use object_color_rgb when ignore supports this
-	% ignore(object_color_rgba(Obj,R,G,B,A)),
 	ignore(once(triple(Obj,soma:hasColor,Color))),
 	ignore(once(triple(Color,dul:hasRegion,CR))),
 	ignore(triple(CR, soma:hasRGBValue, term([R,G,B]))),

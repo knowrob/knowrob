@@ -2,8 +2,6 @@
     [ object_distance(r,r,?)
     ]).
 
-% TODO: consider qualitative distance: close-to, far-away-from, ...
-
 %% object_distance(+A:iri, +B:iri, ?Distance:float) is semidet
 % 
 % Computes euclidean distance between A and B.
@@ -15,9 +13,9 @@
 object_distance(A,B,Distance) :-
 	ground(A),
 	ground(B),
-	% FIXME: hardcoded map
-	is_at(A, [map,[AX,AY,AZ],_]),
-	is_at(B, [map,[BX,BY,BZ],_]),
+	map_origin_frame(MapFrame),
+	is_at(A, [MapFrame,[AX,AY,AZ],_]),
+	is_at(B, [MapFrame,[BX,BY,BZ],_]),
 	DX is AX - BX,
 	DY is AY - BY,
 	DZ is AZ - BZ,

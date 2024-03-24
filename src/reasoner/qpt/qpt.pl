@@ -149,10 +149,6 @@ get_altered_quality_type__(Concept,_Region,Quality_type) :-
   %object_add_part_(Parent,Filler),
   %object_set_lifetime_end(Filler,Now).
 
-%% TODO: add case for transformed objects? i.e. when
-%%   the whole object changes its form and becomes a new object.
-%%   seems there is no fitting role yet...
-%%   AlteredObject seems only about qualities that change.
 %%object_effects_apply_(Tsk,Grounding,Concept,Filler,Now) :-
   %%rdfs_individual_of(Concept,soma:'TransformedObject'),!,
   %%fail.

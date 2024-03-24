@@ -32,8 +32,6 @@ namespace knowrob {
 }
 
 void Reasoner::pushWork(const std::function<void(void)> &fn) {
-	// TODO: add support for stop request flag. For this the lambda needs to take an additional parameter.
-	//       which itself is a function that returns the stop request flag of the worker.
 	auto runner = std::make_shared<ReasonerTask>(fn);
 	DefaultThreadPool()->pushWork(runner, [](const std::exception &e) {
 		KB_ERROR("Error in reasoner worker thread: {}", e.what());

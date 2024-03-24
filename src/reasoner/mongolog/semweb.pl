@@ -343,7 +343,6 @@ has_equivalent_class(X,Y) +> triple(X, owl:equivalentClass, Y).
 % True if X and Y are  identical   or  connected by the owl:sameAs
 % relation. Considers owl:sameAs transitive and symmetric.
 %
-% TODO: support transitivity of same_as
 same_as(X,Y) ?> X = Y.
 same_as(X,Y) ?> triple(X, owl:sameAs, Y).
 same_as(X,Y) ?> triple(Y, owl:sameAs, X).

@@ -203,7 +203,6 @@ mongolog_add_predicate(Functor, Fields, SourceID, Options) :-
 
 %%
 setup_predicate_collection(Functor, [FirstField|_], Options) :-
-	% TODO support fields marked with -/+ here
 	option(indices(Indices), Options, [[FirstField], [source]]),
 	setup_collection(Functor, Indices).
 

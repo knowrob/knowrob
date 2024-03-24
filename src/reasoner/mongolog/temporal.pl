@@ -92,7 +92,6 @@ since(Statement, Instant) ?>
 	pragma(time_scope(>=(0), >=(Now), Scope)),
 	call_with_context(Statement, [query_scope(Scope)]),
 	% read computed fact scope
-	% FIXME: see above during/2
 	assign(Instant, string('$v_scope.time.since')).
 
 since(Statement, Instant) +>
@@ -139,7 +138,6 @@ until(Statement, Instant) ?>
 		Scope
 	)),
 	call_with_context(Statement, [query_scope(Scope)]),
-	% FIXME: see above during/2
 	assign(Instant, string('$v_scope.time.until')).
 
 until(Statement, Instant) +>

@@ -21,9 +21,6 @@ The following predicates are supported:
 :- mongolog:add_command(functor).
 :- mongolog:add_command(arg).
 :- mongolog:add_command(copy_term).
-% TODO: support more term commands
-%:- mongolog:add_command(same_term).
-%:- mongolog:add_command(term_variables).
 :- mongolog:add_command(=..).
 
 %% functor(?Term, ?Name, ?Arity) [ISO]
@@ -61,9 +58,6 @@ mongolog:step_compile(functor(Term,Functor,Arity), Ctx, Pipeline) :-
 % argument number. Backtracking yields alternative solutions.
 %
 mongolog:step_compile(arg(Arg,Term,Value), Ctx, Pipeline) :-
-	% TODO: support var(Arg),var(Value):
-	%	- list all args with their index
-	%	- first add indices to list, then $unwind
 	% FIXME: arg also need to handle var unification as in:
 	%         arg(0,foo(X),Y) would imply X=Y
 	%		- can be handled with conditional $set, add [X,Y] to

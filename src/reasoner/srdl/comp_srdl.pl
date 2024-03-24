@@ -98,7 +98,6 @@
 %  with_action_description(ActionD, ActionI, Robot, (
 %    findall((CompC,Xs), (
 %      insufficient_comp_for_action(ActionC, ActionI, Robot, CompC),
-%      % TODO(daniel): also check that component is sufficient for the action description!
 %      findall(X, comp_installable_on_robot(X, CompC, Robot), Xs)
 %    ), Components)
 %  )).

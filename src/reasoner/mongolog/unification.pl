@@ -115,9 +115,8 @@ unify_list(List1Val, List2Val, MapList) :-
 			% then use $$this
 			['then', string('$$this')],
 			% else use argument of other term
-			% FIXME: $indexOfArray only return first occurence, we need to call $range to
-			%        iterate over every index!!
-			%        TODO: Is there a way to get index from $map context?
+			% FIXME: $indexOfArray only return first occurence, but we need to call $range to iterate over every index.
+			%        Is there a way to get index from $map context? that would simplify it.
 			['else', ['$arrayElemAt', array([
 				string(List2Val),
 				['$indexOfArray', array([string(List1Val),string('$$this')])]

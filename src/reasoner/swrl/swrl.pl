@@ -201,7 +201,6 @@ swrl_condition_pl(Builtin, Builtin_pl, Vars) :-
 	swrl_builtin(Functor, Args, Builtin_pl, Vars).
 
 %% swrl_builtin
-% TODO (DB): support more builtins: matches, listConcat, member, length, ...
 %
 swrl_builtin(equal, [S,O],
 		    (S_var == O_var), Vars) :-

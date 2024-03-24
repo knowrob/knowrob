@@ -80,8 +80,6 @@ test(swrl_makeOWLIndividual) :-
 	% firing the rule a second time does not change number of individuals
 	assert_equals(Cars1, Cars2),
 	% delete the fact again
-	% FIXME: swrlx_individual/2 facts are not deleted in cleanup step!
-	%        there should be a mechanism to do this under the hood.
 	forall(
 		( member(X,Cars1), \+ member(X,Cars0) ),
 		kb_call(retractall(swrlx_individual(X,_)))

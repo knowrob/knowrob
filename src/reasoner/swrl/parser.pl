@@ -298,7 +298,7 @@ swrl_match_instance(IRI,Name,_) :-
   atom(IRI),!,
   rdf_split_url(_, Name, IRI).
 
-% FIXME: swrl_match_instance called with invalid input a lot, can be avoided?
+% TODO: swrl_match_instance called with invalid input a lot, can be avoided?
 swrl_match_instance(_,'?',_)     :- !, fail.
 swrl_match_instance(_,'(',_)     :- !, fail.
 swrl_match_instance(_,'not',_)   :- !, fail.
@@ -318,15 +318,6 @@ swrl_match_instance(IRI,Name,NS) :-
 	atom_concat(NS,Name,IRI),
 	% check if IRI is a currently defined IRI
 	swrl_subject(IRI),!,
-	assertz(swrl_iri(Name,IRI)).
-
-swrl_match_instance(IRI,Name,NS) :-
-	var(IRI), atom(Name),
-	% TODO: find IRI with Name as suffix
-	log_warn(swrl(match_instance(Name,NS))),
-	fail,
-	%atomic_list_concat(['^.*#',Name,'$'],Pattern),
-	%kb_call(once(triple(regex(Pattern)->IRI,rdf:type,_))),!,
 	assertz(swrl_iri(Name,IRI)).
 
 swrl_match_instance(IRI,Name,NS) :-

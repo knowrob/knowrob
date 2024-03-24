@@ -164,7 +164,6 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 	\+ memberchk(transitive, Ctx),
 	memberchk(collection(Coll), Ctx),
 	memberchk(step_vars(StepVars), Ctx),
-	% TODO: revise below
 	mng_triple_doc(triple(S,P,V), QueryDoc, Ctx),
 	(	memberchk(['s',_],QueryDoc)
 	->	StartValue='$start.s'
@@ -245,8 +244,7 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 	mongolog:var_key_or_val(S0, Ctx, S_val),
 	mongolog:var_key_or_val(V0, Ctx, V_val),
 	
-	% FIXME: a runtime condition is needed to cover the case where S was
-	%        referred to in ignore'd goal that failed.
+	% FIXME: a runtime condition is needed to cover the case where S was referred to in ignore'd goal that failed.
 	(	has_value(S0,Ctx)
 	->	( Start=S_val, To='s', From='o', StartValue='$start.s' )
 	;	( Start=V_val, To='o', From='s', StartValue='$start.o' )
@@ -255,7 +253,7 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 	% match doc for restring the search
 	findall(Restriction,
 		(	Restriction=['p*',Query_p]
-		% TODO: see how scope can be included
+		% TODO: see how scope can be included in transitive lookups
 		%;	graph_doc(Graph,Restriction)
 		%;	scope_doc(Scope,Restriction)
 		),
@@ -301,7 +299,6 @@ lookup_triple(triple(S,P,V), Ctx, Step) :-
 	).
 
 %%
-% FIXME: need to do runtime check for ignored goals!
 %
 has_value(X, _Ctx) :-
 	ground(X),!.
@@ -430,8 +427,6 @@ triple_arg_var(Arg, ArgVar) :-
 %%
 triple_arg_value(_Arg, ArgValue, FieldValue, _Ctx, ['$in',
 		array([ string(ArgValue), string(FieldValue) ])]) :-
-	% FIXME: operators are ignored!!
-	% TODO: can be combined with other operators??
 	atom_concat(_,'*',FieldValue),!.
 	
 triple_arg_value(Arg, ArgValue, FieldValue, _Ctx, [ArgOperator,
@@ -518,7 +513,6 @@ strip_property_modifier1(include_parents(X), pstar,      X).
 % True if Name is not the subject of any known fact.
 %
 is_unique_name(Name) :-
-	% TODO: rather interact with vocabulary of MongoKG in cpp
 	mongolog_get_db(DB, Coll, 'triples'),
 	\+ mng_find(DB, Coll, [['s',string(Name)]], _).
 
