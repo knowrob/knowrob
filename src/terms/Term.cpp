@@ -109,5 +109,7 @@ namespace knowrob::py {
 				.def("isBlank", &Term::isBlank)
 				.def("isGround", &Term::isGround)
 				.def("variables", pure_virtual(&Term::variables), return_value_policy<copy_const_reference>());
+		// register shared_ptr to Term
+		register_ptr_to_python< std::shared_ptr< Term > >();
 	}
 }

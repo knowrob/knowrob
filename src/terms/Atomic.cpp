@@ -85,6 +85,9 @@ namespace knowrob::py {
 		class_<Atomic, std::shared_ptr<AtomicWrap>, bases<Term>, boost::noncopyable>
 				("Atomic", no_init)
 				.def("stringForm", pure_virtual(&Atomic::stringForm))
+				.def("__repr__", &Atomic::stringForm)
+				.def("humanReadableForm", &Atomic::humanReadableForm)
+				.def("__str__", &Atomic::humanReadableForm)
 				.def("atomicType", &Atomic::atomicType)
 				.def("isSameAtomic", &Atomic::isSameAtomic);
 	}

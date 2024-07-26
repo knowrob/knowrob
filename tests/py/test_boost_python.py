@@ -5,6 +5,29 @@ except ImportError:
 	# If the import fails, import the knowrob.so directly
 	from knowrob import *
 
+def perform_query(settings_path, query_string,):
+	# Load the settings
+	modalities = {
+		"epistemicOperator": 0,
+		"aboutAgentIRI": "",
+		"confidence": 0.0,
+		"temporalOperator": 0,
+		"minPastTimestamp": -1.0,
+		"maxPastTimestamp": -1.0,
+	}
+	# Load the settings
+	kb = KnowledgeBase(settings_path)
+	# Create a formula for the query
+	phi = QueryParser.parse(query_string)
+	# Apply the modality
+	mPhi = applyModality(modalities, phi)
+	# Get Result Stream
+	resultStream = kb.submitQueryFormula(mPhi, QueryContext(QueryFlag.QUERY_FLAG_ALL_SOLUTIONS))
+	resultQueue = resultStream.createQueue()
+	# Get the result
+	nextResult = resultQueue.pop_front()
+	return nextResult
+
 
 def atom_to_python(term):
 	# make some tests that the class hierarchy is correct
@@ -99,35 +122,52 @@ def answer_queue():
 	# Check if the substitution is empty
 	assert nextResult.substitution().empty()
 
-
-<<<<<<< HEAD
-def query_knowledge_base(settings_path):
-=======
-
-def query_knowledge_base():
-	# Initialize the knowledge base
-	# args = sys.argv
-	# InitKnowledgeBase(args)
-	# Load the settings
-	kb = KnowledgeBase("settings/default.json")
-	# Create a formula for the query
-	phi = QueryParser.parse("test:hasAncestor(X, Y)")
-	# Apply the modality
-	# mPhi = InterfaceUtils::applyModality(Modality::POSS, phi)
-	# Get Result Stream
-	resultStream = kb.submitQueryFormula(phi, QueryContext(QueryFlag.QUERY_FLAG_ALL_SOLUTIONS))
-	resultQueue = resultStream.createQueue()
-	# Get the result
-	nextResult = resultQueue.pop_front()
-	# Check if the result is an posititve answer
+def kb_positive_query(settings_path):
+	# Test that a query returning "yes" can be made
+	nextResult = perform_query(settings_path, "swrl_test:hasAncestor(swrl_test:'Lea', ?y)")
+	# Check if the result is a positive answer
 	assert nextResult.tokenType() == TokenType.ANSWER_TOKEN
 	assert nextResult.isPositive()
+	assert isinstance(nextResult, AnswerYes), "argument is not an AnswerYes"
 	# Check if the substitution is not empty
 	assert not nextResult.substitution().empty()
 	# Get result
-	for pair in  nextResult.substitution():
-		term = pair.second.second
+	for substitution in nextResult.substitution():
+		term = substitution[2]
 		assert term.termType() == TermType.ATOMIC
 		assert term.atomicType() == AtomicType.ATOM or term.atomicType() == AtomicType.STRING
-		stringResult = term.stringForm().data()
-		assert stringResult == "test:Lea"
+		stringResult = term.humanReadableForm()
+		assert stringResult == 'swrl_test:Fred', "Result is not 'swrl_test:Fred'"
+
+def kb_negative_query(settings_path):
+	# Test that a query returning "no" can be made
+	nextResult = perform_query(settings_path, "swrl_test:hasAncestor(swrl_test:'Lea', swrl_test:'Lea')")
+	# Check if the result is a negative answer
+	assert nextResult.tokenType() == TokenType.ANSWER_TOKEN
+	assert isinstance(nextResult, AnswerNo), "argument is not an AnswerNo"
+	assert nextResult.isNegative()
+
+def kb_dont_know_query(settings_path):
+	# Test that a query returning "don't know" can be made
+	nextResult = perform_query(settings_path, "r(?x, ?y)")
+	# Check if the result is an AnswerDontKnow
+	assert nextResult.tokenType() == TokenType.ANSWER_TOKEN
+	assert isinstance(nextResult, AnswerDontKnow), "argument is not an AnswerDontKnow"
+	assert not nextResult.isPositive()
+	assert not nextResult.isNegative()
+
+def kb_assert(settings_path):
+	# Test that a assertion to the knowledge base can be made
+	kb = KnowledgeBase(settings_path)
+	# Create a triple
+	triple = FramedTripleCopy("swrl_test:Dieter", "swrl_test:hasAncestor", "swrl_test:Friedhelm")
+	# Assert the triple
+	kb.insertOne(triple)
+	# Query the triple
+	nextResult = perform_query(settings_path, "swrl_test:hasAncestor(swrl_test:Dieter, swrl_test:Friedhelm)")
+	# Check if the result is a positive answer
+	assert nextResult.tokenType() == TokenType.ANSWER_TOKEN
+	assert nextResult.isPositive()
+
+
+

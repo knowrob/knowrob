@@ -58,7 +58,6 @@ namespace knowrob::py {
 				.def("__repr__", &Token::stringForm)
 				.def("__hash__", &Token::hash)
 				.def("tokenType", &Token::tokenType)
-				.def("isPositive", &Token::tokenType)
 				.def("indicatesEndOfEvaluation", &Token::indicatesEndOfEvaluation);
 		class_<EndOfEvaluation, bases<Token>, std::shared_ptr<EndOfEvaluation>>
 				("EndOfEvaluation", no_init)

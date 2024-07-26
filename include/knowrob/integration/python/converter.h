@@ -17,5 +17,6 @@
 #include "converter/string_view.h"
 #include "converter/vector.h"
 #include "converter/optional.h"
+#include "converter/pair.h"
 
 #endif //KNOWROB_PY_CONVERTER_H

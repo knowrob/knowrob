@@ -156,7 +156,6 @@ namespace knowrob {
 			return v0->hashOfAnswer() < v1->hashOfAnswer();
 		}
 	}
-
 }
 
 namespace knowrob::py {

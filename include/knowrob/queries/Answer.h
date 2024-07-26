@@ -6,10 +6,9 @@
 #ifndef KNOWROB_ANSWER_H_
 #define KNOWROB_ANSWER_H_
 
-
+#include "Token.h"
 #include "Query.h"
 #include "knowrob/terms/Atom.h"
-#include "Token.h"
 
 namespace knowrob {
 	/**
@@ -126,7 +125,6 @@ namespace knowrob {
 		void setIsPositive(bool val) { isPositive_ = val; }
 
 		void setIsNegative(bool val) { isNegative_ = val; }
-
 	};
 
 	// alias
