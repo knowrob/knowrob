@@ -23,7 +23,7 @@
 #define MONGO_KG_SETTING_DB "db"
 #define MONGO_KG_SETTING_COLLECTION "collection"
 #define MONGO_KG_SETTING_READ_ONLY "read-only"
-#define MONGO_KG_SETTING_DROP_GRAPHS "drop_graphs"
+#define MONGO_KG_SETTING_DROP "drop"
 
 #define MONGO_KG_DEFAULT_HOST "localhost"
 #define MONGO_KG_DEFAULT_PORT "27017"
@@ -125,11 +125,16 @@ bool MongoKnowledgeGraph::initializeBackend(const PropertyTree &config) {
 	}
 
 	// Auto-drop some named graphs
-	auto o_drop_graphs = ptree->get_child_optional(MONGO_KG_SETTING_DROP_GRAPHS);
-	if (o_drop_graphs.has_value()) {
-		BOOST_FOREACH(const auto &v, o_drop_graphs.value()) {
-						removeAllWithOrigin(v.second.data());
-					}
+	auto o_drop = ptree->get_child_optional(MONGO_KG_SETTING_DROP);
+	if (o_drop.has_value()) {
+		if (std::string_view("*") == std::string_view(o_drop.value().data())) {
+			drop();
+			tripleCollection_->createTripleIndex();
+		} else {
+			BOOST_FOREACH(const auto &v, o_drop.value()) {
+							removeAllWithOrigin(v.second.data());
+						}
+		}
 	}
 
 	return true;
