@@ -42,11 +42,9 @@ protected:
 				// Conditionally import module based on MODULENAME
 				if (std::string(moduleNameStr()) == "knowrob") {
 					knowrob_module = python::import("knowrob");
-					std::cout << "Loaded knowrob module" << std::endl;
 				} else {
 					std::string fullModuleName = std::string("knowrob.") + moduleNameStr();
 					knowrob_module = python::import(fullModuleName.c_str());
-					std::cout << "Loaded " << fullModuleName << " module" << std::endl;
 				}
 				test_module = python::import("tests.py.test_jupyter");
 			});
