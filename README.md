@@ -3,72 +3,37 @@ KnowRob
 
 ![CI](https://github.com/knowrob/knowrob/workflows/CI/badge.svg)
 
-The purpose of KnowRob is to equip robots with explicit knowledge about the world.
-Originally, it was implemented using the Prolog programming language.
-In its second iteration, KnowRob is implemented in C++, but still supports Prolog
-for rule-based reasoning (see [this page](src/reasoner/prolog/README.md) for more details).
-
-The core of KnowRob is a shared library that implements a *hybrid* knowledge base.
-With *hybrid*, we mean that different reasoning engines can be combined in
-KowRob's query evaluation process. To this end, KnowRob defines a querying language
-and manages which parts of a query are evaluated by which reasoner or storage backend.
-Both reasoners and storage backends are configurable, and can be extended by plugins
-either written in C++ or Python.
-There are a few applications shipped with this repository including a terminal application
-that allows to interact with KnowRob using a command line interface.
-
-For ROS integration, please refer to this [repository](https://github.com/knowrob/ros).
+KnowRob is a knowledge processing system designed for robots.
+Its purpose is to equip robots with the capability to organize information in re-usable
+knowledge chunks, and to perform reasoning in an expressive logic.
+It further provides a set of tools for visualization and acquisition of knowledge.
 
 ## Getting Started
 
 These instructions will get you a copy of KnowRob up and running on your local machine.
 
-### Dependencies
+### Prerequisites
 
-The following list of software is required to build KnowRob:
-
-- [Redland and Raptor2](https://librdf.org)
-- [spdlog](https://github.com/gabime/spdlog.git)
-- [fmt](https://github.com/fmtlib/fmt)
-- [Eigen 3](https://eigen.tuxfamily.org/index.php?title=Main_Page)
-- [Boost](https://www.boost.org/) >= 1.50 with the following components:
-  - python
-  - program options
-  - serialization
-- [SWI Prolog](https://www.swi-prolog.org/) >= 8.2.4
-- [mongo DB server](https://www.mongodb.com/de-de) >= 4.4 and libmongoc
-- [GTest](https://github.com/google/googletest)
-
-#### Optional Dependencies
-
-Some features will only be conditionally compiled if the following dependencies are found:
-
-- [doxygen](https://www.doxygen.nl/), for generating API documentation.
+- ROS (*ROS noetic* for the master branch)
+- SWI Prolog >= 8.2.4 (see [Further Information](https://github.com/artnie/knowrob/tree/update-setup#further-information))
+- mongo DB server >= 4.4 and libmongoc (see [Further Information](https://github.com/artnie/knowrob/tree/update-setup#further-information))
+- [rosprolog](https://github.com/knowrob/rosprolog)
 
 ### Installation
 
-#### Pre-built
-
-Pre-built packages are available for Debian-based systems.
-They can be downloaded from the
-[release page](https://github.com/knowrob/knowrob/tags) of this repository.
-
-#### CMake
-
-KnowRob uses *CMake* as build system. The following steps will guide you through the installation process.
-Assuming you have cloned the repository to `~/knowrob`:
+KnowRob uses the [catkin](http://wiki.ros.org/catkin) buildsystem that has been the main ROS buildsystem.
+We have prepared different *.rosinstall* setup files that you can add to your ROS workspace as described [here](http://www.ros.org/wiki/ROS/Tutorials/InstallingandConfiguringROSEnvironment).
 
 ```Bash
-cd ~/knowrob
-mkdir build
-cd build
-cmake -DCATKIN=OFF -DPYTHON_MODULE_LIBDIR="dist-packages" ..
-make
-sudo make install
+rosdep update
+cd ~/catkin_ws/src
+wstool init
+wstool merge https://raw.github.com/knowrob/knowrob/master/rosinstall/knowrob-base.rosinstall
+wstool update
+rosdep install --ignore-src --from-paths .
+cd ~/catkin_ws
+catkin_make
 ```
-
-The `PYTHON_MODULE_LIBDIR` option should be set to "site-packages" if you are using a
-non-Debian system. `CATKIN=OFF` is used to avoid the installation of unnecessary files.
 
 You may further need to set the *SWI_HOME_DIR* environment variable to the installation location of *swipl*:
 
@@ -76,248 +41,157 @@ You may further need to set the *SWI_HOME_DIR* environment variable to the insta
 export SWI_HOME_DIR=/usr/lib/swi-prolog
 ```
 
-Alternatively, you may clone the KnowRob repository into a ROS workspace and build it using *catkin*.
-Please refer to the [ROS](https://github.com/knowrob/ros) documentation for further information.
-
-#### Plugin Installation
-
-KnowRob attempts to load all plugins referred to in the active configuration file.
-To this end it will try to resolve relative paths using the following directories:
-
-- `${SOURCE_PREFIX}/src`
-- `~/.knowrob`
-- `${INSTALL_PREFIX}/lib/knowrob` (for shared libraries)
-- `${INSTALL_PREFIX}/share/knowrob` (for Python modules)
-
-`${SOURCE_PREFIX}` is the directory where the source code is located,
-`${INSTALL_PREFIX}` is the directory where the installation directory
-(usually "/usr/local").
-Make sure to install plugins in one of these directories,
-or alternatively, refer to the plugin in the configuration file
-using an absolute path.
-
-### Development
-
-Any IDE with proper CMake and C++ language support should be able to load the project.
-For example, you can use *CLion* or *Visual Studio Code*.
-But support for Prolog code is usually quite limited or not existent.
-
-### Configuration
-
-KnowRob uses a configuration file to set up the knowledge base.
-Internally, boost's property tree is used to parse the configuration file.
-Hence, JSON is one of the supported formats.
-The configuration file specifies the storage backends,
-the reasoner, and the knowledge sources that are loaded into the knowledge base.
-
-An example configuration is listed below:
-
-```json
-{
-  "data-sources": [
-    {
-      "path": "/path/to/owl/my-ontology.owl",
-      "language": "owl",
-      "format": "xml"
-    }
-  ],
-  "data-backends": [
-    {
-      "name": "pl",
-      "type": "Prolog:rdf_db"
-    }
-  ],
-  "reasoner": [
-    {
-      "name": "pl",
-      "type": "Prolog",
-      "data-backend": "pl",
-      "imports": [
-        {
-          "path": "/path/to/rules/my-rules.pl",
-          "format": "prolog"
-        }
-      ]
-    }
-  ]
-}
-```
-
-It configures KnowRob to use a builtin storage backend with type `Prolog:rdf_db`, and 
-connects a `Prolog` reasoner to it (which is also a builtin reasoner type).
-The storage is populated with an OWL ontology in XML format,
-and the reasoner is extended with a set of Prolog rules via the "imports" configuration.
-The files are loaded from the specified paths, if these are provided as relative paths,
-KnowRob will attempt to resolve them relative to source, home, or installation directories.
-
-For more information about storage backends, please refer to the [Triple Store](src/storage/README.md) documentation,
-and for more information about reasoning, please refer to the [Reasoner](src/reasoner/README.md) documentation.
-Additional examples of configuration files can be found in the `settings` and `tests` directories.
-
 ### Launching
 
-Being a shared library, KnowRob cannot be launched directly but only in the context
-of a program that uses it.
-
-#### Using the Python Module
-
-KnowRob provides a Python module that can be used to interact with the shared library.
-The module is generated during the build process and is installed in the Python module directory
-of the installation prefix (e.g., `/usr/local/lib/python3/dist-packages`).
-In the case of a ROS workspace, the module is installed in the `devel` directory.
-
-To use the module, simply import it in your Python script:
-
-```Python
-import knowrob
-```
-
-The API of the Python module mirrors a part of the C++ API, and is designed to be as similar as possible.
-There is no separate API documentation for the Python module, as the API is (almost) the same as the C++ API
-(see [API Documentation](https://knowrob.github.io/knowrob/)).
-
-For more information on how to use the Python module, please refer to the
-[Python Integration](src/integration/python/README.md) documentation, and the
-examples in the `tests` directory.
-
-#### Using the Shared Library
-
-Applications may choose to link with the shared library and use the provided C API
-(see [API Documentation](https://knowrob.github.io/knowrob/)). The library is called `libknowrob.so`
-and is installed in the library directory of the installation prefix (usually `/usr/local/lib`).
-In the case of a ROS workspace, the library is installed in the `devel/lib` directory of the workspace.
-To link against the library, make sure the library installation directory is in the search path
-(`LD_LIBRARY_PATH` for Linux-based systems).
-
-KnowRob further generates a pkg-config file that can be used to retrieve the necessary flags
-for compiling and linking against the library. The file is called `knowrob.pc` and is installed
-in the `lib/pkgconfig` directory of the installation prefix. To use it, add the following line
-to your `CMakeLists.txt`:
-
-```CMake
-pkg_check_modules(KNOWROB REQUIRED knowrob)
-```
-Then you can use the `KNOWROB_LIBRARIES` and `KNOWROB_INCLUDE_DIRS` variables in your build.
-
-In the case of a ROS workspace, simply do the following:
-
-- add "knowrob" to the `find_package` and `catkin_package` calls in your *CMakeLists.txt*
-- add "knowrob" to the *depend* fields in your *package.xml*
-
-#### Using an interactive Terminal
-
-KnowRob can also run as a standalone program `knowrob-terminal` that provides a command line interface.
-It can be launched as follows:
+In order to interact with other robot components,
+the [Robot Operating System](https://www.ros.org/) (ROS)
+is used via [rosprolog](https://github.com/knowrob/rosprolog).
+*rosprolog* provides a ROS node that manages a pool of Prolog engines
+in which KnowRob can be loaded such that its querying interface
+is exposed via the node.
+KnowRob provides a launch file that starts the *rosprolog* node, and initializes KnowRob:
 
 ```
-knowrob-terminal --config-file ~/knowrob/settings/prolog.json
+roslaunch knowrob knowrob.launch
 ```
 
-The configuration file is a required argument, there is no fallback configuration file.
-
-Once the terminal is up and running, you should see a greeting message and a prompt
-which looks like this:
+Please refer to the *rosprolog* documentation for how to interact with this node.
+However, KnowRob can also be launched without ROS node through a script offered by *rosprolog*:
 
 ```
-Welcome to KnowRob.
-For online help and background, visit http://knowrob.org/
-
-?- 
+rosrun rosprolog rosprolog knowrob
 ```
 
-Please refer to the [Query](src/queries/README.md) documentation for the syntax of queries
-that can be typed into the terminal. Limited auto-completion is available. `exit/0` will
-terminate the terminal.
+Launching KnowRob without the ROS node may help debugging (at the moment the GUI tracing tool of SWI Prolog *gtrace* does not work via the rosprolog node).
 
-#### Using a ROS Node 
-
-Alternatively, you can expose the KnowRob querying interface via a ROS node.
-The code for doing this is not part of this repository, but is available in the
-[knowrob_ros](https://github.com/knowrob/ros) repository.
-
-## Overview
+## Getting Familiar
 
 Here we provide an overview about functionality of KnowRob.
 
 ### Querying
 
-The core of KnowRob is a querying interface that is built around a custom querying language.
-Its syntax is similar to Prolog, but it is more simplified and not Turing-complete like Prolog is.
+The core of KnowRob is an extendible querying interface that
+provides basic operations *ask*, *tell*, *forget*, and *remember*.
+Their argument is some statement written in the [KnowRob Querying Language](src/lang/README.md).
+Language phrases are terms whose semantics is defined
+in form of Prolog rules using special operators such as *?>* (the ask operator),
+or *+>* (the tell operator).
 
-For more information on querying in KnowRob, please have a look
-[here](src/queries/README.md).
+One useful CLI for queries is launched with `rosrun rosprolog rosprolog_commandline.py`
 
-### Ontologies
+### Model
 
-KnowRob structures knowledge using ontologies. Ontologies are (formal) models of a domain that are
-used to describe the concepts in the domain and the relationships between them.
-In KnowRob, ontologies are usually represented as RDF knowledge graphs using the RDFS and OWL vocabularies.
-
-Ontologies are organized in a hierarchy where each ontology is a specialization of another ontology.
-A common distinction is made between foundational (or top-level) ontologies, domain ontologies, 
-and application ontologies.
-A foundational ontology fixes the basic concepts and relationships that are used
-across different domains.
-In KnowRob, we define a domain ontology for the robotics domain, and align it with a
-common foundational ontology.
-Applications can then import the domain ontology and extend it with application-specific concepts
-to cover the specific requirements of the application.
-
-For more information on ontologies in KnowRob, please have a look
-[here](src/semweb/README.md).
+KnowRob structures knowledge according to models represented using RDF.
+Some models are very basic and domain-independent such as the OWL model
+that e.g. distinguishes between object and datatype properties, or the
+toplevel ontology SOMA which is supported by KnowRob.
+[KnowRob Models](src/model/README.md) is a collection of such models
+that are explicitely supported by KnowRob.
+However, support for other models may be added through plugins.
 
 ### Triple Store and Data Access
 
-Knowledge is represented in form of contextualized triples --
-each subject-predicate-object triple has additional fields
-that contextualize the triple.
-A configurable storage backend is used to store and retrieve triples --
-currently, triple stores based on Prolog, MongoDB and Redland are supported.
+Knowledge is represented in form of temporalized triples --
+each subject-predicate-object triple has an additional field
+that restricts the temporal scope in which the statement
+represented by the triple is true.
+A configurable backend is used to store and retrieve temporalized triples --
+as a falback implementation, KnowRob provides a simple MongoDB
+implementation of a temporalized triple store.
 
 One important aspect in knowledge representation for robots is that
 a lot of knowledge is *implicitly* encoded in the control structures
-of the robot. Hence, one goal is to make this implicit knowledge *explicit*.
-This is done by mapping data to symbols in an ontology.
-In case of querying, this is often referred to as *Ontology-based Data Access* (OBDA).
+of the robot. Hence, one goal is to make the knowledge in robot
+control structures *explicit*.
+KnowRob does that through *Ontology-based Data Access* (OBDA).
+So called, *semantic data accessors* are used to map data to symbols in
+an ontology, often by accessing some database, or by reading from
+a message queue, etc.
 
-For more information on storages in KnowRob, please have a look
-[here](src/storage/README.md).
+For more information on database backends in KnowRob, please have a look
+[here](src/db/README.md).
 
 ### Reasoning
 
 KnowRob uses an ensemble of reasoners approach where inferences
 of different reasoners are combined into correlated knowledge pieces.
 The reason for choosing this approach is that there is no single
-method that is suited for every reasoning tasks.
+formalism that is suited for every reasoning tasks.
 Instead, given a problem, one should decide what the most suitable
-method is to tackle it.
+formalism is to tackle it.
 Consequently, KnowRob can be configured to solve specific problems
 by loading corresponding reasoning modules that implement a common interface.
-
-For more information on reasoning in KnowRob, please have a look
-[here](src/reasoner/README.md).
-
-## Getting Familiar
-
-To get familiar with KnowRob, we provide a set of interactive tutorials. These tutorials are written in Jupyter notebooks and can be found in the `tutorials` directory. For detailed instructions on setting up and running the tutorials, refer to the [tutorials README](/tutorials/README.md).
-
-### Examples
-
-In the `tests` directory, you can find a set of examples that demonstrate the usage of KnowRob.
-These examples are written in C++ and Python, and can be used as a starting point for your own projects.
+KnowRob also ships with a set of reasoning modules including
+an (incomplete) OWL reasoner, a SWRL reasoner, and some specialized
+reasoning modules that handle domain-specific problems
+such as reasoning about time intervals using Allen's interval
+calculus.
+More complete information about reasoning in KnowRob can be found
+[here](src/reasoning/README.md).
 
 ## Further Information
 
-More documentation can be found in the following pages:
+- Sourcecode documentation is available [here](https://knowrob.github.io/knowrob/)
+- A blog and more wiki pages are avaiabale at [knowrob.org](http://www.knowrob.org)
 
-- [Terms](src/terms/README.md)
-- [Formulas](src/formulas/README.md)
-- [Semantic Web](src/semweb/README.md)
-- [Triple Stores](src/storage/README.md)
-- [Querying](src/queries/README.md)
-- [Reasoner](src/reasoner/README.md)
-- [Python Integration](src/integration/python/README.md)
+### Installation of SWI-Prolog and MongoDB
 
-In addition, the following resources are available:
-- [API Documentation](https://knowrob.github.io/knowrob/)
-- A blog and more wiki pages are available at [knowrob.org](http://www.knowrob.org)
+- SWI Prolog latest stable version
+
+```bash
+# If swi-prolog is already installed, check the version
+swipl --version
+# If it's under 8.2.4, add the ppa of the latest stable version
+sudo apt-add-repository -y ppa:swi-prolog/stable
+# And update it
+sudo apt update
+sudo apt upgrade
+# or install it, if not present before.
+sudo apt install swi-prolog
+```
+
+- MongoDB
+
+```bash
+# Check the mongodb version
+mongod --version
+# If below 4.4, an update is needed.
+# Updating the mongodb requires either wiping all existing DBs or dumping/restoring them.
+# Newer versions are not compatible with old DBs and wouldn't even allow the mongodb service to start
+# Therefore, if you want to keep old DBs, store them BEFORE upgading mongodb.
+# The following procedure reinstalls mongodb completely with the desired version. 
+# All previous deps, settings, DBs of mongodb will be lost!
+
+# Stop the service
+sudo systemctl stop mongod.service
+# Remove all DBs
+sudo rm -r /var/log/mongodb
+sudo rm -r /var/lib/mongodb
+# Uninstall all mongo packages
+# Be aware that this also removes unrelated packages starting with 'mongo*'
+sudo apt purge mongo*
+# Fetch the latest packages of mongodb-org
+wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+# Update references and install mongodb
+sudo apt update
+sudo apt install mongodb-org
+
+# Troubleshoot: If dpkg errors occurr, the deps still refer to old versions. Force the new version
+# Replace the <version> with your own new version. To this day it is '4.4.10'. 
+sudo dpkg -i --force-overwrite /var/cache/apt/archives/mongodb-org-tools_4.4.<version>_amd64.deb
+
+# Try to run the mongodb service
+sudo systemctl start mongod.service
+# Check if the service is running properly
+sudo systemctl status mongod.service
+# Optional: Make the mongod service start on boot
+sudo systemctl enable mongod.service
+
+# In case of errors, refer to the mongodb error code explaination for further insight: 
+# https://github.com/mongodb/mongo/blob/master/src/mongo/util/exit_code.h
+# Status 62 identifies old DBs in /var/log and /var/lib, so delete them.
+# To instead keep them, you'll need to downgrade mongo, dump DBs, upgrade mongo, recreate DBs.
+# When it fails to open /var/log/mongodb/mongod.log the permissons for that file are incorrect.
+# Either set owner and group of these two paths to mongodb, or reinstall mongodb.
+```
