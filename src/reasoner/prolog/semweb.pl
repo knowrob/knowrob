@@ -46,6 +46,8 @@
       sw_register_computable(r),   % +RDF_predicate
       sw_register_computable(r,+), % +RDF_predicate
 
+      sw_assert/4,               % +Subject, +Predicate, +Object, +Graph
+      sw_retract/4,              % +Subject, +Predicate, +Object, +Graph
       load_rdf_xml/2               % +URL, +ParentGraph
     ]).
 /** <module> Extensions around the semweb modules of Prolog.
@@ -789,6 +791,30 @@ sw_set_default_graph(Graph) :-
     current_reasoner_manager(ReasonerManager),
     current_reasoner_module(Reasoner),
 	sw_set_default_graph_cpp(ReasonerManager, Reasoner, Graph).
+
+     /*******************************
+      *    ASSERT / RETRACT    *
+      *******************************/
+
+%% sw_assert(+Subject, +Predicate, +Object, +Graph) is det.
+%
+% Assert a new triple into the database.
+%
+sw_assert(Subject, Predicate, Object, Graph) :-
+    atom(Subject), atom(Predicate), ground(Object),!,
+    current_reasoner_manager(ReasonerManager),
+    current_reasoner_module(Reasoner),
+    sw_assert_cpp(ReasonerManager, Reasoner, Subject, Predicate, Object, Graph).
+
+%% sw_retract(+Subject, +Predicate, +Object, +Graph) is det.
+%
+% Retract a triple from the database.
+%
+sw_retract(Subject, Predicate, Object, Graph) :-
+    atom(Subject), atom(Predicate), ground(Object),!,
+    current_reasoner_manager(ReasonerManager),
+    current_reasoner_module(Reasoner),
+    sw_retract_cpp(ReasonerManager, Reasoner, Subject, Predicate, Object, Graph).
 
      /*******************************
       *    LOADING RDF/XML DATA     *

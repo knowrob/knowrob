@@ -167,6 +167,70 @@ foreign_t sw_load_rdf_xml4(term_t t_manager, term_t t_reasoner, term_t t_url, te
 	return false;
 }
 
+foreign_t sw_assert6(term_t t_manager, term_t t_reasoner, term_t t_subject, term_t t_predicate, term_t t_object, term_t t_graph) {
+	auto kb = getKnowledgeBase(t_manager, t_reasoner);
+	if (!kb) return false;
+	auto s = PrologTerm::toKnowRobTerm(t_subject);
+	auto p = PrologTerm::toKnowRobTerm(t_predicate);
+	auto o = PrologTerm::toKnowRobTerm(t_object);
+	if (!s || !p || !o) return false;
+	TripleView tripleData;
+	tripleData.setSubject(((Atomic *) s.get())->stringForm());
+	tripleData.setPredicate(((Atomic *) p.get())->stringForm());
+	if(o->termType() == TermType::ATOMIC) {
+		auto atomic = std::static_pointer_cast<Atomic>(o);
+		if (atomic->isNumeric()) {
+			tripleData.setXSDValue(atomic->stringForm(),
+				std::static_pointer_cast<Numeric>(atomic)->xsdType());
+		} else if (atomic->isIRI()) {
+			tripleData.setObjectIRI(atomic->stringForm());
+		} else if (atomic->isBlank()) {
+			tripleData.setObjectBlank(atomic->stringForm());
+		} else {
+			tripleData.setStringValue(atomic->stringForm());
+		}
+	} else {
+		return false;
+	}
+	auto g = PrologTerm::toKnowRobTerm(t_graph);
+	if (g && g->termType() == TermType::ATOMIC) {
+		tripleData.setGraph(((Atomic *) g.get())->stringForm());
+	}
+	return kb->insertOne(tripleData);
+}
+
+foreign_t sw_retract6(term_t t_manager, term_t t_reasoner, term_t t_subject, term_t t_predicate, term_t t_object, term_t t_graph) {
+	auto kb = getKnowledgeBase(t_manager, t_reasoner);
+	if (!kb) return false;
+	auto s = PrologTerm::toKnowRobTerm(t_subject);
+	auto p = PrologTerm::toKnowRobTerm(t_predicate);
+	auto o = PrologTerm::toKnowRobTerm(t_object);
+	if (!s || !p || !o) return false;
+	TripleView tripleData;
+	tripleData.setSubject(((Atomic *) s.get())->stringForm());
+	tripleData.setPredicate(((Atomic *) p.get())->stringForm());
+	if(o->termType() == TermType::ATOMIC) {
+		auto atomic = std::static_pointer_cast<Atomic>(o);
+		if (atomic->isNumeric()) {
+			tripleData.setXSDValue(atomic->stringForm(),
+				std::static_pointer_cast<Numeric>(atomic)->xsdType());
+		} else if (atomic->isIRI()) {
+			tripleData.setObjectIRI(atomic->stringForm());
+		} else if (atomic->isBlank()) {
+			tripleData.setObjectBlank(atomic->stringForm());
+		} else {
+			tripleData.setStringValue(atomic->stringForm());
+		}
+	} else {
+		return false;
+	}
+	auto g = PrologTerm::toKnowRobTerm(t_graph);
+	if (g && g->termType() == TermType::ATOMIC) {
+		tripleData.setGraph(((Atomic *) g.get())->stringForm());
+	}
+	return kb->removeOne(tripleData);
+}
+
 namespace knowrob::prolog {
 	PL_extension PL_extension_semweb[] = {
 			{"sw_url_graph",                   2, (pl_function_t) sw_url_graph2,                0},
@@ -185,6 +249,8 @@ namespace knowrob::prolog {
 			{"sw_set_current_graph_cpp",       3, (pl_function_t) sw_set_current_graph3,       0},
 			{"sw_unset_current_graph_cpp",     3, (pl_function_t) sw_unset_current_graph3,     0},
 			{"sw_load_rdf_xml_cpp",            4, (pl_function_t) sw_load_rdf_xml4,            0},
+			{"sw_assert_cpp",                  6, (pl_function_t) sw_assert6,				    0},
+			{"sw_retract_cpp",                 6, (pl_function_t) sw_retract6,                 0},
 			{nullptr,                          0, nullptr,                                     0}
 	};
 }
