@@ -165,6 +165,10 @@ TYPED_TEST(StorageTest, Assert_a_b_c) {
 	EXPECT_EQ(TEST_LOOKUP(parse("triple(swrl_test:x, swrl_test:b, C)")).size(), 0);
 }
 
+TYPED_TEST(StorageTest, QueryDuplicateVars) {
+	EXPECT_EQ(TEST_LOOKUP(parse("triple(?x, swrl_test:b, ?x)")).size(), 0);
+}
+
 TYPED_TEST(StorageTest, TripleWithOrigin) {
 	TripleCopy data_cbd(swrl_test_"c", swrl_test_"b", swrl_test_"d");
 	EXPECT_EQ(TEST_LOOKUP(data_cbd).size(), 0);
