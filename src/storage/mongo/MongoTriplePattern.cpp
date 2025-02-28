@@ -299,8 +299,11 @@ void MongoTriplePattern::setTripleVariables(Pipeline &pipeline,
 
 	if (!varList.empty()) {
 		auto setVariables = pipeline.appendStageBegin("$set");
+		std::set<std::string_view> setVariablesNames;
 		for (auto &it: varList) {
+			if (setVariablesNames.count(it.second->name()) > 0) continue;
 			appendSetVariable(setVariables, it.second->name(), it.first);
+			setVariablesNames.insert(it.second->name());
 		}
 		pipeline.appendStageEnd(setVariables);
 	}
