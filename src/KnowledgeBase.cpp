@@ -397,6 +397,8 @@ bool KnowledgeBase::insertOne(const Triple &triple) {
 		triples.emplace_back(tripleCopy);
 		auto container = std::make_shared<ProxyTripleContainer>(triples);
 		observerManager_->insert(container);
+		// TODO: need to change frequency of EDB assertions here?
+		//vocabulary_->increaseFrequency(triple.predicate());
 		return true;
 	} else {
 		return false;
@@ -411,6 +413,7 @@ bool KnowledgeBase::insertAll(const TripleContainerPtr &triples) {
 			StorageInterface::Excluding,
 			{sourceBackend});
 	if (transaction->commit(triples)) {
+		// TODO: need to change frequency of EDB assertions here?
 		observerManager_->insert(triples);
 		return true;
 	} else {
@@ -431,6 +434,7 @@ bool KnowledgeBase::removeOne(const Triple &triple) {
 		triples.emplace_back(tripleCopy);
 		auto container = std::make_shared<ProxyTripleContainer>(triples);
 		observerManager_->remove(container);
+		// TODO: need to change frequency of EDB assertions here?
 		return true;
 	} else {
 		return false;
@@ -445,6 +449,7 @@ bool KnowledgeBase::removeAll(const TripleContainerPtr &triples) {
 			StorageInterface::Excluding,
 			{sourceBackend});
 	if (transaction->commit(triples)) {
+		// TODO: need to change frequency of EDB assertions here?
 		observerManager_->remove(triples);
 		return true;
 	} else {

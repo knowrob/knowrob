@@ -438,6 +438,7 @@ add_executable(all_gtests
         tests/KnowledgeBaseTest.cpp
         tests/StorageTest.cpp
         tests/py/test-module.cpp
+        tests/py/test-application.cpp
         tests/TokenBroadcasterTest.cpp
         tests/QueryTreeTest.cpp
         tests/DependencyGraphTest.cpp

@@ -1,0 +1,36 @@
+{
+  "logging": {
+    "console-sink": { "level": "debug" },
+    "file-sink": { "level": "debug" }
+  },
+  "semantic-web": {
+    "prefixes": [
+      { "alias": "lpn", "uri":  "http://knowrob.org/kb/lpn" }
+    ]
+  },
+  "data-sources": [
+    {
+      "path": "tests/owl/lpn.owl",
+      "format": "turtle"
+    }
+  ],
+  "data-backends": [
+    {
+      "name": "pl",
+      "type": "Prolog:rdf_db"
+    }
+  ],
+  "reasoner": [
+    {
+      "name": "pl",
+      "type": "Prolog",
+      "data-backend": "pl",
+      "imports": [
+        {
+          "path": "tests/prolog/lpn.pl",
+          "format": "prolog"
+        }
+      ]
+    }
+  ]
+}
