@@ -6,12 +6,12 @@
 
 using namespace knowrob;
 
-LPNReasoner::LPNReasoner(std::string_view pluginID) : RDFGoalReasoner() {
+LPNReasoner::LPNReasoner(std::string_view) : RDFGoalReasoner() {
     loves = IRIAtom::Tabled("http://knowrob.org/kb/lpn#loves");
     defineRelation(PredicateIndicator("http://knowrob.org/kb/lpn#jealous",2));
 }
 
-bool LPNReasoner::initializeReasoner(const PropertyTree& config) {
+bool LPNReasoner::initializeReasoner(const PropertyTree&) {
     // nothing to do here
     return true;
 }
