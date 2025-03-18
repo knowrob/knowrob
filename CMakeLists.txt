@@ -428,6 +428,9 @@ include(CPack)
 ########## Unit Testings
 ##############
 
+# add sub-directory for plugin libraries
+add_subdirectory(tests/plugins)
+
 # add an executable target for GTest.
 # but the testing code is partly in the *knowrob* library
 # where gtest won't find them without using the "--no-as-needed"

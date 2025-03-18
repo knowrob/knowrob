@@ -6,7 +6,7 @@
 namespace knowrob {
     class LPNReasoner : public RDFGoalReasoner {
     public:
-        LPNReasoner();
+        explicit LPNReasoner(std::string_view pluginID);
 
         bool initializeReasoner(const PropertyTree& config) override;
 
