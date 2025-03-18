@@ -169,7 +169,7 @@ namespace knowrob {
  * @param pluginName a plugin identifier, e.g. the name of the backend type.
  */
 #define KNOWROB_STORAGE_PLUGIN(classType, pluginName) extern "C" { \
-        std::shared_ptr<knowrob::DataBackend> knowrob_createPlugin(const std::string &pluginID) \
+        std::shared_ptr<knowrob::Storage> knowrob_createPlugin(const std::string &pluginID) \
             { return std::make_shared<classType>(); } \
         const char* knowrob_getPluginName() { return pluginName; } }
 
