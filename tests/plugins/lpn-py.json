@@ -24,7 +24,7 @@
     {
       "type": "LPNReasoner",
       "name": "lpn",
-      "module": "tests/py/lpn_reasoner.py",
+      "module": "tests/plugins/lpn_reasoner.py",
       "data-backend": "store"
     }
   ]
