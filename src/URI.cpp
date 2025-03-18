@@ -79,6 +79,7 @@ std::optional<std::string> URI::getHomePath(void) {
 std::string URI::resolve(const std::string_view &uriString) {
 	static std::filesystem::path projectPath(KNOWROB_SOURCE_DIR);
 	static std::filesystem::path installPath(KNOWROB_INSTALL_PREFIX);
+	static std::filesystem::path buildPath(KNOWROB_BUILD_DIR);
 	static std::optional<std::string> homePath(getHomePath());
 
 	std::filesystem::path filePath(uriString);
@@ -91,9 +92,11 @@ std::string URI::resolve(const std::string_view &uriString) {
 		if (homePath) {
 			possiblePaths.push_back(std::filesystem::path(homePath.value()) / ".knowrob" / filePath);
 		}
-		// lastly try loading from install directory
+		// try loading from install directory
 		possiblePaths.push_back(installPath / "share" / "knowrob" / filePath);
 		possiblePaths.push_back(installPath / "lib" / "knowrob" / filePath);
+		// lastly try loading from build directory
+		possiblePaths.push_back(buildPath / filePath);
 
 		for (const auto &p: possiblePaths) {
 			if (exists(p)) return p.u8string();
