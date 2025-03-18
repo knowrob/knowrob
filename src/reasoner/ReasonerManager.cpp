@@ -22,6 +22,7 @@ ReasonerManager::~ReasonerManager() {
 		// make sure reasoner does not interact with the manager anymore
 		x.second->value()->setReasonerManager(nullptr);
 	}
+	pluginPool_.clear();
 }
 
 void ReasonerManager::setReasonerStorage(const std::shared_ptr<NamedPlugin<Reasoner>> &plugin,
