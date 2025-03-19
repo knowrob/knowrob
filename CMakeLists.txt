@@ -418,7 +418,7 @@ set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
         set(CPACK_PACKAGE_DESCRIPTION ${PROJECT_DESCRIPTION})
         set(CPACK_PACKAGE_HOMEPAGE_URL ${PROJECT_WEBSITE})
         set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Daniel Beßler <danielb@uni-bremen.de>")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libboost-program-options-dev, libboost-serialization-dev, libboost-python-dev, libeigen3-dev, libmongoc-dev, libraptor2-dev, librdf0-dev, libspdlog-dev, libgtest-dev, libswipl-dev, python3-dev")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libboost-program-options-dev, libboost-serialization-dev, libboost-python-dev, libeigen3-dev, libmongoc-dev, libraptor2-dev, librdf0-dev, libspdlog-dev, libgtest-dev, swi-prolog, python3-dev")
 set(CPACK_DEBIAN_PACKAGE_SECTION "devel")
 set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
@@ -447,9 +447,14 @@ add_executable(all_gtests
         tests/py/test-jupyter.cpp
         tests/py/PythonTests.cpp)
 add_dependencies(all_gtests knowrob_py)
+
+# add sub-directory for plugin libraries
+add_subdirectory(tests/plugins)
+
 target_link_libraries(all_gtests
         -Wl,--whole-archive,--no-as-needed
         knowrob
         -Wl,--no-whole-archive
         ${Boost_Python_COMPONENT}
         ${GTEST_MAIN_LIBRARIES})
+
