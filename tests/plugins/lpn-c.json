@@ -1,0 +1,31 @@
+{
+  "logging": {
+    "console-sink": { "level": "debug" },
+    "file-sink": { "level": "debug" }
+  },
+  "semantic-web": {
+    "prefixes": [
+      { "alias": "lpn", "uri":  "http://knowrob.org/kb/lpn" }
+    ]
+  },
+  "data-sources": [
+    {
+      "path": "tests/owl/lpn.owl",
+      "format": "turtle"
+    }
+  ],
+  "data-backends": [
+    {
+      "type": "Redland",
+      "name": "store"
+    }
+  ],
+  "reasoner": [
+    {
+      "type": "LPNReasoner",
+      "name": "lpn",
+      "lib": "tests/plugins/liblpn_reasoner.so",
+      "data-backend": "store"
+    }
+  ]
+}

@@ -359,8 +359,16 @@ TEST_F(KnowledgeBaseTest, lpn_json) {
 	kb_ = nullptr;
 }
 
-TEST_F(KnowledgeBaseTest, python_lpn_json) {
-	kb_ = KnowledgeBase::create("tests/settings/python-lpn.json");
+TEST_F(KnowledgeBaseTest, lpn_py) {
+	kb_ = KnowledgeBase::create("tests/plugins/lpn-py.json");
+	EXPECT_ONLY_SOLUTION(
+			"lpn:jealous(lpn:vincent, X)",
+			Bindings({{varX_, iri("lpn","marsellus")}}))
+	kb_ = nullptr;
+}
+
+TEST_F(KnowledgeBaseTest, lpn_c) {
+	kb_ = KnowledgeBase::create("tests/plugins/lpn-c.json");
 	EXPECT_ONLY_SOLUTION(
 			"lpn:jealous(lpn:vincent, X)",
 			Bindings({{varX_, iri("lpn","marsellus")}}))

@@ -447,9 +447,14 @@ add_executable(all_gtests
         tests/py/test-jupyter.cpp
         tests/py/PythonTests.cpp)
 add_dependencies(all_gtests knowrob_py)
+
+# add sub-directory for plugin libraries
+add_subdirectory(tests/plugins)
+
 target_link_libraries(all_gtests
         -Wl,--whole-archive,--no-as-needed
         knowrob
         -Wl,--no-whole-archive
         ${Boost_Python_COMPONENT}
         ${GTEST_MAIN_LIBRARIES})
+
