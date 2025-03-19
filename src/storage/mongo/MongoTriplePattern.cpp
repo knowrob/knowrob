@@ -300,12 +300,35 @@ void MongoTriplePattern::setTripleVariables(Pipeline &pipeline,
 	if (!varList.empty()) {
 		auto setVariables = pipeline.appendStageBegin("$set");
 		std::set<std::string_view> setVariablesNames;
+		std::vector<std::pair<const char *, Variable *>> duplicates;
 		for (auto &it: varList) {
-			if (setVariablesNames.count(it.second->name()) > 0) continue;
+			if (setVariablesNames.count(it.second->name()) > 0) {
+				duplicates.push_back(it);
+				continue;
+			}
 			appendSetVariable(setVariables, it.second->name(), it.first);
 			setVariablesNames.insert(it.second->name());
 		}
 		pipeline.appendStageEnd(setVariables);
+
+		// handle duplicates: make sure that each variable value is equal to the computed value
+		// of the duplicate variable.
+		for (auto &it: duplicates) {
+			static const std::string varPrefix("$");
+			auto varValue = std::string("$") + MongoTerm::variableKey(it.second->name());
+
+			// append $match stage for each duplicate variable
+			bson_t exprDoc, matchArr;
+			auto matchStage = pipeline.appendStageBegin("$match"); {
+				BSON_APPEND_DOCUMENT_BEGIN(matchStage, "$expr", &exprDoc);
+				BSON_APPEND_ARRAY_BEGIN(&exprDoc, "$eq", &matchArr);
+				BSON_APPEND_UTF8(&matchArr, "0", varValue.c_str());
+				BSON_APPEND_UTF8(&matchArr, "1", it.first);
+				bson_append_array_end(&exprDoc, &matchArr);
+				bson_append_document_end(matchStage, &exprDoc);
+			}
+			pipeline.appendStageEnd(matchStage);
+		}
 	}
 }
 
