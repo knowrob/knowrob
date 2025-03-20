@@ -14,6 +14,12 @@ namespace knowrob {
 
     private:
         IRIAtomPtr loves;
+
+        bool evaluateJealous(const RDFGoalPtr &goal, const std::shared_ptr<TriplePattern> &triplePattern);
+
+        bool evaluatePos(const RDFGoalPtr &goal, const std::shared_ptr<TriplePattern> &triplePattern);
+
+        bool evaluateQuaternion(const RDFGoalPtr &goal, const std::shared_ptr<TriplePattern> &triplePattern);
     };
 } // knowrob
 
