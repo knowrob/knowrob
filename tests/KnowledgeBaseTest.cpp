@@ -375,6 +375,23 @@ TEST_F(KnowledgeBaseTest, lpn_c) {
 	kb_ = nullptr;
 }
 
+TEST_F(KnowledgeBaseTest, lpn_c_list_term) {
+	kb_ = KnowledgeBase::create("tests/plugins/lpn-c.json");
+	auto zero = XSDAtomic::create("0.0", xsdTypeToIRI(XSDType::DOUBLE));
+	auto posVal = std::make_shared<ListTerm>(std::vector<TermPtr>{zero, zero, zero});
+	auto quatVal = std::make_shared<ListTerm>(std::vector<TermPtr>{zero, zero, zero, zero});
+	EXPECT_ONLY_SOLUTION(
+			"lpn:pos(foo, X)",
+			Bindings({{varX_, posVal}}))
+	EXPECT_ONLY_SOLUTION(
+			"lpn:quaternion(foo, X)",
+			Bindings({{varX_, quatVal}}))
+	EXPECT_ONLY_SOLUTION(
+			"lpn:pos(foo, X) & lpn:quaternion(foo, Y)",
+			Bindings({{varX_, posVal}, {varY_, quatVal}}))
+	kb_ = nullptr;
+}
+
 TEST_F(KnowledgeBaseTest, mongolog_lpn_json) {
 	kb_ = KnowledgeBase::create("tests/settings/mongolog-lpn.json");
 	EXPECT_ONLY_SOLUTION(

@@ -104,12 +104,14 @@ std::shared_ptr<TokenStream::Channel> TokenStream::Channel::create(
 void TokenStream::Channel::close() {
 	// prevent channels from being closed while other channel operations are in progress.
 	// also avoid close being called multiple times at the same time.
-	std::lock_guard<std::shared_mutex> lock(mutex_);
+	std::unique_lock<std::shared_mutex> lock(mutex_);
 	if (isOpened()) {
 		isOpened_ = false;
 		if (stream_->isOpened()) {
-			stream_->push(*this, EndOfEvaluation::get());
+			auto s = stream_;
 			stream_ = {};
+			lock.unlock();
+			s->push(*this, EndOfEvaluation::get());
 		}
 	}
 }
@@ -121,13 +123,15 @@ uint32_t TokenStream::Channel::id() const {
 void TokenStream::Channel::push(const TokenPtr &tok) {
 	// prevent channels from being closed while push operations are in progress
 	// note: this is a shared lock, i.e., multiple push operations can be performed in parallel.
-	std::shared_lock<std::shared_mutex> lock(mutex_);
+	std::unique_lock<std::shared_mutex> lock(mutex_);
 	if (isOpened()) {
-		stream_->push(*this, tok);
+		auto s = stream_;
 		if (tok->indicatesEndOfEvaluation()) {
 			isOpened_ = false;
 			stream_ = {};
 		}
+		lock.unlock();
+		s->push(*this, tok);
 	} else if (!tok->indicatesEndOfEvaluation()) {
 		KB_WARN("message pushed to closed stream {}", reinterpret_cast<std::uintptr_t>(this));
 	}

@@ -46,15 +46,21 @@ void ConjunctiveBroadcaster::push(Channel &channel, const TokenPtr &tok) {
 			negativeAnswers_.emplace_back(std::static_pointer_cast<const AnswerNo>(answer));
 		}
 	} else {
-		if (tok->indicatesEndOfEvaluation() && !hasSolution_) {
-			if (negativeAnswers_.size() == 1) {
-				TokenBroadcaster::push(negativeAnswers_.front());
-			} else {
-				auto no = std::make_shared<AnswerNo>();
-				for (auto &x: negativeAnswers_) {
-					no->mergeWith(*x);
+		if (tok->indicatesEndOfEvaluation()) {
+			numClosedChannels_++;
+			if (numClosedChannels_ == channels_.size() && !hasSolution_) {
+				if (negativeAnswers_.size() == 1) {
+					TokenBroadcaster::push(negativeAnswers_.front());
+				} else {
+					auto no = std::make_shared<AnswerNo>();
+					for (auto &x: negativeAnswers_) {
+						no->mergeWith(*x);
+					}
+					TokenBroadcaster::push(no);
 				}
-				TokenBroadcaster::push(no);
+			} else {
+				// do not pass on the EOF token until all channels have finished
+				return;
 			}
 		}
 		// pass through non-answer messages

@@ -29,6 +29,7 @@ namespace knowrob {
 		std::mutex buffer_mutex_;
 		bool ignoreInconsistentAnswers_;
 		bool hasSolution_;
+		unsigned int numClosedChannels_ = 0;
 		std::vector<AnswerNoPtr> negativeAnswers_;
 
 		// Override TokenBroadcaster
