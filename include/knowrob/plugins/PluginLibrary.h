@@ -10,6 +10,7 @@
 #include <memory>
 #include <dlfcn.h>
 #include "knowrob/plugins/PluginFactory.h"
+#include "knowrob/Logger.h"
 
 namespace knowrob {
 	/**
@@ -55,6 +56,10 @@ namespace knowrob {
 		 */
 		bool loadDLL() {
 			handle_ = dlopen(dllPath_.c_str(), RTLD_LAZY);
+			// Throw the error if the library could not be loaded
+			if (!handle_) {
+				KB_ERROR("dlopen failed: {}", dlerror());
+			};
 			if (handle_ != nullptr) {
 				create_ = (std::shared_ptr<T> (*)()) dlsym(handle_, "knowrob_createPlugin");
 				get_name_ = (char *(*)()) dlsym(handle_, "knowrob_getPluginName");
