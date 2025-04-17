@@ -50,19 +50,37 @@ boost::property_tree::ptree InterfaceUtils::loadSettings() {
 }
 
 bool InterfaceUtils::assertStatements(const KnowledgeBasePtr &kb_, const std::vector<FormulaPtr> &args) {
-	std::vector<TriplePtr> data(args.size());
-	std::vector<TriplePatternPtr> buf(args.size());
-	uint32_t dataIndex = 0;
-
-	for (auto &phi: args) {
-		const QueryTree qt(phi);
-		if (qt.numPaths() > 1) {
+	// Create the query trees for each formula and calculate the number of nodes of type Predicate
+	// first create the list of query trees
+	std::vector<std::unique_ptr<QueryTree>> queryTrees;
+	for (auto &phi : args) {
+		auto qt = std::make_unique<QueryTree>(phi);
+		if (qt->numPaths() > 1) {
 			throw QueryError("Disjunctions are not allowed in assertions. "
 							 "Appears in statement {}.", *phi);
-		} else if (qt.numPaths() == 0) {
+		} else if (qt->numPaths() == 0) {
 			throw QueryError("Invalid assertion: '{}'", *phi);
 		}
-		for (auto &psi: qt.begin()->nodes()) {
+		queryTrees.push_back(std::move(qt));  // ✔️ move the unique_ptr
+	}
+	// create a counter for the number of nodes of type Predicate
+	int numPredicates = 0;
+	for (auto &qt: queryTrees) {
+		for (auto &psi: qt->begin()->nodes()) {
+			if (psi->type() == knowrob::FormulaType::PREDICATE) {
+				numPredicates += 1;
+			}
+		}
+	}
+	
+	// create a vector of TriplePtr and TriplePatternPtr
+	std::vector<TriplePtr> data(numPredicates);
+	std::vector<TriplePatternPtr> buf(numPredicates);
+	uint32_t dataIndex = 0;
+
+	// iterate over the query trees and create the TriplePattern objects
+	for (auto &qt: queryTrees) {
+		for (auto &psi: qt->begin()->nodes()) {
 			switch (psi->type()) {
 				case knowrob::FormulaType::PREDICATE:
 					buf[dataIndex] = std::make_shared<TriplePattern>(
@@ -73,10 +91,12 @@ bool InterfaceUtils::assertStatements(const KnowledgeBasePtr &kb_, const std::ve
 					dataIndex += 1;
 					break;
 				default:
-					throw QueryError("Invalid assertion: '{}'", *phi);
+					throw QueryError("Invalid assertion: '{}'", *psi);
 			}
 		}
 	}
+
+
 	if (kb_->insertAll(data)) {
 		std::cout << "success, " << dataIndex << " statement(s) were asserted." << "\n";
 		return true;
