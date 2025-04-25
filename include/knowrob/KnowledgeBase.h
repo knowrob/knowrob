@@ -206,6 +206,8 @@ namespace knowrob {
 
 		void initVocabulary();
 
+		void addToVocabulary(const TriplePtr &triple);
+
 		void initBackends();
 
 		void synchronizeBackends();
