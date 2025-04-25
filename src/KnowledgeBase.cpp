@@ -268,6 +268,9 @@ void KnowledgeBase::addToVocabulary(const TriplePtr &triple) {
 	else if (propertyAtom.get() == owl::inverseOf.get()) {
 		vocabulary_->setInverseOf(triple->subject(), triple->valueAsString());
 		vocabulary_->increaseFrequency(owl::inverseOf->stringForm());
+	} else {
+		vocabulary_->defineProperty(propertyAtom);
+		vocabulary_->increaseFrequency(propertyAtom->stringForm());
 	}
 	// TODO: need to add special handling for reified relations here?
 }
