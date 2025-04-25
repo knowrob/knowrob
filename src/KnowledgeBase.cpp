@@ -247,6 +247,34 @@ void KnowledgeBase::initVocabulary() {
 	}
 }
 
+void KnowledgeBase::addToVocabulary(const TriplePtr &triple) {
+	auto propertyAtom = IRIAtom::Tabled(triple->predicate());
+	// handle rdf:type assertions
+	if (propertyAtom.get() == rdf::type.get()) {
+		vocabulary_->addResourceType(triple->subject(), triple->valueAsString());
+		vocabulary_->increaseFrequency(rdf::type->stringForm());
+	}
+	// handle rdfs::subClassOf assertions
+	else if (propertyAtom.get() == rdfs::subClassOf.get()) {
+		vocabulary_->addSubClassOf(triple->subject(), triple->valueAsString(), triple->graph());
+		vocabulary_->increaseFrequency(rdfs::subClassOf->stringForm());
+	}
+	// handle rdfs::subPropertyOf assertions
+	else if (propertyAtom.get() == rdfs::subPropertyOf.get()) {
+		vocabulary_->addSubPropertyOf(triple->subject(), triple->valueAsString(), triple->graph());
+		vocabulary_->increaseFrequency(rdfs::subPropertyOf->stringForm());
+	}
+	// handle owl::inverseOf assertions
+	else if (propertyAtom.get() == owl::inverseOf.get()) {
+		vocabulary_->setInverseOf(triple->subject(), triple->valueAsString());
+		vocabulary_->increaseFrequency(owl::inverseOf->stringForm());
+	} else {
+		vocabulary_->defineProperty(propertyAtom);
+		vocabulary_->increaseFrequency(propertyAtom->stringForm());
+	}
+	// TODO: need to add special handling for reified relations here?
+}
+
 void KnowledgeBase::configure(const boost::property_tree::ptree &config) {
 	configurePrefixes(config);
 	// initialize data backends from configuration
@@ -411,6 +439,10 @@ bool KnowledgeBase::insertAll(const TripleContainerPtr &triples) {
 			StorageInterface::Excluding,
 			{sourceBackend});
 	if (transaction->commit(triples)) {
+		// update the vocabulary with the new triples
+		for (auto &triple: *triples) {
+			addToVocabulary(triple);
+		}
 		observerManager_->insert(triples);
 		return true;
 	} else {
