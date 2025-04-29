@@ -46,20 +46,31 @@ find_package(spdlog REQUIRED)
 set(Python3_EXECUTABLE "/usr/bin/python" CACHE FILEPATH "Path to specific Python3 executable")
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 execute_process(
-    COMMAND python3-config --extension-suffix
+    COMMAND python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}-config --extension-suffix
     OUTPUT_VARIABLE PYTHON3_SUFFIX
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
 # Construct Boost Python component name based on Python version
-set(Boost_Python_VERSION "python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}" CACHE FILEPATH "Boost Python version")
+set(Boost_Python_VERSION "python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")
 set(Boost_Python_COMPONENT "Boost::${Boost_Python_VERSION}")
 message(STATUS "Using Boost Python component: ${Boost_Python_COMPONENT}")
 
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization ${Boost_Python_VERSION})
+
+if(DEFINED Boost_ROOT AND Boost_ROOT)
+	# Enable Boost_ROOT usage properly
+	if(POLICY CMP0074)
+		cmake_policy(SET CMP0074 NEW)
+	endif()
+	# Set CMake's internal Boost root hint
+	message(STATUS "Using user-defined Boost_ROOT: ${Boost_ROOT}")
+	find_package(Boost REQUIRED COMPONENTS program_options serialization ${Boost_Python_VERSION})
+else()
+  	find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization ${Boost_Python_VERSION})
+endif()
 
 enable_testing()
 find_package(GTest REQUIRED)
@@ -311,15 +322,11 @@ set(KNOWROB_LIBRARIES
         ${GTEST_LIBRARIES})
 target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
 # install shared library and headers
+install(TARGETS knowrob
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/knowrob)
 install(FILES $<TARGET_FILE:knowrob>
         DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
         RENAME libknowrob${PYTHON3_SUFFIX})
-        install(CODE "
-        execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
-            libknowrob${PYTHON3_SUFFIX}
-            \$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libknowrob.so
-        )
-        message(STATUS \"Created symlink libknowrob.so → libknowrob${PYTHON3_SUFFIX}\")")
 install(DIRECTORY include/knowrob
         DESTINATION include)
 # Install Python and Prolog files into the share directory such that they can be loaded at runtime.
