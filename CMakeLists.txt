@@ -156,6 +156,7 @@ set(knowrob_INCLUDE_DIRS
         ${REDLAND_INCLUDE_DIRS})
 include_directories(${knowrob_INCLUDE_DIRS})
 
+option(KNOWROB_USE_SUFFIX "Append fixed suffix to KnowRob module name" OFF)
 add_library(knowrob SHARED
         src/knowrob.cpp
         src/ThreadPool.cpp
@@ -325,15 +326,12 @@ set(KNOWROB_LIBRARIES
 target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
 # install shared library and headers
 
-option(KNOWROB_USE_SUFFIX "Append fixed suffix to KnowRob module name" OFF)
 if(KNOWROB_USE_SUFFIX)
-	install(FILES $<TARGET_FILE:knowrob>
-			DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-			RENAME libknowrob${PYTHON3_SUFFIX})
-else()
-	install(TARGETS knowrob
-			PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/knowrob)
+	message(STATUS "Installing knowrob with suffix ${PYTHON3_SUFFIX}")
+	set_target_properties(knowrob PROPERTIES OUTPUT_NAME "knowrob${PYTHON3_SUFFIX}")
 endif()
+install(TARGETS knowrob
+		PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/knowrob)
 
 install(DIRECTORY include/knowrob
         DESTINATION include)
