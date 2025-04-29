@@ -328,7 +328,8 @@ target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
 
 if(KNOWROB_USE_SUFFIX)
 	message(STATUS "Installing knowrob with suffix ${PYTHON3_SUFFIX}")
-	set_target_properties(knowrob PROPERTIES OUTPUT_NAME "knowrob${PYTHON3_SUFFIX}")
+	string(REPLACE ".so" "" PYTHON3_SUFFIX_BASE "${PYTHON3_SUFFIX}")
+	set_target_properties(knowrob PROPERTIES OUTPUT_NAME "knowrob${PYTHON3_SUFFIX_BASE}")
 endif()
 install(TARGETS knowrob
 		PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/knowrob)
