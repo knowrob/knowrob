@@ -324,11 +324,17 @@ set(KNOWROB_LIBRARIES
         ${GTEST_LIBRARIES})
 target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
 # install shared library and headers
-install(TARGETS knowrob
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/knowrob)
-install(FILES $<TARGET_FILE:knowrob>
-        DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-        RENAME libknowrob${PYTHON3_SUFFIX})
+
+option(KNOWROB_USE_SUFFIX "Append fixed suffix to KnowRob module name" OFF)
+if(KNOWROB_USE_SUFFIX)
+	install(FILES $<TARGET_FILE:knowrob>
+			DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+			RENAME libknowrob${PYTHON3_SUFFIX})
+else()
+	install(TARGETS knowrob
+			PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/knowrob)
+endif()
+
 install(DIRECTORY include/knowrob
         DESTINATION include)
 # Install Python and Prolog files into the share directory such that they can be loaded at runtime.
