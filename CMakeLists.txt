@@ -45,6 +45,8 @@ find_package(PkgConfig REQUIRED)
 find_package(spdlog REQUIRED)
 set(Python3_EXECUTABLE "/usr/bin/python" CACHE FILEPATH "Path to specific Python3 executable")
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+message(STATUS "Found Python3 include: ${Python3_INCLUDE_DIRS}")
+message(STATUS "Found Python3 libraries: ${Python3_LIBRARIES}")
 execute_process(
     COMMAND python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}-config --extension-suffix
     OUTPUT_VARIABLE PYTHON3_SUFFIX
@@ -132,7 +134,7 @@ if (CATKIN)
         catkin_package(
                 INCLUDE_DIRS include
                 LIBRARIES knowrob
-                DEPENDS Boost -lswipl MONGOC RAPTOR REDLAND spdlog Python GTest EIGEN3
+                DEPENDS Boost -lswipl MONGOC RAPTOR REDLAND spdlog Python3 GTest EIGEN3
         )
     else ()
         message(STATUS "No catkin workspace found.")
