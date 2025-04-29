@@ -43,10 +43,16 @@ include("cmake/ontologies.cmake")
 find_package(Eigen3 REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(spdlog REQUIRED)
-find_package(Python COMPONENTS Interpreter Development)
+set(Python3_EXECUTABLE "/usr/bin/python" CACHE FILEPATH "Path to specific Python3 executable")
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+execute_process(
+    COMMAND python3-config --extension-suffix
+    OUTPUT_VARIABLE PYTHON3_SUFFIX
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 
 # Construct Boost Python component name based on Python version
-set(Boost_Python_VERSION "python${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
+set(Boost_Python_VERSION "python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}" CACHE FILEPATH "Boost Python version")
 set(Boost_Python_COMPONENT "Boost::${Boost_Python_VERSION}")
 message(STATUS "Using Boost Python component: ${Boost_Python_COMPONENT}")
 
@@ -131,7 +137,7 @@ set(knowrob_INCLUDE_DIRS
         ${SWIPL_INCLUDE_DIRS}
         ${EIGEN3_INCLUDE_DIR}
         ${Boost_INCLUDE_DIRS}
-        ${Python_INCLUDE_DIRS}
+        ${Python3_INCLUDE_DIRS}
         ${MONGOC_INCLUDE_DIRS}
         ${RAPTOR_INCLUDE_DIRS}
         ${REDLAND_INCLUDE_DIRS})
@@ -300,13 +306,20 @@ set(KNOWROB_LIBRARIES
         ${MONGOC_LIBRARIES}
         ${RAPTOR_LIBRARIES}
         ${REDLAND_LIBRARIES}
-        ${Python_LIBRARIES}
+        ${Python3_LIBRARIES}
         spdlog::spdlog
         ${GTEST_LIBRARIES})
 target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
 # install shared library and headers
-install(TARGETS knowrob
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/knowrob)
+install(FILES $<TARGET_FILE:knowrob>
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+        RENAME libknowrob${PYTHON3_SUFFIX})
+        install(CODE "
+        execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
+            libknowrob${PYTHON3_SUFFIX}
+            \$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libknowrob.so
+        )
+        message(STATUS \"Created symlink libknowrob.so → libknowrob${PYTHON3_SUFFIX}\")")
 install(DIRECTORY include/knowrob
         DESTINATION include)
 # Install Python and Prolog files into the share directory such that they can be loaded at runtime.
@@ -350,7 +363,7 @@ target_include_directories(knowrob_py PRIVATE
         ${SWIPL_INCLUDE_DIRS}
         ${EIGEN3_INCLUDE_DIR}
         ${Boost_INCLUDE_DIRS}
-        ${PYTHON_INCLUDE_DIRS})
+        ${PYTHON3_INCLUDE_DIRS})
 target_link_libraries(knowrob_py PRIVATE
         ${KNOWROB_LIBRARIES}
         Boost::program_options
@@ -382,7 +395,8 @@ else ()
 endif()
 # install the Python module into the site-packages directory
 install(FILES ${CMAKE_BINARY_DIR}/knowrob.so
-        DESTINATION lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/${PYTHON_MODULE_LIBDIR})
+        DESTINATION lib/python/${PYTHON_MODULE_LIBDIR}
+        RENAME knowrob${PYTHON3_SUFFIX})
 
 ##############
 ########## Doxygen
