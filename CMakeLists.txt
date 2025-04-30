@@ -48,7 +48,7 @@ find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 message(STATUS "Found Python3 include: ${Python3_INCLUDE_DIRS}")
 message(STATUS "Found Python3 libraries: ${Python3_LIBRARIES}")
 execute_process(
-    COMMAND python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}-config --extension-suffix
+    COMMAND ${Python3_EXECUTABLE}-config --extension-suffix
     OUTPUT_VARIABLE PYTHON3_SUFFIX
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
@@ -134,7 +134,7 @@ if (CATKIN)
         catkin_package(
                 INCLUDE_DIRS include
                 LIBRARIES knowrob
-                DEPENDS Boost -lswipl MONGOC RAPTOR REDLAND spdlog Python3 GTest EIGEN3
+                DEPENDS Boost -lswipl MONGOC RAPTOR2 REDLAND spdlog Python3 GTest EIGEN3
         )
     else ()
         message(STATUS "No catkin workspace found.")
@@ -152,12 +152,13 @@ set(knowrob_INCLUDE_DIRS
         ${Boost_INCLUDE_DIRS}
         ${Python3_INCLUDE_DIRS}
         ${MONGOC_INCLUDE_DIRS}
-        ${RAPTOR_INCLUDE_DIRS}
+        ${RAPTOR2_INCLUDE_DIRS}
         ${REDLAND_INCLUDE_DIRS})
 include_directories(${knowrob_INCLUDE_DIRS})
 
 option(KNOWROB_USE_SUFFIX "Append fixed suffix to KnowRob module name" OFF)
-add_library(knowrob SHARED
+set(KNOWROB_LIBRARY_TYPE STATIC CACHE STRING "Library type")
+add_library(knowrob ${KNOWROB_LIBRARY_TYPE}
         src/knowrob.cpp
         src/ThreadPool.cpp
         src/Logger.cpp
@@ -315,15 +316,34 @@ add_library(knowrob SHARED
         src/storage/ObserverManager.cpp
         src/storage/ObserverJob.cpp
         src/queries/parsers/graph.cpp)
-set(KNOWROB_LIBRARIES
-        ${SWIPL_LIBRARIES}
-        ${MONGOC_LIBRARIES}
-        ${RAPTOR_LIBRARIES}
-        ${REDLAND_LIBRARIES}
-        ${Python3_LIBRARIES}
-        spdlog::spdlog
-        ${GTEST_LIBRARIES})
+if(KNOWROB_LIBRARY_TYPE STREQUAL "SHARED")
+        set(KNOWROB_LIBRARIES
+                ${SWIPL_LIBRARIES}
+                ${MONGOC_LIBRARIES}
+                ${RAPTOR2_LIBRARIES}
+                ${REDLAND_LIBRARIES}
+                ${Python3_LIBRARIES}
+                spdlog::spdlog
+                ${GTEST_LIBRARIES})
+else()
+        set(KNOWROB_LIBRARIES
+                ${SWIPL_LIBRARIES}.a
+                ${MONGOC_LIBRARIES}
+                ${RAPTOR2_LIBRARIES}.a
+                curl
+                xslt
+                xml2
+                yajl
+                ${REDLAND_LIBRARIES}.a
+                ltdl
+                rasqal
+                ${Python3_LIBRARIES}
+                spdlog::spdlog
+                ${GTEST_LIBRARIES}
+                dl)
+endif()
 target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
+target_compile_options(knowrob PRIVATE -fPIC)
 # install shared library and headers
 
 if(KNOWROB_USE_SUFFIX)
