@@ -78,10 +78,10 @@ enable_testing()
 find_package(GTest REQUIRED)
 
 pkg_check_modules(SWIPL REQUIRED swipl)
-pkg_check_modules(RAPTOR REQUIRED raptor2)
+pkg_check_modules(RAPTOR2 REQUIRED raptor2)
 pkg_check_modules(REDLAND REQUIRED redland)
 
-link_directories(${SWIPL_LIBRARY_DIRS})
+link_directories(${SWIPL_LIBRARY_DIRS} ${RAPTOR2_LIBRARY_DIRS} ${REDLAND_LIBRARY_DIRS})
 
 # install ontologies hosted on http servers.
 # copy them into the workspace such the we can load them
