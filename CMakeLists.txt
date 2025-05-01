@@ -14,6 +14,8 @@ if (NOT PYTHON_MODULE_LIBDIR)
     set(PYTHON_MODULE_LIBDIR "dist-packages")
 endif ()
 
+option(KNOWROB_USE_STATIC_LIB "Link against static libraries" OFF)
+
 # Read version from the package.xml file.
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/package.xml package_xml_str)
 if(NOT package_xml_str MATCHES "<version>([0-9]+.[0-9]+.[0-9]+)</version>")
@@ -82,7 +84,6 @@ pkg_check_modules(RAPTOR2 REQUIRED raptor2)
 pkg_check_modules(REDLAND REQUIRED redland)
 
 link_directories(${SWIPL_LIBRARY_DIRS} ${RAPTOR2_LIBRARY_DIRS} ${REDLAND_LIBRARY_DIRS})
-
 # install ontologies hosted on http servers.
 # copy them into the workspace such the we can load them
 # from a local source at runtime.
@@ -157,7 +158,11 @@ set(knowrob_INCLUDE_DIRS
 include_directories(${knowrob_INCLUDE_DIRS})
 
 option(KNOWROB_USE_SUFFIX "Append fixed suffix to KnowRob module name" OFF)
-set(KNOWROB_LIBRARY_TYPE STATIC CACHE STRING "Library type")
+if(KNOWROB_USE_STATIC_LIB)
+    set(KNOWROB_LIBRARY_TYPE "STATIC")
+else()
+    set(KNOWROB_LIBRARY_TYPE "SHARED")
+endif()
 add_library(knowrob ${KNOWROB_LIBRARY_TYPE}
         src/knowrob.cpp
         src/ThreadPool.cpp
@@ -316,7 +321,7 @@ add_library(knowrob ${KNOWROB_LIBRARY_TYPE}
         src/storage/ObserverManager.cpp
         src/storage/ObserverJob.cpp
         src/queries/parsers/graph.cpp)
-if(KNOWROB_LIBRARY_TYPE STREQUAL "SHARED")
+if (NOT KNOWROB_USE_STATIC_LIB)
         set(KNOWROB_LIBRARIES
                 ${SWIPL_LIBRARIES}
                 ${MONGOC_LIBRARIES}
@@ -326,29 +331,45 @@ if(KNOWROB_LIBRARY_TYPE STREQUAL "SHARED")
                 spdlog::spdlog
                 ${GTEST_LIBRARIES})
 else()
+        pkg_check_modules(SPDLOG REQUIRED spdlog)
+        pkg_check_modules(GMP REQUIRED gmp)
+        pkg_check_modules(XSLT REQUIRED libxslt)
+        pkg_check_modules(YAJL REQUIRED yajl)
+        pkg_check_modules(RASQAL REQUIRED rasqal)
+        pkg_check_modules(XML2 REQUIRED libxml-2.0)
+        pkg_check_modules(LZMA REQUIRED liblzma)
+        pkg_check_modules(UUID REQUIRED uuid)
+        link_directories(${SPDLOG_LIBRARY_DIRS} ${GMP_LIBRARY_DIRS} ${XSLT_LIBRARY_DIRS} ${YAJL_LIBRARY_DIRS} ${RASQAL_LIBRARY_DIRS} ${XML2_LIBRARY_DIRS} ${LZMA_LIBRARY_DIRS} ${UUID_LIBRARY_DIRS})
         set(KNOWROB_LIBRARIES
-                ${SWIPL_LIBRARIES}.a
+                ${SWIPL_STATIC_LIBRARIES}
                 ${MONGOC_LIBRARIES}
-                ${RAPTOR2_LIBRARIES}.a
-                curl
-                xslt
-                xml2
-                yajl
-                ${REDLAND_LIBRARIES}.a
-                ltdl
-                rasqal
+                ${RAPTOR2_STATIC_LIBRARIES}
+                ${REDLAND_STATIC_LIBRARIES}
+                ${SPDLOG_STATIC_LIBRARIES}
                 ${Python3_LIBRARIES}
-                spdlog::spdlog
                 ${GTEST_LIBRARIES}
-                dl)
+                ${GMP_STATIC_LIBRARIES}
+                ${XSLT_STATIC_LIBRARIES}
+                ${YAJL_STATIC_LIBRARIES}
+                ${RASQAL_STATIC_LIBRARIES}
+                ltdl.a
+                ${XML2_STATIC_LIBRARIES}
+                ${LZMA_STATIC_LIBRARIES}
+                ${UUID_STATIC_LIBRARIES}
+                curl
+                dl
+                z
+                tinfo
+                pcre
+                fmt)
 endif()
 target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
 target_compile_options(knowrob PRIVATE -fPIC)
 # install shared library and headers
 
 if(KNOWROB_USE_SUFFIX)
-	message(STATUS "Installing knowrob with suffix ${PYTHON3_SUFFIX}")
 	string(REPLACE ".so" "" PYTHON3_SUFFIX_BASE "${PYTHON3_SUFFIX}")
+        message(STATUS "Installing knowrob with suffix ${PYTHON3_SUFFIX_BASE}")
 	set_target_properties(knowrob PROPERTIES OUTPUT_NAME "knowrob${PYTHON3_SUFFIX_BASE}")
 endif()
 install(TARGETS knowrob
