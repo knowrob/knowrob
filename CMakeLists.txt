@@ -129,14 +129,6 @@ if(${KNOWROB_USE_STATIC_LIB})
 	list(GET MONGOC_INCLUDE_DIRS 0 MONGOC_DIR)
 	list(GET MONGOC_INCLUDE_DIRS 1 BSON2_DIR)
 	set(MONGOC_INCLUDE_DIRS "${MONGOC_DIR};${MONGOC_DIR}/mongoc;${BSON2_DIR};${BSON2_DIR}/bson")
-	message(WARNING "WILL NOT USE THIS MONGOC_STATIC_LIBRARIES (before pkg-config): ${MONGOC_STATIC_LIBRARIES}!!!...")
-	execute_process(
-		COMMAND pkg-config --libs mongoc2-static
-		OUTPUT_VARIABLE MONGOC_STATIC_LIBRARIES
-		OUTPUT_STRIP_TRAILING_WHITESPACE
-	)
-	separate_arguments(MONGOC_STATIC_LIBRARIES)
-	message(WARNING "INSTEAD, USE THIS MONGOC_STATIC_LIBRARIES (from pkg-config): ${MONGOC_STATIC_LIBRARIES}")
 else()
 	pkg_check_modules(MONGOC REQUIRED libmongoc-1.0)
 endif()
@@ -171,7 +163,6 @@ endif()
 # #############
 # ### SHARED LIBRARY
 # #############
-message(STATUS ${MONGOC_INCLUDE_DIR})
 set(knowrob_INCLUDE_DIRS
 	include
 	${SWIPL_INCLUDE_DIRS}
@@ -360,31 +351,42 @@ if(NOT KNOWROB_USE_STATIC_LIB)
 		spdlog::spdlog
 		${GTEST_LIBRARIES})
 else()
+	pkg_check_modules(RAPTOR2 REQUIRED raptor2)
 	pkg_check_modules(SPDLOG REQUIRED spdlog)
+	pkg_check_modules(CURL REQUIRED libcurl)
 	pkg_check_modules(GMP REQUIRED gmp)
-	pkg_check_modules(XSLT REQUIRED libxslt)
 	pkg_check_modules(YAJL REQUIRED yajl)
 	pkg_check_modules(RASQAL REQUIRED rasqal)
-	pkg_check_modules(XML2 REQUIRED libxml-2.0)
-	pkg_check_modules(LZMA REQUIRED liblzma)
-	pkg_check_modules(UUID REQUIRED uuid)
-	link_directories(${SPDLOG_LIBRARY_DIRS} ${GMP_LIBRARY_DIRS} ${XSLT_LIBRARY_DIRS} ${YAJL_LIBRARY_DIRS} ${RASQAL_LIBRARY_DIRS} ${XML2_LIBRARY_DIRS} ${LZMA_LIBRARY_DIRS} ${UUID_LIBRARY_DIRS})
+	link_directories(${RAPTOR2_LIBRARY_DIRS} ${SPDLOG_LIBRARY_DIRS} ${CURL_LIBRARY_DIRS} ${GMP_LIBRARY_DIRS} ${YAJL_LIBRARY_DIRS} ${RASQAL_LIBRARY_DIRS})
 	set(KNOWROB_LIBRARIES
 		${SWIPL_STATIC_LIBRARIES}
-		${MONGOC_STATIC_LIBRARIES}
-		${RAPTOR2_STATIC_LIBRARIES}
-		${REDLAND_STATIC_LIBRARIES}
-		${SPDLOG_STATIC_LIBRARIES}
-		${GMP_STATIC_LIBRARIES}
-		${YAJL_STATIC_LIBRARIES}
+		${MONGOC_DIR}/../../lib/libmongoc2.a
+		libraptor2.a
+		librdf.a
+		libspdlog.a
+		libcurl.a
+		libcrypto.a
+		libssl.a
+		${MONGOC_DIR}/../../lib/libbson2.a
+		librasqal.a
+		gmp.a
+		yajl_s.a
 		${Python3_LIBRARIES}
 		${GTEST_LIBRARIES}
+		resolv
+		zstd
 		ltdl
 		tinfo
-		fmt)
-	message(STATUS "Using static libraries: ${KNOWROB_LIBRARIES}")
+		fmt
+		dl
+		pcre
+		uuid
+		xml2
+		z
+		lzma
+		xslt)
 endif()
-
+set(OpenSSL_LIBRARIES "")  # Unset to avoid leakage
 target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
 target_compile_options(knowrob PRIVATE -fPIC)
 
