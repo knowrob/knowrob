@@ -113,10 +113,24 @@ add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 add_definitions(-DFMT_DEPRECATED_OSTREAM=1)
 
 ##############
-#### MONGO DB
-##############
 
-pkg_check_modules(MONGOC REQUIRED libmongoc-1.0)
+if (${KNOWROB_USE_STATIC_LIB})
+	pkg_check_modules(BSON2 REQUIRED bson2-static)
+	pkg_check_modules(MONGOC REQUIRED mongoc2-static)
+	list(GET MONGOC_INCLUDE_DIRS 0 MONGOC_DIR)
+	list(GET MONGOC_INCLUDE_DIRS 1 BSON2_DIR)
+	set(MONGOC_INCLUDE_DIRS "${MONGOC_DIR};${MONGOC_DIR}/mongoc;${BSON2_DIR};${BSON2_DIR}/bson")
+	message(WARNING "WILL NOT USE THIS MONGOC_STATIC_LIBRARIES (before pkg-config): ${MONGOC_STATIC_LIBRARIES}!!!...")
+	execute_process(
+		COMMAND pkg-config --libs mongoc2-static
+		OUTPUT_VARIABLE MONGOC_STATIC_LIBRARIES
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+	separate_arguments(MONGOC_STATIC_LIBRARIES)
+	message(WARNING "INSTEAD, USE THIS MONGOC_STATIC_LIBRARIES (from pkg-config): ${MONGOC_STATIC_LIBRARIES}")
+else()
+	pkg_check_modules(MONGOC REQUIRED libmongoc-1.0)
+endif()
 # find_package(libmongoc-1.0 1.7 REQUIRED)
 link_directories(${MONGOC_LIBRARY_DIRS})
 
@@ -145,7 +159,7 @@ endif ()
 ##############
 #### SHARED LIBRARY
 ##############
-
+message(STATUS ${MONGOC_INCLUDE_DIR})
 set(knowrob_INCLUDE_DIRS
         include
         ${SWIPL_INCLUDE_DIRS}
@@ -340,28 +354,20 @@ else()
         pkg_check_modules(LZMA REQUIRED liblzma)
         pkg_check_modules(UUID REQUIRED uuid)
         link_directories(${SPDLOG_LIBRARY_DIRS} ${GMP_LIBRARY_DIRS} ${XSLT_LIBRARY_DIRS} ${YAJL_LIBRARY_DIRS} ${RASQAL_LIBRARY_DIRS} ${XML2_LIBRARY_DIRS} ${LZMA_LIBRARY_DIRS} ${UUID_LIBRARY_DIRS})
-        set(KNOWROB_LIBRARIES
+		set(KNOWROB_LIBRARIES
                 ${SWIPL_STATIC_LIBRARIES}
-                ${MONGOC_LIBRARIES}
+                ${MONGOC_STATIC_LIBRARIES}
                 ${RAPTOR2_STATIC_LIBRARIES}
                 ${REDLAND_STATIC_LIBRARIES}
                 ${SPDLOG_STATIC_LIBRARIES}
+                ${GMP_STATIC_LIBRARIES}
+                ${YAJL_STATIC_LIBRARIES}
                 ${Python3_LIBRARIES}
                 ${GTEST_LIBRARIES}
-                ${GMP_STATIC_LIBRARIES}
-                ${XSLT_STATIC_LIBRARIES}
-                ${YAJL_STATIC_LIBRARIES}
-                ${RASQAL_STATIC_LIBRARIES}
-                ltdl.a
-                ${XML2_STATIC_LIBRARIES}
-                ${LZMA_STATIC_LIBRARIES}
-                ${UUID_STATIC_LIBRARIES}
-                curl
-                dl
-                z
+				ltdl
                 tinfo
-                pcre
                 fmt)
+		message(STATUS "Using static libraries: ${KNOWROB_LIBRARIES}")
 endif()
 target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
 target_compile_options(knowrob PRIVATE -fPIC)
@@ -520,6 +526,9 @@ add_dependencies(all_gtests knowrob_py)
 # add sub-directory for plugin libraries
 add_subdirectory(tests/plugins)
 
+if (KNOWROB_USE_STATIC_LIB)
+	set(GTEST_MAIN_LIBRARIES "${GTEST_MAIN_LIBRARIES};${MONGOC_STATIC_LIBRARIES}")
+endif()
 target_link_libraries(all_gtests
         -Wl,--whole-archive,--no-as-needed
         knowrob
