@@ -357,20 +357,21 @@ else()
 	pkg_check_modules(GMP REQUIRED gmp)
 	pkg_check_modules(YAJL REQUIRED yajl)
 	pkg_check_modules(RASQAL REQUIRED rasqal)
-	link_directories(${RAPTOR2_LIBRARY_DIRS} ${SPDLOG_LIBRARY_DIRS} ${CURL_LIBRARY_DIRS} ${GMP_LIBRARY_DIRS} ${YAJL_LIBRARY_DIRS} ${RASQAL_LIBRARY_DIRS})
+	link_directories(${MONGOC_DIR}/../../lib/ ${RAPTOR2_LIBRARY_DIRS} ${SPDLOG_LIBRARY_DIRS} ${CURL_LIBRARY_DIRS} ${GMP_LIBRARY_DIRS} ${YAJL_LIBRARY_DIRS} ${RASQAL_LIBRARY_DIRS})
 	set(KNOWROB_LIBRARIES
 		${SWIPL_STATIC_LIBRARIES}
-		${MONGOC_DIR}/../../lib/libmongoc2.a
+		libmongoc2.a
+		libbson2.a
 		libraptor2.a
 		librdf.a
 		libspdlog.a
 		libcurl.a
-		libcrypto.a
 		libssl.a
-		${MONGOC_DIR}/../../lib/libbson2.a
+		libcrypto.a
 		librasqal.a
 		gmp.a
 		yajl_s.a
+		uuid.a
 		${Python3_LIBRARIES}
 		${GTEST_LIBRARIES}
 		resolv
@@ -380,11 +381,12 @@ else()
 		fmt
 		dl
 		pcre
-		uuid
 		xml2
 		z
 		lzma
-		xslt)
+		xslt
+		ldap
+		lber)
 endif()
 set(OpenSSL_LIBRARIES "")  # Unset to avoid leakage
 target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
