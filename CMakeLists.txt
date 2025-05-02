@@ -362,7 +362,23 @@ else()
 	pkg_check_modules(GMP REQUIRED gmp)
 	pkg_check_modules(YAJL REQUIRED yajl)
 	pkg_check_modules(UUID REQUIRED uuid)
-	link_directories(${MONGOC_DIR}/../../lib/ ${XSLT_LIBRARY_DIRS} ${RASQAL_LIBRARY_DIRS} ${XML2_LIBRARY_DIRS} ${SPDLOG_LIBRARY_DIRS} ${SSL_LIBRARY_DIRS} ${CURL_LIBRARY_DIRS} ${CRYPTO_LIBRARY_DIRS} ${GMP_LIBRARY_DIRS} ${YAJL_LIBRARY_DIRS} ${UUID_LIBRARY_DIRS})
+	pkg_check_modules(LDAP REQUIRED ldap)
+	pkg_check_modules(LBER REQUIRED lber)
+	pkg_check_modules(PCRE REQUIRED libpcre)
+	link_directories(${MONGOC_DIR}/../../lib/
+		${XSLT_LIBRARY_DIRS}
+		${RASQAL_LIBRARY_DIRS}
+		${XML2_LIBRARY_DIRS}
+		${SPDLOG_LIBRARY_DIRS}
+		${SSL_LIBRARY_DIRS}
+		${CURL_LIBRARY_DIRS}
+		${CRYPTO_LIBRARY_DIRS}
+		${GMP_LIBRARY_DIRS}
+		${YAJL_LIBRARY_DIRS}
+		${UUID_LIBRARY_DIRS}
+		${LDAP_LIBRARY_DIRS}
+		${LBER_LIBRARY_DIRS}
+		${PCRE_LIBRARY_DIRS})
 	set(KNOWROB_LIBRARIES
 		libraptor2.a
 		librdf.a
@@ -381,6 +397,9 @@ else()
 		libgmp.a
 		libyajl_s.a
 		libuuid.a
+		libldap.a
+		liblber.a
+		libpcre.a
 		${Python3_LIBRARIES}
 		${GTEST_LIBRARIES}
 		resolv
@@ -389,12 +408,12 @@ else()
 		tinfo
 		fmt
 		dl
-		pcre
 		z
 		rt)
-	message(STATUS "Using static libraries: ${KNOWROB_LIBRARIES}")
+	message(STATUS "KnowRob uses libraries: ${KNOWROB_LIBRARIES}")
 endif()
-set(OpenSSL_LIBRARIES "")  # Unset to avoid leakage
+
+set(OpenSSL_LIBRARIES "") # Unset to avoid leakage
 target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
 target_compile_options(knowrob PRIVATE -fPIC)
 
@@ -557,13 +576,10 @@ add_dependencies(all_gtests knowrob_py)
 # add sub-directory for plugin libraries
 add_subdirectory(tests/plugins)
 
-if(KNOWROB_USE_STATIC_LIB)
-	set(GTEST_MAIN_LIBRARIES "${GTEST_MAIN_LIBRARIES};${MONGOC_STATIC_LIBRARIES}")
-endif()
-
 target_link_libraries(all_gtests
 	-Wl,--whole-archive,--no-as-needed
 	knowrob
+	libswipl.so # Gtest needs this to find the Prolog engine
 	-Wl,--no-whole-archive
 	${Boost_Python_COMPONENT}
 	${GTEST_MAIN_LIBRARIES})
