@@ -352,26 +352,35 @@ if(NOT KNOWROB_USE_STATIC_LIB)
 		${GTEST_LIBRARIES})
 else()
 	pkg_check_modules(RAPTOR2 REQUIRED raptor2)
+	pkg_check_modules(XSLT REQUIRED libxslt)
+	pkg_check_modules(RASQAL REQUIRED rasqal)
+	pkg_check_modules(XML2 REQUIRED libxml-2.0)
 	pkg_check_modules(SPDLOG REQUIRED spdlog)
 	pkg_check_modules(CURL REQUIRED libcurl)
+	pkg_check_modules(SSL REQUIRED libssl)
+	pkg_check_modules(CRYPTO REQUIRED libcrypto)
 	pkg_check_modules(GMP REQUIRED gmp)
 	pkg_check_modules(YAJL REQUIRED yajl)
-	pkg_check_modules(RASQAL REQUIRED rasqal)
-	link_directories(${MONGOC_DIR}/../../lib/ ${RAPTOR2_LIBRARY_DIRS} ${SPDLOG_LIBRARY_DIRS} ${CURL_LIBRARY_DIRS} ${GMP_LIBRARY_DIRS} ${YAJL_LIBRARY_DIRS} ${RASQAL_LIBRARY_DIRS})
+	pkg_check_modules(UUID REQUIRED uuid)
+	link_directories(${MONGOC_DIR}/../../lib/ ${XSLT_LIBRARY_DIRS} ${RASQAL_LIBRARY_DIRS} ${XML2_LIBRARY_DIRS} ${SPDLOG_LIBRARY_DIRS} ${SSL_LIBRARY_DIRS} ${CURL_LIBRARY_DIRS} ${CRYPTO_LIBRARY_DIRS} ${GMP_LIBRARY_DIRS} ${YAJL_LIBRARY_DIRS} ${UUID_LIBRARY_DIRS})
 	set(KNOWROB_LIBRARIES
-		${SWIPL_STATIC_LIBRARIES}
-		libmongoc2.a
-		libbson2.a
 		libraptor2.a
 		librdf.a
+		libxslt.a
+		librasqal.a
+		libxml2.a
+		liblzma.a
+		libswipl.a
+		libmongoc2.a
+		libsasl2.a
+		libbson2.a
 		libspdlog.a
 		libcurl.a
 		libssl.a
 		libcrypto.a
-		librasqal.a
-		gmp.a
-		yajl_s.a
-		uuid.a
+		libgmp.a
+		libyajl_s.a
+		libuuid.a
 		${Python3_LIBRARIES}
 		${GTEST_LIBRARIES}
 		resolv
@@ -381,12 +390,9 @@ else()
 		fmt
 		dl
 		pcre
-		xml2
 		z
-		lzma
-		xslt
-		ldap
-		lber)
+		rt)
+	message(STATUS "Using static libraries: ${KNOWROB_LIBRARIES}")
 endif()
 set(OpenSSL_LIBRARIES "")  # Unset to avoid leakage
 target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
