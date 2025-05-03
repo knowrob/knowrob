@@ -10,7 +10,7 @@
 namespace knowrob::py {
 
 	// Function to convert Python object to boost::any
-	boost::any python_to_boost_any(const boost::python::object &obj) {
+	inline boost::any python_to_boost_any(const boost::python::object &obj) {
 		using namespace boost::python;
 
 		if (extract<int>(obj).check()) {
@@ -29,7 +29,7 @@ namespace knowrob::py {
 	}
 
 	// Function to convert Python dict to std::unordered_map<std::string, boost::any>
-	std::unordered_map<std::string, boost::any> dict_to_map(const boost::python::dict &py_dict) {
+	inline std::unordered_map<std::string, boost::any> dict_to_map(const boost::python::dict &py_dict) {
 		std::unordered_map<std::string, boost::any> map;
 		boost::python::list keys = py_dict.keys();
 		for (int i = 0; i < len(keys); ++i) {
@@ -56,7 +56,7 @@ namespace knowrob::py {
 	};
 
 	// Register the converter in the module initialization function
-	void register_dict_to_map_converter() {
+	inline void register_dict_to_map_converter() {
 		boost::python::converter::registry::push_back(
 				&DictToMapConverter::convertible,
 				&DictToMapConverter::construct,
