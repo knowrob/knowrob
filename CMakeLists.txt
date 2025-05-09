@@ -43,17 +43,36 @@ include("cmake/ontologies.cmake")
 find_package(Eigen3 REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(spdlog REQUIRED)
-find_package(Python COMPONENTS Interpreter Development)
+set(Python3_EXECUTABLE "/usr/bin/python" CACHE FILEPATH "Path to specific Python3 executable")
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+message(STATUS "Found Python3 include: ${Python3_INCLUDE_DIRS}")
+message(STATUS "Found Python3 libraries: ${Python3_LIBRARIES}")
+execute_process(
+    COMMAND python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}-config --extension-suffix
+    OUTPUT_VARIABLE PYTHON3_SUFFIX
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 
 # Construct Boost Python component name based on Python version
-set(Boost_Python_VERSION "python${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
+set(Boost_Python_VERSION "python${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")
 set(Boost_Python_COMPONENT "Boost::${Boost_Python_VERSION}")
 message(STATUS "Using Boost Python component: ${Boost_Python_COMPONENT}")
 
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization ${Boost_Python_VERSION})
+
+if(DEFINED Boost_ROOT AND Boost_ROOT)
+	# Enable Boost_ROOT usage properly
+	if(POLICY CMP0074)
+		cmake_policy(SET CMP0074 NEW)
+	endif()
+	# Set CMake's internal Boost root hint
+	message(STATUS "Using user-defined Boost_ROOT: ${Boost_ROOT}")
+	find_package(Boost REQUIRED COMPONENTS program_options serialization ${Boost_Python_VERSION})
+else()
+  	find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization ${Boost_Python_VERSION})
+endif()
 
 enable_testing()
 find_package(GTest REQUIRED)
@@ -115,7 +134,7 @@ if (CATKIN)
         catkin_package(
                 INCLUDE_DIRS include
                 LIBRARIES knowrob
-                DEPENDS Boost -lswipl MONGOC RAPTOR REDLAND spdlog Python GTest EIGEN3
+                DEPENDS Boost -lswipl MONGOC RAPTOR REDLAND spdlog Python3 GTest EIGEN3
         )
     else ()
         message(STATUS "No catkin workspace found.")
@@ -131,12 +150,13 @@ set(knowrob_INCLUDE_DIRS
         ${SWIPL_INCLUDE_DIRS}
         ${EIGEN3_INCLUDE_DIR}
         ${Boost_INCLUDE_DIRS}
-        ${Python_INCLUDE_DIRS}
+        ${Python3_INCLUDE_DIRS}
         ${MONGOC_INCLUDE_DIRS}
         ${RAPTOR_INCLUDE_DIRS}
         ${REDLAND_INCLUDE_DIRS})
 include_directories(${knowrob_INCLUDE_DIRS})
 
+option(KNOWROB_USE_SUFFIX "Append fixed suffix to KnowRob module name" OFF)
 add_library(knowrob SHARED
         src/knowrob.cpp
         src/ThreadPool.cpp
@@ -300,13 +320,20 @@ set(KNOWROB_LIBRARIES
         ${MONGOC_LIBRARIES}
         ${RAPTOR_LIBRARIES}
         ${REDLAND_LIBRARIES}
-        ${Python_LIBRARIES}
+        ${Python3_LIBRARIES}
         spdlog::spdlog
         ${GTEST_LIBRARIES})
 target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
 # install shared library and headers
+
+if(KNOWROB_USE_SUFFIX)
+	message(STATUS "Installing knowrob with suffix ${PYTHON3_SUFFIX}")
+	string(REPLACE ".so" "" PYTHON3_SUFFIX_BASE "${PYTHON3_SUFFIX}")
+	set_target_properties(knowrob PROPERTIES OUTPUT_NAME "knowrob${PYTHON3_SUFFIX_BASE}")
+endif()
 install(TARGETS knowrob
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/knowrob)
+		PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/knowrob)
+
 install(DIRECTORY include/knowrob
         DESTINATION include)
 # Install Python and Prolog files into the share directory such that they can be loaded at runtime.
@@ -350,7 +377,7 @@ target_include_directories(knowrob_py PRIVATE
         ${SWIPL_INCLUDE_DIRS}
         ${EIGEN3_INCLUDE_DIR}
         ${Boost_INCLUDE_DIRS}
-        ${PYTHON_INCLUDE_DIRS})
+        ${PYTHON3_INCLUDE_DIRS})
 target_link_libraries(knowrob_py PRIVATE
         ${KNOWROB_LIBRARIES}
         Boost::program_options
@@ -382,7 +409,8 @@ else ()
 endif()
 # install the Python module into the site-packages directory
 install(FILES ${CMAKE_BINARY_DIR}/knowrob.so
-        DESTINATION lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/${PYTHON_MODULE_LIBDIR})
+        DESTINATION lib/python/${PYTHON_MODULE_LIBDIR}
+        RENAME knowrob${PYTHON3_SUFFIX})
 
 ##############
 ########## Doxygen
