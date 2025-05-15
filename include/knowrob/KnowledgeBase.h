@@ -175,6 +175,14 @@ namespace knowrob {
 		bool removeAllWithOrigin(std::string_view origin);
 
 		/**
+		 * Export all triples in the model to a file.
+		 * @param filename the name of the file to export to.
+		 * @param format the format of the output file.
+		 */
+		bool exportTo(const std::string &filename,
+					  semweb::TripleFormat format=semweb::RDF_XML) const;
+
+		/**
 		 * Set the default graph for queries.
 		 * @param origin the origin of the default graph
 		 */

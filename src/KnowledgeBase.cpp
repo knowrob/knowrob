@@ -677,6 +677,15 @@ bool KnowledgeBase::loadNonOntologySource(const DataSourcePtr &source) const {
 	return hasHandler && allSucceeded;
 }
 
+bool KnowledgeBase::exportTo(const std::string &filename, semweb::TripleFormat format) const {
+	auto backend = getBackendForQuery();
+	if (!backend) {
+		KB_ERROR("No backend available for exporting.");
+		return false;
+	}
+	return backend->exportTo(filename, format);
+}
+
 void KnowledgeBase::setDefaultGraph(std::string_view origin) {
 	vocabulary_->importHierarchy()->setDefaultGraph(origin);
 }
