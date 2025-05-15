@@ -740,6 +740,7 @@ namespace knowrob::py {
 						fn(bindings);
 					});
 				})
+				.def("exportTo", with<no_gil>(&KnowledgeBase::exportTo))
 				.def("insertOne", with<no_gil>(&KnowledgeBase::insertOne))
 				.def("insertAll", with<no_gil>(static_cast<ContainerAction>(&KnowledgeBase::insertAll)))
 				.def("insertAll", with<no_gil>(static_cast<ListAction>(&KnowledgeBase::insertAll)))
