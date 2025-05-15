@@ -371,3 +371,8 @@ TYPED_TEST(StorageTest, ExtendsTimeInterval) {
 	statement.setIsOccasional(true);
 	EXPECT_EQ(TEST_LOOKUP(statement).size(), 1);
 }
+
+TYPED_TEST(StorageTest, ExportRDF_XML) {
+	auto &queryable = StorageTest<TypeParam>::queryable_;
+	EXPECT_TRUE(queryable->exportTo("/tmp/knowrob/tests/rdf/test.rdf", semweb::RDF_XML));
+}
