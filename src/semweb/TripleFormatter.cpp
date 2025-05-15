@@ -9,9 +9,9 @@
 #include "knowrob/Logger.h"
 
 bool knowrob::semweb::TripleFormatter::exportTo(
-        const std::map<std::string_view, TriplePtr> &triples,
-        const std::string &filename,
-        TripleFormat format) {
+    const std::map<std::string_view, TriplePtr> &triples,
+    const std::string &filename,
+    TripleFormat format) {
     switch (format) {
         case TripleFormat::RDF_XML:
             return exportRDF_XML(triples, filename);
@@ -23,8 +23,8 @@ bool knowrob::semweb::TripleFormatter::exportTo(
 }
 
 bool knowrob::semweb::TripleFormatter::exportRDF_XML(
-        const std::map<std::string_view, TriplePtr> &triples,
-        const std::string &filename) {
+    const std::map<std::string_view, TriplePtr> &triples,
+    const std::string &filename) {
     // make sure the directory exists
     std::filesystem::path path(filename);
     if (path.has_parent_path()) {
@@ -42,13 +42,13 @@ bool knowrob::semweb::TripleFormatter::exportRDF_XML(
     file << "         xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\"\n";
     file << "         xmlns:owl=\"http://www.w3.org/2002/07/owl#\"\n";
     // iterate over known namespaces
-    for (const auto &[uri, prefix] : PrefixRegistry::get()) {
+    for (const auto &[uri, prefix]: PrefixRegistry::get()) {
         file << "         xmlns:" << prefix << "=\"" << uri << "\"\n";
     }
     file << ">\n";
 
     // write triples
-    for (const auto &[subject,triple] : triples) {
+    for (const auto &[subject,triple]: triples) {
         file << "  <rdf:Description rdf:about=\"" << subject << "\">\n";
         auto property = triple->predicate();
         auto valueString = triple->createStringValue();

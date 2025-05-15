@@ -12,31 +12,31 @@
 #include "knowrob/semweb/Triple.h"
 
 namespace knowrob::semweb {
-	/**
-	 * A class that is responsible for exporting triples to different formats.
-	 */
-	class TripleFormatter {
-	public:
-		/**
-		 * @param triples a map of triples
-		 * @param filename the name of the file to export to
-		 * @param format the format of the output file
-		 * @return true if the export was successful
-		 */
-		static bool exportTo(
-              const std::map<std::string_view, TriplePtr> &triples,
-              const std::string &filename,
-              TripleFormat format = TripleFormat::RDF_XML);
+    /**
+     * A class that is responsible for exporting triples to different formats.
+     */
+    class TripleFormatter {
+    public:
+        /**
+         * @param triples a map of triples
+         * @param filename the name of the file to export to
+         * @param format the format of the output file
+         * @return true if the export was successful
+         */
+        static bool exportTo(
+            const std::map<std::string_view, TriplePtr> &triples,
+            const std::string &filename,
+            TripleFormat format = TripleFormat::RDF_XML);
 
-		/**
-		 * @param triples a map of triples
-		 * @param filename the name of the file to export to
-		 * @return true if the export was successful
-		 */
-		static bool exportRDF_XML(
-              const std::map<std::string_view, TriplePtr> &triples,
-			  const std::string &filename);
-	};
+        /**
+         * @param triples a map of triples
+         * @param filename the name of the file to export to
+         * @return true if the export was successful
+         */
+        static bool exportRDF_XML(
+            const std::map<std::string_view, TriplePtr> &triples,
+            const std::string &filename);
+    };
 }
 
 #endif //KNOWROB_TRIPLE_FORMATTER_H
