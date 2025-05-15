@@ -165,6 +165,13 @@ TYPED_TEST(StorageTest, Assert_a_b_c) {
 	EXPECT_EQ(TEST_LOOKUP(parse("triple(swrl_test:x, swrl_test:b, C)")).size(), 0);
 }
 
+TYPED_TEST(StorageTest, Assert_relative_iri) {
+    TripleCopy data_abx("http://ont.de#a", "marriedTo", "http://ont.de#frank");
+    EXPECT_NO_THROW(TEST_INSERT_ONE(data_abx));
+    EXPECT_EQ(TEST_LOOKUP(data_abx).size(), 1);
+    EXPECT_EQ(TEST_LOOKUP(parse("triple(X, marriedTo, 'http://ont.de#frank')")).size(), 1);
+}
+
 TYPED_TEST(StorageTest, QueryDuplicateVars) {
 	EXPECT_EQ(TEST_LOOKUP(parse("triple(?x, swrl_test:b, ?x)")).size(), 0);
 	TripleCopy data_aba(swrl_test_"a", swrl_test_"b", swrl_test_"a");

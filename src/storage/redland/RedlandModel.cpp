@@ -354,9 +354,15 @@ bool RedlandModel::insertOne(const Triple &knowrobTriple) {
 	// map the knowrob triple into a raptor triple
 	knowrobToRaptor(knowrobTriple, raptorTriple);
 	// add the triple together with a context node holding the origin literal
-	librdf_model_context_add_statement(model_, getContextNode(knowrobTriple), raptorTriple);
+	auto status = librdf_model_context_add_statement(model_,
+			getContextNode(knowrobTriple), raptorTriple);
 	librdf_free_statement(raptorTriple);
-	return true;
+	if (status != 0) {
+		KB_WARN("Failed to add triple {} to model.", knowrobTriple);
+		return false;
+	} else {
+		return true;
+	}
 }
 
 bool RedlandModel::insertAll(const TripleContainerPtr &triples) {
@@ -488,6 +494,7 @@ void RedlandModel::match(const TriplePattern &query, const TripleVisitor &visito
 }
 
 bool RedlandModel::sparql(std::string_view queryString, const BindingsHandler &callback) const {
+	KB_INFO("Executing SPARQL query: {}", queryString);
 	auto queryObj = librdf_new_query(
 			world_,
 			QUERY_LANGUAGE_SPARQL.data(),
