@@ -256,6 +256,7 @@ add_library(knowrob SHARED
         src/integration/python/utils.cpp
         src/semweb/Triple.cpp
         src/semweb/TripleFormat.cpp
+        src/semweb/TripleFormatter.cpp
         src/semweb/OntologyLanguage.cpp
         src/reasoner/prolog/semweb.cpp
         src/integration/prolog/PrologBackend.cpp

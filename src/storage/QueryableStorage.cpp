@@ -4,6 +4,7 @@
  */
 
 #include "knowrob/storage/QueryableStorage.h"
+#include <knowrob/semweb/TripleFormatter.h>
 #include "knowrob/ThreadPool.h"
 #include "knowrob/queries/AnswerNo.h"
 #include "knowrob/queries/AnswerYes.h"
@@ -367,6 +368,26 @@ GraphQueryExpansionPtr QueryableStorage::expand(const GraphQueryPtr &q) {
 	exp_ctx->with_reassignment = supports(StorageFeature::ReAssignment);
 	exp_ctx->expanded = expand_query(q, *exp_ctx);
 	return exp_ctx;
+}
+
+bool QueryableStorage::exportTo(
+		const std::string &filename,
+		semweb::TripleFormat format) const {
+	// collects all triples per subject
+	std::map<std::string_view, TriplePtr> subjectTriples;
+	// iterate over all triples in the storage
+	batch([&](const TripleContainerPtr &container) {
+		for (auto &triple: *container) {
+			// collect triples per subject
+			const auto &[val,_] = subjectTriples.insert(
+					std::make_pair(triple->subject(), triple));
+			// take over the ownership of the triple
+			triple.owned = false;
+			val->second.owned = true;
+		}
+	});
+	// write all triples to the file
+	return semweb::TripleFormatter::exportTo(subjectTriples, filename, format);
 }
 
 namespace knowrob::py {

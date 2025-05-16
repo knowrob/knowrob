@@ -6,6 +6,8 @@
 #ifndef KNOWROB_QUERYABLE_STORAGE_H
 #define KNOWROB_QUERYABLE_STORAGE_H
 
+#include <knowrob/semweb/TripleFormat.h>
+
 #include "knowrob/queries/TokenBuffer.h"
 #include "Storage.h"
 #include "knowrob/queries/Answer.h"
@@ -80,6 +82,15 @@ namespace knowrob {
 		 * @param callback a function that is called for each resource and its count.
 		 */
 		virtual void count(const ResourceCounter &callback) const = 0;
+
+		/**
+		 * Export all triples in the model to a file.
+		 * @param filename the name of the file to export to.
+		 * @param format the format of the output file.
+		 * @return true if the export was successful
+		 */
+		bool exportTo(const std::string &filename,
+		              semweb::TripleFormat format=semweb::RDF_XML) const;
 
 		/**
 		 * @return a list of all origins that have been asserted.
