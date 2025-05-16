@@ -87,6 +87,7 @@ namespace knowrob {
 		 * Export all triples in the model to a file.
 		 * @param filename the name of the file to export to.
 		 * @param format the format of the output file.
+		 * @return true if the export was successful
 		 */
 		bool exportTo(const std::string &filename,
 		              semweb::TripleFormat format=semweb::RDF_XML) const;
