@@ -16,6 +16,8 @@ bool knowrob::semweb::TripleFormatter::exportTo(
     switch (format) {
         case TripleFormat::RDF_XML:
             return exportRDF_XML(triples, filename);
+        case TripleFormat::TURTLE:
+            return exportTurtle(triples, filename);
         default:
             // Unsupported format
             KB_WARN("Unsupported format: {}", tripleFormatToString(format));
@@ -23,14 +25,17 @@ bool knowrob::semweb::TripleFormatter::exportTo(
     }
 }
 
-bool knowrob::semweb::TripleFormatter::exportRDF_XML(
-    const std::map<std::string_view, TriplePtr> &triples,
-    const std::string &filename) {
-    // make sure the directory exists
+static void ensureDirectoryExists(const std::string &filename) {
     std::filesystem::path path(filename);
     if (path.has_parent_path()) {
         std::filesystem::create_directories(path.parent_path());
     }
+}
+
+bool knowrob::semweb::TripleFormatter::exportRDF_XML(
+    const std::map<std::string_view, TriplePtr> &triples,
+    const std::string &filename) {
+    ensureDirectoryExists(filename);
     // open file for writing, overwrite if it exists
     std::ofstream file(filename);
     if (!file.is_open()) {
@@ -69,6 +74,47 @@ bool knowrob::semweb::TripleFormatter::exportRDF_XML(
     }
     // write RDF/XML footer
     file << "</rdf:RDF>\n";
+    file.close();
+    return true;
+}
+
+bool knowrob::semweb::TripleFormatter::exportTurtle(
+    const std::map<std::string_view, TriplePtr> &triples,
+    const std::string &filename) {
+    ensureDirectoryExists(filename);
+    // open file for writing, overwrite if it exists
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        KB_WARN("Could not open file {} for writing.", filename);
+        return false;
+    }
+    // write Turtle header
+    file << "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .\n";
+    file << "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n";
+    file << "@prefix owl: <http://www.w3.org/2002/07/owl#> .\n";
+    // iterate over known namespaces
+    for (const auto &[uri, prefix]: PrefixRegistry::get()) {
+        file << "@prefix " << prefix << ": <" << uri << "> .\n";
+    }
+    // write triples
+    for (const auto &[subject, triple]: triples) {
+        file << subject << " ";
+        auto property = triple->predicate();
+        auto valueString = triple->createStringValue();
+        auto valueType = triple->xsdType();
+        if (triple->isXSDLiteral()) {
+            // XSD property assertion
+            file << property << " \"" << valueString << "\"^^<" << xsdTypeToIRI(valueType.value()) << "> .\n";
+        } else if (triple->isObjectIRI()) {
+            // object property assertion
+            file << property << " <" << valueString << "> .\n";
+        } else {
+            // untyped literal
+            file << property << " \"" << valueString << "\" .\n";
+        }
+    }
+    // write Turtle footer
+    file << "\n";
     file.close();
     return true;
 }

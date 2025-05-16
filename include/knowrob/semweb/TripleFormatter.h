@@ -36,6 +36,15 @@ namespace knowrob::semweb {
         static bool exportRDF_XML(
             const std::map<std::string_view, TriplePtr> &triples,
             const std::string &filename);
+
+        /**
+         * @param triples a map of triples
+         * @param filename the name of the file to export to
+         * @return true if the export was successful
+         */
+        static bool exportTurtle(
+            const std::map<std::string_view, TriplePtr> &triples,
+            const std::string &filename);
     };
 }
 
