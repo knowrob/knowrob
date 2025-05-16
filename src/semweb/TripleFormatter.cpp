@@ -4,6 +4,7 @@
  */
 
 #include <filesystem>
+#include <fstream>
 #include "knowrob/semweb/TripleFormatter.h"
 #include "knowrob/semweb/PrefixRegistry.h"
 #include "knowrob/Logger.h"
