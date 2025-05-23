@@ -8,6 +8,7 @@
 
 #include "string_view"
 #include "map"
+#include "vector"
 #include "knowrob/semweb/TripleFormat.h"
 #include "knowrob/semweb/Triple.h"
 
@@ -24,7 +25,7 @@ namespace knowrob::semweb {
          * @return true if the export was successful
          */
         static bool exportTo(
-            const std::map<std::string_view, TriplePtr> &triples,
+            const std::map<std::string, std::vector<std::shared_ptr<TriplePtr>>> &triples,
             const std::string &filename,
             TripleFormat format = TripleFormat::RDF_XML);
 
@@ -34,7 +35,7 @@ namespace knowrob::semweb {
          * @return true if the export was successful
          */
         static bool exportRDF_XML(
-            const std::map<std::string_view, TriplePtr> &triples,
+            const std::map<std::string, std::vector<std::shared_ptr<TriplePtr>>>  &triples,
             const std::string &filename);
 
         /**
@@ -43,7 +44,7 @@ namespace knowrob::semweb {
          * @return true if the export was successful
          */
         static bool exportTurtle(
-            const std::map<std::string_view, TriplePtr> &triples,
+            const std::map<std::string, std::vector<std::shared_ptr<TriplePtr>>>  &triples,
             const std::string &filename);
     };
 }

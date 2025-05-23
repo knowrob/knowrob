@@ -6,6 +6,7 @@
 #ifndef KNOWROB_QUERYABLE_STORAGE_H
 #define KNOWROB_QUERYABLE_STORAGE_H
 
+#include <vector>
 #include <knowrob/semweb/TripleFormat.h>
 
 #include "knowrob/queries/TokenBuffer.h"

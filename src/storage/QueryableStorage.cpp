@@ -370,26 +370,35 @@ GraphQueryExpansionPtr QueryableStorage::expand(const GraphQueryPtr &q) {
 	return exp_ctx;
 }
 
-bool QueryableStorage::exportTo(
-		const std::string &filename,
-		semweb::TripleFormat format) const {
-	// collects all triples per subject
-	std::map<std::string_view, TriplePtr> subjectTriples;
-	// iterate over all triples in the storage
+bool QueryableStorage::exportTo(const std::string &filename,
+	semweb::TripleFormat format) const {
+	KB_WARN("Exporting all triples to file {}.", filename);
+
+	// Map owns its keys; values are TriplePtr (same as everywhere else)
+	std::map<std::string, std::vector<std::shared_ptr<TriplePtr>>> subjectTriples;
+
 	batch([&](const TripleContainerPtr &container) {
-		for (auto &triple: *container) {
-			// collect triples per subject
-			const auto &[val,_] = subjectTriples.insert(
-					std::make_pair(triple->subject(), triple));
-			// take over the ownership of the triple
-			triple.owned = false;
-			val->second.owned = true;
+		for (auto &triple : *container) {
+			auto key = std::string(triple->subject());
+			// auto &copy = subjectTriples[key].emplace_back();
+			auto copy = std::make_shared<TriplePtr>();
+			copy->owned = true; // ensure that the TriplePtr owns the Triple
+
+			if (triple.owned) {
+				copy->ptr = triple.ptr; // reuse the TriplePtr
+				triple.owned = false;  // prevent double deletion
+			} else {
+				copy->ptr = new TripleCopy(*triple.ptr); // create a copy of the Triple
+			}
+			// Add the triple to the map, indexed by its subject.
+			subjectTriples[key].push_back(copy);
 		}
 	});
-	// write all triples to the file
+	KB_WARN("Exporting {} subjects to file {}.", subjectTriples.size(), filename);
+
+	// ------------- call the formatter -------------
 	return semweb::TripleFormatter::exportTo(subjectTriples, filename, format);
 }
-
 namespace knowrob::py {
 	struct QueryableStorageWrap : public QueryableStorage, boost::python::wrapper<QueryableStorage> {
 		explicit QueryableStorageWrap(PyObject *p, const StorageFeatures features)
