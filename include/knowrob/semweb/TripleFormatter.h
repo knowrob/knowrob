@@ -8,10 +8,13 @@
 
 #include "string_view"
 #include "map"
+#include "vector"
 #include "knowrob/semweb/TripleFormat.h"
 #include "knowrob/semweb/Triple.h"
 
 namespace knowrob::semweb {
+	using ExportedTriples = std::map<std::string_view, std::vector<std::shared_ptr<Triple>>>;
+
     /**
      * A class that is responsible for exporting triples to different formats.
      */
@@ -24,7 +27,7 @@ namespace knowrob::semweb {
          * @return true if the export was successful
          */
         static bool exportTo(
-            const std::map<std::string_view, TriplePtr> &triples,
+            const ExportedTriples &triples,
             const std::string &filename,
             TripleFormat format = TripleFormat::RDF_XML);
 
@@ -34,7 +37,7 @@ namespace knowrob::semweb {
          * @return true if the export was successful
          */
         static bool exportRDF_XML(
-            const std::map<std::string_view, TriplePtr> &triples,
+            const ExportedTriples &triples,
             const std::string &filename);
 
         /**
@@ -43,7 +46,7 @@ namespace knowrob::semweb {
          * @return true if the export was successful
          */
         static bool exportTurtle(
-            const std::map<std::string_view, TriplePtr> &triples,
+            const ExportedTriples &triples,
             const std::string &filename);
     };
 }
