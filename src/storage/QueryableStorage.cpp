@@ -379,15 +379,14 @@ bool QueryableStorage::exportTo(
 	batch([&](const TripleContainerPtr &container) {
 		for (auto &triple: *container) {
 			// collect triples per subject
-			auto subject = triple->subject();
-			auto needle = subjectTriples.find(subject);
+			auto tripleCopy = std::make_shared<TripleCopy>(*triple.ptr);
+			auto needle = subjectTriples.find(tripleCopy->subject());
 			if (needle == subjectTriples.end()) {
 				// if the subject is not yet in the map, insert it
 				needle = subjectTriples.insert(std::make_pair(
-					subject, std::vector<std::shared_ptr<Triple>>())).first;
+					tripleCopy->subject(), std::vector<std::shared_ptr<Triple>>())).first;
 
 			}
-			auto tripleCopy = std::make_shared<TripleCopy>(*triple.ptr);
 			needle->second.push_back(tripleCopy);
 		}
 	});
