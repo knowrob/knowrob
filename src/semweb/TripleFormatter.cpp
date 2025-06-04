@@ -10,7 +10,7 @@
 #include "knowrob/Logger.h"
 
 bool knowrob::semweb::TripleFormatter::exportTo(
-    const std::map<std::string_view, TriplePtr> &triples,
+    const ExportedTriples &triples,
     const std::string &filename,
     TripleFormat format) {
     switch (format) {
@@ -33,7 +33,7 @@ static void ensureDirectoryExists(const std::string &filename) {
 }
 
 bool knowrob::semweb::TripleFormatter::exportRDF_XML(
-    const std::map<std::string_view, TriplePtr> &triples,
+    const ExportedTriples &triples,
     const std::string &filename) {
     ensureDirectoryExists(filename);
     // open file for writing, overwrite if it exists
@@ -54,21 +54,23 @@ bool knowrob::semweb::TripleFormatter::exportRDF_XML(
     file << ">\n";
 
     // write triples
-    for (const auto &[subject,triple]: triples) {
+    for (const auto &[subject,exportedTriples]: triples) {
         file << "  <rdf:Description rdf:about=\"" << subject << "\">\n";
-        auto property = triple->predicate();
-        auto valueString = triple->createStringValue();
-        auto valueType = triple->xsdType();
-        if (triple->isXSDLiteral()) {
-            // XSD property assertion
-            file << "    <" << property << " rdf:datatype=\"" << xsdTypeToIRI(valueType.value()) << "\">";
-            file << valueString << "</" << property << ">\n";
-        } else if (triple->isObjectIRI()) {
-            // object property assertion
-            file << "    <" << property << " rdf:resource=\"" << valueString << "\"/>\n";
-        } else {
-            // untyped literal
-            file << "    <" << property << ">" << valueString << "</" << property << ">\n";
+        for (auto &triple : exportedTriples) {
+			auto property = triple->predicate();
+			auto valueString = triple->createStringValue();
+			auto valueType = triple->xsdType();
+			if (triple->isXSDLiteral()) {
+				// XSD property assertion
+				file << "    <" << property << " rdf:datatype=\"" << xsdTypeToIRI(valueType.value()) << "\">";
+				file << valueString << "</" << property << ">\n";
+			} else if (triple->isObjectIRI()) {
+				// object property assertion
+				file << "    <" << property << " rdf:resource=\"" << valueString << "\"/>\n";
+			} else {
+				// untyped literal
+				file << "    <" << property << ">" << valueString << "</" << property << ">\n";
+			}
         }
         file << "  </rdf:Description>\n";
     }
@@ -79,7 +81,7 @@ bool knowrob::semweb::TripleFormatter::exportRDF_XML(
 }
 
 bool knowrob::semweb::TripleFormatter::exportTurtle(
-    const std::map<std::string_view, TriplePtr> &triples,
+    const ExportedTriples &triples,
     const std::string &filename) {
     ensureDirectoryExists(filename);
     // open file for writing, overwrite if it exists
@@ -97,21 +99,29 @@ bool knowrob::semweb::TripleFormatter::exportTurtle(
         file << "@prefix " << prefix << ": <" << uri << "> .\n";
     }
     // write triples
-    for (const auto &[subject, triple]: triples) {
+    for (const auto &[subject, exportedTriples]: triples) {
         file << subject << " ";
-        auto property = triple->predicate();
-        auto valueString = triple->createStringValue();
-        auto valueType = triple->xsdType();
-        if (triple->isXSDLiteral()) {
-            // XSD property assertion
-            file << property << " \"" << valueString << "\"^^<" << xsdTypeToIRI(valueType.value()) << "> .\n";
-        } else if (triple->isObjectIRI()) {
-            // object property assertion
-            file << property << " <" << valueString << "> .\n";
-        } else {
-            // untyped literal
-            file << property << " \"" << valueString << "\" .\n";
-        }
+        bool isFirst = true;
+        for (auto &triple : exportedTriples) {
+			auto property = triple->predicate();
+			auto valueString = triple->createStringValue();
+			auto valueType = triple->xsdType();
+			if (!isFirst) {
+				file << ";\n  ";
+			}
+			isFirst = false;
+			if (triple->isXSDLiteral()) {
+				// XSD property assertion
+				file << property << " \"" << valueString << "\"^^<" << xsdTypeToIRI(valueType.value()) << "> ";
+			} else if (triple->isObjectIRI()) {
+				// object property assertion
+				file << property << " <" << valueString << "> ";
+			} else {
+				// untyped literal
+				file << property << " \"" << valueString << "\" ";
+			}
+		}
+		file << ".\n"; // end of the subject block
     }
     // write Turtle footer
     file << "\n";

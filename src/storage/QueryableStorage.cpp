@@ -374,16 +374,20 @@ bool QueryableStorage::exportTo(
 		const std::string &filename,
 		semweb::TripleFormat format) const {
 	// collects all triples per subject
-	std::map<std::string_view, TriplePtr> subjectTriples;
+	semweb::ExportedTriples subjectTriples;
 	// iterate over all triples in the storage
 	batch([&](const TripleContainerPtr &container) {
 		for (auto &triple: *container) {
 			// collect triples per subject
-			const auto &[val,_] = subjectTriples.insert(
-					std::make_pair(triple->subject(), triple));
-			// take over the ownership of the triple
-			triple.owned = false;
-			val->second.owned = true;
+			auto tripleCopy = std::make_shared<TripleCopy>(*triple.ptr);
+			auto needle = subjectTriples.find(tripleCopy->subject());
+			if (needle == subjectTriples.end()) {
+				// if the subject is not yet in the map, insert it
+				needle = subjectTriples.insert(std::make_pair(
+					tripleCopy->subject(), std::vector<std::shared_ptr<Triple>>())).first;
+
+			}
+			needle->second.push_back(tripleCopy);
 		}
 	});
 	// write all triples to the file
