@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>esg.pl -- Event Endpoint Sequence Graph (ESG).</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>esg.pl -- Event Endpoint Sequence Graph (ESG).</h1>
+
+<p>
+ESGs are directed acyclic graphs in which nodes are endpoints of constituent
+events, and in which an edge is added from one endpoint a
+to another endpoint b if a &lt; b holds. Any path from endpoint
+a to another endpoint b implies that a &lt; b (transitivity).</p>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="esg_to_list/2"><b class="pred">esg_to_list</b><var class="arglist">(+ESG, ?Sequence)</var></a></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="esg_retract/1"><b class="pred">esg_retract</b><var class="arglist">(+ESG)</var></a></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="esg/4"><b class="pred">esg</b><var class="arglist">(+Act, +Events, +Constraints, ?Sequence)</var></a></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="esg_event_sequence/2"><b class="pred">esg_event_sequence</b><var class="arglist">(+ESG, ?Sequence)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"></dd>
+</dl>
+
+<h2 class="undoc">Undocumented predicates</h2>
+
+<p>
+The following predicates are exported, but not or incorrectly documented.</p>
+
+<dl class="undoc">
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="esg_assert/3"><b class="pred">esg_assert</b><var class="arglist">(Arg1, Arg2, Arg3)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="esg_truncated/4"><b class="pred">esg_truncated</b><var class="arglist">(Arg1, Arg2, Arg3, Arg4)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="esg_path/4"><b class="pred">esg_path</b><var class="arglist">(Arg1, Arg2, Arg3, Arg4)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="endpoint_type/2"><b class="pred">endpoint_type</b><var class="arglist">(Arg1, Arg2)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="esg_join/3"><b class="pred">esg_join</b><var class="arglist">(Arg1, Arg2, Arg3)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="esg_endpoints/2"><b class="pred">esg_endpoints</b><var class="arglist">(Arg1, Arg2)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="esg_write_info/1"><b class="pred">esg_write_info</b><var class="arglist">(Arg1)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="esg_write/1"><b class="pred">esg_write</b><var class="arglist">(Arg1)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="esg_pop/3"><b class="pred">esg_pop</b><var class="arglist">(Arg1, Arg2, Arg3)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="esg_peak/2"><b class="pred">esg_peak</b><var class="arglist">(Arg1, Arg2)</var></a></dt>
+</dl>
+
+</body>
+</html>

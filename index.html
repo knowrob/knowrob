@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+	
+		<title>KnowRob API Documentation</title>
+		<style>
+.top-navbar {
+	height: 30px;
+	width: 100%;
+	padding: 0;
+	flex-flow: row nowrap;
+	justify-content: flex-start;
+}
+.top-bar {
+	z-index: 1;
+	width: 100%;
+}
+.navbar-select {	
+	flex-flow: row nowrap;
+}
+.frame {
+	height: calc(100% - 30px);
+	width: 100%;
+	position: absolute;
+	top: 30px;
+ 	left: 0;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	z-index: 0;
+}
+.topnav-centered div {
+	float: none;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-weight: bold;
+}
+.mytoggle {	
+	flex-flow: row nowrap;
+}
+#version {	
+	background-color: white !important;
+    border: 1px solid #b9cde3;
+    padding-left: 6px;
+    padding-right: 6px;
+    color: #287bd3;
+}
+.myicon {	
+	color: #6a9db7;
+}
+</style>
+<script>
+function selectVersion(elem) {
+	var btn = document.getElementById("version");
+	var btnValue = elem.innerText;
+	btn.innerText = btnValue;
+	
+	var frame = document.getElementById("docu");
+	docu.src = btnValue + "/index.html";
+}
+function maximize() {
+	var btn = document.getElementById("version");
+	var btnValue = btn.innerText;
+	window.location.href = btnValue + "/index.html";
+}
+</script>
+</head>
+
+<body>
+<div class="navbar navbar-expand-md navbar-light bg-light top-navbar border-bottom">
+	<div class="container-fluid top-bar">
+		<div class="topnav-centered">
+			<div class="nav-item">KnowRob API Documentation</div>
+		</div>
+		
+		<ul class="nav navbar-nav mr-auto navbar-select">
+			<li class="nav-item">
+				<a class="nav-item m-2">Version</a>
+			</li>
+				
+			<li class="nav-item dropdown">
+				<a class="mytoggle nav-item dropdown-toggle" id="version" href="#"
+					  data-toggle="dropdown" aria-expanded="false">dev</a>
+				<div class="dropdown-menu">
+					<a class="dropdown-item" onclick="selectVersion(this)">dev</a>
+					<a class="dropdown-item" onclick="selectVersion(this)">master</a>
+					<a class="dropdown-item" onclick="selectVersion(this)">v2.0</a>
+				</div>
+			</li>
+		</ul>
+		
+		<div class="nav-item">
+			<a class="nav-link p-2 myicon" href="#" onclick="maximize()"><i class="fa-solid fa-maximize"></i></a>
+		</div>
+		<div class="nav-item">
+			<div class="vr m-2 border-right" style="width: 2px; height: 15px;"></div>
+		</div>
+		<div class="nav-item">
+			<a class="nav-link p-2 myicon" href="https://binder.intel4coro.de/v2/gh/knowrob/knowrob.git/dev?labpath=jupyter%2Fintro.ipynb"><i class="fa-solid fa-gears"></i></a>
+		</div>
+		<div class="nav-item">
+			<a class="nav-link p-2 myicon" href="https://github.com/knowrob/knowrob"><i class="fa-brands fa-github"></i></a>
+		</div>
+		<div class="nav-item">
+			<a class="nav-link p-2 myicon" href="https://ease-crc.org"><i class="fa-solid fa-robot"></i></a>
+		</div>
+	</div>
+</div>
+	
+<iframe id="docu" src="dev/index.html" class="frame" frameborder="0"
+        scrolling="yes" width='100%' height='100%'></iframe>
+</body>
+</html>

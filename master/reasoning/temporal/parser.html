@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>parser.pl -- Activity parsing.</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>parser.pl -- Activity parsing.</h1>
+
+<p>
+The main idea of this parser is that activities
+can be detected through patterns of force events, states,
+and motions that are used to structure the activity.
+This structure is described in plans. Hence, a library of plans
+can be casted as grammar for the parser.</p>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="parser_create/1"><b class="pred">parser_create</b><var class="arglist">(-Parser)</var></a> is <b class="det">det</b></dt><dd class="defbody">Creates a new activity detection parser.
+For this, sequence graphs are created for each
+workflow known.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Parser</var></td><td class="argdescr">- The id of a activity parser.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="parser_create/2"><b class="pred">parser_create</b><var class="arglist">(-Parser, +Workflows)</var></a> is <b class="det">det</b></dt><dd class="defbody">Creates a new activity detection parser.
+For this, sequence graphs are created for each
+workflow provided.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Parser</var></td><td class="argdescr">- The id of a activity parser.</td></tr>
+<tr><td><var>Workflows</var></td><td class="argdescr">- A list of workflow IRIs.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="parser_run/3"><b class="pred">parser_run</b><var class="arglist">(+Parser, +Tokens, -ActTerm)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Runs the parser for provided tokens. This blocks until
+the processing has finished.
+Results are bound to the <var>ActTerm</var> argument.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Parser</var></td><td class="argdescr">- The id of a activity parser.</td></tr>
+<tr><td><var>Tokens</var></td><td class="argdescr">- A list of tokens.</td></tr>
+<tr><td><var>ActTerm</var></td><td class="argdescr">- The parse result.</td></tr>
+<tr><td><var>Opts</var></td><td class="argdescr">- A list of parser options.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="parser_start/1"><b class="pred">parser_start</b><var class="arglist">(+Parser)</var></a> is <b class="det">det</b></dt><dd class="defbody">Starts a parser, putting it in a state where
+it waits for tokens to be streamed to the message
+queue of the parser thread.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Parser</var></td><td class="argdescr">- The id of a activity parser.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="parser_stop/1"><b class="pred">parser_stop</b><var class="arglist">(+Parser)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="parser_stop/2"><b class="pred">parser_stop</b><var class="arglist">(+Parser, -Outputs)</var></a> is <b class="det">det</b></dt><dd class="defbody">Stops a parser, sending an <b>EOF</b> message to all of
+its threads before joining them.
+This call will also <b>destroy</b> the message queues of
+the parser.
+The list of outputs yielded by the parser is unified
+with the <var>Outputs</var> argument.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Parser</var></td><td class="argdescr">- The id of a activity parser.</td></tr>
+<tr><td><var>Outputs</var></td><td class="argdescr">- The result of the parser.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="parser_pop_finalized/2"><b class="pred">parser_pop_finalized</b><var class="arglist">(+Parser, -Outputs)</var></a> is <b class="det">det</b></dt><dd class="defbody">Empties the output message queue of the activity
+parser. <var>Outputs</var> is a list of activity compositions
+considered as <b>final</b> by the parser, i.e., no new token
+could be pushed that would render the items in the list invalid.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Parser</var></td><td class="argdescr">- The id of a activity parser.</td></tr>
+<tr><td><var>Outputs</var></td><td class="argdescr">- The pending finalized results of the parser.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="parser_intermediate_results/2"><b class="pred">parser_intermediate_results</b><var class="arglist">(+Parser, -Outputs)</var></a> is <b class="det">det</b></dt><dd class="defbody"><var>Outputs</var> is a list of activity compositions
+considered as <b>non-final</b> by the parser, i.e., some new token
+could be pushed that would render the item in the list invalid.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Parser</var></td><td class="argdescr">- The id of a activity parser.</td></tr>
+<tr><td><var>Outputs</var></td><td class="argdescr">- The intermediate results of the parser.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="parser_jsonify/2"><b class="pred">parser_jsonify</b><var class="arglist">(+Terms, -JSON_String)</var></a> is <b class="det">det</b></dt><dd class="defbody">Converts a list of action terms into a JSON-encoded
+atom.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Terms</var></td><td class="argdescr">- A list of action terms.</td></tr>
+<tr><td><var>JSON_String</var></td><td class="argdescr">- The list as a JSON string.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2 class="undoc">Undocumented predicates</h2>
+
+<p>
+The following predicates are exported, but not or incorrectly documented.</p>
+
+<dl class="undoc">
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="ros_push_token/2"><b class="pred">ros_push_token</b><var class="arglist">(Arg1, Arg2)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="parser_push_token/2"><b class="pred">parser_push_token</b><var class="arglist">(Arg1, Arg2)</var></a></dt>
+</dl>
+
+</body>
+</html>

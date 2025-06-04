@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>tf</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="wiki">TF integration</h1>
+
+<p>
+KnowRob stores the most recent transforms in local memory.
+This is also the source of data for a TF publisher running in this module.
+There is a distinction between frames that are thought to be "managed" by KnowRob
+and those that are not.
+KnowRob will only publish managed frames on the TF topic.
+This is needed to avoid clashes between other TF publishing nodes such as the
+robot_state_publisher and the one in KnowRob.</p>
+
+<h2 class="wiki">TF logging</h2>
+
+<p>
+This module includes a logger for TF messages stored in a mongo database.
+The logger keeps track of previous transforms, and only writes into the database
+if some threshold was exceeded.
+TF messages are not stored in array format as this would complicate indexing the data.
+The logger can be toggled on or off through a setting:</p>
+
+<pre class="code">
+setting(tf:use_logger, false).</pre>
+
+<h2 class="wiki">TF fluent</h2>
+
+<p>
+The fastest way to query persisted TF data is through the fluent predicate <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=tf/4">tf/4</a>:</p>
+
+<table class="wiki">
+<tr><th>Predicate</th><th>Arguments</th></tr>
+<tr><td class="left"><a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=tf/4">tf/4</a></td><td class="left">+Frame, -ReferenceFrame, -Position, -Rotation</td></tr>
+</table>
+
+<p>
+The predicate compiles into a mongo DB query, and can be potentially
+combined with other goals that can be computed server-side by mongo DB.
+As it is defined as a fluent predicate, it will allways yield the most up-to-date
+TF record of the child frame.
+It also supports querying past fluent values in case they have been persisted in the
+database.
+There exists another variant with two arguments where the second argument is a list
+of parent frame, position, and rotation.
+Note that this will only work if TF data is stored in mongo DB, e.g. by using the TF logger
+in this module.</p>
+
+<p>
+It is also possible to write into the database by referring to <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=tf/4">tf/4</a> in an
+assertion, as in:</p>
+
+<pre class="code">
+kb_call(assert(tf(myframe, map, [0,0,0], [0,0,0,1]))).</pre>
+
+<p>
+However, this will <i>not</i> update the internal TF memory KnowRob maintains
+(see <a href="tf.html#tf_mem_set_pose/3">tf_mem_set_pose/3</a>).
+Further note that <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=tf/4">tf/4</a> does not allow to request a pose in some specific reference frame,
+for that purpose <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=is_at/2">is_at/2</a> can be used.</p>
+
+<h2 class="wiki">TF computable</h2>
+
+<p>
+In many cases, a pose needs to be transformed into some specific reference frame in which
+it was not persisted in the database.
+A computable predicate <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=is_at/2">is_at/2</a> is defined to support exactly this: to compute the pose of
+a frame wrt. some reference frame.
+Within this module, <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=is_at/2">is_at/2</a> is implemented by the predicate <a href="tf.html#tf_get_pose/4">tf_get_pose/4</a>.
+For example:</p>
+
+<pre class="code">
+kb_call(is_at(ns:'MyObject', [target_frame, Position, Rotation]))).</pre>
+
+<h2 class="wiki plfiles">Prolog files</h2>
+
+<table class="summary">
+<tr><th colspan="3" class="file"><span style="float:left"><a href="__init__.html">__init__.pl</a></span><span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="tf.html">tf.pl</a></span><span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="tf.html#tf_get_pose/4">tf_get_pose/4</a></td><td class="summary">Retrieve the pose of an object.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf.html#tf_logger_disable/0">tf_logger_disable/0</a></td><td class="summary">Deactivate the TF logger.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf.html#tf_logger_enable/0">tf_logger_enable/0</a></td><td class="summary">Activate the TF logger.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf.html#tf_mem_clear/0">tf_mem_clear/0</a></td><td class="summary">Reset the TF memory.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf.html#tf_mem_get_pose/3">tf_mem_get_pose/3</a></td><td class="summary">Read the transform of a frame from local memory.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf.html#tf_mem_set_pose/3">tf_mem_set_pose/3</a></td><td class="summary">Update the transform of a frame in local memory.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf.html#tf_republish_clear/0">tf_republish_clear/0</a></td><td class="summary">Reset the TF republisher.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf.html#tf_republish_set_goal/2">tf_republish_set_goal/2</a></td><td class="summary">Set a new goal for the TF republisher.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf.html#tf_republish_set_loop/1">tf_republish_set_loop/1</a></td><td class="summary">Toggle looping from end time to start time.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf.html#tf_republish_set_pose/2">tf_republish_set_pose/2</a></td><td class="summary">Update the transform of a frame in the TF republisher.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf.html#tf_republish_set_progress/1">tf_republish_set_progress/1</a></td><td class="summary">Advance republisher to some point in time.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf.html#tf_republish_set_realtime_factor/1">tf_republish_set_realtime_factor/1</a></td><td class="summary">Change the realtime factor.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf.html#tf_republish_set_time/1">tf_republish_set_time/1</a></td><td class="summary">Set the current time of the TF republisher.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf.html#tf_set_pose/3">tf_set_pose/3</a></td><td class="summary">Update the position of an object.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="tf_mongo.html">tf_mongo.pl</a></span><span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="tf_mongo.html#tf_mng_drop/0">tf_mng_drop/0</a></td><td class="summary">Drops all documents in the TF database collection.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf_mongo.html#tf_mng_lookup/6">tf_mng_lookup/6</a></td><td class="summary">Retrieve all transforms of frame within some time interval.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf_mongo.html#tf_mng_lookup_all/1">tf_mng_lookup_all/1</a></td><td class="summary">Retrieve latest transform of each frame.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf_mongo.html#tf_mng_lookup_all/2">tf_mng_lookup_all/2</a></td><td class="summary">Retrieve latest transform of each frame.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf_mongo.html#tf_mng_store/3">tf_mng_store/3</a></td><td class="summary">Store a transform in mongo DB.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf_mongo.html#tf_mng_trajectory/4">tf_mng_trajectory/4</a></td><td class="summary">Read all transforms associated to a frame in given time interval.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf_mongo.html#tf_mng_tree/2">tf_mng_tree/2</a></td><td class="summary">Loads full TF tree for given timestamp.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="tf_mongo.html#tf_mng_tree_lookup/3">tf_mng_tree_lookup/3</a></td><td class="summary">Retrieve pose of named frame from a previously created TF tree.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+</table>
+
+</body>
+</html>

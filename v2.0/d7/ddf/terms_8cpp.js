@@ -1,0 +1,27 @@
+var terms_8cpp =
+[
+    [ "RETURN_ATOM_RULE", "d7/ddf/terms_8cpp.html#ab07d8eaf2e4c96721eca22dc9bad3717", null ],
+    [ "RETURN_FUNCTION_RULE", "d7/ddf/terms_8cpp.html#a38036ae9c6c85d9bb49aff42c01054ac", null ],
+    [ "RETURN_TERM_RULE", "d7/ddf/terms_8cpp.html#ac995289c736b88a23295e7e79e3ed1da", null ],
+    [ "RETURN_VAR_RULE", "d7/ddf/terms_8cpp.html#ac75f1612d4d1b613f5c8154f2c8d36ca", null ],
+    [ "atom", "d7/ddf/terms_8cpp.html#a9e3756063d48d2e2ed6b11de098b5f41", null ],
+    [ "atom_regular", "d7/ddf/terms_8cpp.html#a1f6291151c788ca19d48a940fd4791a4", null ],
+    [ "atomic", "d7/ddf/terms_8cpp.html#ad3ab3e71cd117736bc3b78d650a1e627", null ],
+    [ "atomic_list", "d7/ddf/terms_8cpp.html#abdc9f9c06a6d7f46d9b9c9d4b0471037", null ],
+    [ "blank", "d7/ddf/terms_8cpp.html#a50a79c614f4433ebc1996b219d86e0e1", null ],
+    [ "function", "d7/ddf/terms_8cpp.html#a5c917ef49b9ea2d5ab29aba165827dc8", null ],
+    [ "iri", "d7/ddf/terms_8cpp.html#a7650e556d32a5b3fdddbaa96cd714957", null ],
+    [ "key_value_pair", "d7/ddf/terms_8cpp.html#a15bc935c50a88d78f7eecf2a3ff66356", null ],
+    [ "nil", "d7/ddf/terms_8cpp.html#a5d2b2e55cdab261648685784fea88603", null ],
+    [ "number", "d7/ddf/terms_8cpp.html#a3c0e1ef1731e134332d9d271e06b0130", null ],
+    [ "option", "d7/ddf/terms_8cpp.html#a68a3b88b4b929c11d0df2ac514242e61", null ],
+    [ "options", "d7/ddf/terms_8cpp.html#aecc0d97e0b9a5bc1c35a44777f2e3dbd", null ],
+    [ "options_or_nil", "d7/ddf/terms_8cpp.html#a89786c15a1867a6deee81afb86aab5df", null ],
+    [ "string", "d7/ddf/terms_8cpp.html#a9c1e5ea8efa4d1a363a78c22d531e712", null ],
+    [ "term", "d7/ddf/terms_8cpp.html#ada290cbf9e5dffe5c9c206caecda1b6c", null ],
+    [ "term_and_function", "d7/ddf/terms_8cpp.html#aedfa57564aaa5c878cd8aa0cdab929b1", null ],
+    [ "var", "d7/ddf/terms_8cpp.html#a000c8c9ef41a9a0ea0d47d6ac787d4d8", null ],
+    [ "var_question", "d7/ddf/terms_8cpp.html#a09bbb8fc3e2e20185d4fd5f8c3092e2e", null ],
+    [ "var_upper", "d7/ddf/terms_8cpp.html#a3e837141887d7dc9e7a68ed7183446cb", null ],
+    [ "xsd", "d7/ddf/terms_8cpp.html#a9ce845a49b864320f998351298c42938", null ]
+];

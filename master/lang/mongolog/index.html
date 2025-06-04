@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>mongolog</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="wiki">mongolog</h1>
+
+<p>
+The main purpose of <code>mongolog</code> is to run logic programs
+with facts that are stored in a mongo database.
+Logic programs are translated into <b>aggregation pipelines</b> and executed server-side.
+This keeps the IO troughput small as the data is transformed and combined server-side.</p>
+
+<p>
+The current implementation has some limitations and does not
+support the full ISO standard.
+One of the limitations is that rules cannot be asserted
+into the mongo database, but are baked into the aggregation pipeline.
+Another limitation is that <b>recursion in rules is not allowed</b>.
+However, many other aspects are supported by <code>mongolog</code>:</p>
+<ul>
+<li>conjunctive and disjunctive queries;</li>
+<li>negation as failure;</li>
+<li>cut operator;</li>
+<li>arithmetic expressions and operators;</li>
+<li>data structures: atoms, numbers, compound terms, lists, variables;</li>
+<li>comparison operators;</li>
+<li>control and meta predicates;</li>
+<li>findall and list predicates;</li>
+<li>typechecking predicates;</li>
+<li>database interaction (for facts only);</li>
+<li>unification of compound terms (does not handle implicit instantiation yet).</li>
+</ul>
+
+<h2 class="wiki plfiles">Prolog files</h2>
+
+<table class="summary">
+<tr><th colspan="3" class="file"><span style="float:left"><a href="__init__.html">__init__.pl</a></span><span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="arithmetic.html">arithmetic.pl</a></span>&nbsp; -- Arithmetic predicates in mongolog programs.<span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="atoms.html">atoms.pl</a></span>&nbsp; -- Analysing and constructing atoms in mongolog programs.<span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="comparison.html">comparison.pl</a></span>&nbsp; -- Comparison of arbitrary terms in mongolog programs.<span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="context.html">context.pl</a></span>&nbsp; -- Accessing compile-context in mongolog programs.<span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="control.html">control.pl</a></span>&nbsp; -- Control structures in mongolog programs.<span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="database.html">database.pl</a></span>&nbsp; -- Storage of predicates in mongolog programs.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="database.html#mongolog_add_predicate/3">mongolog_add_predicate/3</a></td><td class="summary">Register a predicate that stores facts in the database.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="database.html#mongolog_drop_predicate/1">mongolog_drop_predicate/1</a></td><td class="summary">Delete all facts associated to predicate with given functor.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="findall.html">findall.pl</a></span>&nbsp; -- Finding all solutions to a goal in mongolog programs.<span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="fluents.html">fluents.pl</a></span>&nbsp; -- Fluents in mongolog programs.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="fluents.html#mongolog_add_fluent/3">mongolog_add_fluent/3</a></td><td class="summary">Same as <a href="fluents.html#mongolog_add_fluent/4">mongolog_add_fluent/4</a> with empty options list.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="fluents.html#mongolog_add_fluent/4">mongolog_add_fluent/4</a></td><td class="summary">Register a fluent predicate that stores facts in the database.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="fluents.html#mongolog_drop_fluent/1">mongolog_drop_fluent/1</a></td><td class="summary">Delete all facts associated to predicate with given functor.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="lists.html">lists.pl</a></span>&nbsp; -- List manipulation in mongolog programs.<span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="meta.html">meta.pl</a></span>&nbsp; -- Meta predicates in mongolog programs.<span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="mongolog.html">mongolog.pl</a></span>&nbsp; -- Compiling goals into aggregation pipelines.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="mongolog.html#is_mongolog_predicate/1">is_mongolog_predicate/1</a></td><td class="summary">True if PredicateIndicator corresponds to a known mongolog predicate.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="mongolog.html#mongolog_call/1">mongolog_call/1</a></td><td class="summary">Same as <a href="mongolog.html#mongolog_call/2">mongolog_call/2</a> with empty options list.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="mongolog.html#mongolog_call/2">mongolog_call/2</a></td><td class="summary">Call Goal by translating it into an aggregation pipeline.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="projection.html">projection.pl</a></span>&nbsp; -- Projecting the consequences of rules.<span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="sgml.html">sgml.pl</a></span>&nbsp; -- XML namespaces in mongolog programs.<span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="terms.html">terms.pl</a></span>&nbsp; -- Analysing and constructing terms in mongolog programs.<span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="typecheck.html">typecheck.pl</a></span>&nbsp; -- Verify type of a term in mongolog programs.<span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="unification.html">unification.pl</a></span>&nbsp; -- Unification of terms in mongolog programs.<span style="float:right"></span></th></tr>
+</table>
+
+</body>
+</html>

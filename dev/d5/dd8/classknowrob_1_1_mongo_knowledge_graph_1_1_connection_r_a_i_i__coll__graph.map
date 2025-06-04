@@ -1,0 +1,8 @@
+<map id="knowrob::MongoKnowledgeGraph::ConnectionRAII" name="knowrob::MongoKnowledgeGraph::ConnectionRAII">
+<area shape="rect" id="node1" title=" " alt="" coords="129,323,371,364"/>
+<area shape="rect" id="node2" href="$d7/de5/classknowrob_1_1_mongo_knowledge_graph.html" title=" " alt="" coords="5,233,247,260"/>
+<area shape="rect" id="node3" href="$d4/d8b/classknowrob_1_1_queryable_storage.html" title=" " alt="" coords="25,157,227,184"/>
+<area shape="rect" id="node4" href="$d6/d2d/classknowrob_1_1_storage.html" title=" " alt="" coords="58,81,194,108"/>
+<area shape="rect" id="node5" href="$de/de7/classknowrob_1_1_data_source_handler.html" title=" " alt="" coords="20,5,232,32"/>
+<area shape="rect" id="node6" href="$d7/d18/structknowrob_1_1mongo_1_1_triple_store.html" title=" " alt="" coords="271,233,479,260"/>
+</map>

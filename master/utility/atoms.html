@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>atoms.pl -- Analysing and constructing atoms.</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>atoms.pl -- Analysing and constructing atoms.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="atom_ensure_prefix/3"><b class="pred">atom_ensure_prefix</b><var class="arglist">(?Atom:atom, ?Prefix:atom, -AtomResolved:atom)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Add a prefix to an atom.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="atom_ensure_suffix/3"><b class="pred">atom_ensure_suffix</b><var class="arglist">(?Atom:atom, ?Suffix:atom, -AtomResolved:atom)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Add a suffix to an atom.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="atom_remove_prefix/3"><b class="pred">atom_remove_prefix</b><var class="arglist">(?Atom:atom, ?Prefix:atom, -AtomResolved:atom)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Removes prefix from atom.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="lowercase/2"><b class="pred">lowercase</b><var class="arglist">(?Upper:atom, ?Lower:atom)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Convert uppercase and lowercase.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="camelcase/2"><b class="pred">camelcase</b><var class="arglist">(?Underscore:atom, ?CamelCase:atom)</var></a> is <b class="det">det</b></dt><dd class="defbody">Convert lowercase with underscore and camelcase.
+For example, <code>camelcase(hello_world, 'HelloWorld')</code>.
+Works in both directions.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="lower_camelcase/2"><b class="pred">lower_camelcase</b><var class="arglist">(?Underscore:atom, ?LowerCamelCase:atom)</var></a> is <b class="det">det</b></dt><dd class="defbody">Convert lowercase with underscore and camelcase with
+leading lowercase character.
+For example, <code>lower_camelcase(hello_world, helloWorld)</code>.
+Works in both directions.</dd>
+</dl>
+
+</body>
+</html>

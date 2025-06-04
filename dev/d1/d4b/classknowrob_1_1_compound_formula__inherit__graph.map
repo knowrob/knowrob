@@ -1,0 +1,11 @@
+<map id="knowrob::CompoundFormula" name="knowrob::CompoundFormula">
+<area shape="rect" id="node1" title=" " alt="" coords="384,107,593,133"/>
+<area shape="rect" id="node4" href="$df/d53/classknowrob_1_1_conjunction.html" title=" " alt="" coords="649,5,812,32"/>
+<area shape="rect" id="node6" href="$d5/d58/classknowrob_1_1_disjunction.html" title=" " alt="" coords="651,56,810,83"/>
+<area shape="rect" id="node7" href="$d5/d74/classknowrob_1_1_implication.html" title=" " alt="" coords="651,107,810,133"/>
+<area shape="rect" id="node8" href="$de/db7/classknowrob_1_1_modal_formula.html" title=" " alt="" coords="641,157,820,184"/>
+<area shape="rect" id="node9" href="$d4/d03/classknowrob_1_1_negation.html" title=" " alt="" coords="658,208,803,235"/>
+<area shape="rect" id="node2" href="$d4/de3/classknowrob_1_1_formula.html" title=" " alt="" coords="197,107,336,133"/>
+<area shape="rect" id="node3" href="$db/dc5/classknowrob_1_1_printable.html" title=" " alt="" coords="5,107,149,133"/>
+<area shape="rect" id="node5" href="$d5/da8/classknowrob_1_1_simple_conjunction.html" title=" " alt="" coords="868,5,1076,32"/>
+</map>

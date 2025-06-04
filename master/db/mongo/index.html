@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>mongo</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="wiki">A mongo DB client for Prolog</h1>
+
+<p>
+This package implements a mongo client using libmongoc-1.0.0,
+and declares a couple of Prolog predicates to interact with mongo DB
+from Prolog code.
+This includes predicates used to store, update or retrieve documents,
+as well as exporting, importing collections, and setting up their
+search indices.</p>
+
+<p>
+One usecase is logging of ROS messages,
+in which case
+each DB collection corresponds to a ROS topic and is named accordingly.
+The records in collections are messages published on the topic
+and their structure is given by ROS message definitions.
+Using <a href="https://github.com/code-iai/ros-mongodb_log">mongodb-log</a>
+ROS messages can be recorded in advance or while KnowRob is running.
+ROS messages are usually stamped, and thus a timestamp value ends up
+in the DB records that should be used for indexing such that
+KnowRob can quickly find records given some time instant.</p>
+
+<p>
+As an example, consider the following DB layout
+which is based on the <a href="http://docs.ros.org/api/geometry_msgs/html/msg/PoseStamped.html">PoseStamped</a> message
+send via the communication topic <code>tf</code>:</p>
+
+<pre class="code">
+{"tf": {
+    "header": {
+        "seq":      "integer",
+        "stamp":    "time",
+        "frame_id": "string"
+    },
+    "pose": {
+        "position":    { "x": "double", "y": "double", "z": "double" },
+        "orientation": { "x": "double", "y": "double", "z": "double", "w": "double" }
+    }
+}}</pre>
+
+<p>
+In the layout, the name <code>tf</code> corresponds to a named collection in the DB that collects
+recorded PoseStamped messages send via the named topic <code>tf</code>.
+The collection should be indexed by the key <code>header.stamp</code> such that the mongo server
+can quickly filter out records based on the timestamp when they were acquired.
+<var>Note</var> in case of array values (as for tf) it is important
+that the indexed key has identical values for all array members (e.g., the same header stamp
+in case of tf) -- however, <b>it is advised to avoid generating indices over arrays</b>.
+For tf, this means that it might be best to store each tranform in an individual document.</p>
+
+<h3 class="wiki">Querying mongo</h3>
+
+<p>
+Documents in mongo DB can be retrieved by first creating a cursor on
+a named collection, and then reading individual documents until
+the cursor has reached the last document matching the query.
+Cursors can limit the results, sort them, and filter them
+according to a pattern given in the query.
+The query is generally given as Prolog list holding two elements:
+the key (or operator) and the value.
+However, to avoid conversion problems, the value must be wrapped in an atom indicating its type.</p>
+
+<p>
+As an example, below is a query that retrieves documents from a collection named <b>triples</b>.
+The cursor only retrieves documents where the <b>subject</b> key has the value "Obj1",
+and where the <b>begin</b> field has a date value smaller then the Unix timestamp <b>1579888948.52</b>.</p>
+
+<pre class="code" ext="Prolog">
+mng_cursor_create(roslog,triples,Cursor),
+mng_cursor_filter(Cursor,['subject',['$eq',string('Obj1')]]),
+mng_cursor_filter(Cursor,['begin',['$lte',time(1579888948.52)]]),
+mng_cursor_next(Cursor,Doc),
+mng_cursor_destroy(Cursor).</pre>
+
+<p>
+<var>Note</var> Make sure to destroy a cursor once you are done with it. Usually you would want to wrap the cursor operation into a call of <b><a class="builtin" href="http://www.swi-prolog.org/pldoc/man?predicate=setup_call_cleanup/3">setup_call_cleanup/3</a></b>.</p>
+
+<p>
+More complex filters may use, e.g., disjunction as in:</p>
+
+<pre class="code" ext="Prolog">
+mng_cursor_filter(Cursor,['$or',
+    array([['end',    ['$gte',time(Stamp)]],
+           ['end',    ['$exists',bool(0)]]])]).</pre>
+
+<p>
+These expressions are generically mapped to BSON terms. Hence,
+any command supported by your mongo server can be written in such
+an expression.</p>
+
+<h2 class="wiki plfiles">Prolog files</h2>
+
+<table class="summary">
+<tr><th colspan="3" class="file"><span style="float:left"><a href="__init__.html">__init__.pl</a></span><span style="float:right"></span></th></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="client.html">client.pl</a></span>&nbsp; -- A mongo DB client for Prolog.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="client.html#mng_bulk_write/3">mng_bulk_write/3</a></td><td class="summary">Performs bulk operations.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_collection/2">mng_collection/2</a></td><td class="summary">True if Collection is an existing collection in the named database.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_cursor_ascending/2">mng_cursor_ascending/2</a></td><td class="summary">Configure a cursor to yield documents in ascending order.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_cursor_create/3">mng_cursor_create/3</a></td><td class="summary">Creates a new query cursor.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_cursor_descending/2">mng_cursor_descending/2</a></td><td class="summary">Configure a cursor to yield documents in descending order.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_cursor_destroy/1">mng_cursor_destroy/1</a></td><td class="summary">Destroys a query cursor.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_cursor_filter/2">mng_cursor_filter/2</a></td><td class="summary">Appends an additional condition for documents matching the cursor.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_cursor_limit/2">mng_cursor_limit/2</a></td><td class="summary">Limit the maximum number of documents a cursor may yield.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_cursor_materialize/2">mng_cursor_materialize/2</a></td><td class="summary">Yields results of the given database cursor, if any.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_cursor_next/2">mng_cursor_next/2</a></td><td class="summary">Yields the next matching document of the given database cursor, if any.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_db_name/1">mng_db_name/1</a></td><td class="summary">Get the name of the database the client is connected to.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_distinct_values/4">mng_distinct_values/4</a></td><td class="summary">Find all distinct values associated to Key in the given named database collection.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_drop/2">mng_drop/2</a></td><td class="summary">Drop a named collection.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_dump/2">mng_dump/2</a></td><td class="summary">Dump a named database by calling the <code>mongodump</code> commandline tool.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_dump_collection/3">mng_dump_collection/3</a></td><td class="summary">Dump a named database collection by calling the <code>mongodump</code> commandline tool.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_find/4">mng_find/4</a></td><td class="summary">Create a database cursor with given filter query and yield its results.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_get_db/3">mng_get_db/3</a></td><td class="summary">Get database and collection name for type of data denoted by DBType identifier.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_get_dict/3">mng_get_dict/3</a></td><td class="summary">Get a key-value pair from a dictionary.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_index_create/2">mng_index_create/2</a></td><td class="summary">Creates compound search indices.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_index_create/3">mng_index_create/3</a></td><td class="summary">Creates a compound search index.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_one_db/2">mng_one_db/2</a></td><td class="summary">Get a special database collection with just one empty document.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_operator/2">mng_operator/2</a></td><td class="summary">A mapping between Prolog operators and mongo DB operators.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_query_value/2">mng_query_value/2</a></td><td class="summary">Creates a query document from a query term.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_regex_prefix/2">mng_regex_prefix/2</a></td><td class="summary">Create a regex pattern for matching entries with some prefix.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_remove/3">mng_remove/3</a></td><td class="summary">Removes all documents matching Query from a named collection.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_restore/2">mng_restore/2</a></td><td class="summary">Restore named database by calling the <code>mongorestore</code> commandline tool.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_store/3">mng_store/3</a></td><td class="summary">Stores a document in a named database collection.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_strip/4">mng_strip/4</a></td><td class="summary">Strips a value term from its operator and type.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_strip_operator/3">mng_strip_operator/3</a></td><td class="summary">Strip the operator of a value term.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_strip_type/3">mng_strip_type/3</a></td><td class="summary">Strip the type of a value term.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_strip_variable/2">mng_strip_variable/2</a></td><td class="summary">Strips variable from a value term.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_typed_value/2">mng_typed_value/2</a></td><td class="summary">Ensure that Term includes a unary type term.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_unflatten/2">mng_unflatten/2</a></td><td class="summary">Translates a flattened document into a nested one.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_unwatch/1">mng_unwatch/1</a></td><td class="summary">Stop an existing change stream associated to the given identifier.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_update/4">mng_update/4</a></td><td class="summary">Updates all documents in a named collection that match Query.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_uri/1">mng_uri/1</a></td><td class="summary">Get the URI connection string.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="client.html#mng_watch/5">mng_watch/5</a></td><td class="summary">Start a new change stream operation on given collection and filter documents with given aggregation pipeline.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+</table>
+
+</body>
+</html>

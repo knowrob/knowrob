@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>subgraph.pl -- subgraph-of relationship between RDF graphs.</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>subgraph.pl -- subgraph-of relationship between RDF graphs.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="load_graph_structure/0"><b class="pred">load_graph_structure</b></a> is <b class="det">det</b></dt><dd class="defbody">Avoid that there are any orphan graphs.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="add_subgraph/2"><b class="pred">add_subgraph</b><var class="arglist">(+Sub, +Sup)</var></a> is <b class="det">det</b></dt><dd class="defbody">Adds the subgraph-of relation between two named graphs.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Sub</var></td><td class="argdescr">- Name of the subgraph.</td></tr>
+<tr><td><var>Sup</var></td><td class="argdescr">- Name of the super-graph.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="get_supgraphs/2"><b class="pred">get_supgraphs</b><var class="arglist">(+GraphName, -SupGraphs)</var></a> is <b class="det">det</b></dt><dd class="defbody">Get all super-graphs of a named graph. This minds transitivity of the relation.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>GraphName</var></td><td class="argdescr">- Name of a graph.</td></tr>
+<tr><td><var>SupGraphs</var></td><td class="argdescr">- List of super-graphs.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="get_subgraphs/2"><b class="pred">get_subgraphs</b><var class="arglist">(+GraphName, -SubGraphs)</var></a> is <b class="det">det</b></dt><dd class="defbody">Get all subgraphs of a named graph. This minds transitivity of the relation.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>GraphName</var></td><td class="argdescr">- Name of a graph.</td></tr>
+<tr><td><var>SubGraphs</var></td><td class="argdescr">- List of subgraphs.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</body>
+</html>

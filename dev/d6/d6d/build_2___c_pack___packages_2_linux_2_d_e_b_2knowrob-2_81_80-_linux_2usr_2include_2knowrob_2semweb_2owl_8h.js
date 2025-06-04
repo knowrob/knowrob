@@ -1,0 +1,25 @@
+var build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob_2_81_80__linux_2usr_2include_2knowrob_2semweb_2owl_8h =
+[
+    [ "isAnnotationPropertyIRI", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#afbc66b25da18a255701b3012aa948788", null ],
+    [ "isClassIRI", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#a4cac3fe8e5e50419b6ad1b79f3c285f7", null ],
+    [ "isDatatypePropertyIRI", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#a84f618800c0ac17c1960cc800a925a29", null ],
+    [ "isInverseOfIRI", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#abaa1e22d78c06115fcba2cbf7e3c1c86", null ],
+    [ "isObjectPropertyIRI", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#afe7c22ec9748c826bd60a1a6528fbe53", null ],
+    [ "isReflexivePropertyIRI", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#aed5b4687b4b0aefccc7b1060f8caf805", null ],
+    [ "isSymmetricPropertyIRI", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#a74e5779e4f72c4a49e6b59615f834b93", null ],
+    [ "isTransitivePropertyIRI", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#acdb1fc94cb9bb2e5721da8e5e7ffbaad", null ],
+    [ "AnnotationProperty", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#ad1f8c86a3dd15b4115e91754cf294481", null ],
+    [ "Class", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#adb2975fff2389a68feebcebc3ab6dcbd", null ],
+    [ "DatatypeProperty", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#af8976471ea5a3d7e47ab2cb5654ce312", null ],
+    [ "imports", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#a8a1cc74b1bdf7bc740a6251cc7dafc14", null ],
+    [ "inverseOf", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#a08aef27f36c881bf1866dc608c2c2477", null ],
+    [ "NamedIndividual", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#a60830b899d37180c3d8bc9d26d044c79", null ],
+    [ "ObjectProperty", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#a2589023a7f06a221210797ad314e0aa6", null ],
+    [ "prefix", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#a8722f339297a6fa0cb560befcf3e4cf5", null ],
+    [ "ReflexiveProperty", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#ac02dbed274f47a3f9d1f107c2ff84f44", null ],
+    [ "Restriction", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#a7b66c67b95518dee5e330e62f32cd287", null ],
+    [ "SymmetricProperty", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#afedab086a5cb4a8a1beb95a07fe05548", null ],
+    [ "Thing", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#a883eb3061ec2b85d40d42f247bbea313", null ],
+    [ "TransitiveProperty", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#a56fe7aa02f53088e32f31d9fad8e3635", null ],
+    [ "versionInfo", "d6/d6d/build_2___c_pack___packages_2_linux_2_d_e_b_2knowrob-2_81_80-_linux_2usr_2include_2knowrob_2semweb_2owl_8h.html#a6d4c1329606e02e86bf12a4e390f0f98", null ]
+];

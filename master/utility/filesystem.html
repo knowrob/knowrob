@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>filesystem.pl -- Interacting with the filesystem.</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>filesystem.pl -- Interacting with the filesystem.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="path_delimiter/1"><b class="pred">path_delimiter</b><var class="arglist">(?Delimiter)</var></a></dt><dd class="defbody"><var>Delimiter</var> for filesystem paths.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="path_concat/3"><b class="pred">path_concat</b><var class="arglist">(+Prefix, +Suffix, ?Path)</var></a></dt><dd class="defbody">Concatenate path prefix with path suffix.
+Makes sure that one filesytem delimiter is added between
+<var>Prefix</var> and <var>Suffix</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="path_split/2"><b class="pred">path_split</b><var class="arglist">(?Path, ?PathList)</var></a></dt><dd class="defbody">Splits <var>Path</var> at delimiter characters and
+unifies with splitted path elements <var>PathList</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="mkdir/1"><b class="pred">mkdir</b><var class="arglist">(+Dir)</var></a></dt><dd class="defbody">Create directory at <var>Dir</var> if it does not yet exist.
+Also creates all not-existing parent directories.</dd>
+</dl>
+
+</body>
+</html>

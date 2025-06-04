@@ -1,0 +1,14 @@
+<map id="knowrob::Formula" name="knowrob::Formula">
+<area shape="rect" id="node1" title=" " alt="" coords="197,208,336,235"/>
+<area shape="rect" id="node3" href="$d4/d8a/classknowrob_1_1_compound_formula.html" title=" " alt="" coords="384,132,593,159"/>
+<area shape="rect" id="node10" href="$da/da4/classknowrob_1_1_predicate.html" title=" " alt="" coords="415,259,562,285"/>
+<area shape="rect" id="node2" href="$db/dc5/classknowrob_1_1_printable.html" title=" " alt="" coords="5,208,149,235"/>
+<area shape="rect" id="node4" href="$df/d53/classknowrob_1_1_conjunction.html" title=" " alt="" coords="649,5,812,32"/>
+<area shape="rect" id="node6" href="$d5/d58/classknowrob_1_1_disjunction.html" title=" " alt="" coords="651,56,810,83"/>
+<area shape="rect" id="node7" href="$d5/d74/classknowrob_1_1_implication.html" title=" " alt="" coords="651,107,810,133"/>
+<area shape="rect" id="node8" href="$de/db7/classknowrob_1_1_modal_formula.html" title=" " alt="" coords="641,157,820,184"/>
+<area shape="rect" id="node9" href="$d4/d03/classknowrob_1_1_negation.html" title=" " alt="" coords="658,208,803,235"/>
+<area shape="rect" id="node5" href="$d5/da8/classknowrob_1_1_simple_conjunction.html" title=" " alt="" coords="868,5,1076,32"/>
+<area shape="rect" id="node11" href="$d3/d74/classknowrob_1_1_bottom.html" title=" " alt="" coords="663,259,798,285"/>
+<area shape="rect" id="node12" href="$d9/d01/classknowrob_1_1_top.html" title=" " alt="" coords="677,309,785,336"/>
+</map>

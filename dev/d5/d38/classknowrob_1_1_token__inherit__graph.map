@@ -1,0 +1,9 @@
+<map id="knowrob::Token" name="knowrob::Token">
+<area shape="rect" id="node1" title=" " alt="" coords="341,80,463,107"/>
+<area shape="rect" id="node3" href="$db/d98/classknowrob_1_1_answer.html" title=" " alt="" coords="240,155,375,181"/>
+<area shape="rect" id="node7" href="$df/d42/classknowrob_1_1_end_of_evaluation.html" title=" " alt="" coords="399,155,594,181"/>
+<area shape="rect" id="node2" href="$db/dc5/classknowrob_1_1_printable.html" title=" " alt="" coords="330,5,474,32"/>
+<area shape="rect" id="node4" href="$de/d49/classknowrob_1_1_answer_dont_know.html" title=" " alt="" coords="5,229,207,256"/>
+<area shape="rect" id="node5" href="$d1/dbb/classknowrob_1_1_answer_no.html" title=" " alt="" coords="231,229,383,256"/>
+<area shape="rect" id="node6" href="$db/d6c/classknowrob_1_1_answer_yes.html" title=" " alt="" coords="407,229,562,256"/>
+</map>

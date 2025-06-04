@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>rdf_tests.pl -- A test environment for running tests with RDF data.</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>rdf_tests.pl -- A test environment for running tests with RDF data.</h1>
+
+<p>
+A RDF file can be loaded in the set-up step, and all assertions
+written into a special named graph that is deleted again in cleanup step.</p>
+
+<p>
+Example:</p>
+
+<pre class="code" ext="">
+:- begin_rdf_tests('my_module', 'package://my_pkg/rdf/foo.rdf').
+
+test('some test') :- fail.
+
+:- end_tests('my_module').</pre>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="begin_rdf_tests/3"><b class="pred">begin_rdf_tests</b><var class="arglist">(+Name, +RDFFile, +Options)</var></a> is <b class="det">det</b></dt><dd class="defbody">Begin unit testing code section with RDF data.
+Load the RDF data during setup, and unload all asserted facts
+and RDF file on cleanup.
+Calls internally <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=begin_tests/2">begin_tests/2</a>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="begin_rdf_tests/2"><b class="pred">begin_rdf_tests</b><var class="arglist">(+Name, +RDFFile)</var></a> is <b class="det">det</b></dt><dd class="defbody">Same as <a href="rdf_tests.html#begin_rdf_tests/3">begin_rdf_tests/3</a> with empty options list.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="end_rdf_tests/1"><b class="pred">end_rdf_tests</b><var class="arglist">(+Name)</var></a> is <b class="det">det</b></dt><dd class="defbody">End unit testing code section with RDF data.</dd>
+</dl>
+
+</body>
+</html>

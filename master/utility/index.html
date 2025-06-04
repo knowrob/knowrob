@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>utility</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="dir">utility</h1>
+
+<h2 class="wiki plfiles">Prolog files</h2>
+
+<table class="summary">
+<tr><th colspan="3" class="file"><span style="float:left"><a href="algebra.html">algebra.pl</a></span>&nbsp; -- Performing algebraic operations.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="algebra.html#matrix/3">matrix/3</a></td><td class="summary">True if Matrix is the transformation matrix build from Translation and Quaternion.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="algebra.html#matrix_translate/3">matrix_translate/3</a></td><td class="summary">True if Out unifies with In translated by Offset.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="algebra.html#quaternion_multiply/3">quaternion_multiply/3</a></td><td class="summary">True if Multiplied is the result of multiplying Quaternion1 with Quaternion2.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="algebra.html#transform_between/3">transform_between/3</a></td><td class="summary">True if Relative is the relative transform between the target frame of Transform1 and Transform2.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="algebra.html#transform_close_to/3">transform_close_to/3</a></td><td class="summary">True if the squared distance between Transform1 and Transform2 is less then or equal to Delta.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="algebra.html#transform_invert/2">transform_invert/2</a></td><td class="summary">True if Inverted is the inverted transform of Transform (i.e., with inverted reference and source frame).</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="algebra.html#transform_multiply/3">transform_multiply/3</a></td><td class="summary">True if Product is Transform1 x Transform2.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="atoms.html">atoms.pl</a></span>&nbsp; -- Analysing and constructing atoms.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="atoms.html#atom_ensure_prefix/3">atom_ensure_prefix/3</a></td><td class="summary">Add a prefix to an atom.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="atoms.html#atom_ensure_suffix/3">atom_ensure_suffix/3</a></td><td class="summary">Add a suffix to an atom.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="atoms.html#atom_remove_prefix/3">atom_remove_prefix/3</a></td><td class="summary">Removes prefix from atom.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="atoms.html#camelcase/2">camelcase/2</a></td><td class="summary">Convert lowercase with underscore and camelcase.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="atoms.html#lower_camelcase/2">lower_camelcase/2</a></td><td class="summary">Convert lowercase with underscore and camelcase with leading lowercase character.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="atoms.html#lowercase/2">lowercase/2</a></td><td class="summary">Convert uppercase and lowercase.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="filesystem.html">filesystem.pl</a></span>&nbsp; -- Interacting with the filesystem.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="filesystem.html#mkdir/1">mkdir/1</a></td><td class="summary">Create directory at Dir if it does not yet exist.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="filesystem.html#path_concat/3">path_concat/3</a></td><td class="summary">Concatenate path prefix with path suffix.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="filesystem.html#path_delimiter/1">path_delimiter/1</a></td><td class="summary">Delimiter for filesystem paths.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="filesystem.html#path_split/2">path_split/2</a></td><td class="summary">Splits Path at delimiter characters and unifies with splitted path elements PathList.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="functional.html">functional.pl</a></span>&nbsp; -- Functional programming.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="functional.html#range/3">range/3</a></td><td class="summary">Generate a list of integers in a given range.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="functional.html#reduce/4">reduce/4</a></td><td class="summary">The predicate is first called for the first element of the list, the start value and an intermediate result.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="functional.html#zip/3">zip/3</a></td><td class="summary">Zip the lists 1 and 2 together to get list3.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="functional.html#zipm/3">zipm/3</a></td><td class="summary">Zip the lists 1 and 2 together to get list3.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="logging.html">logging.pl</a></span>&nbsp; -- Logging messages.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="logging.html#log_error_and_fail/1">log_error_and_fail/1</a></td><td class="summary">Call <a href="logging.html#log_message/2">log_message/2</a> and fail afterwards.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="logging.html#log_message/2">log_message/2</a></td><td class="summary">Append given term to the logging output.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="module.html">module.pl</a></span>&nbsp; -- Extended Prolog modules.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="module.html#interface/2">interface/2</a></td><td class="summary">Defines a new interface.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="module.html#use_directory/1">use_directory/1</a></td><td class="summary">Load initialization file in directory.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="threads.html">threads.pl</a></span>&nbsp; -- Threading utilities.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="threads.html#message_queue_materialize/2">message_queue_materialize/2</a></td><td class="summary">Retrieves and removes Term from queue.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="threads.html#worker_pool_create/1">worker_pool_create/1</a></td><td class="summary">Same as <a href="threads.html#worker_pool_create/2">worker_pool_create/2</a> with empty options.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="threads.html#worker_pool_create/2">worker_pool_create/2</a></td><td class="summary">Creates a new thread pool with worker threads.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="threads.html#worker_pool_join/2">worker_pool_join/2</a></td><td class="summary">Block the current thread until work is done.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="threads.html#worker_pool_start_work/3">worker_pool_start_work/3</a></td><td class="summary">Schedules a new work goal.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="threads.html#worker_pool_stop_work/2">worker_pool_stop_work/2</a></td><td class="summary">Unschedule any remaining work associated to WorkID.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="url.html">url.pl</a></span>&nbsp; -- Resolving URLs to local filesystem.<span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="url.html#ros_package_iri/2">ros_package_iri/2</a></td><td class="summary">Register an IRI for a ROS package.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="url.html#url_resolve/2">url_resolve/2</a></td><td class="summary">Resolve a URL to local filesystem.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+</table>
+
+</body>
+</html>

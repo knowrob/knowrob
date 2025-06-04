@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>reasoning</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="wiki">KnowRob Reasoning</h1>
+
+<p>
+KnowRob uses the Web Ontology Language (OWL) in combination with
+rule based reasoning powered by SWI Prolog.
+OWL ontologies can be parsed (<a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=owl_parse/1">owl_parse/1</a>) which causes new facts to be
+asserted in the RDF triple store of SWI Prolog.
+SWI Prolog already provides querying with RDFS semantics
+(<a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=rdf_has/3">rdf_has/3</a>, <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=rdfs_individual_of/2">rdfs_individual_of/2</a>).</p>
+
+<p>
+Ontop of the RDFS semantics KnowRob implements a minimal OWL reasoner in Prolog.
+<a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=owl_individual_of/2">owl_individual_of/2</a> checks if a resource satisfies a class description
+according to OWL-Description entailment rules,
+and <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=owl_has/3">owl_has/3</a> checks if a relation can be deduced using OWL inference rules.
+Some OWL2 features such as property chains are also supported,
+but the reasoner is not OWL2 complete.</p>
+
+<p>
+RDF triples may concretely be represented in the RDF triple store of SWI Prolog.
+But KnowRob supports multiple sources for triples including
+computational methods that ground relations in the data structures of the robot's
+control program, or in its senses.
+This concept is called <b>virtual knowledge base</b> in KnowRob.
+Several virtual triple sources are pre-defined in KnowRob
+including computable properties for
+qualitative spatial reasoning (comp_spatial),
+temporal reasoning (knowrob_common),
+ROS tf data (knowrob_memory, knowrob_mongo),
+and SWRL rules (swrl).</p>
+
+<p>
+KnowRob is also capable to handle temporal information,
+allowing robots to reason about past events.
+Please note that OWL is generally considered inappropriate for
+explicating time because it is limited to binary relations.
+One approach to handle time is to <b>reify</b> relations to concepts
+that also have time parameters.
+The ontology used by KnowRob comes with a few reification concepts
+that are handled within KnowRob.
+However, KnowRob also supports explicit time in its QA interface. The time
+specified is used as parameter for the triple store
+(or to select appropiate reifications of relations).
+In case of the default RDF triple store of SWI Prolog,
+all triples are assumed to hold forever.
+However, a dedicated <b>temporalized</b> triple store can be used
+to represent triples that only hold limited time.
+The time value specified in the query is used as parameter
+for the triple store in that case.
+knowrob_mem implements such a temporalized triple store.
+The main interface to access temporalized triples is the
+<a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=holds/2">holds/2</a> predicate:</p>
+
+<pre class="code">
+holds(knowrob:volumeOfObject(Obj, 15.0), 25.0)</pre>
+
+<h3 class="wiki">Action planning</h3>
+
+<p>
+The action model asserts the structure of tasks via plans that decompose them into different steps and phases. Plans further assert a partial ordering between these constituents from which possible sequences of step and phase occurences that would manifest a plan execution can be derived.</p>
+
+<p>
+To infer possible sequences of steps for a given plan, the following can be used:</p>
+
+<pre class="code">
+workflow_sequence(+Plan, ?Steps)</pre>
+
+<p>
+This will internally build up a, so called, endpoint sequence graph (ESG), a datastructure that captures temporal relations between event endpoints (i.e. when they start and when they end), and from which all possible sequences can be sampled.</p>
+
+<p>
+More generally, to read all the steps and phases of a plan, and temporal constraints between them, the following can be used:</p>
+
+<pre class="code">
+workflow_constituents(+Plan, -Constituents, -Constraints)</pre>
+
+<p>
+Where <b>Constraints</b> is a list of binary relations between steps/phases of the plan, for example, the constraint <code>&lt;(A,B)</code> means that the occurance of an event of type <b>A</b> is strictly before the occurance of an event of type <b>B</b>.</p>
+
+<h3 class="wiki">Action detection</h3>
+
+<p>
+A library of plans can be casted as grammar for a parser that yields actions from observed event endpoints which are used as tokens for the parser. This can be used to classify activities given evidence that is more easy to observe such as state changes, contact events, and motions.</p>
+
+<p>
+A parser can be created given a list of plans:</p>
+
+<pre class="code">
+parser_create(Parser,[
+    ptest:'Grasping_WF0',
+    ptest:'Lifting_WF0',
+    ....
+])</pre>
+
+<p>
+Which will create ESG's for each of the plans.</p>
+
+<p>
+The parser runs in its own thread which can be started by calling <a href="parser.html#parser_start/1">parser_start/1</a>. Once started, tokens can be added to the parser using the predicate <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=parser_push_token/2">parser_push_token/2</a>. When done, the parser can be stopped again by calling <a href="parser.html#parser_stop/1">parser_stop/1</a>. This will synchronize all threads, and block until the parser thread exits. A second variant <a href="parser.html#parser_stop/2">parser_stop/2</a> provides the remaining parser output in its second argument.</p>
+
+<pre class="code">
+parser_start(Parser),
+parser_push_token(Parser,tok(0.0,c, -(ptest:'Touching'), ['TestHand','TestObject']),
+...
+parser_stop(Parser,Outputs).</pre>
+
+<p>
+The default mode of the parser is that it yields all actions that are detected no matter if they conflict with each other (i.e. because they provide different interpretations of the same event). However, the predicate <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=parser_start/2">parser_start/2</a> allows to switch to another mode by setting the <b>compose</b> flag in the option list which is the second argument of the predicate. This flag causes the parser to compose individual actions into an activity without conflicting actions.</p>
+
+<h3 class="wiki">Action effects</h3>
+
+<p>
+The effects of actions on objects are derived from the roles the objects play during the action. For example, whenever an object plays the role of being the <b>AlteredObject</b> one of its qualities is being altered to some level. Hence the effect of the action is an alteration of the region of the quality which may be automatically updated by KnowRob after the action has been executed. Other distinct cases are objects being destroyed or created in which case KnowRob updates the lifetime of them, and objects being combined, included, or excluded in which case KnowRob may update relations between these objects.</p>
+
+<p>
+The predicate <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=action_effect/2">action_effect/2</a> relates an action (or task) to its effects, for example:</p>
+
+<pre class="code">
+action_effect(pancake:'CrackingAnEgg', destroyed(pancake:'Egg'))</pre>
+
+<p>
+This states that some <b>Egg</b> is destroyed when <b>CrackingAnEgg</b> tasks are executed. It is also possible to query for tasks that have certain effects by calling this predicate with the first argument ungrounded:</p>
+
+<pre class="code">
+action_effect(Tsk, destroyed(pancake:'Egg'))</pre>
+
+<p>
+Which corresponds to the question <b>how can eggs be destroyed</b>. Finally, with the second argument ungrounded, all known effects of the task are inferred.</p>
+
+<p>
+Some action effects may imply new relations, for example, that one object is part of another after the action has been performed. Consequently, KnowRob also provides a predicate to maintain these relations automatically based on the roles objects play during the action. To infer and assert these relations, the predicate <a class="extmanual" href="http://www.swi-prolog.org/pldoc/man?predicate=action_effects_apply/2">action_effects_apply/2</a> can be used, for example:</p>
+
+<pre class="code">
+action_effects_apply(pancake:'CrackingAnEgg',_{
+  'DestroyedObject': 'Egg_0'
+})</pre>
+
+<p>
+Note that "destroying" an object in KnowRob does not mean that knowledge about it disappears. Each object has an associated lifetime, and an event that destroys some object determines the end of its lifetime rather then vanishing its existence in the knwoledge base.</p>
+
+<h2 class="wiki subdirs">Sub directories</h2>
+
+<table class="subdirs">
+<tr><td><a class="subdir" href="SRDL/index.html">[dir] SRDL</a></td></tr>
+<tr><td><a class="subdir" href="SWRL/index.html">[dir] SWRL</a></td></tr>
+<tr><td><a class="subdir" href="spatial/index.html">[dir] spatial</a></td></tr>
+<tr><td><a class="subdir" href="temporal/index.html">[dir] temporal</a></td></tr>
+</table>
+
+<h2 class="wiki plfiles">Prolog files</h2>
+
+<table class="summary">
+<tr><th colspan="3" class="file"><span style="float:left"><a href="__init__.html">__init__.pl</a></span><span style="float:right"></span></th></tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>urdf</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="wiki">urdfprolog</h1>
+
+<p>
+A Prolog-based interface to the Unified Robot Description Format (URDF).
+The package first implements a wrapper around the C++ URDF parser library,
+and second a mapping into a OWL model of URDF.
+The OWL model is defined in an ontology that comes with this package.</p>
+
+<p>
+Here is example Prolog code where urdfprolog generates RDF descriptions
+of a PR2 robot:</p>
+
+<pre class="code">
+ros_package_path('urdfprolog', X),
+atom_concat(X, '/urdf/pr2_for_unit_tests.urdf', FileURL),
+kb_create(urdf:'Robot', Robot),
+rdf_urdf_load(Robot, FileURL).</pre>
+
+<p>
+The result is a RDF description of the robot's links and joints.
+However, components are not considered in URDF.
+For component descriptions, please have a look at the SRDL package.</p>
+
+<h2 class="wiki plfiles">Prolog files</h2>
+
+<table class="summary">
+<tr><th colspan="3" class="file"><span style="float:left"><a href="URDF.html">URDF.pl</a></span><span style="float:right"></span></th></tr>
+<tr class="public"><td><a href="URDF.html#has_base_link/2">has_base_link/2</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#has_base_link_name/2">has_base_link_name/2</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#has_child_link/2">has_child_link/2</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#has_end_link/2">has_end_link/2</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#has_end_link_name/2">has_end_link_name/2</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#has_parent_link/2">has_parent_link/2</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#has_urdf/2">has_urdf/2</a></td><td class="summary">True if Object is a part of RootObject, and RootObject is assigned to some URDF description.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#is_urdf_joint/1">is_urdf_joint/1</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#is_urdf_link/1">is_urdf_link/1</a></td><td class="summary"></td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_joint_axis/3">urdf_joint_axis/3</a></td><td class="summary">Get the axis of a joint, expressed as a list [X, Y, Z].</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_joint_child_link/3">urdf_joint_child_link/3</a></td><td class="summary">Get the name of the link of a joint.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_joint_damping/3">urdf_joint_damping/3</a></td><td class="summary">Read the damping value of a joint.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_joint_friction/3">urdf_joint_friction/3</a></td><td class="summary">Get the static friction value of a joint.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_joint_hard_limits/5">urdf_joint_hard_limits/5</a></td><td class="summary">Read the hard limits of a joint.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_joint_origin/3">urdf_joint_origin/3</a></td><td class="summary">Get the origin of a joint, expressed as a pose w.r.t.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_joint_parent_link/3">urdf_joint_parent_link/3</a></td><td class="summary">Get the name the parent link of a joint.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_joint_soft_limits/5">urdf_joint_soft_limits/5</a></td><td class="summary">Read the soft limits of a joint.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_joint_type/3">urdf_joint_type/3</a></td><td class="summary">Get the type of a joint.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_link_child_joints/3">urdf_link_child_joints/3</a></td><td class="summary">Get the list of joint names of all child joints of a link.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_link_inertial/5">urdf_link_inertial/5</a></td><td class="summary">Get the inertial origin of a link as a pose w.r.t.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_link_parent_joint/3">urdf_link_parent_joint/3</a></td><td class="summary">Get the name of the parent joint of a link.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_load/2">urdf_load/2</a></td><td class="summary">Same as <a href="URDF.html#urdf_load/3">urdf_load/3</a> with empty options list.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_load/3">urdf_load/3</a></td><td class="summary">Assert a URDF file as description of an object.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_robot_name/2">urdf_robot_name/2</a></td><td class="summary">Get the name of the currently loaded robot.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_root_link/2">urdf_root_link/2</a></td><td class="summary">Get the name of the root link of the robot.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_set_pose/2">urdf_set_pose/2</a></td><td class="summary">Assign the initial pose of links described in URDF as the current pose of link entities.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr class="public"><td><a href="URDF.html#urdf_set_pose_to_origin/2">urdf_set_pose_to_origin/2</a></td><td class="summary">Same as <a href="URDF.html#urdf_set_pose/2">urdf_set_pose/2</a> but assigns the base of the URDF to be located exactly at the frame given in the second argument.</td><td align="right"><span style="white-space: nowrap"></span></td></tr>
+<tr><th colspan="3" class="file"><span style="float:left"><a href="__init__.html">__init__.pl</a></span><span style="float:right"></span></th></tr>
+</table>
+
+</body>
+</html>

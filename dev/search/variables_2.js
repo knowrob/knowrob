@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['callback_5f_4659',['callback_',['../d1/dc2/classknowrob_1_1_observer_job.html#a8b485a4101af0858d624ba3ac4ca4499',1,'knowrob::ObserverJob::callback_()'],['../d2/d43/classknowrob_1_1mongo_1_1_change_stream.html#ac3b54df1cc9c044e624410c9653d6795',1,'knowrob::mongo::ChangeStream::callback_()']]],
+  ['channel_5fmutex_5f_4660',['channel_mutex_',['../db/db3/classknowrob_1_1_token_stream.html#a503fc0b3deec52d9c2a103b0020f4373',1,'knowrob::TokenStream']]],
+  ['channels_5f_4661',['channels_',['../db/db3/classknowrob_1_1_token_stream.html#acbacbe8667bb7482488ec45d4f88244d',1,'knowrob::TokenStream']]],
+  ['children_4662',['children',['../d9/d24/structknowrob_1_1_observer_job_1_1_node.html#ab3cb8b594772cf75c4c3b851387f3bea',1,'knowrob::ObserverJob::Node']]],
+  ['class_4663',['Class',['../d8/d44/namespaceknowrob_1_1rdfs.html#a139a8b4531215cf5af55adb3e27aa935',1,'knowrob::rdfs::Class()'],['../df/d54/namespaceknowrob_1_1owl.html#adb2975fff2389a68feebcebc3ab6dcbd',1,'knowrob::owl::Class()']]],
+  ['coll_5fname_5ftests_4664',['COLL_NAME_TESTS',['../d7/de5/classknowrob_1_1_mongo_knowledge_graph.html#a9492c6fdc2d435c68ccada50780381da',1,'knowrob::MongoKnowledgeGraph']]],
+  ['coll_5fname_5ftriples_4665',['COLL_NAME_TRIPLES',['../d7/de5/classknowrob_1_1_mongo_knowledge_graph.html#a157ab70819a048458c26bb7a365eab8e',1,'knowrob::MongoKnowledgeGraph']]],
+  ['collection_5f_4666',['collection_',['../d2/d43/classknowrob_1_1mongo_1_1_change_stream.html#ab6639856c4ceba233218b5ff1a605099',1,'knowrob::mongo::ChangeStream']]],
+  ['comment_4667',['comment',['../d8/d44/namespaceknowrob_1_1rdfs.html#a916eebd234f394d559620d25de463e19',1,'knowrob::rdfs']]],
+  ['confidence_4668',['confidence',['../d4/db8/structknowrob_1_1_graph_selector.html#a42a5052ca0d4f861e7f84f9695926b4d',1,'knowrob::GraphSelector']]],
+  ['confidence_5f_4669',['confidence_',['../d2/d8b/classknowrob_1_1_triple.html#a7ef7c0ea72a77b909c2b9d20df9cc305',1,'knowrob::Triple']]],
+  ['confidenceterm_5f_4670',['confidenceTerm_',['../de/d78/classknowrob_1_1_triple_pattern.html#addccc65e28ad64fc27cbe9006a57b606',1,'knowrob::TriplePattern']]],
+  ['connections_5f_4671',['connections_',['../d7/de5/classknowrob_1_1_mongo_knowledge_graph.html#afc9edea3c7691d59712d63b05249f839',1,'knowrob::MongoKnowledgeGraph']]],
+  ['contextmessage_5f_4672',['contextMessage_',['../d2/d76/classknowrob_1_1mongo_1_1_mongo_exception.html#a88e5a77fc7b4c9ac95f753c46d0e3feb',1,'knowrob::mongo::MongoException']]],
+  ['contextnodes_5f_4673',['contextNodes_',['../d2/d8b/classknowrob_1_1_redland_model.html#a3f0c748248c12c57010c265f0d33e37f',1,'knowrob::RedlandModel']]],
+  ['counter_4674',['counter',['../d2/d29/structknowrob_1_1_graph_query_expansion.html#ac4a8a108524878a89a741916d8cba4de',1,'knowrob::GraphQueryExpansion']]],
+  ['create_5f_4675',['create_',['../d7/d10/classknowrob_1_1_plugin_library.html#ae81c63a87a9163888eb414bca7f85b16',1,'knowrob::PluginLibrary']]],
+  ['ctx_5f_4676',['ctx_',['../d2/d19/classknowrob_1_1_negation_stage.html#a72dc44e24af9aeb412e4bfa72eec4331',1,'knowrob::NegationStage::ctx_()'],['../d3/df4/classknowrob_1_1_query.html#aefc50ec3771e5d42d7249791088a9798',1,'knowrob::Query::ctx_()'],['../d0/d3d/classknowrob_1_1_query_stage.html#ad9b8e5cb93f014221690c157dda65cca',1,'knowrob::QueryStage::ctx_()'],['../d7/d61/classknowrob_1_1_goal.html#a0615e43d5d65b9c220afa30d911d2d6d',1,'knowrob::Goal::ctx_()']]],
+  ['currentbatch_5f_4677',['currentBatch_',['../dc/d23/classknowrob_1_1_ontology_parser.html#afd7eb46ffe86d552555fe6127d0ad17d',1,'knowrob::OntologyParser']]]
+];

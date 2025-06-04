@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>data_vis.pl -- Methods for data visualization</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>data_vis.pl -- Methods for data visualization</h1>
+
+<p>
+The visualization artifacts are supposed to be generated client side.
+KnowRob only generates a data structure holding the data and
+data visualization clients can connect to the topic on which
+KnowRob publishes the visualization data.</p>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Moritz Tenorth</dd><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="data_vis/2"><b class="pred">data_vis</b><var class="arglist">(+Term:term, +Properties:list)</var></a> is <b class="det">det</b></dt><dd class="defbody">Creates a new data_vis message and publishes it via <i>/data_vis_msgs</i>
+ROS topic.
+<var>Term</var> is one of <code>piechart(Identifier)</code>, <code>barchart(Identifier)</code>,
+<code>treechart(Identifier)</code>, <code>timeline(Identifier)</code>, or <code>linechart(Identifier)</code>.
+<var>Properties</var> is a list of properties for the data_vis message of the form key:value.
+Allowed keys are: data, title, xlabel, ylabel, width, height, fontsize.
+
+<p>
+<code>data_vis(piechart(chart_id), [
+title: 'Some Distribution',
+data: [[a,b,c],[10,30,22]]
+])</code>.</p>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Term</var></td><td class="argdescr">- the data_vis term</td></tr>
+<tr><td><var>Properties</var></td><td class="argdescr">- list of data_vis properties</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="timeline/1"><b class="pred">timeline</b><var class="arglist">(+Events:list)</var></a> is <b class="det">det</b></dt><dd class="defbody">Creates a new data_vis timeline message and publishes it via <i>/data_vis_msgs</i>
+ROS topic.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Events</var></td><td class="argdescr">- list of temporal extended things</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="timeline_data/1"><b class="pred">timeline_data</b><var class="arglist">(+Events:list)</var></a> is <b class="det">det</b></dt><dd class="defbody">Creates a new data_vis timeline message and publishes it via <i>/data_vis_msgs</i>
+ROS topic.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>EventData</var></td><td class="argdescr">- list of list of the form [[<var>Events</var>, Task, Start, End]]</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="data_vis_remove/1"><b class="pred">data_vis_remove</b><var class="arglist">(+Identifier)</var></a> is <b class="det">det</b></dt><dd class="defbody">Republishes a data_vis object with empty data
+so that visualization clients can remove it.</dd>
+</dl>
+
+<h2 class="undoc">Undocumented predicates</h2>
+
+<p>
+The following predicates are exported, but not or incorrectly documented.</p>
+
+<dl class="undoc">
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="timeline_data/2"><b class="pred">timeline_data</b><var class="arglist">(Arg1, Arg2)</var></a></dt>
+</dl>
+
+</body>
+</html>

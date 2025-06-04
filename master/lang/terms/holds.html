@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>holds.pl -- The *holds* predicate.</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>holds.pl -- The *holds* predicate.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="multidef"><span style="float:right">&nbsp;</span><a name="holds/3"><b class="pred">holds</b><var class="arglist">(?Subject, ?Property, ?Value)</var></a> is <b class="det">nondet</b><span class="anot" style="float:right">[multifile]</span></dt><dd class="defbody">Query values of a property on some subject.
+In case of datatype properties, the value may be a term `Operator(<var>Value</var>)`
+where Operator is a comparison operator (e.g. "&lt;"), meaning that only triples
+are yielded where the comparison between actual value and <var>Value</var> yields true.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Subject</var></td><td class="argdescr">- The subject of a triple.</td></tr>
+<tr><td><var>Property</var></td><td class="argdescr">- The predicate of a triple.</td></tr>
+<tr><td><var>Value</var></td><td class="argdescr">- The object of a triple.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="holds/1"><b class="pred">holds</b><var class="arglist">(+Query)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Same as <a href="holds.html#holds/3">holds/3</a> with arguments wrapped into a single
+term `Property(Subject,Value)`.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Query</var></td><td class="argdescr">- the query term.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</body>
+</html>

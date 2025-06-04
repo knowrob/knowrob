@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>query.pl -- Query aggregation.</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>query.pl -- Query aggregation.</h1>
+
+<p>
+The KnowRob query language supports logic programming syntax.
+However, language expressions are potentially compiled by KnowRob into other
+formats such as mongo DB queries in order to combine
+different backends for query answering.
+KnowRob orchestrates this process through a pipeline of query steps
+where different steps are linked with each other by feeding groundings of
+one step into the input queue of the next step.</p>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="kb_call/1"><b class="pred">kb_call</b><var class="arglist">(+Statement)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Same as <a href="query.html#kb_call/3">kb_call/3</a> with default scope to include
+only facts that hold now.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Statement</var></td><td class="argdescr">- a statement term.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="kb_call/3"><b class="pred">kb_call</b><var class="arglist">(+Statement, +QScope, -FScope)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Same as <a href="query.html#kb_call/4">kb_call/4</a> with empty options list.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Statement</var></td><td class="argdescr">- a statement term.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="kb_call/4"><b class="pred">kb_call</b><var class="arglist">(+Statement, +QScope, -FScope, +Options)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True if <var>Statement</var> holds within <var>QScope</var>.
+<var>Statement</var> can also be a list of statements.
+FactScope is the actual scope of the statement being true that overlaps
+with <var>QScope</var>. <var>Options</var> include:
+
+<dl class="termlist">
+<dt class="term"><b class="pred">max_queue_size</b><var class="arglist">(MaxSize)</var></dt><dd>Determines the maximum number of messages queued in each stage. Default is 50.</dd>
+<dt class="term"><b class="pred">graph</b><var class="arglist">(GraphName)</var></dt><dd>Determines the named graph this query is restricted to. Note that graphs are organized hierarchically. Default is user.</dd>
+</dl>
+
+<p>
+Any remaining options are passed to the querying backends that are invoked.</p>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Statement</var></td><td class="argdescr">- a statement term.</td></tr>
+<tr><td><var>QScope</var></td><td class="argdescr">- the requested scope.</td></tr>
+<tr><td><var>FScope</var></td><td class="argdescr">- the actual scope.</td></tr>
+<tr><td><var>Options</var></td><td class="argdescr">- list of options.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="ask/1"><b class="pred">ask</b><var class="arglist">(+Statement)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Same as <a href="query.html#kb_call/1">kb_call/1</a>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Statement</var></td><td class="argdescr">- a statement term.</td></tr>
+</table>
+
+</dd>
+<dt class="keyword-deprecated">deprecated</dt><dd class="keyword-deprecated">- </dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="ask/2"><b class="pred">ask</b><var class="arglist">(+Statement, +Scope)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Same as <a href="query.html#kb_call/4">kb_call/4</a> with empty options list and FScope as wildcard.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Statement</var></td><td class="argdescr">- a statement term.</td></tr>
+<tr><td><var>Scope</var></td><td class="argdescr">- the scope of the statement.</td></tr>
+</table>
+
+</dd>
+<dt class="keyword-deprecated">deprecated</dt><dd class="keyword-deprecated">- </dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="kb_project/1"><b class="pred">kb_project</b><var class="arglist">(+Statement)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Same as <a href="query.html#kb_project/2">kb_project/2</a> with universal scope.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Statement</var></td><td class="argdescr">- a statement term.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="kb_project/2"><b class="pred">kb_project</b><var class="arglist">(+Statement, +Scope)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Same as <a href="query.html#kb_project/3">kb_project/3</a> with empty options list.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Statement</var></td><td class="argdescr">- a statement term.</td></tr>
+<tr><td><var>Scope</var></td><td class="argdescr">- the scope of the statement.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="kb_project/3"><b class="pred">kb_project</b><var class="arglist">(+Statement, +Scope, +Options)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Assert that some statement is true.
+<var>Scope</var> is the scope of the statement being true.
+<var>Statement</var> can also be a list of statements. <var>Options</var> include:
+
+<dl class="termlist">
+<dt class="term"><b class="pred">graph</b><var class="arglist">(GraphName)</var></dt><dd>Determines the named graph this query is restricted to. Note that graphs are organized hierarchically. Default is user.</dd>
+</dl>
+
+<p>
+Any remaining options are passed to the querying backends that are invoked.</p>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Statement</var></td><td class="argdescr">- a statement term.</td></tr>
+<tr><td><var>Scope</var></td><td class="argdescr">- the scope of the statement.</td></tr>
+<tr><td><var>Options</var></td><td class="argdescr">- list of options.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="kb_unproject/1"><b class="pred">kb_unproject</b><var class="arglist">(+Statement)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Same as <a href="query.html#kb_unproject/2">kb_unproject/2</a> with universal scope.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Statement</var></td><td class="argdescr">- a statement term.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="kb_unproject/2"><b class="pred">kb_unproject</b><var class="arglist">(+Statement, +Scope)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Same as <a href="query.html#kb_unproject/3">kb_unproject/3</a> with empty options list.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Statement</var></td><td class="argdescr">- a statement term.</td></tr>
+<tr><td><var>Scope</var></td><td class="argdescr">- the scope of the statement.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="kb_unproject/3"><b class="pred">kb_unproject</b><var class="arglist">(+Statement, +Scope, +Options)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Unproject that some statement is true.
+<var>Statement</var> must be a term <a href="triple.html#triple/3">triple/3</a>.
+It can also be a list of such terms.
+<var>Scope</var> is the scope of the statement to unproject. <var>Options</var> include:
+
+<dl class="termlist">
+<dt class="term"><b class="pred">graph</b><var class="arglist">(GraphName)</var></dt><dd>Determines the named graph this query is restricted to. Note that graphs are organized hierarchically. Default is user.</dd>
+</dl>
+
+<p>
+Any remaining options are passed to the querying backends that are invoked.</p>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Statement</var></td><td class="argdescr">- a statement term.</td></tr>
+<tr><td><var>Scope</var></td><td class="argdescr">- the scope of the statement.</td></tr>
+<tr><td><var>Options</var></td><td class="argdescr">- list of options.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="multidef"><span style="float:right">&nbsp;</span><a name="call_with/3"><b class="pred">call_with</b><var class="arglist">(+Backend, :Goal, +Options)</var></a> is <b class="det">nondet</b><span class="anot" style="float:right">[multifile]</span></dt><dd class="defbody">Calls a goal in given backend.
+The options list may contain additional
+backend specific options.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Backend</var></td><td class="argdescr">- the backend name</td></tr>
+<tr><td><var>Goal</var></td><td class="argdescr">- a goal term</td></tr>
+<tr><td><var>Options</var></td><td class="argdescr">- list of options</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="multidef"><span style="float:right">&nbsp;</span><a name="is_callable_with/2"><b class="pred">is_callable_with</b><var class="arglist">(?Backend, :Goal)</var></a> is <b class="det">nondet</b><span class="anot" style="float:right">[multifile]</span></dt><dd class="defbody">True if <var>Backend</var> is a querying backend that can handle <var>Goal</var>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="kb_add_rule/2"><b class="pred">kb_add_rule</b><var class="arglist">(+Head, +Body)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Register a rule that translates into an aggregation pipeline.
+Any non-terminal predicate in <var>Body</var> must have a previously asserted
+rule it can expand into.
+After being asserted, the <var>Head</var> predicate can be referred to in
+calls of <a href="query.html#kb_call/1">kb_call/1</a>.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Head</var></td><td class="argdescr">- The head of a rule.</td></tr>
+<tr><td><var>Body</var></td><td class="argdescr">- The body of a rule.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="kb_drop_rule/1"><b class="pred">kb_drop_rule</b><var class="arglist">(+Head)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Drop a previously added <code>mongolog</code> rule.
+That is, erase its database record such that it can
+not be referred to anymore in rules added after removal.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Term</var></td><td class="argdescr">- A mongolog rule.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="kb_expand/2"><b class="pred">kb_expand</b><var class="arglist">(+Term, -Expanded)</var></a> is <b class="det">det</b></dt><dd class="defbody">Translate a goal into a sequence of terminal commands.
+Terminal commands are the core predicates supported in queries
+such as arithmetic and comparison predicates.
+Rules, on the other hand, are "flattened" during term expansion,
+and translated to a sequence of these terminal commands.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Term</var></td><td class="argdescr">- A compound term, or a list of terms.</td></tr>
+<tr><td><var>Expanded</var></td><td class="argdescr">- Sequence of terminal commands</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</body>
+</html>

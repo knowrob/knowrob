@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['raptorcontainer_2819',['RaptorContainer',['../d8/d05/classknowrob_1_1_raptor_container.html',1,'knowrob']]],
+  ['rdfgoal_2820',['RDFGoal',['../d8/d5b/classknowrob_1_1_r_d_f_goal.html',1,'knowrob']]],
+  ['rdfgoalreasoner_2821',['RDFGoalReasoner',['../dd/dd0/classknowrob_1_1_r_d_f_goal_reasoner.html',1,'knowrob']]],
+  ['rdfindicator_2822',['RDFIndicator',['../de/d87/structknowrob_1_1_r_d_f_indicator.html',1,'knowrob']]],
+  ['rdfnode_2823',['RDFNode',['../d8/d64/classknowrob_1_1_r_d_f_node.html',1,'knowrob']]],
+  ['reasoner_2824',['Reasoner',['../d7/da9/classknowrob_1_1_reasoner.html',1,'knowrob']]],
+  ['reasonererror_2825',['ReasonerError',['../db/d6a/classknowrob_1_1_reasoner_error.html',1,'knowrob']]],
+  ['reasonermanager_2826',['ReasonerManager',['../de/de7/classknowrob_1_1_reasoner_manager.html',1,'knowrob']]],
+  ['reasonerrunner_2827',['ReasonerRunner',['../de/d9e/classknowrob_1_1_reasoner_runner.html',1,'knowrob']]],
+  ['redlandmodel_2828',['RedlandModel',['../d2/d8b/classknowrob_1_1_redland_model.html',1,'knowrob']]],
+  ['redlanduri_2829',['RedlandURI',['../de/d9f/classknowrob_1_1_redland_u_r_i.html',1,'knowrob']]],
+  ['redundantanswerfilter_2830',['RedundantAnswerFilter',['../d8/dbe/classknowrob_1_1_redundant_answer_filter.html',1,'knowrob']]],
+  ['reificationcontainer_2831',['ReificationContainer',['../dd/df5/classknowrob_1_1_reification_container.html',1,'knowrob']]],
+  ['reifiedquery_2832',['ReifiedQuery',['../d4/dfd/classknowrob_1_1_reified_query.html',1,'knowrob']]],
+  ['reifiedtriple_2833',['ReifiedTriple',['../df/d4e/classknowrob_1_1_reified_triple.html',1,'knowrob']]],
+  ['remove_2834',['Remove',['../d3/ddc/classknowrob_1_1transaction_1_1_remove.html',1,'knowrob::transaction']]],
+  ['replacementevent_2835',['ReplacementEvent',['../db/dce/classknowrob_1_1reasoner_1_1_replacement_event.html',1,'knowrob::reasoner']]],
+  ['resource_2836',['Resource',['../d1/d38/classknowrob_1_1semweb_1_1_resource.html',1,'knowrob::semweb']]],
+  ['result_2837',['result',['../db/d85/structknowrob_1_1parsers_1_1make__shared__f_1_1result.html',1,'knowrob::parsers::make_shared_f']]],
+  ['retractionevent_2838',['RetractionEvent',['../d8/d4a/classknowrob_1_1reasoner_1_1_retraction_event.html',1,'knowrob::reasoner']]],
+  ['runner_2839',['Runner',['../d6/dfe/classknowrob_1_1_thread_pool_1_1_runner.html',1,'knowrob::ThreadPool']]]
+];

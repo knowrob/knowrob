@@ -1,0 +1,10 @@
+<map id="knowrob::KnowRobError" name="knowrob::KnowRobError">
+<area shape="rect" id="node1" title=" " alt="" coords="192,107,371,133"/>
+<area shape="rect" id="node3" href="$d8/d6d/classknowrob_1_1_ontology_error.html" title=" " alt="" coords="420,5,596,32"/>
+<area shape="rect" id="node4" href="$da/dda/classknowrob_1_1_python_error.html" title=" " alt="" coords="427,56,589,83"/>
+<area shape="rect" id="node5" href="$dc/df2/classknowrob_1_1_query_error.html" title=" " alt="" coords="430,107,586,133"/>
+<area shape="rect" id="node6" href="$db/d6a/classknowrob_1_1_reasoner_error.html" title=" " alt="" coords="419,157,597,184"/>
+<area shape="rect" id="node7" href="$db/d42/classknowrob_1_1_storage_error.html" title=" " alt="" coords="425,208,591,235"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,107,144,133"/>
+<area shape="rect" id="node8" href="$d2/d76/classknowrob_1_1mongo_1_1_mongo_exception.html" title=" " alt="" coords="645,208,892,235"/>
+</map>

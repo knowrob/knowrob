@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>parser.pl -- Prolog-based SWRL representation.</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>parser.pl -- Prolog-based SWRL representation.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="swrl_file_unload/1"><b class="pred">swrl_file_unload</b><var class="arglist">(+Filepath)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="swrl_file_unload/2"><b class="pred">swrl_file_unload</b><var class="arglist">(+Filepath, +Label)</var></a> is <b class="det">det</b></dt><dd class="defbody">Unload previously loaded SWRL file,
+retracting all the rules that have been asserted
+so far.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="swrl_file_load/1"><b class="pred">swrl_file_load</b><var class="arglist">(+Filepath)</var></a> is <b class="det">det</b></dt>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="swrl_file_load/2"><b class="pred">swrl_file_load</b><var class="arglist">(+Filepath, +Label)</var></a> is <b class="det">det</b></dt><dd class="defbody">Loads all or one <code>rule(s)</code> from a SWRL file.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="swrl_file_parse/3"><b class="pred">swrl_file_parse</b><var class="arglist">(+Filepath, -Rule, -Args)</var></a> is <b class="det">det</b></dt><dd class="defbody">Parses a SWRL file.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="swrl_phrase_fire/2"><b class="pred">swrl_phrase_fire</b><var class="arglist">(+Phrase, +NS)</var></a></dt><dd class="defbody">Fires SWRL rule given in human readable Syntax.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="swrl_phrase_assert/2"><b class="pred">swrl_phrase_assert</b><var class="arglist">(+Phrase, +NS)</var></a></dt><dd class="defbody">Assert SWRL rule in human readable Syntax as native Prolog <code>rule(s)</code>.</dd>
+</dl>
+
+<h2 class="undoc">Undocumented predicates</h2>
+
+<p>
+The following predicates are exported, but not or incorrectly documented.</p>
+
+<dl class="undoc">
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="swrl_phrase/3"><b class="pred">swrl_phrase</b><var class="arglist">(Arg1, Arg2, Arg3)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="swrl_file_fire/1"><b class="pred">swrl_file_fire</b><var class="arglist">(Arg1)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="swrl_file_fire/2"><b class="pred">swrl_file_fire</b><var class="arglist">(Arg1, Arg2)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="swrl_file_path/3"><b class="pred">swrl_file_path</b><var class="arglist">(Arg1, Arg2, Arg3)</var></a></dt>
+</dl>
+
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>algebra.pl -- Performing algebraic operations.</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>algebra.pl -- Performing algebraic operations.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="transform_multiply/3"><b class="pred">transform_multiply</b><var class="arglist">(+Transform1:term, +Transform2:term, ?Product:term)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True if <var>Product</var> is <var>Transform1</var> x <var>Transform2</var>.
+This is only defined if the target frame of <var>Transform1</var> is equal
+to the reference frame of <var>Transform2</var>.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Transform1</var></td><td class="argdescr">- A Prolog term [Ref,A,Pos1,Rot1]</td></tr>
+<tr><td><var>Transform2</var></td><td class="argdescr">- A Prolog term [A,Src,Pos2,Rot2]</td></tr>
+<tr><td><var>Product</var></td><td class="argdescr">- A Prolog term [Ref,Src,Pos3,Rot3]</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="transform_between/3"><b class="pred">transform_between</b><var class="arglist">(+Transform1:term, +Transform2:term, ?Relative:term)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True if <var>Relative</var> is the relative transform between the target frame of
+<var>Transform1</var> and <var>Transform2</var>.
+Only defined if <var>Transform1</var> and <var>Transform2</var> share the same reference frame.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Transform1</var></td><td class="argdescr">- A Prolog term [F,Src,Pos1,Rot1]</td></tr>
+<tr><td><var>Transform2</var></td><td class="argdescr">- A Prolog term [F,Ref,Pos2,Rot2]</td></tr>
+<tr><td><var>Transform1</var></td><td class="argdescr">- A Prolog term [Ref,Src,Pos3,Rot3]</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="transform_invert/2"><b class="pred">transform_invert</b><var class="arglist">(+Transform:term, ?Inverted:term)</var></a> is <b class="det">det</b></dt><dd class="defbody">True if <var>Inverted</var> is the inverted transform of <var>Transform</var>
+(i.e., with inverted reference and source frame).
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Transform</var></td><td class="argdescr">- A transform term [A,B,Pos,Rot]</td></tr>
+<tr><td><var>Inverted</var></td><td class="argdescr">- A transform term [B,A,Pos',Rot']</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="transform_close_to/3"><b class="pred">transform_close_to</b><var class="arglist">(+Transform1:term, +Transform2:term, +Delta:number)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True if the squared distance between <var>Transform1</var> and <var>Transform2</var>
+is less then or equal to <var>Delta</var>.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Transform1</var></td><td class="argdescr">- Transform term</td></tr>
+<tr><td><var>Transform2</var></td><td class="argdescr">- Transform term</td></tr>
+<tr><td><var>Delta</var></td><td class="argdescr">- Squared distance delta</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="matrix/3"><b class="pred">matrix</b><var class="arglist">(?Matrix:list, ?Translation:list, ?Quaternion:list)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True if <var>Matrix</var> is the transformation matrix build from
+<var>Translation</var> and <var>Quaternion</var>.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Matrix</var></td><td class="argdescr">- A 4x4 matrix</td></tr>
+<tr><td><var>Translation</var></td><td class="argdescr">- A translation [number x,y,z]</td></tr>
+<tr><td><var>Quaternion</var></td><td class="argdescr">- A quaternion [number qx,qy,qz,qw]</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="matrix_translate/3"><b class="pred">matrix_translate</b><var class="arglist">(+In:list, +Offset:list, ?Out:list)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True if <var>Out</var> unifies with <var>In</var> translated by <var>Offset</var>.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>In</var></td><td class="argdescr">- A 4x4 matrix</td></tr>
+<tr><td><var>Offset</var></td><td class="argdescr">- The offset [number x,y,z]</td></tr>
+<tr><td><var>Out</var></td><td class="argdescr">- A 4x4 matrix</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="quaternion_multiply/3"><b class="pred">quaternion_multiply</b><var class="arglist">(+Quaternion1:list, +Quaternion2:list, ?Multiplied:list)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True if <var>Multiplied</var> is the result of multiplying <var>Quaternion1</var>
+with <var>Quaternion2</var>.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Quaternion1</var></td><td class="argdescr">- A quaternion [number qx,qy,qt,qw]</td></tr>
+<tr><td><var>Quaternion2</var></td><td class="argdescr">- A quaternion [number qx,qy,qt,qw]</td></tr>
+<tr><td><var>Multiplied</var></td><td class="argdescr">- A quaternion [number qx,qy,qt,qw]</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+<h2 class="undoc">Undocumented predicates</h2>
+
+<p>
+The following predicates are exported, but not or incorrectly documented.</p>
+
+<dl class="undoc">
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="quaternion_transform/3"><b class="pred">quaternion_transform</b><var class="arglist">(Arg1, Arg2, Arg3)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="quaternion_inverse/2"><b class="pred">quaternion_inverse</b><var class="arglist">(Arg1, Arg2)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="transform_interpolate/4"><b class="pred">transform_interpolate</b><var class="arglist">(Arg1, Arg2, Arg3, Arg4)</var></a></dt>
+</dl>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['name_5f_4859',['name_',['../d7/d10/classknowrob_1_1_plugin_library.html#a0674f8cc36de06abf1bd9a41ffa875db',1,'knowrob::PluginLibrary::name_()'],['../d2/d13/classknowrob_1_1_typed_plugin_factory.html#a99f874085f97bbb954ce8c36da8dc07f',1,'knowrob::TypedPluginFactory::name_()'],['../d2/d53/classknowrob_1_1_current_graph.html#aaf5de33e9318669ddd24795facf1ba61',1,'knowrob::CurrentGraph::name_()'],['../df/d4e/classknowrob_1_1_reified_triple.html#a1e33d74712010123cca7ac9a0224ccb4',1,'knowrob::ReifiedTriple::name_()'],['../d0/d7b/classknowrob_1_1_named_plugin.html#a32b9558327b2cb8d44569ddf33be459c',1,'knowrob::NamedPlugin::name_()']]],
+  ['name_5fof_5fexecutable_4860',['NAME_OF_EXECUTABLE',['../de/d98/namespaceknowrob.html#a63a8ab9e421e88b8814fc09d74da2189',1,'knowrob']]],
+  ['nameatom_5f_4861',['nameAtom_',['../de/d48/classknowrob_1_1_variable.html#a040d871ddc5a50c5765cb7109d4ff360',1,'knowrob::Variable']]],
+  ['namedindividual_4862',['NamedIndividual',['../df/d54/namespaceknowrob_1_1owl.html#a60830b899d37180c3d8bc9d26d044c79',1,'knowrob::owl']]],
+  ['negatedliterals_5f_4863',['negatedLiterals_',['../d6/d67/classknowrob_1_1_predicate_negation_stage.html#a868066dec3715b7453c4687f880be2b1',1,'knowrob::PredicateNegationStage']]],
+  ['negatedmodals_5f_4864',['negatedModals_',['../de/dc7/classknowrob_1_1_modal_negation_stage.html#a7419a97a6efb2c2a69e8e8c6e32fff26',1,'knowrob::ModalNegationStage']]],
+  ['negativeanswers_5f_4865',['negativeAnswers_',['../d9/df3/classknowrob_1_1_conjunctive_broadcaster.html#ab6ea419438f39996be333373a5b7a6fd',1,'knowrob::ConjunctiveBroadcaster::negativeAnswers_()'],['../d5/d42/classknowrob_1_1_disjunctive_broadcaster.html#a2a7acf81c2c415d6463aab1f351f5112',1,'knowrob::DisjunctiveBroadcaster::negativeAnswers_()']]],
+  ['negativegroundings_5f_4866',['negativeGroundings_',['../db/d6c/classknowrob_1_1_answer_yes.html#a799e93100c902bcfc2e09e2c48e3a1d2',1,'knowrob::AnswerYes']]],
+  ['negativeungrounded_5f_4867',['negativeUngrounded_',['../d1/dbb/classknowrob_1_1_answer_no.html#a8a18ea741f5a5eccbb501a1a5526fab4',1,'knowrob::AnswerNo']]],
+  ['neighbors_5f_4868',['neighbors_',['../d9/d5a/classknowrob_1_1_dependency_node.html#a381a5fdfb0575ef597177bec1ff7c39c',1,'knowrob::DependencyNode']]],
+  ['nestedcontext_5f_4869',['nestedContext_',['../dc/d18/classknowrob_1_1_modal_stage.html#a99f369c90f9a7b2147eca7cddecf2e33',1,'knowrob::ModalStage']]],
+  ['next_5f_4870',['next_',['../d7/d98/classknowrob_1_1_graph_transformation.html#aa775eca326ac8203513ce60ab4776a5b',1,'knowrob::GraphTransformation']]],
+  ['next_5fptr_5f_4871',['next_ptr_',['../d2/d43/classknowrob_1_1mongo_1_1_change_stream.html#ad952f50f9d5aae87776b13752c4ee39d',1,'knowrob::mongo::ChangeStream']]],
+  ['nexttransformation_5f_4872',['nextTransformation_',['../d7/d98/classknowrob_1_1_graph_transformation.html#a5eebbdf0e6d41935a97638a2c9c7a82d',1,'knowrob::GraphTransformation']]],
+  ['nodes_5f_4873',['nodes_',['../d1/d31/classknowrob_1_1_dependency_graph.html#ae16729022cf82131bf6d34e5201fe832',1,'knowrob::DependencyGraph::nodes_()'],['../df/dcf/classknowrob_1_1_query_tree_1_1_path.html#a00878c45966c3797edd725669ce9d86b',1,'knowrob::QueryTree::Path::nodes_()'],['../d1/dc2/classknowrob_1_1_observer_job.html#a2932ccd331058ce6fffe0b1bd6b05a70',1,'knowrob::ObserverJob::nodes_()']]],
+  ['notequalfunctor_4874',['notEqualFunctor',['../d2/d46/namespaceknowrob_1_1graph_1_1builtins.html#a8bcf4104c9669494565a7001e52f4dbb',1,'knowrob::graph::builtins']]],
+  ['novariables_5f_4875',['noVariables_',['../d4/de5/classknowrob_1_1_term.html#abb744e98c9a09906163642e335b1bcf9',1,'knowrob::Term']]],
+  ['numstages_5f_4876',['numStages_',['../d8/d3f/classknowrob_1_1mongo_1_1_pipeline.html#a3731546b55f4b096b2e92f3ac9b15227',1,'knowrob::mongo::Pipeline']]]
+];

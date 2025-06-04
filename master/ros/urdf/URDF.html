@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>URDF.pl</title>
+
+<link rel="stylesheet" type="text/css" href="../../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>URDF.pl</h1>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_urdf/2"><b class="pred">has_urdf</b><var class="arglist">(+Object, +RootObject)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">True if <var>Object</var> is a part of <var>RootObject</var>, and <var>RootObject</var> is assigned
+to some URDF description.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Part</var></td><td class="argdescr">- IRI atom</td></tr>
+<tr><td><var>Root</var></td><td class="argdescr">- IRI atom</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_load/2"><b class="pred">urdf_load</b><var class="arglist">(+Object, +File)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Same as <a href="URDF.html#urdf_load/3">urdf_load/3</a> with empty options list.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Object</var></td><td class="argdescr">- IRI atom</td></tr>
+<tr><td><var>File</var></td><td class="argdescr">- Path to URDF file</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_load/3"><b class="pred">urdf_load</b><var class="arglist">(+Object, +File, +Options)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Assert a URDF file as description of an object.
+This is primarly done to associate parts of the object
+to links described in the URDF file.
+Links and joints in the URDF file may further be mapped
+to a RDF model and asserted to the triple store.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Object</var></td><td class="argdescr">- IRI atom</td></tr>
+<tr><td><var>File</var></td><td class="argdescr">- Path to URDF file</td></tr>
+<tr><td><var>Options</var></td><td class="argdescr">- List of options</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_set_pose_to_origin/2"><b class="pred">urdf_set_pose_to_origin</b><var class="arglist">(+Object, +Frame)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Same as <a href="URDF.html#urdf_set_pose/2">urdf_set_pose/2</a> but assigns the base of the
+URDF to be located exactly at the frame given in the second argument.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Object</var></td><td class="argdescr">- IRI atom</td></tr>
+<tr><td><var>Frame</var></td><td class="argdescr">- URDF frame name atom</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_set_pose/2"><b class="pred">urdf_set_pose</b><var class="arglist">(+Object, +Pose)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Assign the initial pose of links described
+in URDF as the current pose of link entities.
+This requires that the <b>load_rdf</b> option was used in <a href="URDF.html#urdf_load/3">urdf_load/3</a>.
+The base link of the URDF is assigned to the transform given
+in the second argument.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Object</var></td><td class="argdescr">- IRI atom</td></tr>
+<tr><td><var>Frame</var></td><td class="argdescr">- A pose list of frame-position-quaternion</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_urdf_link/1"><b class="pred">is_urdf_link</b><var class="arglist">(?Entity)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_urdf_joint/1"><b class="pred">is_urdf_joint</b><var class="arglist">(?Entity)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_base_link_name/2"><b class="pred">has_base_link_name</b><var class="arglist">(?Obj, ?Name)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_end_link_name/2"><b class="pred">has_end_link_name</b><var class="arglist">(?Obj, ?Name)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_base_link/2"><b class="pred">has_base_link</b><var class="arglist">(?Obj, ?Link)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_end_link/2"><b class="pred">has_end_link</b><var class="arglist">(?Obj, ?Link)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_child_link/2"><b class="pred">has_child_link</b><var class="arglist">(?Joint, ?Link)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_parent_link/2"><b class="pred">has_parent_link</b><var class="arglist">(?Joint, ?Link)</var></a> is <b class="det">semidet</b></dt><dd class="defbody"></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_robot_name/2"><b class="pred">urdf_robot_name</b><var class="arglist">(+Object, -Name)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Get the name of the currently loaded robot.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_root_link/2"><b class="pred">urdf_root_link</b><var class="arglist">(+Object, -Name)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Get the name of the root link of the robot.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_link_parent_joint/3"><b class="pred">urdf_link_parent_joint</b><var class="arglist">(+Object, +LinkName, -JointName)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Get the name of the parent joint of a link.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_link_child_joints/3"><b class="pred">urdf_link_child_joints</b><var class="arglist">(+Object, +LinkName, -JointNames)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Get the list of joint names of all child joints of a link.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_link_inertial/5"><b class="pred">urdf_link_inertial</b><var class="arglist">(+Object, +LinkName, -Inertia, -Origin, -Mass)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Get the inertial origin of a link as a pose w.r.t.
+the origin frame of a link.
+
+<p>
+<var>Inertia</var> matrices are coded as a list:
+[XX, XY, XZ, YY, YZ, ZZ].
+For an explanation, visit: <a href="http://wiki.ros.org/urdf/XML/link">http://wiki.ros.org/urdf/XML/link</a></p></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_joint_type/3"><b class="pred">urdf_joint_type</b><var class="arglist">(+Object, +JointName, Type)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Get the type of a joint.
+Possible types: revolute, prismatic, continuous, fixed,
+floating, planar, and unknown.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_joint_child_link/3"><b class="pred">urdf_joint_child_link</b><var class="arglist">(+Object, +JointName, -LinkName)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Get the name of the link of a joint.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_joint_parent_link/3"><b class="pred">urdf_joint_parent_link</b><var class="arglist">(+Object, +JointName, -LinkName)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Get the name the parent link of a joint.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_joint_axis/3"><b class="pred">urdf_joint_axis</b><var class="arglist">(+Object, +JointName, -Axis)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Get the axis of a joint, expressed as a list [X, Y, Z].</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_joint_origin/3"><b class="pred">urdf_joint_origin</b><var class="arglist">(+Object, +JointName, -Origin)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Get the origin of a joint, expressed as a pose
+w.r.t. the link frame of its parent link.
+
+<p>
+Poses are coded as a compound term: <code>pose([X,Y,Z],[QX,QY,QZ,QW])</code>,
+with the orientation represented as Quaternion.</p></dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_joint_damping/3"><b class="pred">urdf_joint_damping</b><var class="arglist">(+Object, +JointName, -Damping)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Read the damping value of a joint.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_joint_friction/3"><b class="pred">urdf_joint_friction</b><var class="arglist">(+Object, +JointName, -Friction)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Get the static friction value of a joint.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_joint_hard_limits/5"><b class="pred">urdf_joint_hard_limits</b><var class="arglist">(+Object, +JointName, -PosLimits, -VelMax, -EffMax)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Read the hard limits of a joint.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="urdf_joint_soft_limits/5"><b class="pred">urdf_joint_soft_limits</b><var class="arglist">(+Object, +JointName, -PosLimits, -KP, -KV)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Read the soft limits of a joint.</dd>
+</dl>
+
+<h2 class="undoc">Undocumented predicates</h2>
+
+<p>
+The following predicates are exported, but not or incorrectly documented.</p>
+
+<dl class="undoc">
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="urdf_joint_names/2"><b class="pred">urdf_joint_names</b><var class="arglist">(Arg1, Arg2)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="urdf_joint_calibration_falling/3"><b class="pred">urdf_joint_calibration_falling</b><var class="arglist">(Arg1, Arg2, Arg3)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="urdf_link_names/2"><b class="pred">urdf_link_names</b><var class="arglist">(Arg1, Arg2)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="urdf_link_collision_shape/4"><b class="pred">urdf_link_collision_shape</b><var class="arglist">(Arg1, Arg2, Arg3, Arg4)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="urdf_init/0"><b class="pred">urdf_init</b></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="urdf_joint_calibration_rising/3"><b class="pred">urdf_joint_calibration_rising</b><var class="arglist">(Arg1, Arg2, Arg3)</var></a></dt>
+<dt class="undoc"><span style="float:right">&nbsp;</span><a name="urdf_link_visual_shape/6"><b class="pred">urdf_link_visual_shape</b><var class="arglist">(Arg1, Arg2, Arg3, Arg4, Arg5, Arg6)</var></a></dt>
+</dl>
+
+</body>
+</html>

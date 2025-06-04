@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>QUDT.pl -- Utilities for handling units of measure and the conversion between different units</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>QUDT.pl -- Utilities for handling units of measure and the conversion between different units</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Moritz Tenorth</dd><dd class="keyword-author">- Daniel Beßler</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="qudt_unit/4"><b class="pred">qudt_unit</b><var class="arglist">(?Symbol, ?Kind, ?Multiplier, ?Offset)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Facts about units in the QUDT model.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Symbol</var></td><td class="argdescr">- SI symbol of the unit</td></tr>
+<tr><td><var>Kind</var></td><td class="argdescr">- the quantity kind</td></tr>
+<tr><td><var>Multiplier</var></td><td class="argdescr">- multiplication factor for conversion</td></tr>
+<tr><td><var>Offset</var></td><td class="argdescr">- offset for conversion</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="qudt_conv/4"><b class="pred">qudt_conv</b><var class="arglist">(+SymbolI, +SymbolO, +ValueI, -ValueO)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Convert a value to another unit of the same kind.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>SymbolI</var></td><td class="argdescr">- SI unit symbol of input</td></tr>
+<tr><td><var>SymbolO</var></td><td class="argdescr">- SI unit symbol of output</td></tr>
+<tr><td><var>ValueI</var></td><td class="argdescr">- the input value</td></tr>
+<tr><td><var>ValueO</var></td><td class="argdescr">- the output value</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</body>
+</html>

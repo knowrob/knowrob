@@ -1,0 +1,29 @@
+/**
+
+This file contains the CSS for the KnowRob Doxygen documentation.
+It is supposed to modify / extend definitions of doxygen-awesome.css.
+see https://github.com/jothepro/doxygen-awesome-css/blob/main/docs/customization.md
+
+*/
+
+html {
+    /* override light-mode variables here */
+
+    /* primary theme color. This will affect the entire websites color scheme: links, arrows, labels, ... */
+    --primary-color: #1779c4;
+    --primary-dark-color: #335c80;
+    --primary-light-color: #70b1e9;
+
+    /* page base colors */
+    --page-background-color: #ffffff;
+    --page-foreground-color: #2f4153;
+    --page-secondary-foreground-color: #6f7e8e;
+
+    /* color for all separators on the website: hr, borders, ... */
+    --separator-color: #dedede;
+
+    /* border radius for all rounded components. Will affect many components, like dropdowns, memitems, codeblocks, ... */
+    --border-radius-large: 8px;
+    --border-radius-small: 4px;
+    --border-radius-medium: 6px;
+}

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>XSD.pl -- XML Schema Data Types.</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>XSD.pl -- XML Schema Data Types.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="xsd_data_type/1"><b class="pred">xsd_data_type</b><var class="arglist">(?DataType)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">True for all XSD data types such as xsd:string.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>DataType</var></td><td class="argdescr">- a XSD data type</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="xsd_data_basetype/2"><b class="pred">xsd_data_basetype</b><var class="arglist">(?DataType, ?PrologType)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Convert between XSD and Prolog type identifier.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>DataType</var></td><td class="argdescr">- a XSD data type</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="xsd_data_type_name/2"><b class="pred">xsd_data_type_name</b><var class="arglist">(+DataType, -Name)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Split name from IRI of a XSD type.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>DataType</var></td><td class="argdescr">- a XSD data type</td></tr>
+<tr><td><var>Name</var></td><td class="argdescr">- the XSD data type without IRI prefix</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="xsd_string_type/1"><b class="pred">xsd_string_type</b><var class="arglist">(?DataType)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">String data types are used for values that contains character strings.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>DataType</var></td><td class="argdescr">- a XSD data type</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="xsd_numeric_type/1"><b class="pred">xsd_numeric_type</b><var class="arglist">(?DataType)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Decimal data types are used for numeric values.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>DataType</var></td><td class="argdescr">- a XSD data type</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="xsd_misc_type/1"><b class="pred">xsd_misc_type</b><var class="arglist">(?DataType)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">Mis data types.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>DataType</var></td><td class="argdescr">- a XSD data type</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+</dl>
+
+</body>
+</html>

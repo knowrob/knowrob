@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>functional.pl -- Functional programming.</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>functional.pl -- Functional programming.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Bernhard Kirchlechner, Moritz Tenorth</dd>
+<dt class="keyword-license">license</dt><dd class="keyword-license">- BSD</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="reduce/4"><b class="pred">reduce</b><var class="arglist">(+Predicate, +List, +StartValue, -Result)</var></a></dt><dd class="defbody">The predicate is first called for the first element of the list, the start value and an intermediate result.
+Then it is repeatedly called for the next elements, the intermediate result and a new intermediate result.
+The final value is the result when the predicate has been called the last time.
+E.g. <code>reduce(plus, [1,2,3,4], 0, 10)</code> holds.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="range/3"><b class="pred">range</b><var class="arglist">(+M, +N, -Range)</var></a></dt><dd class="defbody">Generate a list of integers in a given range. E.g. range(5, 0, [5,4,3,2,1,0].</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="zip/3"><b class="pred">zip</b><var class="arglist">(?List1, ?List2, ?List3)</var></a></dt><dd class="defbody">Zip the lists 1 and 2 together to get list3.
+It behaves like zip in python: <code>zip([a,b],[1,2],[[a,1],[b,2]])</code>.</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="zipm/3"><b class="pred">zipm</b><var class="arglist">(?List1, ?List2, ?List3)</var></a></dt><dd class="defbody">Zip the lists 1 and 2 together to get list3.
+It behaves similar to zip in python but uses - for concatenation: <code>zip([a,b],[1,2],[a-1,b-2])</code>.</dd>
+</dl>
+
+</body>
+</html>

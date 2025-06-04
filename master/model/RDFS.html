@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>RDFS.pl -- The Resource Description Framework Schema model.</title>
+
+<link rel="stylesheet" type="text/css" href="../pldoc.css">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+</head>
+<body>
+
+
+<h1 class="file"><span style="float:right"></span>RDFS.pl -- The Resource Description Framework Schema model.</h1>
+
+<dl class="tags">
+<dt class="keyword-author">author</dt><dd class="keyword-author">- Daniel Beßler</dd>
+</dl>
+
+<dl>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_type/2"><b class="pred">has_type</b><var class="arglist">(+Resource, ?Type)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">rdf:type is an instance of rdf:Property that is used to
+state that a resource is an instance of a class.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Resource</var></td><td class="argdescr">- a RDF resource</td></tr>
+<tr><td><var>Type</var></td><td class="argdescr">- a rdf:type of the resource</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_resource/1"><b class="pred">is_resource</b><var class="arglist">(+Entity)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">All things described by RDF are called resources,
+and are instances of the class rdfs:Resource.
+This is the class of everything.
+All other classes are subclasses of this class.
+rdfs:Resource is an instance of rdfs:Class.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_property/1"><b class="pred">is_property</b><var class="arglist">(+Entity)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">rdf:Property is the class of RDF properties.
+rdf:Property is an instance of rdfs:Class.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_literal/1"><b class="pred">is_literal</b><var class="arglist">(+Entity)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">The class rdfs:Literal is the class of literal values such as
+strings and integers. Property values such as textual strings
+are examples of RDF literals.
+
+<p>
+rdfs:Literal is an instance of rdfs:Class.
+rdfs:Literal is a subclass of rdfs:Resource.</p>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="is_datatype/1"><b class="pred">is_datatype</b><var class="arglist">(+Entity)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">rdfs:Datatype is the class of datatypes.
+All instances of rdfs:Datatype correspond to the RDF model
+of a datatype described in the RDF Concepts specification.
+rdfs:Datatype is both an instance of and a subclass of rdfs:Class.
+Each instance of rdfs:Datatype is a subclass of rdfs:Literal.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- An entity IRI.</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_range/2"><b class="pred">has_range</b><var class="arglist">(?Property, ?Range)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">The range of a property globally restricts values
+of the property to instances of the range.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Property</var></td><td class="argdescr">- a property</td></tr>
+<tr><td><var>Range</var></td><td class="argdescr">- the range of the property</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_domain/2"><b class="pred">has_domain</b><var class="arglist">(?Property, ?Domain)</var></a> is <b class="det">nondet</b></dt><dd class="defbody">The domain of a property globally restricts hosts
+of the property to instances of the domain.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Property</var></td><td class="argdescr">- a property</td></tr>
+<tr><td><var>Domain</var></td><td class="argdescr">- the range of the property</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_label/2"><b class="pred">has_label</b><var class="arglist">(+Resource, ?Comment)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">rdfs:label is an instance of rdf:Property that may be used
+to provide a human-readable version of a resource's name.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Resource</var></td><td class="argdescr">- a RDF resource</td></tr>
+<tr><td><var>Label</var></td><td class="argdescr">- a label atom</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="has_comment/2"><b class="pred">has_comment</b><var class="arglist">(+Resource, ?Comment)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">rdfs:comment is an instance of rdf:Property that may be used
+to provide a human-readable description of a resource.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Resource</var></td><td class="argdescr">- a RDF resource</td></tr>
+<tr><td><var>Comment</var></td><td class="argdescr">- a comment atom</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="multidef"><span style="float:right">&nbsp;</span><a name="instance_of/2"><b class="pred">instance_of</b><var class="arglist">(?Entity, ?Type)</var></a> is <b class="det">nondet</b><span class="anot" style="float:right">[multifile]</span></dt><dd class="defbody">The type of an entity (rdf:type).
+For example: `Nibbler instance_of Cat`.
+
+<p>
+Note: that the <b>projection</b> clause of this rule allows
+<var>Entity</var> to be a variable, in which case a new entity
+symbol is generated.</p>
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Entity</var></td><td class="argdescr">- a named individual</td></tr>
+<tr><td><var>Type</var></td><td class="argdescr">- the type of the entity</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="multidef"><span style="float:right">&nbsp;</span><a name="subclass_of/2"><b class="pred">subclass_of</b><var class="arglist">(?Class, ?SuperClass)</var></a> is <b class="det">nondet</b><span class="anot" style="float:right">[multifile]</span></dt><dd class="defbody">The subclass-of relation (rdfs:subClassOf).
+For example: `Cat subclass_of Animal`.
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Class</var></td><td class="argdescr">- a class IRI</td></tr>
+<tr><td><var>SuperClass</var></td><td class="argdescr">- a class IRI</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="multidef"><span style="float:right">&nbsp;</span><a name="subproperty_of/2"><b class="pred">subproperty_of</b><var class="arglist">(?Property, ?SuperProperty)</var></a> is <b class="det">nondet</b><span class="anot" style="float:right">[multifile]</span></dt><dd class="defbody">The subproperty-of relation (rdfs:subPropertyOf).
+
+<dl class="tags">
+<dt class="tag">Arguments:</dt><dd>
+
+<table class="arglist">
+<tr><td><var>Property</var></td><td class="argdescr">- a property IRI</td></tr>
+<tr><td><var>SuperProperty</var></td><td class="argdescr">- a property IRI</td></tr>
+</table>
+
+</dd>
+</dl>
+
+</dd>
+<dt class="pubdef"><span style="float:right">&nbsp;</span><a name="rdf_list/2"><b class="pred">rdf_list</b><var class="arglist">(+RDF_list, -Pl_List)</var></a> is <b class="det">semidet</b></dt><dd class="defbody">Read a RDF list into a Prolog list.</dd>
+</dl>
+
+</body>
+</html>

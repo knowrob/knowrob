@@ -1,0 +1,11 @@
+<map id="knowrob::Query" name="knowrob::Query">
+<area shape="rect" id="node1" title=" " alt="" coords="344,80,469,107"/>
+<area shape="rect" id="node3" href="$d2/d0e/classknowrob_1_1_conjunctive_query.html" title=" " alt="" coords="5,155,208,181"/>
+<area shape="rect" id="node4" href="$d9/d40/classknowrob_1_1_formula_query.html" title=" " alt="" coords="232,155,411,181"/>
+<area shape="rect" id="node5" href="$d7/d61/classknowrob_1_1_goal.html" title=" " alt="" coords="435,155,551,181"/>
+<area shape="rect" id="node7" href="$d0/dd9/classknowrob_1_1_graph_query.html" title=" " alt="" coords="590,155,754,181"/>
+<area shape="rect" id="node2" href="$db/dc5/classknowrob_1_1_printable.html" title=" " alt="" coords="335,5,479,32"/>
+<area shape="rect" id="node6" href="$d8/d5b/classknowrob_1_1_r_d_f_goal.html" title=" " alt="" coords="409,229,551,256"/>
+<area shape="rect" id="node8" href="$dc/d25/classknowrob_1_1_graph_path_query.html" title=" " alt="" coords="576,229,768,256"/>
+<area shape="rect" id="node9" href="$d4/dfd/classknowrob_1_1_reified_query.html" title=" " alt="" coords="792,229,963,256"/>
+</map>
